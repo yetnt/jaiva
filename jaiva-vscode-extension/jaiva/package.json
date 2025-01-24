@@ -1,0 +1,42 @@
+{
+    "name": "jaiva",
+    "displayName": "Jaiva Coloring",
+    "description": "Colouring for jaiva code. If you use lol",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.96.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "themes": [
+            {
+                "label": "My Custom Theme",
+                "uiTheme": "vs-dark",
+                "path": "./themes/jaiva-color-theme.json"
+            }
+        ],
+        "languages": [
+            {
+                "id": "jaiva",
+                "aliases": [
+                    "Jaiva Wena!",
+                    "jaiva"
+                ],
+                "extensions": [
+                    ".jva",
+                    ".jaiva"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "jaiva",
+                "scopeName": "source.jaiva",
+                "path": "./syntaxes/jaiva.tmLanguage.json"
+            }
+        ]
+    }
+}

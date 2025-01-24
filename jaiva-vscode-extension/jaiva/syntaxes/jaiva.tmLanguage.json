@@ -1,0 +1,123 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Jaiva Wena!",
+    "patterns": [
+        {
+            "include": "#keywords"
+        },
+        {
+            "include": "#strings"
+        },
+        {
+            "include": "#variables"
+        },
+        {
+            "include": "#comments"
+        },
+        {
+            "include": "#comparisonOperators"
+        },
+        {
+            "include": "#functions"
+        },
+        {
+            "include": "#symbols"
+        },
+        {
+            "include": "#numbers"
+        }
+    ],
+    "repository": {
+        "keywords": {
+            "patterns": [
+                {
+                    "name": "keyword.control.jaiva",
+                    "match": "\\b(maak|if|mara|zama|kwenza|cima|colonize|chaai|khutla|with)\\b"
+                }
+            ]
+        },
+        "strings": {
+            "name": "string.quoted.double.jaiva",
+            "begin": "\"",
+            "end": "\"",
+            "patterns": [
+                {
+                    "name": "constant.character.escape.jaiva",
+                    "match": "\\*."
+                }
+            ]
+        },
+        "variables": {
+            "patterns": [
+                {
+                    "name": "variable.other.jaiva",
+                    "match": "(?!chaai\\b)(\\b[a-zA-Z_][a-zA0-9_]*\\b)(?=\\s*<-)"
+                }
+            ]
+        },
+        "comments": {
+            "patterns": [
+                {
+                    "name": "comment.line.jaiva",
+                    "match": "^@.*$"
+                },
+                {
+                    "name": "comment.block.jaiva",
+                    "begin": "/@",
+                    "end": "@/",
+                    "patterns": [
+                        {
+                            "name": "comment.block.documentation.jaiva",
+                            "match": "(?<=/@)[\\s\\S]+(?=@/)"
+                        }
+                    ]
+                }
+            ]
+        },
+        "comparisonOperators": {
+            "patterns": [
+                {
+                    "name": "keyword.operator.comparison.jaiva",
+                    "match": "\\b(== | != | <= | >= | < | > )(?!\\s*(<~|<==|->))\\b"
+                }
+            ]
+        },
+        "functions": {
+            "patterns": [
+                {
+                    "name": "entity.name.function.jaiva",
+                    "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\b(?=\\()"
+                }
+            ]
+        },
+        "symbols": {
+            "patterns": [
+                {
+                    "name": "keyword.operator.jaiva",
+                    "match": "\\|"
+                },
+                {
+                    "name": "keyword.operator.end.jaiva",
+                    "match": "<=="
+                },
+                {
+                    "name": "keyword.operator.jaiva",
+                    "match": ","
+                },
+                {
+                    "name": "keyword.operator.end.jaiva",
+                    "match": "!"
+                }
+            ]
+        },
+        "numbers": {
+            "patterns": [
+                {
+                    "name": "constant.numeric.jaiva",
+                    "match": "\\b\\d+(\\.\\d+)?\\b"
+                }
+            ]
+        }
+    },
+    "scopeName": "source.jaiva"
+}

@@ -1,0 +1,35 @@
+maak variable <- 10!
+maak arrayvar <- 10, 23, 234, 23!
+
+kuluma("Hello World*!")!
+kuluma(variable)!
+
+if (variable != 100) ->
+    kuluma("Variable is not 100")!
+<~ mara ->
+    kuluma("It's 10")!
+<~
+
+@ comment
+
+/@
+multi line comment
+@/
+
+kwenza addition(param1, param2) ->
+    khutla param1 + param2!
+<~
+
+colonize i <- 0 | i <= 10 | + ->
+    kuluma(addition(arrayVar[i], 10))!
+<~
+
+colonize arrayVar with i ->
+    kuluma(i)!
+<~
+
+zama zama ->
+    cima <== "This is an error"
+<~ chaai ->
+    kuluma("error msg" + chaai)!
+<~
