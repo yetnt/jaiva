@@ -2,65 +2,42 @@ package com.yetnt;
 
 import java.util.*;
 
-class Token<T> {
-
-    private final T value;
-
-    public Token(T value) {
-        this.value = value;
+class EscapeSequence {
+    /**
+     * Escape a string.
+     * 
+     * @param str The string to escape.
+     * @return
+     */
+    public static String escape(String str) {
+        return str
+                .replace("*e", "=")
+                .replace("*s", " ").replace("*n", "\n")
+                .replace("*t", "\t")
+                .replace("*r", "\r")
+                .replace("*b", "\b")
+                .replace("*f", "\f")
+                .replace("*'", "'")
+                .replace("*\"", "\"")
+                .replace("*\\", "\\");
     }
 
-    public T getValue() {
-        return value;
-    }
-
-    // Inner class TVar
-    class TStringVar {
-        public String name;
-        public String value;
-
-        TStringVar(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        // Return a Token<TVar> on initialization
-        public Token<TStringVar> toToken() {
-            return new Token<>(this);
-        }
-    }
-
-    class TIntVar {
-        public String name;
-        public int value;
-
-        TIntVar(String name, int value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        // Return a Token<TVar> on initialization
-        public Token<TIntVar> toToken() {
-            return new Token<>(this);
-        }
-    }
-
-    // Inner class TFunc
-    class TFunc {
-        public String name;
-        public ArrayList<String> args;
-        public String body;
-
-        TFunc(String name, ArrayList<String> args, String body) {
-            this.name = name;
-            this.args = args;
-            this.body = body;
-        }
-
-        // Return a Token<TFunc> on initialization
-        public Token<TFunc> toToken() {
-            return new Token<>(this);
-        }
+    /**
+     * Unescape a string.
+     * 
+     * @param str The string to unescape.
+     * @return
+     */
+    public static String unescape(String str) {
+        return str
+                .replace("=", "*e").replace(" ", "*s").replace("\n", "*n")
+                .replace("\t", "*t")
+                .replace("\r", "*r")
+                .replace("\b", "*b")
+                .replace("\f", "*f")
+                .replace("'", "*'")
+                .replace("\"", "*\"")
+                .replace("\\", "*\\");
     }
 }
 
@@ -77,32 +54,99 @@ class Token<T> {
 // "+tVarInstance.name);System.out.println("TVar Value: "+tVarInstance.value);
 
 public class Tokenizer {
-    public static ArrayList<Token<?>> readLine(String line) throws Exception {
+    /**
+     * Find the index of the enclosing character in a string.
+     * 
+     * @param line  The string to search in.
+     * @param start The starting character.
+     * @param end   The ending character.
+     * @return
+     */
+    public static int findEnclosingCharIndex(String line, char start, char end) {
+        int startCount = 0;
+        int endCount = 0;
+        boolean isStart = true;
+        for (int i = 0; i < line.length(); i++) {
+            if (start != end) {
+                if (line.charAt(i) == start) {
+                    startCount++;
+                } else if (line.charAt(i) == end) {
+                    endCount++;
+                }
+                if (startCount == endCount && startCount != 0) {
+                    return i;
+                }
+            } else {
+                if (line.charAt(i) == end) {
+                    if (!isStart) {
+                        return i;
+                    }
+                    isStart = !isStart;
+                }
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Read a line and tokenize it.
+     * May return an arraylist of tokens or a string to be used as the previosu
+     * string of another readLine call.
+     * 
+     * @param line
+     * @param previousLine
+     * @return ArrayList<Token<?>> or String
+     * @throws Exception
+     */
+    public static Object readLine(String line, String previousLine) throws Exception {
         ArrayList<Token<?>> tokens = new ArrayList<>();
         Token<?> tContainer = new Token<>(null);
 
-        if (line.startsWith("maak")) {
-            // maak varuiablename = value!
-            line = line.trim();
-            line = line.substring(0, 4);
-            // varuiablename = value!
+        String[] lines = line.split("!");
+        System.out.println(lines[1]);
+        if (lines.length > 1 && !lines[1].isEmpty()) {
+            // multiple lines.
+            for (int i = 0; i < lines.length - 1; i++) {
+                tokens.addAll((ArrayList<Token<?>>) readLine(lines[i] + "!", i == 0 ? previousLine : ""));
+            }
+            return tokens;
+        }
 
-            String[] parts = line.split(" ");
-            // parts = [varuiablename, =, value!]
-            if (parts.length < 3 || !parts[1].equals("=") || !parts[2].endsWith("!")) {
+        // #STRING# is a line which contains something that needs to be tokenized.
+
+        if (line.startsWith("maak")) {
+            boolean isString = false;
+            // #maak varuiablename = " value"!#
+            // #maak varuiablename = 49!#
+            int stringStart = line.indexOf("\"");
+            int stringEnd = findEnclosingCharIndex(line, '"', '"');
+            if (stringStart != -1 && stringEnd != -1) {
+                isString = true;
+                String encasedString = line.substring(stringStart + 1, stringEnd);
+                line = line.substring(0, stringStart - 1) + EscapeSequence.unescape(encasedString) + "!";
+                // #maak varuiablename = "*svalue"!#
+            }
+            line = line.trim();
+            line = line.substring(4, line.length());
+            // #varuiablename = *svalue!#
+            // #varuiablename = 49!#
+
+            String[] parts = line.split("=");
+            // parts = ["varuiablename ", " *svalue!"]
+            // parts = ["varuiablename ", " 49!"]
+            if (parts.length != 2 || !parts[1].endsWith("!")) {
                 throw new Exception("Invalid syntax!");
             }
             // remove ! from parts[2] (at the end of the line)
-            parts[2] = parts[2].substring(0, parts[2].length() - 1);
-            // parts = [varuiablename, =, value]
+            parts[1] = parts[1].substring(0, parts[1].length() - 1).trim();
+            parts[0] = parts[0].trim();
+            // parts = ["varuiablename", "*svalue"]
+            // parts = ["varuiablename", "49"]
 
-            // Try to convery parts[2] to an integer. if it doesnt work (exce4ption thrown)
-            // then treat as string.
-            try {
-                int value = Integer.parseInt(parts[2]);
-                tokens.add(tContainer.new TIntVar(parts[0], value).toToken());
-            } catch (NumberFormatException e) {
-                tokens.add(tContainer.new TStringVar(parts[0], parts[2]).toToken());
+            if (isString) {
+                tokens.add(tContainer.new TStringVar(parts[0], EscapeSequence.unescape(parts[1])).toToken());
+            } else {
+                tokens.add(tContainer.new TIntVar(parts[0], Integer.parseInt(parts[1])).toToken());
             }
 
         }
