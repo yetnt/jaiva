@@ -11,8 +11,10 @@ class EscapeSequence {
      */
     public static String escape(String str) {
         return str
-                .replace("*e", "=")
-                .replace("*s", " ").replace("*n", "\n")
+                .replace("*=", "=")
+                .replace("*!", "!")
+                .replace("*s", " ")
+                .replace("*n", "\n")
                 .replace("*t", "\t")
                 .replace("*r", "\r")
                 .replace("*b", "\b")
@@ -30,7 +32,10 @@ class EscapeSequence {
      */
     public static String unescape(String str) {
         return str
-                .replace("=", "*e").replace(" ", "*s").replace("\n", "*n")
+                .replace("=", "*=")
+                .replace("!", "*!")
+                .replace(" ", "*s")
+                .replace("\n", "*n")
                 .replace("\t", "*t")
                 .replace("\r", "*r")
                 .replace("\b", "*b")
@@ -102,15 +107,18 @@ public class Tokenizer {
         ArrayList<Token<?>> tokens = new ArrayList<>();
         Token<?> tContainer = new Token<>(null);
 
-        String[] lines = line.split("!");
-        System.out.println(lines[1]);
+        String[] lines = line.split("(?<!\\*)!");
         if (lines.length > 1 && !lines[1].isEmpty()) {
+            System.out.println("Multiple lines detected!");
             // multiple lines.
-            for (int i = 0; i < lines.length - 1; i++) {
+            for (int i = 0; i < lines.length; i++) {
+                System.out.println("Reading line " + i + "...");
                 tokens.addAll((ArrayList<Token<?>>) readLine(lines[i] + "!", i == 0 ? previousLine : ""));
             }
             return tokens;
         }
+
+        line = previousLine + line;
 
         // #STRING# is a line which contains something that needs to be tokenized.
 
@@ -118,6 +126,7 @@ public class Tokenizer {
             boolean isString = false;
             // #maak varuiablename = " value"!#
             // #maak varuiablename = 49!#
+            // #maak varuiablename = true!#
             int stringStart = line.indexOf("\"");
             int stringEnd = findEnclosingCharIndex(line, '"', '"');
             if (stringStart != -1 && stringEnd != -1) {
@@ -130,10 +139,12 @@ public class Tokenizer {
             line = line.substring(4, line.length());
             // #varuiablename = *svalue!#
             // #varuiablename = 49!#
+            // #varuiablename = true!#
 
-            String[] parts = line.split("=");
+            String[] parts = line.split("<-");
             // parts = ["varuiablename ", " *svalue!"]
             // parts = ["varuiablename ", " 49!"]
+            // parts = ["varuiablename ", " true!"]
             if (parts.length != 2 || !parts[1].endsWith("!")) {
                 throw new Exception("Invalid syntax!");
             }
@@ -142,11 +153,25 @@ public class Tokenizer {
             parts[0] = parts[0].trim();
             // parts = ["varuiablename", "*svalue"]
             // parts = ["varuiablename", "49"]
+            // parts = ["varuiablename", "true"]
 
             if (isString) {
                 tokens.add(tContainer.new TStringVar(parts[0], EscapeSequence.unescape(parts[1])).toToken());
             } else {
-                tokens.add(tContainer.new TIntVar(parts[0], Integer.parseInt(parts[1])).toToken());
+                try {
+
+                    tokens.add(tContainer.new TIntVar(parts[0], Integer.parseInt(parts[1])).toToken());
+                } catch (NumberFormatException e) {
+                    if (parts[1].equals("true") || parts[1].equals("false") || parts[1].equals("yebo")
+                            || parts[1].equals("aowa")) {
+                        parts[1] = parts[1].replace("yebo", "true").replace("aowa", "false");
+                        tokens.add(tContainer.new TBooleanVar(parts[0], Boolean.parseBoolean(parts[1])).toToken());
+                    } else {
+                        throw new Errors.TokenizerSyntaxError("Invalid variable declaration!");
+                    }
+                    // tokens.add(tContainer.new TBooleanVar(parts[0],
+                    // Boolean.parseBoolean(parts[1])).toToken());
+                }
             }
 
         }

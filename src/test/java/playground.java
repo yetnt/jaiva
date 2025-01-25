@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 
 import com.yetnt.*;
+import com.yetnt.Token.TBooleanVar;
+import com.yetnt.Token.TIntVar;
+import com.yetnt.Token.TStringVar;
 
 public class playground {
     public static int findEnclosingCharIndex(String line, char start, char end) {
@@ -30,11 +33,14 @@ public class playground {
     }
 
     public static void main(String[] args) {
-        String stuff = "maak koo = \"df\"! maak lol = 233!";
+        String stuff = "maak lol\n<- aowa!\nmaak poop <- 100!";
+        int lineNum = 0;
         try {
             @SuppressWarnings("unchecked")
-            ArrayList<Token<?>> m = (ArrayList<Token<?>>) Tokenizer.readLine(stuff, "");
-            System.out.println(m.get(1));
+            ArrayList<Token<?>> tokens = (ArrayList<Token<?>>) Tokenizer.readLine(stuff, "");
+            @SuppressWarnings({ "unchecked", "rawtypes" })
+            Token<TBooleanVar>.TBooleanVar token = (Token<TBooleanVar>.TBooleanVar) tokens.get(0).getValue();
+            System.out.println(token.value);
         } catch (Exception e) {
             e.printStackTrace();
         }

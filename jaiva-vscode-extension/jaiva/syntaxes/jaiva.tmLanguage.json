@@ -51,7 +51,7 @@
             "patterns": [
                 {
                     "name": "variable.other.jaiva",
-                    "match": "(?!chaai\\b)(\\b[a-zA-Z_][a-zA0-9_]*\\b)(?=\\s*<-)"
+                    "match": "(?<!<~|!|\\n\\([a-zA-Z_][a-zA-Z0-9_]*\\))(?<=\\(|<-|^|\\s|\\[)\\b(?!chaai\\b)[a-zA-Z_][a-zA-Z0-9_]*\\b(?=\\)|\\[|,|==|!=|<=|>=|<|\\]|>|\\s|$)"
                 }
             ]
         },
@@ -107,6 +107,10 @@
                 {
                     "name": "keyword.operator.end.jaiva",
                     "match": "!"
+                },
+                {
+                    "name": "keyword.operator.end.jaiva",
+                    "match": "\\?"
                 }
             ]
         },
