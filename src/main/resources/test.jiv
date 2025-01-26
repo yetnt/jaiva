@@ -1,7 +1,13 @@
+@ comment
+
+{
+    multi line comment
+}
+
 maak variable <- 10!
 maak arrayVar <- 10, 23, 234, 23!
 
-kuluma("Hello World*!")!
+kuluma("Hello World")!
 kuluma(variable)!
 
 if (variable != 100) ->
@@ -10,11 +16,6 @@ if (variable != 100) ->
     kuluma("It's 10")!
 <~
 
-@ comment
-
-/@
-multi line comment
-@/
 
 kwenza addition(param1, param2) ->
     khutla (param1 + param2)!
@@ -22,6 +23,17 @@ kwenza addition(param1, param2) ->
 
 colonize i <- 0 | i <= 10 | + ->
     kuluma(addition(arrayVar[i], 10))!
+<~
+
+colonize i, j <- 0 | i >= 10, j <= -10 | +- ->
+    left ->
+    @ some code that uses the variable i
+    @ i will be incremented
+    <~
+    right ->
+    @ some code that uses the variable j
+    @ j will be decremented
+    <~
 <~
 
 colonize arrayVar with i ->
