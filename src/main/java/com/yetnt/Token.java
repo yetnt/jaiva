@@ -2,7 +2,17 @@ package com.yetnt;
 
 import java.util.ArrayList;
 
-public class Token<T> {
+class TokenDefault {
+    public String name = "";
+
+    public
+
+    TokenDefault(String name) {
+        this.name = name;
+    }
+}
+
+public class Token<T extends TokenDefault> {
 
     private final T value;
 
@@ -17,7 +27,8 @@ public class Token<T> {
     @Override
     public String toString() {
         return "Token {" +
-                "value = " + value +
+                "name = " + value.name +
+                " | value = " + value +
                 " }";
     }
 
@@ -26,10 +37,11 @@ public class Token<T> {
      * This class usually isn't used directly, but rather as a part of another
      * instance.
      */
-    public class TStatement {
+    public class TStatement extends TokenDefault {
         public String statement;
 
         TStatement(String statement) {
+            super("TStatement");
             this.statement = statement;
         }
 
@@ -44,10 +56,11 @@ public class Token<T> {
      * This class usually isn't used directly, but rather as a part of another
      * instance
      */
-    public class TCodeblock {
+    public class TCodeblock extends TokenDefault {
         public ArrayList<Token<?>> lines;
 
         TCodeblock(ArrayList<Token<?>> lines) {
+            super("TCodeBlock");
             this.lines = lines;
         }
 
@@ -60,12 +73,12 @@ public class Token<T> {
     /**
      * Represents a string variable such as {@code maak name <- "John"};
      */
-    public class TStringVar {
-        public String name;
+    public class TStringVar extends TokenDefault {
+
         public String value;
 
         TStringVar(String name, String value) {
-            this.name = name;
+            super(name);
             this.value = value;
         }
 
@@ -77,12 +90,11 @@ public class Token<T> {
     /**
      * Represents a integer variable such as {@code maak age <- 20};
      */
-    public class TIntVar {
-        public String name;
+    public class TIntVar extends TokenDefault {
         public int value;
 
         TIntVar(String name, int value) {
-            this.name = name;
+            super(name);
             this.value = value;
         }
 
@@ -94,12 +106,11 @@ public class Token<T> {
     /**
      * Represents a boolean variable such as {@code maak isTrue <- true};
      */
-    public class TBooleanVar {
-        public String name;
+    public class TBooleanVar extends TokenDefault {
         public boolean value;
 
         TBooleanVar(String name, boolean value) {
-            this.name = name;
+            super(name);
             this.value = value;
         }
 
@@ -113,13 +124,13 @@ public class Token<T> {
      * {@code kwenza addition(param1, param2) -> khutla (param1 + param2)! <~}
      * This class is
      */
-    public class TFunc {
+    public class TFunc extends TokenDefault {
         public String name;
         public ArrayList<String> args;
         public TCodeblock body;
 
         TFunc(String name, ArrayList<String> args, TCodeblock body) {
-            this.name = name;
+            super(name);
             this.args = args;
             this.body = body;
         }
