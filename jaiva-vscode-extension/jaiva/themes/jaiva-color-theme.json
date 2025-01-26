@@ -11,7 +11,7 @@
                 "keyword.control.jaiva"
             ],
             "settings": {
-                "foreground": "#6a6fc8"  // Red for keywords
+                "foreground": "#ff6464"  // Red for keywords
             }
         },
         {
@@ -19,7 +19,7 @@
                 "variable.other.jaiva"
             ],
             "settings": {
-                "foreground":  "#00ffee" // Green for variables
+                "foreground":  "#00ffeeb1" // Green for variables
             }
         },
         {
@@ -77,7 +77,16 @@
                 "constant.numeric.jaiva"
             ],
             "settings": {
-                "foreground": "#8958fc"  // Blue for operators
+                "foreground": "#fcaf58"  // Blue for operators
+            }
+        }, {
+            "scope": [
+                "keyword.other.true.jaiva",
+                "keyword.other.false.jaiva"
+            ],
+            "settings": {
+                "foreground": "#0c30ff",
+                "fontStyle": "bold"
             }
         }
     ]

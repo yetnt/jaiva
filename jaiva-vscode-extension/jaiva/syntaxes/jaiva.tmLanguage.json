@@ -25,6 +25,9 @@
         },
         {
             "include": "#numbers"
+        },
+        {
+            "include": "#booleans"
         }
     ],
     "repository": {
@@ -59,16 +62,16 @@
             "patterns": [
                 {
                     "name": "comment.line.jaiva",
-                    "match": "^@.*$"
+                    "match": "@.*"
                 },
                 {
                     "name": "comment.block.jaiva",
-                    "begin": "/@",
-                    "end": "@/",
+                    "begin": "{",
+                    "end": "}",
                     "patterns": [
                         {
                             "name": "comment.block.documentation.jaiva",
-                            "match": "(?<=/@)[\\s\\S]+(?=@/)"
+                            "match": "(?<={)[\\s\\S]+(?=})"
                         }
                     ]
                 }
@@ -119,6 +122,18 @@
                 {
                     "name": "constant.numeric.jaiva",
                     "match": "\\b\\d+(\\.\\d+)?\\b"
+                }
+            ]
+        },
+        "booleans": {
+            "patterns": [
+                {
+                    "name": "keyword.other.true.jaiva",
+                    "match": "\\btrue|yebo\\b"
+                },
+                {
+                    "name": "keyword.other.false.jaiva",
+                    "match": "\\bfalse|aowa\\b"
                 }
             ]
         }
