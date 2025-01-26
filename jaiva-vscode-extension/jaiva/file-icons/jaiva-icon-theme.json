@@ -1,0 +1,13 @@
+{
+  "iconDefinitions": {
+    "jaiva-icon": {
+      "iconPath": "./images/jaiva.svg"
+    }
+  },
+  "fileExtensions": {
+    "jaiva": "jaiva-icon"
+  },
+  "languageIds": {
+    "jaiva": "jaiva-icon"
+  }
+}

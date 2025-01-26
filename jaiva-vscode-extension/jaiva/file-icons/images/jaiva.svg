@@ -1,0 +1,29 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048" width="2048" height="2048">
+	<title>jaiva-logo-2</title>
+	<style>
+		tspan { white-space:pre } 
+		.t0 { font-size: 1387px;fill: #7800ff;font-weight: 500;font-family: "Baloo2-Medium", "Baloo" } 
+		.t1 { font-size: 334px;fill: #7800ff;font-weight: 500;font-family: "Baloo2-Medium", "Baloo" } 
+		.t2 { font-size: 251px;fill: #7800ff;font-weight: 500;font-family: "Baloo2-Medium", "Baloo" } 
+	</style>
+	<text id="J" style="transform: matrix(2.574,0,0,2.225,-17.456,1929.299)" >
+		<tspan x="0" y="0" class="t0">J</tspan><tspan  y="0" class="t0">
+</tspan>
+	</text>
+	<text id="i" style="transform: matrix(2.574,0,0,2.225,921.544,2651.299)" >
+		<tspan x="0" y="0" class="t0">i
+</tspan>
+	</text>
+	<text id="v" style="transform: matrix(2.574,0,0,2.225,1445.544,1231.299)" >
+		<tspan x="0" y="0" class="t1">v
+</tspan>
+	</text>
+	<text id="a" style="transform: matrix(2.574,0,0,2.225,220.544,1538.299)" >
+		<tspan x="0" y="0" class="t2">a
+</tspan>
+	</text>
+	<text id="a" style="transform: matrix(2.574,0,0,2.225,1664.544,1985.299)" >
+		<tspan x="0" y="0" class="t2">a
+</tspan>
+	</text>
+</svg>
