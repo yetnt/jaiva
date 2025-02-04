@@ -26,7 +26,7 @@ public class Token<T extends TokenDefault> {
 
     @Override
     public String toString() {
-        return "Token {" +
+        return "Token { " +
                 "name = " + value.name +
                 " | value = " + value +
                 " }";
