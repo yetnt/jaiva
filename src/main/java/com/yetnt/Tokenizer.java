@@ -290,10 +290,11 @@ public class Tokenizer {
         boolean isComment = (cont && ((MultipleLinesOutput) multipleLinesOutput).isComment)
                 || (line.startsWith("{") || (line.indexOf('{') != -1 && line.charAt(line.indexOf('{')) != '*'));
         boolean isCodeBlock = (cont && !((MultipleLinesOutput) multipleLinesOutput).isComment)
-                || (line.contains("->") && (line.indexOf('-') > 0 && line.charAt(line.indexOf('-') - 1) != '*' && line
-                        .charAt(line.indexOf('-') - 1) != '<'));
-
-        System.out.println(line.contains("->"));
+                || (line.startsWith("if") || line.startsWith("kwenza") || line.startsWith("colonize"))
+        // || (line.contains("->") && (line.indexOf('-') > 0 &&
+        // line.charAt(line.indexOf('-') - 1) != '*' && line
+        // .charAt(line.indexOf('-') - 1) != '<'))
+        ;
 
         ArrayList<Token<?>> tokens = new ArrayList<>();
         Token<?> tContainer = new Token<>(null);
