@@ -130,28 +130,29 @@ public class Tokenizer {
      * @return
      */
     public static MultipleLinesOutput findEnclosingCharIMultipleLines(String line, String start, String end,
-            int startCount,
-            int endCount, String previousLines) {
+            int startCount, int endCount, String previousLines) {
         if (start.length() > 2 || end.length() > 2)
-            throw new IllegalArgumentException("ARGUMENTS ARE NOT 2 LONG IDIOT!");
+            throw new IllegalArgumentException("Arguments must be at most 2 characters long!");
         boolean isStart = true;
+
         for (int i = 0; i < line.length(); i++) {
-            if (start != end) {
+            if (!start.equals(end)) {
                 if (line.charAt(i) == start.charAt(0)) {
-                    startCount += line.charAt(i + 1) == start.charAt(1) ? 1 : 0;
+                    startCount += (i + 1 < line.length() && line.charAt(i + 1) == start.charAt(1)) ? 1 : 0;
                 } else if (line.charAt(i) == end.charAt(0)) {
-                    endCount += line.charAt(i + 1) == end.charAt(1) ? 1 : 0;
+                    endCount += (i + 1 < line.length() && line.charAt(i + 1) == end.charAt(1)) ? 1 : 0;
                 }
                 if (startCount == endCount && startCount != 0) {
                     return new MultipleLinesOutput(startCount, endCount, previousLines + line);
                 }
             } else {
                 if (line.charAt(i) == end.charAt(0)) {
-                    if (line.charAt(i + 1) == end.charAt(1)) {
-                        if (!isStart) {
-                            return new MultipleLinesOutput(i, i, previousLines + line);
-                        }
+                    if (i + 1 < line.length() && line.charAt(i + 1) == end.charAt(1)) {
+                        // if (!isStart) {
+                        return new MultipleLinesOutput(i, i, previousLines + line);
+                        // }
                     }
+                    // System.out.println("Found!");
                     isStart = !isStart;
                 }
             }
@@ -242,32 +243,28 @@ public class Tokenizer {
         return line.substring(0, line.indexOf('@'));
     }
 
-    public static Object handleBlocks(boolean isComment, String tokenizerLine,
+    public static Object handleBlocks(boolean isComment, String line,
             MultipleLinesOutput multipleLinesOutput, String entireLine) {
         MultipleLinesOutput m;
-        if (multipleLinesOutput instanceof MultipleLinesOutput) {
+        if (multipleLinesOutput != null) {
             // multiple lines output exists. So we need to keep going until we find }
-            m = isComment ? findEnclosingCharIMultipleLines(tokenizerLine, '{', '}', multipleLinesOutput.startCount,
+            m = isComment ? findEnclosingCharIMultipleLines(
+                    line, '{', '}', multipleLinesOutput.startCount,
                     multipleLinesOutput.endCount)
-                    : findEnclosingCharIMultipleLines(tokenizerLine, "->", "<~",
+                    : findEnclosingCharIMultipleLines(
+                            line, "->", "<~",
                             multipleLinesOutput.startCount,
                             multipleLinesOutput.endCount, multipleLinesOutput.preLine);
         } else {
             // Not given, but we need to find the closing tag.
-            m = isComment ? findEnclosingCharIMultipleLines(tokenizerLine, '{', '}', 0, 0)
-                    : findEnclosingCharIMultipleLines(tokenizerLine, "->", "<~", 0, 0, "");
+            m = isComment ? findEnclosingCharIMultipleLines(
+                    line, '{', '}', 0, 0)
+                    : findEnclosingCharIMultipleLines(line, "->", "<~", 0, 0, "");
         }
 
-        // System.err.println(m.startCount);
-        // System.err.println(m.endCount);
-
         if (m.endCount == m.startCount && m.startCount != 0 && m.startCount != -1) {
-            // Their equal and not zero, meaning we found the closing pair.
-            // so exit. since its a comment
             return isComment ? null : entireLine;
         } else {
-            // their not equal or their equal to -1. So keep going and find the enclosing
-            // tag.
             return m;
         }
     }
@@ -323,23 +320,20 @@ public class Tokenizer {
          * and block stuff
          */
         if (cont || isComment || isCodeBlock) {
-            Object output = isComment
-                    ? handleBlocks(true,
-                            tokenizerLine, (MultipleLinesOutput) multipleLinesOutput,
-                            line)
-                    : handleBlocks(false, "*Nn" + tokenizerLine,
-                            (MultipleLinesOutput) multipleLinesOutput,
-                            line);
-            if (output instanceof MultipleLinesOutput || output == null) {
+            Object output = handleBlocks(isComment, line, (MultipleLinesOutput) multipleLinesOutput, tokenizerLine);
+            if (output == null)
                 return output;
-            }
-            // if its not one of the above cases, it HAS to be a string meaning its a block
-            // of code
-            output = (((MultipleLinesOutput) multipleLinesOutput).preLine.replace("*Nn", "").substring(2));
 
+            if (output instanceof MultipleLinesOutput) {
+                if (((MultipleLinesOutput) output).endCount != ((MultipleLinesOutput) output).startCount)
+                    return output;
+            }
+            String preLine = ((MultipleLinesOutput) multipleLinesOutput).preLine.replaceFirst("kwenza", "")
+                    .replaceFirst("if", "")
+                    .replaceFirst("->", "")
+                    .replace("*Nn", "");
             ArrayList<Token<?>> nestedTokens = new ArrayList<>();
-            nestedTokens.addAll((ArrayList<Token<?>>) readLine(
-                    (String) output, "", null));
+            nestedTokens.addAll((ArrayList<Token<?>>) readLine(preLine, "", null));
             tokens.add(tContainer.new TCodeblock(nestedTokens).toToken());
         }
 
