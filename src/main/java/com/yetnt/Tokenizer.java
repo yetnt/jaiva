@@ -7,6 +7,9 @@ import javax.swing.plaf.multi.MultiListUI;
 import com.yetnt.Token.TCodeblock;
 
 class EscapeSequence {
+
+    final String endOfLineChar = "!";
+
     /**
      * Escape a string.
      * 
@@ -26,7 +29,7 @@ class EscapeSequence {
                 .replace("*f", "\f")
                 .replace("*'", "'")
                 .replace("*\"", "\"")
-                .replace("*\\", "\\");
+                .replace("**", "*");
     }
 
     /**
@@ -263,6 +266,7 @@ public class Tokenizer {
         }
 
         if (m.endCount == m.startCount && m.startCount != 0 && m.startCount != -1) {
+            // System.out.println(entireLine);
             return isComment ? null : entireLine;
         } else {
             return m;
@@ -295,15 +299,27 @@ public class Tokenizer {
 
         ArrayList<Token<?>> tokens = new ArrayList<>();
         Token<?> tContainer = new Token<>(null);
-
-        String[] lines = line.split("(?<!\\*)!");
+        boolean containsNewln = line.contains("\n");
+        String[] lines = containsNewln ? line.split("\n") : line.split("(?<!\\*)!");
 
         if (lines.length > 1 && !lines[1].isEmpty()) {
             // System.out.println("Multiple lines detected!");
             // multiple lines.
+            MultipleLinesOutput m = null;
             for (int i = 0; i != lines.length; i++) {
                 // System.out.println("Reading line " + i + "...");
-                tokens.addAll((ArrayList<Token<?>>) readLine(lines[i] + "!", i == 0 ? previousLine : "", null));
+                String previousLine2 = i == 0 ? previousLine : lines[i - 1];
+                System.out.println(previousLine2);
+                // System.out.println(lines[i]);
+                Object something = readLine(lines[i] + (!containsNewln ? "!" : ""), previousLine2, m);
+                if (something instanceof MultipleLinesOutput) {
+                    m = ((MultipleLinesOutput) something);
+                } else if (something instanceof ArrayList<?>) {
+                    m = null;
+                    tokens.addAll((ArrayList<Token<?>>) something);
+                } else {
+                    m = null;
+                }
             }
             return tokens;
         }
@@ -320,18 +336,23 @@ public class Tokenizer {
          * and block stuff
          */
         if (cont || isComment || isCodeBlock) {
-            Object output = handleBlocks(isComment, line, (MultipleLinesOutput) multipleLinesOutput, tokenizerLine);
+            Object output = handleBlocks(isComment, line + "\n", (MultipleLinesOutput) multipleLinesOutput,
+                    tokenizerLine);
             if (output == null)
                 return output;
 
             if (output instanceof MultipleLinesOutput) {
-                if (((MultipleLinesOutput) output).endCount != ((MultipleLinesOutput) output).startCount)
+                int endCount = ((MultipleLinesOutput) output).endCount;
+                int startCount = ((MultipleLinesOutput) output).startCount;
+                // System.out.println(startCount + " + " + endCount);
+                if (endCount != startCount)
                     return output;
             }
             String preLine = ((MultipleLinesOutput) multipleLinesOutput).preLine.replaceFirst("kwenza", "")
                     .replaceFirst("if", "")
                     .replaceFirst("->", "")
                     .replace("*Nn", "");
+            System.out.println(preLine);
             ArrayList<Token<?>> nestedTokens = new ArrayList<>();
             nestedTokens.addAll((ArrayList<Token<?>>) readLine(preLine, "", null));
             tokens.add(tContainer.new TCodeblock(nestedTokens).toToken());
