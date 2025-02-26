@@ -14,6 +14,25 @@ Code blocks start with -> and end in <~.
 
 No types. Fuck types.
 
+## Keywords
+
+Alot of the keywords refer to words from south african languages, so if you happen to know one, you've got the advantage
+here's a cheat table though
+
+| keyword   | meaning                              | language origin |
+| --------- | ------------------------------------ | --------------- |
+| maak      | make/new                             | Afrikaans       |
+| aowa      | no (false)                           | Sepedi          |
+| yebo      | yes (true)                           | Zulu            |
+| khuluma   | talk                                 | Zulu            |
+| mara      | but                                  | Sesotho         |
+| kwenza    | does (function)                      | Zulu            |
+| khutla    | return                               | Zulu            |
+| colonize  | for (for loop)                       | English         |
+| zama zama | try (try block)                      | Zulu            |
+| cima      | turn off (throw)                     | Zulu            |
+| chaai     | "oh no!" or "oh shit!" (catch block) | idk             |
+
 ### Variables
 
 ```jiv
@@ -44,7 +63,7 @@ This piece of code doesnt work.
 ### Logging
 
 ```jiv
-kuluma("hello")!
+khuluma("hello")!
 ```
 
 This logs to ur console fr fr.
@@ -53,9 +72,9 @@ This logs to ur console fr fr.
 
 ```jiv
 if (variable != 100) ->
-    kuluma("Variable is not 100")!
+    khuluma("Variable is not 100")!
 <~ mara ->
-    kuluma("It's 10")!
+    khuluma("It's 10")!
 <~
 ```
 
@@ -65,7 +84,7 @@ Simple nothing crazy, until
 
 ```jiv
 colonize i <- 0 | i <= 10 | + ->
-    kuluma(addition(arrayVar[i], 10))!
+    khuluma(addition(arrayVar[i], 10))!
 <~
 ```
 
@@ -89,7 +108,7 @@ cima <== "This is an error"!
 zama zama ->
     @ block of code to try
 <~ chaai ->
-    kuluma("error msg" + chaai)!
+    khuluma("error msg" + chaai)!
 <~
 ```
 

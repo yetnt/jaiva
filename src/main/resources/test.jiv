@@ -7,13 +7,13 @@
 maak variable <- 10!
 maak arrayVar <- 10, 23, 234, 23!
 
-kuluma("Hello World")!
-kuluma(variable)!
+khuluma("Hello World")!
+khuluma(variable)!
 
 if (variable != 100) ->
-    kuluma("Variable is not 100")!
+    khuluma("Variable is not 100")!
 <~ mara ->
-    kuluma("It's 10")!
+    khuluma("It's 10")!
 <~
 
 
@@ -22,8 +22,10 @@ kwenza addition(param1, param2) ->
 <~
 
 colonize i <- 0 | i <= 10 | + ->
-    kuluma(addition(arrayVar[i], 10))!
+    khuluma(addition(arrayVar[i], 10))!
 <~
+
+
 
 colonize i, j <- 0 | i >= 10, j <= -10 | +- ->
     left ->
@@ -36,12 +38,14 @@ colonize i, j <- 0 | i >= 10, j <= -10 | +- ->
     <~
 <~
 
+
+
 colonize arrayVar with i ->
-    kuluma(i)!
+    khuluma(i)!
 <~
 
 zama zama ->
     cima <== "This is an error"
 <~ chaai ->
-    kuluma("error msg" + chaai)!
+    khuluma("error msg" + chaai)!
 <~
