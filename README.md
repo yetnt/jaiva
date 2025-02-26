@@ -1,8 +1,10 @@
 # Jaiva!
 
+This esolang of mine is still in development, so expect alot of updates.
+
 An esolang of mine which is way better, here is how you do stuff in my lanuage
 
-To make a jaiva file. Create a text file with the _`.jiv`_ or _`.jaiva`_ extension.
+To make a jaiva file. Create a text file with the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
 
 ## Syntax
 
@@ -74,3 +76,56 @@ kwenza addition(param1, param2) ->
     khutla (param1 + param2)!
 <~
 ```
+
+### Throw-error
+
+```jiv
+cima <== "This is an error"!
+```
+
+### Try-catch block
+
+```jiv
+zama zama ->
+    @ block of code to try
+<~ chaai ->
+    kuluma("error msg" + chaai)!
+<~
+```
+
+## Language specific features.
+
+### Effeciency
+
+To make your code 20% more efficient, begin your file with
+
+```jiv
+@# (My Real life name, replace these brackets with these)
+```
+
+why? well-
+
+### Parallel For Loops
+
+```jiv
+colonize i, j <- 0 | i >= 10, j <= -10 | +- ->
+    left ->
+    @ some code that uses the variable i
+    @ i will be incremented (the + sign)
+    <~
+    right ->
+    @ some code that uses the variable j
+    @ j will be decremented (the - sign)
+    <~
+<~
+```
+
+### Politeness
+
+Sometimes the intepreter may demand you end your file with the following
+
+```jiv
+Thank you.
+```
+
+or else it will be angry at you.
