@@ -1,6 +1,8 @@
 package com.yetnt;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Set;
 
 class TokenDefault {
     public String name = "";
@@ -38,14 +40,84 @@ public class Token<T extends TokenDefault> {
      * instance.
      */
     public class TStatement extends TokenDefault {
-        public String statement;
+        public Object lHandSide;
+        public String op;
+        public Object rHandSide;
+        /**
+         * 0 = boolean logic |
+         * 1 = int arithmetic
+         */
+        public int statementType;
+        private static final Set<String> BOOLEAN_OPERATORS = Set.of("&&", "||");
+        private static final Set<String> ARITHMETIC_OPERATORS = Set.of("+", "-", "*", "/", "=", "<", ">", "!");
 
         TStatement(String statement) {
             super("TStatement");
-            this.statement = statement;
+            parse(statement);
         }
 
-        // Return a Token<TStatement> on initialization
+        /**
+         * Parses a given string. This assumes you've already used braces to
+         * indicate the correct order of operations.
+         *
+         * @param statement The statement to parse.
+         */
+        private void parse(String statement) {
+            statement = statement.trim();
+
+            if (statement.matches("true|false")) {
+                lHandSide = Boolean.parseBoolean(statement);
+                statementType = 0;
+                return;
+            } else if (statement.matches("\\d+")) {
+                lHandSide = Integer.parseInt(statement);
+                statementType = 1;
+                return;
+            }
+
+            if (statement.startsWith("(") && statement.endsWith(")")) {
+                parse(statement.substring(1, statement.length() - 1).trim());
+                return;
+            }
+
+            for (String op : BOOLEAN_OPERATORS) {
+                int index = findOperatorIndex(statement, op);
+                if (index != -1) {
+                    lHandSide = new TStatement(statement.substring(0, index).trim());
+                    this.op = op;
+                    rHandSide = new TStatement(statement.substring(index + op.length()).trim());
+                    statementType = 0;
+                    return;
+                }
+            }
+
+            for (String op : ARITHMETIC_OPERATORS) {
+                int index = findOperatorIndex(statement, op);
+                if (index != -1) {
+                    lHandSide = new TStatement(statement.substring(0, index).trim());
+                    this.op = op;
+                    rHandSide = new TStatement(statement.substring(index + op.length()).trim());
+                    statementType = 1;
+                    return;
+                }
+            }
+        }
+
+        private int findOperatorIndex(String statement, String operator) {
+            int level = 0;
+            for (int i = 0; i < statement.length(); i++) {
+                char c = statement.charAt(i);
+                if (c == '(')
+                    level++;
+                else if (c == ')')
+                    level--;
+                else if (level == 0 && statement.startsWith(operator, i)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
         public Token<TStatement> toToken() {
             return new Token<>(this);
         }
