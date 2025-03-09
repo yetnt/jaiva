@@ -2,8 +2,10 @@ package com.yetnt;
 
 import java.util.*;
 
+import javax.security.auth.kerberos.KeyTab;
 import javax.swing.plaf.multi.MultiListUI;
 
+import com.yetnt.Errors.TokenizerSyntaxError;
 import com.yetnt.Token.TCodeblock;
 
 class EscapeSequence {
@@ -84,12 +86,33 @@ public class Tokenizer {
      * their lower than -1, this output isnt to be used for this method but rather
      * another method.
      * </ul>
+     * 
+     * Okay now to talk about the {@code type} field and the {@code args} field.
+     * <p>
+     * The {@code type} field is used to determine which block it is between an if
+     * statement "if", a loop "colonize" or a function "kwenza" or a while loop
+     * Keywords.WHILE.
+     * <p>
+     * The {@code args} field is used to store the arguments for the block.
+     * <ul>
+     * <li>For an if statement, the first argument is the condition. More blocks
+     * will be handled later on in develpment
+     * <li>For a loop, the first argument is the variable declaration, second is the
+     * condition, third is the increment.
+     * <li>For a function, the first argument is the function name, second is the
+     * arguments.
+     * <li>For a while loop, the first argument is the function name, second is the
+     * arguments.
+     * </ul>
      */
     static class MultipleLinesOutput {
         public int startCount = 0;
         public int endCount = 0;
         public boolean isComment = false;
         public String preLine = "";
+
+        public String type = ""; // either "kwenza" or "if" or "colonize"
+        public String[] args = new String[3]; // the arguments for it.
 
         public MultipleLinesOutput(int start, int end) {
             startCount = start;
@@ -100,6 +123,14 @@ public class Tokenizer {
             startCount = start;
             endCount = end;
             preLine = pString;
+        }
+
+        public MultipleLinesOutput(int start, int end, String pString, String t, String[] a) {
+            startCount = start;
+            endCount = end;
+            preLine = pString;
+            type = t;
+            args = a;
         }
 
         public MultipleLinesOutput(int start, int end, String pString, boolean inBlockComment) {
@@ -133,7 +164,7 @@ public class Tokenizer {
      * @return
      */
     public static MultipleLinesOutput findEnclosingCharIMultipleLines(String line, String start, String end,
-            int startCount, int endCount, String previousLines) {
+            int startCount, int endCount, String previousLines, String type, String[] args) {
         if (start.length() > 2 || end.length() > 2)
             throw new IllegalArgumentException("Arguments must be at most 2 characters long!");
         boolean isStart = true;
@@ -146,13 +177,13 @@ public class Tokenizer {
                     endCount += (i + 1 < line.length() && line.charAt(i + 1) == end.charAt(1)) ? 1 : 0;
                 }
                 if (startCount == endCount && startCount != 0) {
-                    return new MultipleLinesOutput(startCount, endCount, previousLines + line);
+                    return new MultipleLinesOutput(startCount, endCount, previousLines + line, type, args);
                 }
             } else {
                 if (line.charAt(i) == end.charAt(0)) {
                     if (i + 1 < line.length() && line.charAt(i + 1) == end.charAt(1)) {
                         // if (!isStart) {
-                        return new MultipleLinesOutput(i, i, previousLines + line);
+                        return new MultipleLinesOutput(i, i, previousLines + line, type, args);
                         // }
                     }
                     // System.out.println("Found!");
@@ -160,7 +191,7 @@ public class Tokenizer {
                 }
             }
         }
-        return new MultipleLinesOutput(startCount, endCount, previousLines + line);
+        return new MultipleLinesOutput(startCount, endCount, previousLines + line, type, args);
     }
 
     /**
@@ -247,7 +278,7 @@ public class Tokenizer {
     }
 
     public static Object handleBlocks(boolean isComment, String line,
-            MultipleLinesOutput multipleLinesOutput, String entireLine) {
+            MultipleLinesOutput multipleLinesOutput, String entireLine, String t, String[] args) {
         MultipleLinesOutput m;
         if (multipleLinesOutput != null) {
             // multiple lines output exists. So we need to keep going until we find }
@@ -257,12 +288,14 @@ public class Tokenizer {
                     : findEnclosingCharIMultipleLines(
                             line, "->", "<~",
                             multipleLinesOutput.startCount,
-                            multipleLinesOutput.endCount, multipleLinesOutput.preLine);
+                            multipleLinesOutput.endCount, multipleLinesOutput.preLine,
+                            t, args);
         } else {
             // Not given, but we need to find the closing tag.
             m = isComment ? findEnclosingCharIMultipleLines(
                     line, '{', '}', 0, 0)
-                    : findEnclosingCharIMultipleLines(line, "->", "<~", 0, 0, "");
+                    : findEnclosingCharIMultipleLines(line, "->", "<~", 0, 0, "",
+                            t, args);
         }
 
         if (m.endCount == m.startCount && m.startCount != 0 && m.startCount != -1) {
@@ -270,6 +303,130 @@ public class Tokenizer {
             return isComment ? null : entireLine;
         } else {
             return m;
+
+        }
+    }
+
+    public static String[] handleArgs(String type, String line) {
+        switch (type) {
+            case "if": {
+                // if (condition) ->
+                // if (variable != 100) ->
+                return new String[] { line.substring(line.indexOf("("), line.lastIndexOf(")")), "" };
+            }
+            case "nikhil": {
+                // nikhil (condition) ->
+                // nikhil (i < 10) ->
+                return new String[] { line.substring(line.indexOf("("), line.lastIndexOf(")")), "" };
+            }
+            case "colonize": {
+                // colonize declaration | condition | increment ->
+                // colonize i <- 0 | i <= 10 | + ->
+                String[] parts = line.split(Keywords.FOR)[1].trim().split("->")[0].split("\\|");
+                return new String[] { parts[0].trim(), parts[1].trim(), parts[2].trim() };
+            }
+            case "kwenza": {
+                // kwenza function_name(...args) ->
+                // kwenza addition(param1, param2) ->
+                String[] parts = line.split(Keywords.D_FUNCTION)[1].trim().split("->");
+                String functionName = parts[0].substring(0, parts[0].indexOf("("));
+                String args = parts[0].substring(parts[0].indexOf("(") + 1, parts[0].indexOf(")"));
+                return new String[] { functionName, args };
+            }
+            default: {
+                return new String[] { "" };
+            }
+        }
+    }
+
+    public static Object processBlockLines(boolean isComment, String line, MultipleLinesOutput multipleLinesOutput,
+            String tokenizerLine, ArrayList<Token<?>> tokens, Token<?> tContainer, String type, String[] args) {
+        System.out.println("Processing block lines...");
+        Object output = handleBlocks(isComment, line + "\n", (MultipleLinesOutput) multipleLinesOutput,
+                tokenizerLine, multipleLinesOutput == null ? type : multipleLinesOutput.type,
+                multipleLinesOutput == null ? args : multipleLinesOutput.args);
+        if (output == null)
+            return output;
+
+        if (output instanceof MultipleLinesOutput) {
+            int endCount = ((MultipleLinesOutput) output).endCount;
+            int startCount = ((MultipleLinesOutput) output).startCount;
+            // System.out.println(startCount + " + " + endCount);
+            if (endCount != startCount)
+                return output;
+        }
+        String preLine = ((MultipleLinesOutput) multipleLinesOutput).preLine.replaceFirst(Keywords.D_FUNCTION, "")
+                .replaceFirst(Keywords.IF, "")
+                .replaceFirst(Keywords.WHILE, "")
+                .replaceFirst(Keywords.FOR, "")
+                .replaceFirst("->", "")
+                .replace("*Nn", "");
+        System.out.println(preLine);
+        ArrayList<Token<?>> nestedTokens = new ArrayList<>();
+        try {
+            nestedTokens.addAll((ArrayList<Token<?>>) readLine(preLine, "", null));
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        Token<?> codeblock = tContainer.new TCodeblock(nestedTokens).toToken();
+        // Token<?> token = tContainer.new
+        return tokens.add(codeblock);
+    }
+
+    public static Token<?> processVariable(String line, Token<?> tContainer)
+            throws TokenizerSyntaxError {
+        boolean isString = false;
+        // #maak varuiablename <- " value"!#
+        // #maak varuiablename <- 49!#
+        // #maak varuiablename <- true!#
+        // #maak varuiablename <- true! @comment#
+        int stringStart = line.indexOf("\"");
+        int stringEnd = findEnclosingCharI(line, '"', '"');
+        if (stringStart != -1 && stringEnd != -1) {
+            isString = true;
+            String encasedString = line.substring(stringStart + 1, stringEnd);
+            line = line.substring(0, stringStart - 1) + EscapeSequence.unescape(encasedString) + "!";
+            // #maak varuiablename = "*svalue"!#
+        }
+        line = line.trim();
+        line = line.substring(4, line.length());
+        // #varuiablename <- *svalue!#
+        // #varuiablename <- 49!#
+        // #varuiablename <- true!#
+        // #varuiablename <- true! @comment#
+
+        String[] parts = line.split("<-");
+        // parts = ["varuiablename ", " *svalue!"]
+        // parts = ["varuiablename ", " 49!"]
+        // parts = ["varuiablename ", " true!"]
+        // parts = ["varuiablename ", " true! @comment"]
+
+        if (parts.length != 2 || !parts[1].endsWith("!")) {
+            throw new Errors.TokenizerSyntaxError("Variable declaration does not end in new line!");
+        }
+        // remove ! from parts[2] (at the end of the line)
+        parts[1] = parts[1].substring(0, parts[1].length() - 1).trim();
+        parts[0] = parts[0].trim();
+        // parts = ["varuiablename", "*svalue"]
+        // parts = ["varuiablename", "49"]
+        // parts = ["varuiablename", "true"]
+
+        if (isString) {
+            return tContainer.new TStringVar(parts[0], EscapeSequence.unescape(parts[1])).toToken();
+        } else {
+            try {
+
+                return tContainer.new TIntVar(parts[0], Integer.parseInt(parts[1])).toToken();
+            } catch (NumberFormatException e) {
+                if (parts[1].equals("true") || parts[1].equals("false") || parts[1].equals(Keywords.TRUE)
+                        || parts[1].equals(Keywords.FALSE)) {
+                    parts[1] = parts[1].replace(Keywords.TRUE, "true").replace(Keywords.FALSE, "false");
+                    return tContainer.new TBooleanVar(parts[0], Boolean.parseBoolean(parts[1])).toToken();
+                } else {
+                    throw new Errors.TokenizerSyntaxError("Invalid variable declaration!");
+                }
+            }
         }
     }
 
@@ -291,7 +448,14 @@ public class Tokenizer {
         boolean isComment = (cont && ((MultipleLinesOutput) multipleLinesOutput).isComment)
                 || (line.startsWith("{") || (line.indexOf('{') != -1 && line.charAt(line.indexOf('{')) != '*'));
         boolean isCodeBlock = (cont && !((MultipleLinesOutput) multipleLinesOutput).isComment)
-                || (line.startsWith("if") || line.startsWith("kwenza") || line.startsWith("colonize"))
+                || (line.startsWith(Keywords.IF) || line.startsWith(Keywords.D_FUNCTION)
+                        || line.startsWith(Keywords.FOR))
+                || line.startsWith(Keywords.WHILE);
+        String type = line.startsWith(Keywords.IF) ? Keywords.IF
+                : line.startsWith(Keywords.D_FUNCTION) ? Keywords.D_FUNCTION
+                        : line.startsWith(Keywords.FOR) ? Keywords.FOR
+                                : line
+                                        .startsWith(Keywords.WHILE) ? Keywords.WHILE : null;
         // || (line.contains("->") && (line.indexOf('-') > 0 &&
         // line.charAt(line.indexOf('-') - 1) != '*' && line
         // .charAt(line.indexOf('-') - 1) != '<'))
@@ -336,90 +500,20 @@ public class Tokenizer {
          * and block stuff
          */
         if (cont || isComment || isCodeBlock) {
-            Object output = handleBlocks(isComment, line + "\n", (MultipleLinesOutput) multipleLinesOutput,
-                    tokenizerLine);
-            if (output == null)
-                return output;
-
-            if (output instanceof MultipleLinesOutput) {
-                int endCount = ((MultipleLinesOutput) output).endCount;
-                int startCount = ((MultipleLinesOutput) output).startCount;
-                // System.out.println(startCount + " + " + endCount);
-                if (endCount != startCount)
-                    return output;
-            }
-            String preLine = ((MultipleLinesOutput) multipleLinesOutput).preLine.replaceFirst("kwenza", "")
-                    .replaceFirst("if", "")
-                    .replaceFirst("->", "")
-                    .replace("*Nn", "");
-            System.out.println(preLine);
-            ArrayList<Token<?>> nestedTokens = new ArrayList<>();
-            nestedTokens.addAll((ArrayList<Token<?>>) readLine(preLine, "", null));
-            tokens.add(tContainer.new TCodeblock(nestedTokens).toToken());
+            return type == null
+                    ? processBlockLines(isComment, line, (MultipleLinesOutput) multipleLinesOutput, tokenizerLine,
+                            tokens, tContainer, type,
+                            new String[] { "" })
+                    : processBlockLines(
+                            isComment, line, (MultipleLinesOutput) multipleLinesOutput, tokenizerLine, tokens,
+                            tContainer, type,
+                            handleArgs(type, line));
         }
 
         // #STRING# is a line which contains something that needs to be tokenized.
 
-        if (line.startsWith("maak")) {
-            boolean isString = false;
-            // #maak varuiablename <- " value"!#
-            // #maak varuiablename <- 49!#
-            // #maak varuiablename <- true!#
-            // #maak varuiablename <- true! @comment#
-            int stringStart = line.indexOf("\"");
-            int stringEnd = findEnclosingCharI(line, '"', '"');
-            if (stringStart != -1 && stringEnd != -1) {
-                isString = true;
-                String encasedString = line.substring(stringStart + 1, stringEnd);
-                line = line.substring(0, stringStart - 1) + EscapeSequence.unescape(encasedString) + "!";
-                // #maak varuiablename = "*svalue"!#
-            }
-            line = line.trim();
-            line = line.substring(4, line.length());
-            // #varuiablename <- *svalue!#
-            // #varuiablename <- 49!#
-            // #varuiablename <- true!#
-            // #varuiablename <- true! @comment#
-
-            String[] parts = line.split("<-");
-            // parts = ["varuiablename ", " *svalue!"]
-            // parts = ["varuiablename ", " 49!"]
-            // parts = ["varuiablename ", " true!"]
-            // parts = ["varuiablename ", " true! @comment"]
-
-            if (parts.length != 2 || !parts[1].endsWith("!")) {
-                throw new Exception("Invalid syntax!");
-            }
-            // remove ! from parts[2] (at the end of the line)
-            parts[1] = parts[1].substring(0, parts[1].length() - 1).trim();
-            parts[0] = parts[0].trim();
-            // parts = ["varuiablename", "*svalue"]
-            // parts = ["varuiablename", "49"]
-            // parts = ["varuiablename", "true"]
-
-            if (isString) {
-                tokens.add(tContainer.new TStringVar(parts[0], EscapeSequence.unescape(parts[1])).toToken());
-            } else {
-                try {
-
-                    tokens.add(tContainer.new TIntVar(parts[0], Integer.parseInt(parts[1])).toToken());
-                } catch (NumberFormatException e) {
-                    if (parts[1].equals("true") || parts[1].equals("false") || parts[1].equals("yebo")
-                            || parts[1].equals("aowa")) {
-                        parts[1] = parts[1].replace("yebo", "true").replace("aowa", "false");
-                        tokens.add(tContainer.new TBooleanVar(parts[0], Boolean.parseBoolean(parts[1])).toToken());
-                    } else {
-                        throw new Errors.TokenizerSyntaxError("Invalid variable declaration!");
-                    }
-                    // tokens.add(tContainer.new TBooleanVar(parts[0],
-                    // Boolean.parseBoolean(parts[1])).toToken());
-                }
-            }
-
-        }
+        if (line.startsWith(Keywords.D_VAR))
+            tokens.add(processVariable(line, tContainer));
         return tokens;
-        // if (!line.endsWith("!")) {
-        // return line;
-        // }
     }
 }
