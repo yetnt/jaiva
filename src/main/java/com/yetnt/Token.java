@@ -7,13 +7,21 @@ import java.util.Set;
 class TokenDefault {
     public String name = "";
 
-    public
+    public String getContents(int depth) {
+        return "";
+    }
 
     TokenDefault(String name) {
         this.name = name;
     }
 }
 
+/**
+ * The Token class represents a generic token that holds a value of type T.
+ * T must extend the TokenDefault class.
+ *
+ * @param <T> the type of the value held by this token
+ */
 public class Token<T extends TokenDefault> {
 
     private final T value;
@@ -40,9 +48,9 @@ public class Token<T extends TokenDefault> {
      * instance.
      */
     public class TStatement extends TokenDefault {
-        public Object lHandSide;
+        public Object lHandSide = null;
         public String op;
-        public Object rHandSide;
+        public Object rHandSide = null;
         /**
          * 0 = boolean logic |
          * 1 = int arithmetic
@@ -54,6 +62,11 @@ public class Token<T extends TokenDefault> {
         TStatement(String statement) {
             super("TStatement");
             parse(statement);
+        }
+
+        @Override
+        public String getContents(int depth) {
+            return lHandSide.toString() + " " + op + " " + rHandSide.toString();
         }
 
         /**
@@ -132,8 +145,17 @@ public class Token<T extends TokenDefault> {
         public ArrayList<Token<?>> lines;
 
         TCodeblock(ArrayList<Token<?>> lines) {
-            super("TCodeBlock");
+            super("TCodeblock");
             this.lines = lines;
+        }
+
+        @Override
+        public String getContents(int depth) {
+            StringBuilder sb = new StringBuilder();
+            for (Token<?> t : lines) {
+                sb.append("\n" + "^ ".repeat(depth) + t.getValue().getContents(depth)).append("\n");
+            }
+            return sb.toString();
         }
 
         // Return a Token<TCodeblockVar> on initialization
@@ -154,6 +176,11 @@ public class Token<T extends TokenDefault> {
             this.value = value;
         }
 
+        @Override
+        public String getContents(int depth) {
+            return name + " <- " + value;
+        }
+
         public Token<TStringVar> toToken() {
             return new Token<>(this);
         }
@@ -168,6 +195,11 @@ public class Token<T extends TokenDefault> {
         TIntVar(String name, int value) {
             super(name);
             this.value = value;
+        }
+
+        @Override
+        public String getContents(int depth) {
+            return name + " <- " + Integer.toString(value);
         }
 
         public Token<TIntVar> toToken() {
@@ -186,6 +218,11 @@ public class Token<T extends TokenDefault> {
             this.value = value;
         }
 
+        @Override
+        public String getContents(int depth) {
+            return name + " <- " + Boolean.toString(value);
+        }
+
         public Token<TBooleanVar> toToken() {
             return new Token<>(this);
         }
@@ -197,18 +234,102 @@ public class Token<T extends TokenDefault> {
      * This class is
      */
     public class TFunc extends TokenDefault {
-        public String name;
-        public ArrayList<String> args;
+        public String[] args;
         public TCodeblock body;
 
-        TFunc(String name, ArrayList<String> args, TCodeblock body) {
-            super(name);
+        TFunc(String name, String[] args, TCodeblock body) {
+            super("F~" + name);
             this.args = args;
             this.body = body;
         }
 
+        @Override
+        public String getContents(int depth) {
+            return name + " " + Arrays.toString(args) + " " + body.getContents(depth + 1);
+        }
+
         // Return a Token<TFunc> on initialization
         public Token<TFunc> toToken() {
+            return new Token<>(this);
+        }
+    }
+
+    public class TForLoop extends TokenDefault {
+        public TIntVar variable;
+        public TStatement condition;
+        public String increment;
+        public TCodeblock body;
+
+        TForLoop(TIntVar variable, TStatement condition, String increment, TCodeblock body) {
+            super("TForLoop");
+            this.variable = variable;
+            this.condition = condition;
+            this.increment = increment;
+            this.body = body;
+        }
+
+        @Override
+        public String getContents(int depth) {
+            System.out.println("YO!!");
+            return " [" + variable.getContents(0) + " " + condition.getContents(0) + " " + increment + "] "
+                    + body.getContents(depth + 1);
+        }
+
+        public Token<TForLoop> toToken() {
+            return new Token<>(this);
+        }
+    }
+
+    public class TWhileLoop extends TokenDefault {
+        public TStatement condition;
+        public TCodeblock body;
+
+        TWhileLoop(TStatement condition, TCodeblock body) {
+            super("TWhileLoop");
+            this.condition = condition;
+            this.body = body;
+        }
+
+        @Override
+        public String getContents(int depth) {
+            return " [" + condition.getContents(0) + "] " + body.getContents(depth + 1);
+        }
+
+        public Token<TWhileLoop> toToken() {
+            return new Token<>(this);
+        }
+    }
+
+    public class TIfStatement extends TokenDefault {
+        public TStatement condition;
+        public TCodeblock body;
+        public TCodeblock elseBody = null;
+        public ArrayList<TCodeblock> elseIfs = null;
+
+        TIfStatement(TStatement condition, TCodeblock body) {
+            super("TIfStatement");
+            this.condition = condition;
+            this.body = body;
+        }
+
+        // TODO: Add support for else if statements
+        public void appendElseIf(TStatement condition, TCodeblock body) {
+            if (elseIfs == null) {
+                elseIfs = new ArrayList<>();
+            }
+            elseIfs.add(body);
+        }
+
+        /**
+         * Appends the provided else body to the current token.
+         * 
+         * @param elseBody the TCodeblock representing the else body to be appended
+         */
+        public void appendElse(TCodeblock elseBody) {
+            this.elseBody = elseBody;
+        }
+
+        public Token<TIfStatement> toToken() {
             return new Token<>(this);
         }
     }
