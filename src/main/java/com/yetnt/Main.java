@@ -5,10 +5,8 @@ import java.io.FileNotFoundException; // Import this class to handle errors
 import java.util.ArrayList;
 import java.util.Scanner; // Import the Scanner class to read text files
 
-import com.yetnt.Token.TCodeblock;
-import com.yetnt.Token;
-
 public class Main {
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         File myObj = new File("C://Users//ACER//Documents//code//jaiva//src//main//resources//test2.jiv");
         try {
@@ -35,16 +33,7 @@ public class Main {
 
             for (Token<?> t : tokens) {
                 System.out.println(t.toString());
-                if (t.getValue().name == "TCodeBlock") {
-                    @SuppressWarnings("rawtypes")
-                    Token<TCodeblock> g = (Token<TCodeblock>) t;
-                    ArrayList<Token<?>> codeblocklines = g.getValue().lines;
-                    System.out.println(codeblocklines.size());
-                    for (Token<?> bToken : codeblocklines) {
-                        System.out.println("- " + bToken.toString());
-                    }
-                    // for (Token<?> t2 : g)
-                }
+                System.out.println(t.getValue().getContents(0));
             }
             System.out.println(tokens.size());
             myReader.close();

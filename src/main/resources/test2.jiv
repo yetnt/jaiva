@@ -1,6 +1,16 @@
-if ->
-    if ->
-        maak lol <- "SDfsdf"!
-        maak vc <- 4!
+maak j <- "A stirng ytay"!
+
+kwenza name(fgh, dfg, sdf) ->
+    maak o <- 232!
+    kwenza jk(fgh, dfg, sdf) ->
+        maak k <- 232!
+    <~
+    kwenza hellYe(fgh, dfg, sdf) ->
+        maak t <- 232!
+    <~
+    colonize i <- 0 | i <= 10 | + ->
+        maak b <- 2324!
     <~
 <~
+@ bro 2
+@ bro

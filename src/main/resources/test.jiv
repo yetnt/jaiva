@@ -16,6 +16,9 @@ if (variable != 100) ->
     khuluma("It's 10")!
 <~
 
+nikhil (yebo) ->
+    khuluma("while loop!")!
+<~
 
 kwenza addition(param1, param2) ->
     khutla (param1 + param2)!
@@ -26,7 +29,7 @@ colonize i <- 0 | i <= 10 | + ->
 <~
 
 
-
+@ The following is code that WOULD be cool to add, but a pain, its essentially 2 for loops running in parallel
 colonize i, j <- 0 | i >= 10, j <= -10 | +- ->
     left ->
     @ some code that uses the variable i

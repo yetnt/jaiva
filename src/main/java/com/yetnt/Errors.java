@@ -17,26 +17,34 @@ public class Errors {
         }
     }
 
-    public static class TokenizerSyntaxWarning extends TokenizerException {
+    public static class SyntaxWarning extends TokenizerException {
         private static final long serialVersionUID = 1L;
 
-        public TokenizerSyntaxWarning(String message) {
+        public SyntaxWarning(String message) {
             super(message);
         }
     }
 
-    public static class TokenizerSyntaxError extends TokenizerException {
+    public static class SyntaxError extends TokenizerException {
         private static final long serialVersionUID = 1L;
 
-        public TokenizerSyntaxError(String message) {
+        public SyntaxError(String message) {
             super(message);
         }
     }
 
-    public static class TokenizerSyntaxCriticalError extends TokenizerException {
+    public static class SyntaxCriticalError extends TokenizerException {
         private static final long serialVersionUID = 1L;
 
-        public TokenizerSyntaxCriticalError(String message) {
+        public SyntaxCriticalError(String message) {
+            super(message);
+        }
+    }
+
+    public static class UnknownSyntaxError extends TokenizerException {
+        private static final long serialVersionUID = 1L;
+
+        public UnknownSyntaxError(String message) {
             super(message);
         }
     }

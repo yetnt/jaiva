@@ -2,11 +2,10 @@ package com.yetnt;
 
 import java.util.*;
 
-import javax.security.auth.kerberos.KeyTab;
-import javax.swing.plaf.multi.MultiListUI;
-
-import com.yetnt.Errors.TokenizerSyntaxError;
+import com.yetnt.Errors.SyntaxError;
 import com.yetnt.Token.TCodeblock;
+import com.yetnt.Token.TIntVar;
+import com.yetnt.Token.TStatement;;
 
 class EscapeSequence {
 
@@ -339,12 +338,15 @@ public class Tokenizer {
         }
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Object processBlockLines(boolean isComment, String line, MultipleLinesOutput multipleLinesOutput,
-            String tokenizerLine, ArrayList<Token<?>> tokens, Token<?> tContainer, String type, String[] args) {
-        System.out.println("Processing block lines...");
+            String tokenizerLine, ArrayList<Token<?>> tokens, Token<?> tContainer, String type, String[] args)
+            throws Exception {
+        // System.out.println("Processing block lines...");
+        type = multipleLinesOutput == null ? type : multipleLinesOutput.type;
+        args = multipleLinesOutput == null ? args : multipleLinesOutput.args;
         Object output = handleBlocks(isComment, line + "\n", (MultipleLinesOutput) multipleLinesOutput,
-                tokenizerLine, multipleLinesOutput == null ? type : multipleLinesOutput.type,
-                multipleLinesOutput == null ? args : multipleLinesOutput.args);
+                tokenizerLine, type, args);
         if (output == null)
             return output;
 
@@ -359,9 +361,9 @@ public class Tokenizer {
                 .replaceFirst(Keywords.IF, "")
                 .replaceFirst(Keywords.WHILE, "")
                 .replaceFirst(Keywords.FOR, "")
-                .replaceFirst("->", "")
                 .replace("*Nn", "");
-        System.out.println(preLine);
+        preLine = preLine.substring(preLine.indexOf("->") + 2);
+        // System.out.println(preLine);
         ArrayList<Token<?>> nestedTokens = new ArrayList<>();
         try {
             nestedTokens.addAll((ArrayList<Token<?>>) readLine(preLine, "", null));
@@ -369,13 +371,41 @@ public class Tokenizer {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        Token<?> codeblock = tContainer.new TCodeblock(nestedTokens).toToken();
-        // Token<?> token = tContainer.new
-        return tokens.add(codeblock);
+        TCodeblock codeblock = tContainer.new TCodeblock(nestedTokens);
+        // Okay cool, we've parsed everything, but what if its different types?
+        Token<?> specific;
+        switch (type) {
+            case "if": {
+                TStatement s = tContainer.new TStatement(args[0]);
+                specific = tContainer.new TIfStatement(s, codeblock).toToken();
+                break;
+            }
+            case "colonize": {
+                TIntVar variable = (Token<TIntVar>.TIntVar) ((ArrayList<Token<?>>) readLine(
+                        "maak " + args[0] + "!", "", null)).get(0).getValue();
+                TStatement condition = tContainer.new TStatement(args[1]);
+                specific = tContainer.new TForLoop(variable, condition, args[2], codeblock).toToken();
+                break;
+            }
+            case "kwenza": {
+                specific = tContainer.new TFunc(args[0], args[1].split(","), codeblock).toToken();
+                break;
+            }
+            case "nikhil": {
+                TStatement s = tContainer.new TStatement(args[0]);
+                specific = tContainer.new TWhileLoop(s, codeblock).toToken();
+                break;
+            }
+            default: {
+                throw new Errors.TokenizerException("Uhm, something went wrong. This shouldnt happen.");
+            }
+        }
+        tokens.add(specific);
+        return tokens;
     }
 
     public static Token<?> processVariable(String line, Token<?> tContainer)
-            throws TokenizerSyntaxError {
+            throws SyntaxError {
         boolean isString = false;
         // #maak varuiablename <- " value"!#
         // #maak varuiablename <- 49!#
@@ -403,7 +433,7 @@ public class Tokenizer {
         // parts = ["varuiablename ", " true! @comment"]
 
         if (parts.length != 2 || !parts[1].endsWith("!")) {
-            throw new Errors.TokenizerSyntaxError("Variable declaration does not end in new line!");
+            throw new Errors.SyntaxError("Variable declaration does not end in new line!");
         }
         // remove ! from parts[2] (at the end of the line)
         parts[1] = parts[1].substring(0, parts[1].length() - 1).trim();
@@ -413,7 +443,7 @@ public class Tokenizer {
         // parts = ["varuiablename", "true"]
 
         if (isString) {
-            return tContainer.new TStringVar(parts[0], EscapeSequence.unescape(parts[1])).toToken();
+            return tContainer.new TStringVar(parts[0], EscapeSequence.escape(parts[1])).toToken();
         } else {
             try {
 
@@ -424,7 +454,7 @@ public class Tokenizer {
                     parts[1] = parts[1].replace(Keywords.TRUE, "true").replace(Keywords.FALSE, "false");
                     return tContainer.new TBooleanVar(parts[0], Boolean.parseBoolean(parts[1])).toToken();
                 } else {
-                    throw new Errors.TokenizerSyntaxError("Invalid variable declaration!");
+                    throw new Errors.SyntaxError("Invalid variable declaration!");
                 }
             }
         }
@@ -443,6 +473,7 @@ public class Tokenizer {
      * @return ArrayList<Token<?>> or String
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     public static Object readLine(String line, String previousLine, Object multipleLinesOutput) throws Exception {
         boolean cont = multipleLinesOutput instanceof MultipleLinesOutput;
         boolean isComment = (cont && ((MultipleLinesOutput) multipleLinesOutput).isComment)
@@ -451,6 +482,7 @@ public class Tokenizer {
                 || (line.startsWith(Keywords.IF) || line.startsWith(Keywords.D_FUNCTION)
                         || line.startsWith(Keywords.FOR))
                 || line.startsWith(Keywords.WHILE);
+
         String type = line.startsWith(Keywords.IF) ? Keywords.IF
                 : line.startsWith(Keywords.D_FUNCTION) ? Keywords.D_FUNCTION
                         : line.startsWith(Keywords.FOR) ? Keywords.FOR
@@ -473,7 +505,7 @@ public class Tokenizer {
             for (int i = 0; i != lines.length; i++) {
                 // System.out.println("Reading line " + i + "...");
                 String previousLine2 = i == 0 ? previousLine : lines[i - 1];
-                System.out.println(previousLine2);
+                // System.out.println(previousLine2);
                 // System.out.println(lines[i]);
                 Object something = readLine(lines[i] + (!containsNewln ? "!" : ""), previousLine2, m);
                 if (something instanceof MultipleLinesOutput) {
@@ -512,8 +544,11 @@ public class Tokenizer {
 
         // #STRING# is a line which contains something that needs to be tokenized.
 
-        if (line.startsWith(Keywords.D_VAR))
+        if (line.startsWith(Keywords.D_VAR)) {
             tokens.add(processVariable(line, tContainer));
-        return tokens;
+            return tokens;
+        }
+
+        return void.class;
     }
 }
