@@ -1,7 +1,8 @@
-package com.yetnt;
+package com.yetnt.tokenizer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 class TokenDefault {
@@ -48,16 +49,14 @@ public class Token<T extends TokenDefault> {
      * instance.
      */
     public class TStatement extends TokenDefault {
-        public Object lHandSide = null;
+        public Object lHandSide = "null";
         public String op;
-        public Object rHandSide = null;
+        public Object rHandSide = "null";
         /**
          * 0 = boolean logic |
          * 1 = int arithmetic
          */
         public int statementType;
-        private static final Set<String> BOOLEAN_OPERATORS = Set.of("&&", "||");
-        private static final Set<String> ARITHMETIC_OPERATORS = Set.of("+", "-", "*", "/", "=", "<", ">", "!");
 
         TStatement(String statement) {
             super("TStatement");
@@ -66,7 +65,13 @@ public class Token<T extends TokenDefault> {
 
         @Override
         public String getContents(int depth) {
-            return lHandSide.toString() + " " + op + " " + rHandSide.toString();
+            return (lHandSide == null || lHandSide == "null" ? "" : lHandSide.toString()) + " " + (op == null ? "" : op)
+                    + " " + (rHandSide == null || rHandSide == "null" ? "" : rHandSide.toString());
+        }
+
+        @Override
+        public String toString() {
+            return getContents(0);
         }
 
         /**
@@ -76,16 +81,24 @@ public class Token<T extends TokenDefault> {
          * @param statement The statement to parse.
          */
         private void parse(String statement) {
+            // System.out.println("Parsing: " + statement);
             statement = statement.trim();
 
             if (statement.matches("true|false")) {
                 lHandSide = Boolean.parseBoolean(statement);
                 statementType = 0;
                 return;
+            } else if (statement.matches("aowa|yebo")) {
+                lHandSide = statement.matches("aowa") ? false : true;
+                statementType = 0;
+                return;
             } else if (statement.matches("\\d+")) {
                 lHandSide = Integer.parseInt(statement);
                 statementType = 1;
                 return;
+            } else {
+                // probs a variable.
+                lHandSide = statement;
             }
 
             if (statement.startsWith("(") && statement.endsWith(")")) {
@@ -93,26 +106,28 @@ public class Token<T extends TokenDefault> {
                 return;
             }
 
-            for (String op : BOOLEAN_OPERATORS) {
+            for (String op : Lang.BOOLEAN_OPERATORS) {
                 int index = findOperatorIndex(statement, op);
-                if (index != -1) {
-                    lHandSide = new TStatement(statement.substring(0, index).trim());
-                    this.op = op;
-                    rHandSide = new TStatement(statement.substring(index + op.length()).trim());
-                    statementType = 0;
-                    return;
-                }
+                if (index == -1)
+                    continue;
+
+                lHandSide = new TStatement(statement.substring(0, index).trim());
+                this.op = op.trim();
+                rHandSide = new TStatement(statement.substring(index + op.length()).trim());
+                statementType = 0;
+                return;
             }
 
-            for (String op : ARITHMETIC_OPERATORS) {
+            for (String op : Lang.ARITHMATIC_OPERATIONS) {
                 int index = findOperatorIndex(statement, op);
-                if (index != -1) {
-                    lHandSide = new TStatement(statement.substring(0, index).trim());
-                    this.op = op;
-                    rHandSide = new TStatement(statement.substring(index + op.length()).trim());
-                    statementType = 1;
-                    return;
-                }
+                if (index == -1)
+                    continue;
+                lHandSide = new TStatement(statement.substring(0, index).trim());
+                this.op = op.trim();
+                System.out.println(statement.substring(index + op.length()));
+                rHandSide = new TStatement(statement.substring(index + op.length()).trim());
+                statementType = 1;
+                return;
             }
         }
 
@@ -190,16 +205,22 @@ public class Token<T extends TokenDefault> {
      * Represents a integer variable such as {@code maak age <- 20};
      */
     public class TIntVar extends TokenDefault {
-        public int value;
+        public Object value;
 
         TIntVar(String name, int value) {
             super(name);
             this.value = value;
         }
 
+        TIntVar(String name, TStatement value) {
+            super(name);
+            this.value = value;
+        }
+
         @Override
         public String getContents(int depth) {
-            return name + " <- " + Integer.toString(value);
+            return name + " <- " + (value instanceof Integer ? Integer.toString((Integer) value)
+                    : ((TStatement) value).getContents(0));
         }
 
         public Token<TIntVar> toToken() {
@@ -211,19 +232,46 @@ public class Token<T extends TokenDefault> {
      * Represents a boolean variable such as {@code maak isTrue <- true};
      */
     public class TBooleanVar extends TokenDefault {
-        public boolean value;
+        public Object value;
 
         TBooleanVar(String name, boolean value) {
             super(name);
             this.value = value;
         }
 
+        TBooleanVar(String name, TStatement value) {
+            super(name);
+            this.value = value;
+        }
+
         @Override
         public String getContents(int depth) {
-            return name + " <- " + Boolean.toString(value);
+            return name + " <- " + (value instanceof Boolean ? Boolean.toString((Boolean) value)
+                    : ((TStatement) value).getContents(0));
         }
 
         public Token<TBooleanVar> toToken() {
+            return new Token<>(this);
+        }
+    }
+
+    public class TArrayVar extends TokenDefault {
+        public Object[] contents;
+
+        TArrayVar(String name, Object[] contents) {
+            super(name);
+            this.contents = contents;
+        }
+
+        @Override
+        public String getContents(int depth) {
+            ArrayList<String> content = new ArrayList<>();
+            Arrays.asList(contents).forEach(g -> content.add(g.toString()));
+            return name + " <-| " + content;
+        }
+
+        // Return a Token<TArrayVar> on initialization
+        public Token<TArrayVar> toToken() {
             return new Token<>(this);
         }
     }
@@ -270,7 +318,6 @@ public class Token<T extends TokenDefault> {
 
         @Override
         public String getContents(int depth) {
-            System.out.println("YO!!");
             return " [" + variable.getContents(0) + " " + condition.getContents(0) + " " + increment + "] "
                     + body.getContents(depth + 1);
         }
@@ -304,7 +351,7 @@ public class Token<T extends TokenDefault> {
         public TStatement condition;
         public TCodeblock body;
         public TCodeblock elseBody = null;
-        public ArrayList<TCodeblock> elseIfs = null;
+        public ArrayList<TIfStatement> elseIfs = new ArrayList<>();
 
         TIfStatement(TStatement condition, TCodeblock body) {
             super("TIfStatement");
@@ -313,7 +360,7 @@ public class Token<T extends TokenDefault> {
         }
 
         // TODO: Add support for else if statements
-        public void appendElseIf(TStatement condition, TCodeblock body) {
+        public void appendElseIf(TStatement condition, TIfStatement body) {
             if (elseIfs == null) {
                 elseIfs = new ArrayList<>();
             }
