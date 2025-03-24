@@ -376,7 +376,48 @@ public class Token<T extends TokenDefault> {
             this.elseBody = elseBody;
         }
 
+        @Override
+        // This was made by Copilot
+        // TODO: Test if this actually works
+        public String getContents(int depth) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("[" + condition.getContents(0) + "] " + body.getContents(depth + 1));
+            if (elseIfs != null) {
+                for (TIfStatement t : elseIfs) {
+                    sb.append("\n" + "^ ".repeat(depth) + t.getContents(depth));
+                }
+            }
+            if (elseBody != null) {
+                sb.append("\n" + "^ ".repeat(depth) + "else " + elseBody.getContents(depth + 1));
+            }
+            return sb.toString();
+        }
+
         public Token<TIfStatement> toToken() {
+            return new Token<>(this);
+        }
+    }
+
+    public class TTryCatchStatement extends TokenDefault {
+        public TCodeblock tryBlock;
+        public TCodeblock catchBlock;
+
+        TTryCatchStatement(TCodeblock tryBlock) {
+            super("TTryCatchStatement");
+            this.tryBlock = tryBlock;
+        }
+
+        public void appendCatchBlock(TCodeblock catchBlock) {
+            this.catchBlock = catchBlock;
+        }
+
+        @Override
+        public String getContents(int depth) {
+            return "try " + tryBlock.getContents(depth + 1) + "\n" + "^ ".repeat(depth) + "catch "
+                    + catchBlock.getContents(depth + 1);
+        }
+
+        public Token<TTryCatchStatement> toToken() {
             return new Token<>(this);
         }
     }

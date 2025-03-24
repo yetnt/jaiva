@@ -1,9 +1,5 @@
 package com.yetnt.tokenizer;
 
-class BlockChain {
-
-}
-
 public class FindEnclosing {
 
     /**
@@ -49,8 +45,8 @@ public class FindEnclosing {
 
         public String type = ""; // either "kwenza" or "if" or "colonize"
         public String[] args = new String[3]; // the arguments for it.
-        public Object specialArg = null; // these are for nested blocks, represents the previous block (Like linked
-                                         // lists.)
+        public Token<?> specialArg = null; // these are for nested blocks, represents the previous block (Like linked
+                                           // lists.)
 
         public MultipleLinesOutput(int start, int end) {
             startCount = start;
@@ -71,7 +67,7 @@ public class FindEnclosing {
             args = a;
         }
 
-        public MultipleLinesOutput(int start, int end, String pString, String t, String[] a, Object sArg) {
+        public MultipleLinesOutput(int start, int end, String pString, String t, String[] a, Token<?> sArg) {
             startCount = start;
             endCount = end;
             preLine = pString;
@@ -112,7 +108,7 @@ public class FindEnclosing {
      */
     static MultipleLinesOutput charIMultipleLines(String line, String start,
             String end,
-            int startCount, int endCount, String previousLines, String type, String[] args) {
+            int startCount, int endCount, String previousLines, String type, String[] args, Token<?> blockChain) {
         if (start.length() > 2 || end.length() > 2)
             throw new IllegalArgumentException("Arguments must be at most 2 characters long!");
         boolean isStart = true;
@@ -126,13 +122,13 @@ public class FindEnclosing {
                 }
                 if (startCount == endCount && startCount != 0) {
                     return new MultipleLinesOutput(startCount, endCount, previousLines + line, type,
-                            args);
+                            args, blockChain);
                 }
             } else {
                 if (line.charAt(i) == end.charAt(0)) {
                     if (i + 1 < line.length() && line.charAt(i + 1) == end.charAt(1)) {
                         // if (!isStart) {
-                        return new MultipleLinesOutput(i, i, previousLines + line, type, args);
+                        return new MultipleLinesOutput(i, i, previousLines + line, type, args, blockChain);
                         // }
                     }
                     // System.out.println("Found!");
@@ -140,7 +136,7 @@ public class FindEnclosing {
                 }
             }
         }
-        return new MultipleLinesOutput(startCount, endCount, previousLines + line, type, args);
+        return new MultipleLinesOutput(startCount, endCount, previousLines + line, type, args, blockChain);
     }
 
     /**

@@ -5,7 +5,7 @@
 }
 
 maak variable <- 10!
-maak arrayVar <- 10, 23, 234, 23!
+maak arrayVar <-| 10, 23, 234, 23!
 
 khuluma("Hello World")!
 khuluma(variable)!
@@ -30,16 +30,16 @@ colonize i <- 0 | i <= 10 | + ->
 
 
 @ The following is code that WOULD be cool to add, but a pain, its essentially 2 for loops running in parallel
-colonize i, j <- 0 | i >= 10, j <= -10 | +- ->
-    left ->
-    @ some code that uses the variable i
-    @ i will be incremented
-    <~
-    right ->
-    @ some code that uses the variable j
-    @ j will be decremented
-    <~
-<~
+@ colonize i, j <- 0 | i >= 10, j <= -10 | +- ->
+@     left ->
+@     @ some code that uses the variable i
+@     @ i will be incremented
+@     <~
+@     right ->
+@     @ some code that uses the variable j
+@     @ j will be decremented
+@     <~
+@ <~
 
 
 
