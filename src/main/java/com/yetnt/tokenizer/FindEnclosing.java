@@ -3,6 +3,10 @@ package com.yetnt.tokenizer;
 public class FindEnclosing {
 
     /**
+     * i honestly wish i documented this earlier, there are SO MANY overrides
+     * for the constructor that i don't even know if half of them are needed
+     * I just know if i remove one, Java compiler will strike me down like Zeus.
+     * 
      * Class that represents that the intepreter needs to call readline again for
      * some reason.
      * <p>
@@ -45,8 +49,7 @@ public class FindEnclosing {
 
         public String type = ""; // either "kwenza" or "if" or "colonize"
         public String[] args = new String[3]; // the arguments for it.
-        public Token<?> specialArg = null; // these are for nested blocks, represents the previous block (Like linked
-                                           // lists.)
+        public Token<?> specialArg = null; // these are for else if chains. This represents the original if
 
         public MultipleLinesOutput(int start, int end) {
             startCount = start;
