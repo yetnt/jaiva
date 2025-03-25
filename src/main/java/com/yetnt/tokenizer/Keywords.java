@@ -1,5 +1,11 @@
 package com.yetnt.tokenizer;
 
+/**
+ * The Keywords class contains a set of predefined string constants
+ * that represent various keywords used in JAIVA.
+ * <p>
+ * These keywords are mapped to specific string values.
+ */
 public class Keywords {
     public static String WHILE = "nikhil";
     public static String D_VAR = "maak";
