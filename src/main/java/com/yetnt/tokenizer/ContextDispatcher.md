@@ -12,19 +12,17 @@ Now they both call each other to make sure it fallsback to just handling as the 
 
 **_make sure to always `.trim()` the lines_**
 
-`0b`**`abcdef`** represents the integer we're trying to make.
+`0b`**`abcde`** represents the integer we're trying to make.
 
 `a` - SE : Is the **S**tring **E**mpty?
 
-`b` - SB : Line **S**tarts in a **B**race. (This operator only comes into play when `0b`**`cdef`** either make `0b1000` or `0b1101`, other than those cases we can completely ignore it.)
+`b` - EB : Did we **E**ncounter a **B**race before an operand?
 
-`c` - EB : Did we **E**ncounter a **B**race before an operand?
+`c` - EO : Did we **E**ncoutner an **O**perand?
 
-`d` - EO : Did we **E**ncoutner an **O**perand?
+`d` - BC : All **B**races have been **C**losed on the left hand side of the OUTER operand.
 
-`e` - BC : All **B**races have been **C**losed on the left hand side of the OUTER operand.
-
-`f` - EIB : Line **E**nds **I**n a **B**race.
+`e` - EIB : Line **E**nds **I**n a **B**race.
 
 | Input statement             | SE  | EB  | EO  | BC  | EIB | The output     |
 | --------------------------- | --- | --- | --- | --- | --- | -------------- |
@@ -59,7 +57,6 @@ Now they both call each other to make sure it fallsback to just handling as the 
 | ``                          | 1   | 0   | 0   | 0   | 0   | Empty String   |
 
 The integers we get are:
-_(Where ints marked with \* are were SB was taken into account.)_
 
 TStatement = 6, 7, 12, 14, 15
 
