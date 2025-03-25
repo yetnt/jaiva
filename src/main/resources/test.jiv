@@ -17,7 +17,7 @@ if (variable != 100) ->
 <~
 
 nikhil (yebo) ->
-    khuluma("while loop!")!
+    khuluma("while loop")!
 <~
 
 kwenza addition(param1, param2) ->
@@ -42,13 +42,13 @@ colonize i <- 0 | i <= 10 | + ->
 @ <~
 
 
-
-colonize arrayVar with i ->
-    khuluma(i)!
-<~
+@ when i need to
+@ colonize arrayVar with i ->
+@     khuluma(i)!
+@ <~
 
 zama zama ->
-    cima <== "This is an error"
+    cima <== "This is an error"!
 <~ chaai ->
     khuluma("error msg" + chaai)!
 <~
