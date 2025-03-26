@@ -1,6 +1,4 @@
-# On Giant Class Diagram.
-
-Because who doesnt love a good class diagram??
+# Tokens class diagram
 
 ```mermaid
 classDiagram
