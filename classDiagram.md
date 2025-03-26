@@ -20,7 +20,7 @@ class Token~T extends TokenDefault~ {
     +toString() String
 }
 
-Token -- TokenDefault : generic (T) extends from
+Token ..> TokenDefault : generic (T) extends from
 class TCodeblock {
     +lines ArrayList~Token~T~~
     +toToken() Token~TCodeBlock~
