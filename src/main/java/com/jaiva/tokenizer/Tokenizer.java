@@ -228,6 +228,7 @@ public class Tokenizer {
                 if (line.contains(Keywords.ELSE)) {
                     return new BlockChain(specific, line.replaceFirst(Lang.BLOCK_CLOSE, "").trim());
                 }
+                break;
             }
             case "mara": {
                 TIfStatement originalIf = ((TIfStatement) ((FindEnclosing.MultipleLinesOutput) multipleLinesOutput).specialArg
