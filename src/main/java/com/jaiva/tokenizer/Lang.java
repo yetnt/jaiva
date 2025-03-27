@@ -39,7 +39,7 @@ public class Lang {
     public static String THROW_ERROR = "<==";
     public static String ARRAY_ASSIGNMENT = "<-|";
     public static Set<String> ARITHMATIC_OPERATIONS = Set.of("+", "-", "*", "/", "=");
-    public static Set<String> BOOLEAN_OPERATORS = Set.of(">=", "<=", "!=", "<", ">", "&", "|", "&&", "||");
+    public static Set<String> BOOLEAN_OPERATORS = Set.of(">=", "<=", "!=", "&&", "||", "<", ">", "&", "|");
 
     /**
      * Checks if the given character array contains any arithmetic or boolean

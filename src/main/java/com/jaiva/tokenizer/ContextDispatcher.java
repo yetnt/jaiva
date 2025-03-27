@@ -39,7 +39,8 @@ public class ContextDispatcher {
      */
     private boolean isOperator(char c) {
         // Define your operators here. For example:
-        return c == '+' || c == '-' || c == '*' || c == '/' || c == '|' || c == '>' || c == '<';
+        return c == '+' || c == '-' || c == '*' || c == '/' || c == '|' || c == '>' || c == '<' || c == '&' || c == '!'
+                || c == '=';
     }
 
     /**

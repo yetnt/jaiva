@@ -6,7 +6,7 @@ processContext : processes function calls and variable calls and also array acce
 
 The problem comes with both trying to figure out what to do with () as the one uses it for order and the other uses it for function calls.
 
-Now they both call each other to make sure it fallsback to just handling as the other, but we need to be careful in which one do we call **first**, How do we know it's an arithmatic operation with a function call inside? or the other way around? Here's my solution
+Now they both call each other to make sure that we are in the correct context, but we need to be careful in which one do we call **first**, How do we know it's an arithmatic operation with a function call inside? or the other way around? Or if its all mixed? Here's my solution
 
 # Context Dispatcher
 

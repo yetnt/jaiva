@@ -11,6 +11,7 @@ import com.jaiva.tokenizer.Keywords.LoopControl;
 
 class TokenDefault {
     public String name = "";
+    public int lineNumber = 0;
 
     public String getContents(int depth) {
         return "";
@@ -18,6 +19,11 @@ class TokenDefault {
 
     TokenDefault(String name) {
         this.name = name;
+    }
+
+    TokenDefault(String name, int line) {
+        this.name = name;
+        this.lineNumber = line;
     }
 }
 
