@@ -1,14 +1,14 @@
-package com.yetnt;
+package com.jaiva;
 
 import java.io.File; // Import the File class
 import java.io.FileNotFoundException; // Import this class to handle errors
 import java.util.ArrayList;
 import java.util.Scanner; // Import the Scanner class to read text files
 
-import com.yetnt.tokenizer.BlockChain;
-import com.yetnt.tokenizer.FindEnclosing;
-import com.yetnt.tokenizer.Token;
-import com.yetnt.tokenizer.Tokenizer;
+import com.jaiva.tokenizer.BlockChain;
+import com.jaiva.tokenizer.FindEnclosing;
+import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.Tokenizer;
 
 public class Main {
     @SuppressWarnings("unchecked")

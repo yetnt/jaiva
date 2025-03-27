@@ -1,14 +1,14 @@
-package com.yetnt.tokenizer;
+package com.jaiva.tokenizer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import com.yetnt.Errors;
-import com.yetnt.Errors.SyntaxCriticalError;
-import com.yetnt.Errors.SyntaxError;
-import com.yetnt.tokenizer.ContextDispatcher.To;
+import com.jaiva.Errors;
+import com.jaiva.Errors.SyntaxCriticalError;
+import com.jaiva.Errors.SyntaxError;
+import com.jaiva.tokenizer.ContextDispatcher.To;
 
 class TokenDefault {
     public String name = "";

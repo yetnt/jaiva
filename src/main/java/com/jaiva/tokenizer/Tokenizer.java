@@ -1,19 +1,14 @@
-package com.yetnt.tokenizer;
+package com.jaiva.tokenizer;
 
-import java.security.Key;
 import java.util.*;
 
-import com.yetnt.Errors;
-import com.yetnt.Errors.SyntaxError;
-import com.yetnt.Errors.TokenizerException;
-import com.yetnt.tokenizer.Token.TCodeblock;
-import com.yetnt.tokenizer.Token.TIfStatement;
-import com.yetnt.tokenizer.Token.TIntVar;
-import com.yetnt.tokenizer.Token.TStatement;
-import com.yetnt.tokenizer.Token.TTryCatchStatement;
-
-import com.yetnt.tokenizer.Keywords;
-import com.yetnt.tokenizer.Lang;
+import com.jaiva.Errors;
+import com.jaiva.Errors.SyntaxError;
+import com.jaiva.Errors.TokenizerException;
+import com.jaiva.tokenizer.Token.TCodeblock;
+import com.jaiva.tokenizer.Token.TIfStatement;
+import com.jaiva.tokenizer.Token.TIntVar;
+import com.jaiva.tokenizer.Token.TTryCatchStatement;
 
 class EscapeSequence {
 

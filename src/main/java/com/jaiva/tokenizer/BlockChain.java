@@ -1,4 +1,4 @@
-package com.yetnt.tokenizer;
+package com.jaiva.tokenizer;
 
 /**
  * This class represents a chain of code blocks, such as if-else chains or

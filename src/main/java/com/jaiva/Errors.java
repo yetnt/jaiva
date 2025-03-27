@@ -1,4 +1,4 @@
-package com.yetnt;
+package com.jaiva;
 
 public class Errors {
     public static class TokenizerException extends Exception {

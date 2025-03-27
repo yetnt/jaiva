@@ -1,4 +1,4 @@
-package com.yetnt.tokenizer;
+package com.jaiva.tokenizer;
 
 import java.util.Set;
 

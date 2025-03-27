@@ -1,4 +1,4 @@
-package com.yetnt.tokenizer;
+package com.jaiva.tokenizer;
 
 /**
  * The Keywords class contains a set of predefined string constants

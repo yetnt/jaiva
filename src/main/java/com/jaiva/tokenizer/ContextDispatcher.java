@@ -1,4 +1,4 @@
-package com.yetnt.tokenizer;
+package com.jaiva.tokenizer;
 
 /**
  * The ContextDispatcher class is used to determine the context of a given line
