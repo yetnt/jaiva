@@ -35,6 +35,10 @@ public class Main {
                 } else if (something instanceof BlockChain) {
                     m = null;
                     b = (BlockChain) something;
+                } else if (something instanceof Token<?>) {
+                    b = null;
+                    m = null;
+                    tokens.add((Token<?>) something);
                 } else {
                     b = null;
                     m = null;

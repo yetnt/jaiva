@@ -452,13 +452,12 @@ public class Token<T extends TokenDefault> {
 
         TLoopControl(String type) throws UnknownSyntaxError {
             super("TLoopControl");
-            switch (type) {
-                case "nevermind":
-                    this.type = LoopControl.CONTINUE;
-                case "voetsek":
-                    this.type = LoopControl.BREAK;
-                default:
-                    throw new Errors.UnknownSyntaxError("So we're in LoopControl but not correctly?");
+            if (type.equals(Keywords.LC_CONTINUE)) {
+                this.type = LoopControl.CONTINUE;
+            } else if (type.equals(Keywords.LC_BREAK)) {
+                this.type = LoopControl.BREAK;
+            } else {
+                throw new Errors.UnknownSyntaxError("So we're in LoopControl but not correctly?");
             }
         }
 

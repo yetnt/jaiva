@@ -186,21 +186,24 @@ public class Tokenizer {
                 return output;
         }
         String preLine = ((String) output);
-        if (preLine.startsWith(Keywords.IF)) {
-            System.out.println();
-        }
         preLine = preLine.startsWith(Keywords.D_FUNCTION) ? preLine.replaceFirst(Keywords.D_FUNCTION, "") : preLine;
         preLine = preLine.startsWith(Keywords.IF) ? preLine.replaceFirst(Keywords.IF, "") : preLine;
         preLine = preLine.startsWith(Keywords.WHILE) ? preLine.replaceFirst(Keywords.WHILE, "") : preLine;
         preLine = preLine.startsWith(Keywords.FOR) ? preLine.replaceFirst(Keywords.FOR, "") : preLine;
         preLine = preLine.startsWith(Keywords.ELSE) ? preLine.replaceFirst(Keywords.ELSE, "") : preLine;
         preLine = preLine.startsWith(Keywords.CATCH) ? preLine.replaceFirst(Keywords.CATCH, "") : preLine;
+        preLine = preLine.startsWith(Keywords.TRY) ? preLine.replaceFirst(Keywords.TRY, "") : preLine;
         preLine = preLine.replace("$Nn", "").trim();
         preLine = preLine.substring(preLine.indexOf(Lang.BLOCK_OPEN) + 2);
         preLine = preLine.substring(0, preLine.lastIndexOf(Lang.BLOCK_CLOSE));
         ArrayList<Token<?>> nestedTokens = new ArrayList<>();
+        Object stuff = readLine(preLine, "", null, null);
         try {
-            nestedTokens.addAll((ArrayList<Token<?>>) readLine(preLine, "", null, null));
+            if (stuff instanceof ArrayList) {
+                nestedTokens.addAll((ArrayList<Token<?>>) stuff);
+            } else if (stuff instanceof Token<?>) {
+                nestedTokens.add((Token<?>) stuff);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -219,8 +222,10 @@ public class Tokenizer {
                 TIfStatement originalIf = ((TIfStatement) ((FindEnclosing.MultipleLinesOutput) multipleLinesOutput).specialArg
                         .getValue());
                 originalIf.appendElseIf(ifStatement);
-                // ~> mara if () <- ...
-                return new BlockChain(originalIf.toToken(), line.replaceFirst(Lang.BLOCK_CLOSE, "").trim());
+                specific = originalIf.toToken();
+                if (line.contains(Keywords.ELSE)) {
+                    return new BlockChain(specific, line.replaceFirst(Lang.BLOCK_CLOSE, "").trim());
+                }
             }
             case "mara": {
                 TIfStatement originalIf = ((TIfStatement) ((FindEnclosing.MultipleLinesOutput) multipleLinesOutput).specialArg
@@ -240,9 +245,7 @@ public class Tokenizer {
                 if (line.contains(Keywords.ELSE)) {
                     // will turn "~> mara <- ... " into "mara <- ..."
                     // and "~> mara if () <- ..." into "mara if () <- ..."
-                    String l = line.replaceFirst(Lang.BLOCK_CLOSE, "").trim();
-                    System.out.println(l);
-                    return new BlockChain(specific, l);
+                    return new BlockChain(specific, line.replaceFirst(Lang.BLOCK_CLOSE, "").trim());
                 }
                 break;
             }
@@ -406,12 +409,13 @@ public class Tokenizer {
     @SuppressWarnings("unchecked")
     public static Object readLine(String line, String previousLine, Object multipleLinesOutput, BlockChain blockChain)
             throws Exception {
-        line = EscapeSequence.escapeAll(line);
+        line = EscapeSequence.escapeAll(line).trim();
         line = line.trim();
         boolean cont = multipleLinesOutput instanceof FindEnclosing.MultipleLinesOutput;
         boolean isComment = (cont && ((FindEnclosing.MultipleLinesOutput) multipleLinesOutput).isComment)
-                || (line.startsWith("{") || (line.indexOf(Lang.COMMENT_OPEN) != -1
-                        && line.charAt(line.indexOf(Lang.COMMENT_OPEN)) != '$'));
+                || (multipleLinesOutput == null && (line.startsWith(Character.toString(Lang.COMMENT_OPEN))
+                        || (line.indexOf(Lang.COMMENT_OPEN) != -1
+                                && line.charAt(line.indexOf(Lang.COMMENT_OPEN)) != '$')));
         boolean isCodeBlock = (cont && !((FindEnclosing.MultipleLinesOutput) multipleLinesOutput).isComment)
                 || (line.startsWith(Keywords.IF) || line.startsWith(Keywords.D_FUNCTION)
                         || line.startsWith(Keywords.FOR))
@@ -433,7 +437,7 @@ public class Tokenizer {
                                                                 .startsWith(Keywords.ELSE) ? Keywords.ELSE
                                                                         : line.startsWith(Keywords.TRY) ? Keywords.TRY
                                                                                 : line.replace(Lang.BLOCK_CLOSE, "")
-                                                                                        .trim().trim()
+                                                                                        .trim()
                                                                                         .startsWith(Keywords.CATCH)
                                                                                                 ? Keywords.CATCH
                                                                                                 : null;
@@ -450,7 +454,7 @@ public class Tokenizer {
             // System.out.println("Multiple lines detected!");
             // multiple lines.
             FindEnclosing.MultipleLinesOutput m = null;
-            BlockChain b = blockChain;
+            BlockChain b = null;
             for (int i = 0; i != lines.length; i++) {
                 String l = "";
                 if (b instanceof BlockChain) {
@@ -474,9 +478,13 @@ public class Tokenizer {
                 } else if (something instanceof BlockChain) {
                     m = null;
                     b = (BlockChain) something;
-                } else {
-                    b = null;
+                } else if (something instanceof Token<?>) {
+                    tokens.add((Token<?>) something);
                     m = null;
+                    b = null;
+                } else {
+                    m = null;
+                    b = null;
                 }
             }
             return tokens;
@@ -484,11 +492,8 @@ public class Tokenizer {
         line = line.trim(); // The actual current line.
         String tokenizerLine = previousLine.trim() + line; // The entire line to the tokenizer.
 
+        // System.out.println("sdfsdfd");
         // @comment (single line)
-
-        line = decimateSingleComments(line);
-        line.trim(); // what if there was a single comment after a bunch of spaces and theres real
-                     // code before it?
 
         /*
          * {
@@ -509,6 +514,9 @@ public class Tokenizer {
         // if its anything after this the line has to end in a ! or else invalid syntax.
         // (All other methods which did the ! will be redundant as we can just check
         // here.)
+        line = decimateSingleComments(line);
+        if (line.isEmpty())
+            return null;
 
         if (!line.isEmpty() && !line.equals(Lang.BLOCK_CLOSE) && !line.endsWith(Lang.BLOCK_OPEN)
                 && (!line.endsWith("!"))) {
@@ -537,6 +545,8 @@ public class Tokenizer {
             tokens.add(tContainer.new TThrowError(errorMessage).toToken());
             return tokens;
         }
+
+        line = line.trim();
 
         if (line.startsWith(Keywords.LC_BREAK) || line.startsWith(Keywords.LC_CONTINUE)) {
             switch (line) {
