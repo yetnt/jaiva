@@ -274,7 +274,10 @@ public class Tokenizer {
                 break;
             }
             case "kwenza": {
-                specific = tContainer.new TFunction(args[0], args[1].split(","), codeblock).toToken();
+                String[] fArgs = args[1].split(",");
+                for (int i = 0; i < fArgs.length; i++)
+                    fArgs[i] = fArgs[i].trim();
+                specific = tContainer.new TFunction(args[0], fArgs, codeblock).toToken();
                 break;
             }
             case "nikhil": {
