@@ -78,7 +78,8 @@ public class Token<T extends TokenDefault> {
 
     /**
      * Represents a variable where it's type can only be resolved by the interpeter
-     * such as {@code maak name <- functionCall()!};
+     * such as {@code maak name <- functionCall()!}; or if they made a variable but
+     * didnt declare the value.
      */
     public class TUnknownVar extends TokenDefault {
         public Object value;
@@ -94,6 +95,24 @@ public class Token<T extends TokenDefault> {
         }
 
         public Token<TUnknownVar> toToken() {
+            return new Token<>(this);
+        }
+    }
+
+    public class TVarReassign extends TokenDefault {
+        public Object newValue;
+
+        TVarReassign(String name, Object value) {
+            super(name);
+            this.newValue = value;
+        }
+
+        @Override
+        public String getContents(int depth) {
+            return name + " <<- " + value.toString();
+        }
+
+        public Token<TVarReassign> toToken() {
             return new Token<>(this);
         }
     }

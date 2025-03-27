@@ -21,46 +21,71 @@ class EscapeSequence {
 
     /**
      * Escape a string.
-     * 
+     *
      * @param str The string to escape.
      * @return
      */
     public static String escape(String str) {
         return str
-                .replace("*=", "=")
-                .replace("*!", "!")
-                .replace("*s", " ")
-                .replace("*@", "@")
-                .replace("*n", "\n")
-                .replace("*t", "\t")
-                .replace("*r", "\r")
-                .replace("*b", "\b")
-                .replace("*f", "\f")
-                .replace("*'", "'")
-                .replace("*\"", "\"")
-                .replace("**", "*");
+                .replace("$=", "=")
+                .replace("$!", "!")
+                .replace("$s", " ")
+                .replace("$@", "@")
+                .replace("$n", "\n")
+                .replace("$t", "\t")
+                .replace("$r", "\r")
+                .replace("$b", "\b")
+                .replace("$f", "\f")
+                .replace("$'", "'")
+                .replace("$\"", "\"")
+                .replace("$$", "$");
     }
 
     /**
      * Unescape a string.
-     * 
+     *
      * @param str The string to unescape.
      * @return
      */
     public static String unescape(String str) {
         return str
-                .replace("=", "*=")
-                .replace("!", "*!")
-                .replace(" ", "*s")
-                .replace("@", "*@")
-                .replace("\n", "*n")
-                .replace("\t", "*t")
-                .replace("\r", "*r")
-                .replace("\b", "*b")
-                .replace("\f", "*f")
-                .replace("'", "*'")
-                .replace("\"", "*\"")
-                .replace("\\", "*\\");
+                .replace("$", "$$")
+                .replace("=", "$=")
+                .replace("!", "$!")
+                .replace(" ", "$s")
+                .replace("@", "$@")
+                .replace("\n", "$n")
+                .replace("\t", "$t")
+                .replace("\r", "$r")
+                .replace("\b", "$b")
+                .replace("\f", "$f")
+                .replace("'", "$'")
+                .replace("\"", "$\"")
+                .replace("\\", "$\\");
+    }
+
+    public static String escapeAll(String line) {
+        // maak a <- "heelo"!
+        // func("weird thing", "with multiple strings")
+        // We have to escape anything in EVEN number stuff (ODD number in 0-based
+        // indexing)
+        // 0, 1, 2, 3, 4
+        // all the actual strings are stored in 1, 3, etc
+        String[] parts = line.split("(?<!\\$)\""); // Negative lookbehind checks that their isnt $ before "
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < parts.length; i++) {
+            if (i % 2 != 0) {
+                String unescapedString = parts[i]
+                        .split("((?<!\\$)(\\\"|\\!|\\\\|\\\"|\\'|@|=))|(\\t|\\n|\\s)").length != 1
+                                ? unescape(parts[i])
+                                : parts[i];
+                b.append("\"" + unescapedString + "\"");
+            } else {
+                b.append(parts[i]);
+            }
+        }
+
+        return b.toString();
     }
 }
 
@@ -161,20 +186,23 @@ public class Tokenizer {
         if (output instanceof FindEnclosing.MultipleLinesOutput) {
             int endCount = ((FindEnclosing.MultipleLinesOutput) output).endCount;
             int startCount = ((FindEnclosing.MultipleLinesOutput) output).startCount;
+            // multipleLinesOutput = ((FindEnclosing.MultipleLinesOutput) output);
             if (endCount != startCount)
                 return output;
         }
-        String preLine = ((String) output)
-                .replaceFirst(Keywords.D_FUNCTION, "")
-                .replaceFirst(Keywords.IF, "")
-                .replaceFirst(Keywords.WHILE, "")
-                .replaceFirst(Keywords.FOR, "")
-                .replace(Keywords.ELSE, "")
-                .replace(Keywords.CATCH, "")
-                .replace("*Nn", "").trim();
+        String preLine = ((String) output);
+        if (preLine.startsWith(Keywords.IF)) {
+            System.out.println();
+        }
+        preLine = preLine.startsWith(Keywords.D_FUNCTION) ? preLine.replaceFirst(Keywords.D_FUNCTION, "") : preLine;
+        preLine = preLine.startsWith(Keywords.IF) ? preLine.replaceFirst(Keywords.IF, "") : preLine;
+        preLine = preLine.startsWith(Keywords.WHILE) ? preLine.replaceFirst(Keywords.WHILE, "") : preLine;
+        preLine = preLine.startsWith(Keywords.FOR) ? preLine.replaceFirst(Keywords.FOR, "") : preLine;
+        preLine = preLine.startsWith(Keywords.ELSE) ? preLine.replaceFirst(Keywords.ELSE, "") : preLine;
+        preLine = preLine.startsWith(Keywords.CATCH) ? preLine.replaceFirst(Keywords.CATCH, "") : preLine;
+        preLine = preLine.replace("$Nn", "").trim();
         preLine = preLine.substring(preLine.indexOf(Lang.BLOCK_OPEN) + 2);
-        preLine = preLine.substring(0, preLine.indexOf(Lang.BLOCK_CLOSE));
-        // System.out.println(preLine);
+        preLine = preLine.substring(0, preLine.lastIndexOf(Lang.BLOCK_CLOSE));
         ArrayList<Token<?>> nestedTokens = new ArrayList<>();
         try {
             // TODO : Allow blocks here
@@ -219,7 +247,9 @@ public class Tokenizer {
                 if (line.contains(Keywords.ELSE)) {
                     // will turn "~> mara <- ... " into "mara <- ..."
                     // and "~> mara if () <- ..." into "mara if () <- ..."
-                    return new BlockChain(specific, line.replaceFirst(Lang.BLOCK_CLOSE, "").trim());
+                    String l = line.replaceFirst(Lang.BLOCK_CLOSE, "").trim();
+                    System.out.println(l);
+                    return new BlockChain(specific, l);
                 }
                 break;
             }
@@ -299,31 +329,40 @@ public class Tokenizer {
         if (stringStart != -1 && stringEnd != -1) {
             isString = true;
             String encasedString = line.substring(stringStart + 1, stringEnd);
-            line = line.substring(0, stringStart - 1) + EscapeSequence.unescape(encasedString) + "!";
-            // #maak varuiablename = "*svalue"!#
+            line = line.substring(0, stringStart - 1) + encasedString;
+            // line = line.substring(0, stringStart - 1) +
+            // EscapeSequence.unescape(encasedString) + "!";
+            // #maak varuiablename = "$svalue"!#
         }
         line = line.trim();
         line = line.substring(4, line.length());
-        // #varuiablename <- *svalue!#
+        // #varuiablename <- $svalue!#
         // #varuiablename <- 49!#
         // #varuiablename <- true!#
         // #varuiablename <- true! @comment#
 
         String[] parts = line.split(Lang.ASSIGNMENT);
-        // parts = ["varuiablename ", " *svalue!"]
+        // parts = ["varuiablename ", " $svalue!"]
         // parts = ["varuiablename ", " 49!"]
         // parts = ["varuiablename ", " true!"]
         // parts = ["varuiablename ", " true! @comment"]
 
-        parts[1] = parts[1].trim();
         parts[0] = parts[0].trim();
+        if (parts.length == 1) {
+            // they declared the variable with no value. Still valid syntax.
+            return tContainer.new TUnknownVar(parts[0], null).toToken();
+        }
+        parts[1] = parts[1].trim();
+
         // int isStatement = Lang.containsOperator(parts[1].toCharArray());
-        // parts = ["varuiablename", "*svalue"]
+        // parts = ["varuiablename", "$svalue"]
         // parts = ["varuiablename", "49"]
         // parts = ["varuiablename", "true"]
 
         if (isString) {
-            return tContainer.new TStringVar(parts[0], EscapeSequence.escape(parts[1])).toToken();
+            return tContainer.new TStringVar(parts[0], parts[1]).toToken();
+            // return tContainer.new TStringVar(parts[0],
+            // EscapeSequence.escape(parts[1])).toToken();
         } else {
             try {
                 return tContainer.new TIntVar(parts[0], Integer.parseInt(parts[1])).toToken();
@@ -374,10 +413,12 @@ public class Tokenizer {
     @SuppressWarnings("unchecked")
     public static Object readLine(String line, String previousLine, Object multipleLinesOutput, BlockChain blockChain)
             throws Exception {
+        line = EscapeSequence.escapeAll(line);
+        line = line.trim();
         boolean cont = multipleLinesOutput instanceof FindEnclosing.MultipleLinesOutput;
         boolean isComment = (cont && ((FindEnclosing.MultipleLinesOutput) multipleLinesOutput).isComment)
                 || (line.startsWith("{") || (line.indexOf(Lang.COMMENT_OPEN) != -1
-                        && line.charAt(line.indexOf(Lang.COMMENT_OPEN)) != '*'));
+                        && line.charAt(line.indexOf(Lang.COMMENT_OPEN)) != '$'));
         boolean isCodeBlock = (cont && !((FindEnclosing.MultipleLinesOutput) multipleLinesOutput).isComment)
                 || (line.startsWith(Keywords.IF) || line.startsWith(Keywords.D_FUNCTION)
                         || line.startsWith(Keywords.FOR))
@@ -404,29 +445,38 @@ public class Tokenizer {
                                                                                                 ? Keywords.CATCH
                                                                                                 : null;
         // || (line.contains(Lang.BLOCK_OPEN) && (line.indexOf('-') > 0 &&
-        // line.charAt(line.indexOf('-') - 1) != '*' && line
+        // line.charAt(line.indexOf('-') - 1) != '$' && line
         // .charAt(line.indexOf('-') - 1) != '<'));
 
         ArrayList<Token<?>> tokens = new ArrayList<>();
         Token<?> tContainer = new Token<>(null);
         boolean containsNewln = line.contains("\n");
-        String[] lines = containsNewln ? line.split("\n") : line.split("(?<!\\*)!(?!\\=)");
+        String[] lines = containsNewln ? line.split("\n") : line.split("(?<!\\$)!(?!\\=)");
 
         if (lines.length > 1 && !lines[1].isEmpty()) {
             // System.out.println("Multiple lines detected!");
             // multiple lines.
             FindEnclosing.MultipleLinesOutput m = null;
-            BlockChain b = null;
+            BlockChain b = blockChain;
             for (int i = 0; i != lines.length; i++) {
+                String l = "";
+                if (b instanceof BlockChain) {
+                    l = b.getCurrentLine();
+                    i--;
+                } else {
+                    l = lines[i] + (!containsNewln ? "!" : "");
+                }
                 // System.out.println("Reading line " + i + "...");
                 String previousLine2 = i == 0 ? previousLine : lines[i - 1];
                 // System.out.println(previousLine2);
                 // System.out.println(lines[i]);
-                Object something = readLine(lines[i] + (!containsNewln ? "!" : ""), previousLine2, m, b);
+                Object something = readLine(l, previousLine2, m, b);
                 if (something instanceof FindEnclosing.MultipleLinesOutput) {
                     m = ((FindEnclosing.MultipleLinesOutput) something);
+                    b = null;
                 } else if (something instanceof ArrayList<?>) {
                     m = null;
+                    b = null;
                     tokens.addAll((ArrayList<Token<?>>) something);
                 } else if (something instanceof BlockChain) {
                     m = null;
@@ -452,7 +502,7 @@ public class Tokenizer {
          * multi line comment}
          * and block stuff
          */
-        if (cont || isComment || isCodeBlock) {
+        if (cont || isComment || isCodeBlock)
             return type == null
                     ? processBlockLines(isComment, line, (FindEnclosing.MultipleLinesOutput) multipleLinesOutput,
                             tokenizerLine,
@@ -462,18 +512,17 @@ public class Tokenizer {
                             isComment, line, (FindEnclosing.MultipleLinesOutput) multipleLinesOutput, tokenizerLine,
                             tokens, tContainer, type,
                             handleArgs(type, line), (blockChain != null ? blockChain.getInitialIf() : null));
-        }
 
         // if its anything after this the line has to end in a ! or else invalid syntax.
         // (All other methods which did the ! will be redundant as we can just check
         // here.)
 
-        if (!line.isEmpty() && !line.equals(Lang.BLOCK_CLOSE) && (!line.endsWith("!"))) {
-            System.out.println(line);
+        if (!line.isEmpty() && !line.equals(Lang.BLOCK_CLOSE) && !line.endsWith(Lang.BLOCK_OPEN)
+                && (!line.endsWith("!"))) {
             throw new Errors.SyntaxCriticalError("Ye wena shout your code!");
         }
 
-        line = line.replace("!", "");
+        line = line.isEmpty() ? line : line.substring(0, line.length() - 1);
 
         // #STRING# is (khutla 100!) syntax which is a function return.
 
@@ -488,7 +537,9 @@ public class Tokenizer {
             }
             String errorMessage = parts[1].trim();
             if (errorMessage.startsWith("\"") && errorMessage.endsWith("\"") && errorMessage.length() >= 2) {
-                errorMessage = EscapeSequence.escape(errorMessage.substring(1, errorMessage.length() - 1));
+                errorMessage = errorMessage.substring(1, errorMessage.length() - 1);
+                // errorMessage = EscapeSequence.escape(errorMessage.substring(1,
+                // errorMessage.length() - 1));
             }
             tokens.add(tContainer.new TThrowError(errorMessage).toToken());
             return tokens;
@@ -504,6 +555,14 @@ public class Tokenizer {
 
         if (line.startsWith(Keywords.D_VAR)) {
             tokens.add(processVariable(line, tContainer));
+            return tokens;
+        }
+
+        // if it doesnt start with declaration nfor var, it might be a reassingment
+        String[] parts = line.split(Lang.ASSIGNMENT);
+        if (parts.length > 1) {
+            tokens.add(
+                    tContainer.new TVarReassign(parts[0].trim(), tContainer.processContext(parts[1].trim())).toToken());
             return tokens;
         }
 
