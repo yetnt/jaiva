@@ -1,4 +1,6 @@
-# other classes
+# Tokenizer Class Diagram.
+
+This represents only the Tokenizer and all it's relationships. Where `Token<?>` is a shared class in both this diagram and the `Token.md` files
 
 ```mermaid
 classDiagram
@@ -105,7 +107,7 @@ class Keywords {
 
 ContextDispatcher <-- To
 
-MultipleLinesOutput o-- FindEnclosing
+MultipleLinesOutput o--- FindEnclosing
 Tokenizer --o Token
 Tokenizer ..> EscapeSequence
 Tokenizer ..> BlockChain

@@ -2,7 +2,7 @@
 
 ```mermaid
 classDiagram
-
+direction LR
 class TokenDefault {
     +name String
     +getContents(int depth) String
