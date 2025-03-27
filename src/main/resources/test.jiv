@@ -7,17 +7,17 @@
 maak variable <- 10!
 maak arrayVar <-| 10, 23, 234, 23!
 
-khuluma("Hello World")!
+khuluma("Hello World!")!
 khuluma(variable)!
 
 if (variable != 100) ->
-    khuluma("Variable is not 100")!
+    khuluma("Variable is not 100!")!
 <~ mara ->
-    khuluma("It's 10")!
+    khuluma("It's 10!")!
 <~
 
 nikhil (yebo) ->
-    khuluma("while loop")!
+    khuluma("while loop!")!
 <~
 
 kwenza addition(param1, param2) ->
@@ -26,6 +26,12 @@ kwenza addition(param1, param2) ->
 
 colonize i <- 0 | i <= 10 | + ->
     khuluma(addition(arrayVar[i], 10))!
+    if (i = 2) ->
+        nevermind! @ "continue" keyword
+    <~
+    if (i = 5) ->
+        voetsek! @ "break" keyword which will exit the loop.
+    <~
 <~
 
 

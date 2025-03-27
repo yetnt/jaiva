@@ -1,7 +1,7 @@
 const vscode = require("vscode");
 
 function activate(context) {
-    console.log("My language extension is now active!");
+    console.log("Jaiva has been activated. It's chaai");
 }
 
 function deactivate() {}

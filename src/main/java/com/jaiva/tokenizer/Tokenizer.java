@@ -200,10 +200,8 @@ public class Tokenizer {
         preLine = preLine.substring(0, preLine.lastIndexOf(Lang.BLOCK_CLOSE));
         ArrayList<Token<?>> nestedTokens = new ArrayList<>();
         try {
-            // TODO : Allow blocks here
             nestedTokens.addAll((ArrayList<Token<?>>) readLine(preLine, "", null, null));
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         TCodeblock codeblock = tContainer.new TCodeblock(nestedTokens);
@@ -540,9 +538,19 @@ public class Tokenizer {
             return tokens;
         }
 
+        if (line.startsWith(Keywords.LC_BREAK) || line.startsWith(Keywords.LC_CONTINUE)) {
+            switch (line) {
+                case "voetsek", "nevermind":
+                    return tContainer.new TLoopControl(line).toToken();
+                default:
+                    throw new Errors.SyntaxCriticalError("Loop control keywords should be by themselves big bro.");
+            }
+        }
+
         if (line.startsWith(Keywords.RETURN)) {
             tokens.add(
-                    tContainer.new TFuncReturn(tContainer.processContext(line.replace(Keywords.RETURN, ""))).toToken());
+                    tContainer.new TFuncReturn(tContainer.processContext(line.replace(Keywords.RETURN, "")))
+                            .toToken());
             return tokens;
         }
 
