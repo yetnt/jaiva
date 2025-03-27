@@ -103,8 +103,16 @@ class Keywords {
     +TRY String
     +CATCH String
     +THROW String
+    +LC_BREAK String
+    +LC_CONTINUE String
 }
 
+class LoopControl {
+    <<Enumeration>>
+    BREAK, CONTINUE
+}
+
+Keywords <-- LoopControl
 ContextDispatcher <-- To
 
 MultipleLinesOutput o--- FindEnclosing

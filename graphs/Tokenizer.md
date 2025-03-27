@@ -20,6 +20,12 @@ direction RL
 	    +toString() String
     }
 
+
+    class TLoopControl {
+        +type LoopControl
+        toToken() Token~TLoopControl~
+    }
+
     class TCodeblock {
 	    +lines ArrayList~Token~T~~
 	    +toToken() Token~TCodeBlock~
@@ -126,6 +132,8 @@ direction RL
     }
 
     Token ..> TokenDefault : generic (T) extends from
+    TLoopControl --|> TokenDefault
+    TLoopControl o--o Token
     TCodeblock --|> TokenDefault
     TCodeblock o--o Token
     TUnknownVar --|> TokenDefault
@@ -249,7 +257,16 @@ class Keywords {
     +TRY String
     +CATCH String
     +THROW String
+    +LC_BREAK String
+    +LC_CONTINUE String
 }
+
+class LoopControl {
+    <<Enumeration>>
+    BREAK, CONTINUE
+}
+
+Keywords <-- LoopControl
 
 ContextDispatcher <-- To
 
@@ -259,6 +276,7 @@ Tokenizer ..> EscapeSequence
 Tokenizer ..> BlockChain
 Token ..> ContextDispatcher
 TStatement ..> ContextDispatcher
+TLoopControl ..> LoopControl
 Tokenizer ..> FindEnclosing
 Tokenizer ..> Lang
 Tokenizer ..> Keywords

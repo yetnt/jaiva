@@ -35,7 +35,7 @@
             "patterns": [
                 {
                     "name": "keyword.control.jaiva",
-                    "match": "\\b(maak|if|mara|zama|kwenza|cima|colonize|chaai|khutla|with|nikhil|kota)\\b"
+                    "match": "\\b(maak|if|mara|zama|kwenza|cima|colonize|chaai|khutla|with|nikhil|kota|voetsek|nevermind)\\b"
                 }
             ]
         },
@@ -46,7 +46,7 @@
             "patterns": [
                 {
                     "name": "constant.character.escape.jaiva",
-                    "match": "\\*."
+                    "match": "\\$."
                 }
             ]
         },

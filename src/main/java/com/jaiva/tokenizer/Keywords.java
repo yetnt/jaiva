@@ -20,4 +20,10 @@ public class Keywords {
     public static String TRY = "zama zama";
     public static String CATCH = "chaai";
     public static String THROW = "cima";
+    public static String LC_BREAK = "voetsek";
+    public static String LC_CONTINUE = "nevermind";
+
+    enum LoopControl {
+        BREAK, CONTINUE
+    }
 }

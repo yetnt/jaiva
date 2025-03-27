@@ -1,14 +1,13 @@
 package com.jaiva.tokenizer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import com.jaiva.Errors;
 import com.jaiva.Errors.SyntaxCriticalError;
 import com.jaiva.Errors.SyntaxError;
+import com.jaiva.Errors.UnknownSyntaxError;
 import com.jaiva.tokenizer.ContextDispatcher.To;
+import com.jaiva.tokenizer.Keywords.LoopControl;
 
 class TokenDefault {
     public String name = "";
@@ -444,6 +443,31 @@ public class Token<T extends TokenDefault> {
         }
 
         public Token<TVarRef> toToken() {
+            return new Token<>(this);
+        }
+    }
+
+    public class TLoopControl extends TokenDefault {
+        public Keywords.LoopControl type;
+
+        TLoopControl(String type) throws UnknownSyntaxError {
+            super("TLoopControl");
+            switch (type) {
+                case "nevermind":
+                    this.type = LoopControl.CONTINUE;
+                case "voetsek":
+                    this.type = LoopControl.BREAK;
+                default:
+                    throw new Errors.UnknownSyntaxError("So we're in LoopControl but not correctly?");
+            }
+        }
+
+        @Override
+        public String getContents(int depth) {
+            return name;
+        }
+
+        public Token<TLoopControl> toToken() {
             return new Token<>(this);
         }
     }

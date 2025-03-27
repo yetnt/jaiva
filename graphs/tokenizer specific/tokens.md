@@ -19,6 +19,14 @@ class Token~T extends TokenDefault~ {
 }
 
 Token ..> TokenDefault : generic (T) extends from
+
+class TLoopControl {
+    +type LoopControl
+    toToken() Token~TLoopControl~
+}
+TLoopControl --|> TokenDefault
+TLoopControl o--o Token
+
 class TCodeblock {
     +lines ArrayList~Token~T~~
     +toToken() Token~TCodeBlock~
