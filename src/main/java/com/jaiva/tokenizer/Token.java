@@ -193,9 +193,9 @@ public class Token<T extends TokenDefault> {
     }
 
     public class TArrayVar extends TokenDefault {
-        public Object[] contents;
+        public ArrayList<Object> contents;
 
-        TArrayVar(String name, Object[] contents) {
+        TArrayVar(String name, ArrayList<Object> contents) {
             super(name);
             this.contents = contents;
         }
@@ -569,7 +569,7 @@ public class Token<T extends TokenDefault> {
     }
 
     // Helper function that splits a string by commas that are at nesting level 0.
-    private List<String> splitByTopLevelComma(String argsString) {
+    public List<String> splitByTopLevelComma(String argsString) {
         List<String> parts = new ArrayList<>();
         int level = 0;
         int lastSplit = 0;
@@ -579,7 +579,7 @@ public class Token<T extends TokenDefault> {
                 level++;
             } else if (c == ')' /* || c == ']' */) {
                 level--;
-            } else if (c == ',' && level == 0) {
+            } else if ((c == ',' && level == 0) && (i - 1 > 0 && (argsString.charAt(i - 1) != '$'))) {
                 parts.add(argsString.substring(lastSplit, i).trim());
                 lastSplit = i + 1;
             }

@@ -23,6 +23,7 @@ class EscapeSequence {
     public static String escape(String str) {
         return str
                 .replace("$=", "=")
+                .replace("$,", ",")
                 .replace("$!", "!")
                 .replace("$s", " ")
                 .replace("$@", "@")
@@ -46,6 +47,7 @@ class EscapeSequence {
         return str
                 .replace("$", "$$")
                 .replace("=", "$=")
+                .replace(",", "$,")
                 .replace("!", "$!")
                 .replace(" ", "$s")
                 .replace("@", "$@")
@@ -316,11 +318,16 @@ public class Tokenizer {
             // parts = ["variablename ", " 100, 23, k!"]
             parts[0] = parts[0].trim();
 
-            parts[1] = parts[1].substring(0, parts[1].length() - 1).trim(); // trims ending !
+            // parts[1] = parts[1].substring(0, parts[1].length() - 1).trim(); // trims
+            // ending !
             // parts = ["variablename", "100, 23, k"]
-            String[] values = parts[1].split(",");
+            ArrayList<Object> parsedValues = new ArrayList<>();
+
+            tContainer.splitByTopLevelComma(parts[1]).forEach(value -> {
+                parsedValues.add(tContainer.processContext(value.trim()));
+            });
             // values = ["100", "23", "k"]
-            return tContainer.new TArrayVar(parts[0], values).toToken();
+            return tContainer.new TArrayVar(parts[0], parsedValues).toToken();
 
         }
         int stringStart = line.indexOf("\"");

@@ -13,7 +13,7 @@ direction RL
     class Token~T extends TokenDefault~ {
 	    -value T
 	    +getValue() T
-	    -splitByTopLevelComma(String argsString) List~String~
+	    +splitByTopLevelComma(String argsString) List~String~
 	    +processContext(String line) Object
 	    +dispatchContext(String line) Object
 	    +isValidBoolInput(Object t) boolean
@@ -57,7 +57,7 @@ direction RL
     }
 
     class TArrayVar {
-	    +contents Object[]
+	    +contents ArrayList~Object~
 	    +toToken() Token~TArrayVar~
     }
 

@@ -11,7 +11,7 @@ class TokenDefault {
 class Token~T extends TokenDefault~ {
     -value T
     +getValue() T
-    -splitByTopLevelComma(String argsString) List~String~
+    +splitByTopLevelComma(String argsString) List~String~
     +processContext(String line) Object
     +dispatchContext(String line) Object
     +isValidBoolInput(Object t) boolean
@@ -70,7 +70,7 @@ TBooleanVar --|> TokenDefault
 TBooleanVar o--o Token
 
 class TArrayVar {
-    +contents Object[]
+    +contents ArrayList~Object~
     +toToken() Token~TArrayVar~
 }
 TArrayVar --|> TokenDefault
