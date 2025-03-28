@@ -13,7 +13,7 @@ import com.jaiva.tokenizer.Token.TUnknownVar;
 import com.jaiva.tokenizer.Token.TVarReassign;
 import com.jaiva.tokenizer.TokenDefault;
 
-public class Intepreter {
+public class Interpreter {
 
     /**
      * The bane of my existance
