@@ -1,4 +1,9 @@
-package com.jaiva.tokenizer;
+package com.jaiva.utils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.jaiva.tokenizer.Token;
 
 public class FindEnclosing {
 
@@ -109,7 +114,7 @@ public class FindEnclosing {
      * @param end   The ending character.
      * @return
      */
-    static MultipleLinesOutput charIMultipleLines(String line, String start,
+    public static MultipleLinesOutput charIMultipleLines(String line, String start,
             String end,
             int startCount, int endCount, String previousLines, String type, String[] args, Token<?> blockChain) {
         if (start.length() > 2 || end.length() > 2)
@@ -152,7 +157,7 @@ public class FindEnclosing {
      * @param end   The ending character.
      * @return
      */
-    static MultipleLinesOutput charIMultipleLines(String line, char start, char end,
+    public static MultipleLinesOutput charIMultipleLines(String line, char start, char end,
             int startCount,
             int endCount) {
         boolean isStart = true;
@@ -186,7 +191,7 @@ public class FindEnclosing {
      * @param end   The ending character.
      * @return
      */
-    static int charI(String line, char start, char end) {
+    public static int charI(String line, char start, char end) {
         int startCount = 0;
         int endCount = 0;
         boolean isStart = true;
@@ -209,6 +214,32 @@ public class FindEnclosing {
                 }
             }
         }
+        return -1;
+    }
+
+    public static int findLastOutermostBracePair(String line) {
+        ArrayList<Integer> indexes = new ArrayList<>();
+        int pair = 0;
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == '(' || c == '[') {
+                pair++;
+                if (pair == 1)
+                    indexes.add(i);
+            }
+            if (c == ')' || c == ']') {
+                pair--;
+            }
+        }
+        List<Integer> rIndexes = indexes.reversed();
+        for (Integer i : rIndexes) {
+            String sString = line.substring(i, line.length());
+            char openingChar = line.charAt(i);
+            int closingCharI = charI(sString, openingChar, openingChar == '(' ? ')' : ']');
+            if (closingCharI == sString.length() - 1)
+                return i;
+        }
+
         return -1;
     }
 

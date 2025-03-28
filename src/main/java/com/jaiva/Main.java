@@ -5,10 +5,10 @@ import java.io.FileNotFoundException; // Import this class to handle errors
 import java.util.ArrayList;
 import java.util.Scanner; // Import the Scanner class to read text files
 
-import com.jaiva.tokenizer.BlockChain;
-import com.jaiva.tokenizer.FindEnclosing;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Tokenizer;
+import com.jaiva.utils.BlockChain;
+import com.jaiva.utils.FindEnclosing;
 
 public class Main {
     @SuppressWarnings("unchecked")

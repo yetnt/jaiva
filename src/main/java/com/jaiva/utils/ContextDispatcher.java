@@ -1,4 +1,6 @@
-package com.jaiva.tokenizer;
+package com.jaiva.utils;
+
+import com.jaiva.tokenizer.Lang;
 
 /**
  * The ContextDispatcher class is used to determine the context of a given line

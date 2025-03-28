@@ -23,14 +23,6 @@ class Tokenizer {
 
 class Token~T extends TokenDefault~ {
     -value T
-    +getValue() T
-    +splitByTopLevelComma(String argsString) List~String~
-    +processContext(String line) Object
-    +dispatchContext(String line) Object
-    +isValidBoolInput(Object t) boolean
-    -findLastOutermostBracePair(String line) int
-    -simplifyIdentifier(String identifier, String prefix) String
-    +toString() String
 }
 
 class BlockChain {

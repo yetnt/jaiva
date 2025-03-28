@@ -2,13 +2,13 @@ package com.jaiva.tokenizer;
 
 import java.util.*;
 
-import com.jaiva.Errors;
-import com.jaiva.Errors.SyntaxError;
-import com.jaiva.Errors.TokenizerException;
+import com.jaiva.errors.TokErrs.*;
 import com.jaiva.tokenizer.Token.TCodeblock;
 import com.jaiva.tokenizer.Token.TIfStatement;
 import com.jaiva.tokenizer.Token.TIntVar;
 import com.jaiva.tokenizer.Token.TTryCatchStatement;
+import com.jaiva.utils.BlockChain;
+import com.jaiva.utils.FindEnclosing;
 
 class EscapeSequence {
 
@@ -218,7 +218,7 @@ public class Tokenizer {
                 if (tContainer.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
-                    throw new Errors.TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
+                    throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
                 }
                 TIfStatement ifStatement = tContainer.new TIfStatement(obj, codeblock);
                 TIfStatement originalIf = ((TIfStatement) ((FindEnclosing.MultipleLinesOutput) multipleLinesOutput).specialArg
@@ -242,7 +242,7 @@ public class Tokenizer {
                 if (tContainer.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
-                    throw new Errors.TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
+                    throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
                 }
                 specific = tContainer.new TIfStatement(obj, codeblock).toToken();
                 if (line.contains(Keywords.ELSE)) {
@@ -271,7 +271,7 @@ public class Tokenizer {
                 if (tContainer.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
-                    throw new Errors.TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
+                    throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
                 }
                 specific = tContainer.new TForLoop(variable, obj, args[2], codeblock).toToken();
                 break;
@@ -288,13 +288,13 @@ public class Tokenizer {
                 if (tContainer.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
-                    throw new Errors.TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
+                    throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
                 }
                 specific = tContainer.new TWhileLoop(obj, codeblock).toToken();
                 break;
             }
             default: {
-                throw new Errors.TokenizerException("Uhm, something went wrong. This shouldnt happen.");
+                throw new TokenizerException("Uhm, something went wrong. This shouldnt happen.");
             }
         }
         tokens.add(specific);
@@ -531,7 +531,7 @@ public class Tokenizer {
 
         if (!line.isEmpty() && !line.equals(Lang.BLOCK_CLOSE) && !line.endsWith(Lang.BLOCK_OPEN)
                 && (!line.endsWith("!"))) {
-            throw new Errors.SyntaxCriticalError("Ye wena shout your code!");
+            throw new SyntaxCriticalError("Ye wena shout your code!");
         }
 
         line = line.isEmpty() ? line : line.substring(0, line.length() - 1);
@@ -545,7 +545,7 @@ public class Tokenizer {
             // Split on the operator "<=="
             String[] parts = withoutKeyword.split(Lang.THROW_ERROR);
             if (parts.length != 2) {
-                throw new Errors.SyntaxCriticalError("Ehh baba you must use the right syntax to throw an error.");
+                throw new SyntaxCriticalError("Ehh baba you must use the right syntax to throw an error.");
             }
             String errorMessage = parts[1].trim();
             if (errorMessage.startsWith("\"") && errorMessage.endsWith("\"") && errorMessage.length() >= 2) {
@@ -564,7 +564,7 @@ public class Tokenizer {
                 case "voetsek", "nevermind":
                     return tContainer.new TLoopControl(line).toToken();
                 default:
-                    throw new Errors.SyntaxCriticalError("Loop control keywords should be by themselves big bro.");
+                    throw new SyntaxCriticalError("Loop control keywords should be by themselves big bro.");
             }
         }
 

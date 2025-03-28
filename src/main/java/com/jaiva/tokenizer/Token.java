@@ -2,30 +2,11 @@ package com.jaiva.tokenizer;
 
 import java.util.*;
 
-import com.jaiva.Errors;
-import com.jaiva.Errors.SyntaxCriticalError;
-import com.jaiva.Errors.SyntaxError;
-import com.jaiva.Errors.UnknownSyntaxError;
-import com.jaiva.tokenizer.ContextDispatcher.To;
+import com.jaiva.errors.TokErrs.*;
 import com.jaiva.tokenizer.Keywords.LoopControl;
-
-class TokenDefault {
-    public String name = "";
-    public int lineNumber = 0;
-
-    public String getContents(int depth) {
-        return "";
-    }
-
-    TokenDefault(String name) {
-        this.name = name;
-    }
-
-    TokenDefault(String name, int line) {
-        this.name = name;
-        this.lineNumber = line;
-    }
-}
+import com.jaiva.utils.ContextDispatcher;
+import com.jaiva.utils.FindEnclosing;
+import com.jaiva.utils.ContextDispatcher.To;
 
 /**
  * The Token class represents a generic token that holds a value of type T.
@@ -126,7 +107,6 @@ public class Token<T extends TokenDefault> {
      * Represents a string variable such as {@code maak name <- "John"};
      */
     public class TStringVar extends TokenDefault {
-
         public String value;
 
         TStringVar(String name, String value) {
@@ -201,7 +181,7 @@ public class Token<T extends TokenDefault> {
     public class TArrayVar extends TokenDefault {
         public ArrayList<Object> contents;
 
-        TArrayVar(String name, ArrayList<Object> contents) {
+        public TArrayVar(String name, ArrayList<Object> contents) {
             super(name);
             this.contents = contents;
         }
@@ -247,7 +227,7 @@ public class Token<T extends TokenDefault> {
         public String[] args;
         public TCodeblock body;
 
-        TFunction(String name, String[] args, TCodeblock body) {
+        public TFunction(String name, String[] args, TCodeblock body) {
             super("F~" + name);
             this.args = args;
             this.body = body;
@@ -463,7 +443,7 @@ public class Token<T extends TokenDefault> {
             } else if (type.equals(Keywords.LC_BREAK)) {
                 this.type = LoopControl.BREAK;
             } else {
-                throw new Errors.UnknownSyntaxError("So we're in LoopControl but not correctly?");
+                throw new UnknownSyntaxError("So we're in LoopControl but not correctly?");
             }
         }
 
@@ -594,32 +574,6 @@ public class Token<T extends TokenDefault> {
         return parts;
     }
 
-    private int findLastOutermostBracePair(String line) {
-        ArrayList<Integer> indexes = new ArrayList<>();
-        int pair = 0;
-        for (int i = 0; i < line.length(); i++) {
-            char c = line.charAt(i);
-            if (c == '(' || c == '[') {
-                pair++;
-                if (pair == 1)
-                    indexes.add(i);
-            }
-            if (c == ')' || c == ']') {
-                pair--;
-            }
-        }
-        List<Integer> rIndexes = indexes.reversed();
-        for (Integer i : rIndexes) {
-            String sString = line.substring(i, line.length());
-            char openingChar = line.charAt(i);
-            int closingCharI = FindEnclosing.charI(sString, openingChar, openingChar == '(' ? ')' : ']');
-            if (closingCharI == sString.length() - 1)
-                return i;
-        }
-
-        return -1;
-    }
-
     private String simplifyIdentifier(String identifier, String prefix) {
         return identifier.contains(")") || identifier.contains("(") || identifier.contains("[")
                 || identifier.contains("]") || Lang.containsOperator(identifier.toCharArray()) != -1 ? identifier
@@ -651,7 +605,7 @@ public class Token<T extends TokenDefault> {
         if (d.getDeligation() == To.TSTATEMENT) {
             return new TStatement().parse(line);
         }
-        int index = findLastOutermostBracePair(line);
+        int index = FindEnclosing.findLastOutermostBracePair(line);
 
         if (index == 0) {
             // the outmost pair is just () so its prolly a TStatement, remove the stuff then
@@ -710,9 +664,9 @@ public class Token<T extends TokenDefault> {
             case PROCESS_CONTENT:
                 return processContext(line);
             case SINGLE_BRACE, EMPTY_STRING:
-                throw new Errors.SyntaxError("malformed string.");
+                throw new SyntaxError("malformed string.");
             default:
-                throw new Errors.SyntaxCriticalError("yeah sum went wrong with ur dispatch code");
+                throw new SyntaxCriticalError("yeah sum went wrong with ur dispatch code");
         }
 
     }
