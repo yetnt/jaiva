@@ -28,6 +28,8 @@ class Token~T extends TokenDefault~ {
     +processContext(String line) Object
     +dispatchContext(String line) Object
     +isValidBoolInput(Object t) boolean
+    -findLastOutermostBracePair(String line) int
+    -simplifyIdentifier(String identifier, String prefix) String
     +toString() String
 }
 

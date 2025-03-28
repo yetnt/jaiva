@@ -404,10 +404,10 @@ public class Token<T extends TokenDefault> {
     }
 
     public class TFuncCall extends TokenDefault {
-        public String functionName;
+        public Object functionName;
         public ArrayList<Object> args; // can be a TStatement, TFuncCall, TVarRef, or a primitive type
 
-        TFuncCall(String name, ArrayList<Object> args) {
+        TFuncCall(Object name, ArrayList<Object> args) {
             super("TFuncCall");
             this.functionName = name;
             this.args = args;
@@ -429,15 +429,15 @@ public class Token<T extends TokenDefault> {
      */
     public class TVarRef extends TokenDefault {
         public int type;
-        public String varName;
+        public Object varName;
         public Object index = null;
 
-        TVarRef(String name) {
+        TVarRef(Object name) {
             super("TVarRef");
             this.varName = name;
         }
 
-        TVarRef(String name, Object index) {
+        TVarRef(Object name, Object index) {
             super("TVarRef");
             this.index = index;
             this.varName = name;
@@ -594,6 +594,38 @@ public class Token<T extends TokenDefault> {
         return parts;
     }
 
+    private int findLastOutermostBracePair(String line) {
+        ArrayList<Integer> indexes = new ArrayList<>();
+        int pair = 0;
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == '(' || c == '[') {
+                pair++;
+                if (pair == 1)
+                    indexes.add(i);
+            }
+            if (c == ')' || c == ']') {
+                pair--;
+            }
+        }
+        List<Integer> rIndexes = indexes.reversed();
+        for (Integer i : rIndexes) {
+            String sString = line.substring(i, line.length());
+            char openingChar = line.charAt(i);
+            int closingCharI = FindEnclosing.charI(sString, openingChar, openingChar == '(' ? ')' : ']');
+            if (closingCharI == sString.length() - 1)
+                return i;
+        }
+
+        return -1;
+    }
+
+    private String simplifyIdentifier(String identifier, String prefix) {
+        return identifier.contains(")") || identifier.contains("(") || identifier.contains("[")
+                || identifier.contains("]") || Lang.containsOperator(identifier.toCharArray()) != -1 ? identifier
+                        : prefix + identifier;
+    }
+
     /**
      * This method serves 2 purposes, to tokenize a function call and to tokenize a
      * varibale call too.
@@ -619,23 +651,29 @@ public class Token<T extends TokenDefault> {
         if (d.getDeligation() == To.TSTATEMENT) {
             return new TStatement().parse(line);
         }
+        int index = findLastOutermostBracePair(line);
 
-        if (line.contains("(") && line.contains(")")) {
+        if (index == 0) {
+            // the outmost pair is just () so its prolly a TStatement, remove the stuff then
+            // parse as TStatement
+            return new TStatement().parse(line.substring(1, line.length() - 1));
+        }
+
+        if (index != -1 && (line.charAt(index) == '(')) {
             // then its a TFuncCall
-            String[] parts = line.split("\\(");
-            int b = FindEnclosing.charI(line, '(', ')');
-            ArrayList<String> args = new ArrayList<>(
-                    splitByTopLevelComma(
-                            line.substring(line.indexOf('(') + 1, FindEnclosing.charI(line, '(', ')'))));
+            String name = line.substring(0, index).trim();
+            String params = line.substring(index + 1, line.length() - 1).trim();
+
+            ArrayList<String> args = new ArrayList<>(splitByTopLevelComma(params));
             ArrayList<Object> parsedArgs = new ArrayList<>();
             args.forEach(arg -> parsedArgs.add(processContext((String) arg)));
-            return new TFuncCall(parts[0], parsedArgs).toToken();
-        } else if (line.contains("[") && line.contains("]")) {
+            return new TFuncCall(processContext(simplifyIdentifier(name, "F~")), parsedArgs).toToken();
+        } else if (index != -1 && (line.charAt(index) == '[')) {
             // then its a variable call an array one to be specific
             // name[index]
-            return new TVarRef(line.substring(0, line.indexOf("[") - 1),
-                    processContext(line.substring(line.indexOf("[") + 1, FindEnclosing.charI(line, '[', ']'))))
-                    .toToken();
+            String name = line.substring(0, index).trim();
+            String arrayIndex = line.substring(index + 1, line.length() - 1).trim();
+            return new TVarRef(processContext(simplifyIdentifier(name, "V~")), processContext(arrayIndex)).toToken();
         } else {
             // here, processTFuncCall will try to parse "line" as a primitive type. (if not
             // a bool, int, or string)
@@ -653,7 +691,11 @@ public class Token<T extends TokenDefault> {
                 } else if (line.isBlank()) {
                     return null;
                 } else {
-                    return new TVarRef(line).toToken();
+                    if (line.startsWith("V~") || line.startsWith("F~")) {
+                        return line.substring(2);
+                    } else {
+                        return new TVarRef(line).toToken();
+                    }
                 }
             }
         }
