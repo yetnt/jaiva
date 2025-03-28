@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.jaiva.tokenizer.Token;
 
-public class FindEnclosing {
+public class Find {
 
     /**
      * i honestly wish i documented this earlier, there are SO MANY overrides
@@ -15,7 +15,7 @@ public class FindEnclosing {
      * Class that represents that the intepreter needs to call readline again for
      * some reason.
      * <p>
-     * For {@code findEnclosingCharIMultipleLines()}
+     * For {@code Find.closingCharIndexML()}
      * <ul>
      * <li>{@code this.startCount == this.endCount} : if their equal then the method
      * ahs found the closing brace and doesnt need to read another line.
@@ -114,7 +114,7 @@ public class FindEnclosing {
      * @param end   The ending character.
      * @return
      */
-    public static MultipleLinesOutput charIMultipleLines(String line, String start,
+    public static MultipleLinesOutput closingCharIndexML(String line, String start,
             String end,
             int startCount, int endCount, String previousLines, String type, String[] args, Token<?> blockChain) {
         if (start.length() > 2 || end.length() > 2)
@@ -157,7 +157,7 @@ public class FindEnclosing {
      * @param end   The ending character.
      * @return
      */
-    public static MultipleLinesOutput charIMultipleLines(String line, char start, char end,
+    public static MultipleLinesOutput closingCharIndexML(String line, char start, char end,
             int startCount,
             int endCount) {
         boolean isStart = true;
@@ -191,7 +191,7 @@ public class FindEnclosing {
      * @param end   The ending character.
      * @return
      */
-    public static int charI(String line, char start, char end) {
+    public static int closingCharIndex(String line, char start, char end) {
         int startCount = 0;
         int endCount = 0;
         boolean isStart = true;
@@ -217,29 +217,93 @@ public class FindEnclosing {
         return -1;
     }
 
-    public static int findLastOutermostBracePair(String line) {
+    /**
+     * Returns the index of the outermost operator (at top level, i.e. depth==0).
+     * Returns -1 if there is no operator at the outer level.
+     */
+    public static int outermostOperatorIndex(String s) {
+        int depth = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '(' || c == '[') {
+                depth++;
+            } else if (c == ')' || c == ']') {
+                depth--;
+            } else if (depth == 0 && Validate.isOperator(c)) {
+                // We found an operator while at depth 0: that's our outermost operator.
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Method will return the index of the opening brace which is part of the last,
+     * outermost brace pair. Both () and [] are checked for agasinst each other.
+     * This will r
+     * <p>
+     * <blockquote>
+     * 
+     * <pre>
+     * "func()" returns 4
+     * "()[]" returns 2
+     * "()" returns 0
+     * </pre>
+     * 
+     * </blockquote>
+     * 
+     * @param line Input.
+     * @returns int
+     */
+    public static int lastOutermostBracePair(String line) {
         ArrayList<Integer> indexes = new ArrayList<>();
-        int pair = 0;
+        int depth = 0;
         for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
             if (c == '(' || c == '[') {
-                pair++;
-                if (pair == 1)
+                depth++;
+                if (depth == 1)
                     indexes.add(i);
             }
             if (c == ')' || c == ']') {
-                pair--;
+                depth--;
             }
         }
         List<Integer> rIndexes = indexes.reversed();
         for (Integer i : rIndexes) {
             String sString = line.substring(i, line.length());
             char openingChar = line.charAt(i);
-            int closingCharI = charI(sString, openingChar, openingChar == '(' ? ')' : ']');
+            int closingCharI = closingCharIndex(sString, openingChar, openingChar == '(' ? ')' : ']');
             if (closingCharI == sString.length() - 1)
                 return i;
         }
 
+        return -1;
+    }
+
+    /**
+     * Finds the oeprator index in respects to braces. This is meant for the
+     * TStatement class.
+     * <p>
+     * Rather use {@link Find#outermostOperatorIndex} which takes both () and []
+     * into respects.
+     * 
+     * @param statement
+     * @param operator
+     * @return
+     */
+    public static int operatorIndex(String statement, String operator) {
+        int level = 0;
+        for (int i = 0; i < statement.length(); i++) {
+            char c = statement.charAt(i);
+            if (c == '(')
+                level++;
+            else if (c == ')')
+                level--;
+            else if (level == 0 && statement.startsWith(operator, i)) {
+                return i;
+            }
+        }
         return -1;
     }
 

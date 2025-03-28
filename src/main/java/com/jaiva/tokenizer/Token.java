@@ -5,7 +5,8 @@ import java.util.*;
 import com.jaiva.errors.TokErrs.*;
 import com.jaiva.tokenizer.Keywords.LoopControl;
 import com.jaiva.utils.ContextDispatcher;
-import com.jaiva.utils.FindEnclosing;
+import com.jaiva.utils.Find;
+import com.jaiva.utils.Validate;
 import com.jaiva.utils.ContextDispatcher.To;
 
 /**
@@ -509,7 +510,7 @@ public class Token<T extends TokenDefault> {
             }
 
             for (String op : Lang.BOOLEAN_OPERATORS) {
-                int index = findOperatorIndex(statement, op);
+                int index = Find.operatorIndex(statement, op);
                 if (index == -1)
                     continue;
 
@@ -521,7 +522,7 @@ public class Token<T extends TokenDefault> {
             }
 
             for (String op : Lang.ARITHMATIC_OPERATIONS) {
-                int index = findOperatorIndex(statement, op);
+                int index = Find.operatorIndex(statement, op);
                 if (index == -1)
                     continue;
                 lHandSide = new TStatement().parse(statement.substring(0, index).trim());
@@ -532,21 +533,6 @@ public class Token<T extends TokenDefault> {
             }
 
             return null;
-        }
-
-        private int findOperatorIndex(String statement, String operator) {
-            int level = 0;
-            for (int i = 0; i < statement.length(); i++) {
-                char c = statement.charAt(i);
-                if (c == '(')
-                    level++;
-                else if (c == ')')
-                    level--;
-                else if (level == 0 && statement.startsWith(operator, i)) {
-                    return i;
-                }
-            }
-            return -1;
         }
 
         public Token<TStatement> toToken() {
@@ -576,7 +562,7 @@ public class Token<T extends TokenDefault> {
 
     private String simplifyIdentifier(String identifier, String prefix) {
         return identifier.contains(")") || identifier.contains("(") || identifier.contains("[")
-                || identifier.contains("]") || Lang.containsOperator(identifier.toCharArray()) != -1 ? identifier
+                || identifier.contains("]") || Validate.containsOperator(identifier.toCharArray()) != -1 ? identifier
                         : prefix + identifier;
     }
 
@@ -605,7 +591,7 @@ public class Token<T extends TokenDefault> {
         if (d.getDeligation() == To.TSTATEMENT) {
             return new TStatement().parse(line);
         }
-        int index = FindEnclosing.findLastOutermostBracePair(line);
+        int index = Find.lastOutermostBracePair(line);
 
         if (index == 0) {
             // the outmost pair is just () so its prolly a TStatement, remove the stuff then
@@ -669,19 +655,6 @@ public class Token<T extends TokenDefault> {
                 throw new SyntaxCriticalError("yeah sum went wrong with ur dispatch code");
         }
 
-    }
-
-    /**
-     * These are for your if, while loops, for loops, where we need to make sure
-     * that its NOT an integer, string or null.
-     * It has to be TFuncCall, TVarRef, TStatement or a primitive boolean.
-     * 
-     * @param t
-     * @return
-     */
-    public boolean isValidBoolInput(Object t) {
-        return t instanceof Token<?>.TFuncCall || t instanceof Token<?>.TVarRef || t instanceof Token<?>.TIfStatement
-                || t instanceof Token<?> || t instanceof Boolean;
     }
 
 }

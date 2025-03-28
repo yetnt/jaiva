@@ -30,6 +30,8 @@ import java.util.Set;
  * various operators and delimiters defined in the constants.
  */
 public class Lang {
+    public static char ESCAPE = '$';
+    public static char END_LINE = '!';
     public static char COMMENT = '@';
     public static char COMMENT_OPEN = '{';
     public static char COMMENT_CLOSE = '}';
@@ -40,27 +42,6 @@ public class Lang {
     public static String ARRAY_ASSIGNMENT = "<-|";
     public static Set<String> ARITHMATIC_OPERATIONS = Set.of("+", "-", "*", "/", "=");
     public static Set<String> BOOLEAN_OPERATORS = Set.of(">=", "<=", "!=", "&&", "||", "<", ">", "&", "|");
-
-    /**
-     * Checks if the given character array contains any arithmetic or boolean
-     * operators.
-     * Returns 1 if an arithmetic operator is found, 0 if a boolean operator is
-     * found, and -1 if no operators are found.
-     * 
-     * @param string
-     * @return
-     */
-    public static int containsOperator(char[] string) {
-        for (char c : string) {
-            if (ARITHMATIC_OPERATIONS.contains(String.valueOf(c))) {
-                return 1;
-            }
-            if (BOOLEAN_OPERATORS.contains(String.valueOf(c))) {
-                return 0;
-            }
-        }
-        return -1;
-    }
 
     /**
      * Get the index of the operator in the given character array.

@@ -8,7 +8,7 @@ import java.util.Scanner; // Import the Scanner class to read text files
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Tokenizer;
 import com.jaiva.utils.BlockChain;
-import com.jaiva.utils.FindEnclosing;
+import com.jaiva.utils.Find;
 
 public class Main {
     @SuppressWarnings("unchecked")
@@ -16,7 +16,7 @@ public class Main {
         File myObj = new File("C://Users//ACER//Documents//code//jaiva//src//main//resources//test2.jiv");
         try {
             ArrayList<Token<?>> tokens = new ArrayList<>();
-            FindEnclosing.MultipleLinesOutput m = null;
+            Find.MultipleLinesOutput m = null;
             BlockChain b = null;
             Scanner myReader = new Scanner(myObj);
             String previousLine = "";
@@ -25,8 +25,8 @@ public class Main {
                 // System.out.println(line);
                 // System.out.println(line);
                 Object something = Tokenizer.readLine(line, (b != null ? "" : previousLine), m, b);
-                if (something instanceof FindEnclosing.MultipleLinesOutput) {
-                    m = (FindEnclosing.MultipleLinesOutput) something;
+                if (something instanceof Find.MultipleLinesOutput) {
+                    m = (Find.MultipleLinesOutput) something;
                     b = null;
                 } else if (something instanceof ArrayList<?>) {
                     m = null;

@@ -36,42 +36,12 @@ public class ContextDispatcher {
     }
 
     /**
-     * Checks if a character is considered an operator.
-     * Modify this method if you have a specific set of operator characters.
-     */
-    private boolean isOperator(char c) {
-        // Define your operators here. For example:
-        return c == '+' || c == '-' || c == '*' || c == '/' || c == '|' || c == '>' || c == '<' || c == '&' || c == '!'
-                || c == '=';
-    }
-
-    /**
-     * Returns the index of the outermost operator (at top level, i.e. depth==0).
-     * Returns -1 if there is no operator at the outer level.
-     */
-    private int findOutermostOperatorIndex(String s) {
-        int depth = 0;
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (c == '(' || c == '[') {
-                depth++;
-            } else if (c == ')' || c == ']') {
-                depth--;
-            } else if (depth == 0 && isOperator(c)) {
-                // We found an operator while at depth 0: that's our outermost operator.
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
      * Determines if the parentheses in the left-hand side of the OUTERMOST operator
      * are balanced.
      * This sets BC (Braces Closed) correctly.
      */
     private boolean checkBracesClosedBeforeOutermostOperand(String line) {
-        int outerOpIndex = findOutermostOperatorIndex(line);
+        int outerOpIndex = Find.outermostOperatorIndex(line);
         // If there's no outer operator, then we cannot say the braces are “closed
         // before the operator.”
         if (outerOpIndex == -1)
@@ -90,7 +60,7 @@ public class ContextDispatcher {
         int opIndex = Lang.getOperatorIndex(line.toCharArray()) != -1 ? Lang.getOperatorIndex(line.toCharArray())
                 : Integer.MAX_VALUE; // this is so EB can be handled properly.
         // SB = line.startsWith("(");
-        EO = Lang.containsOperator(line.toCharArray()) != -1;
+        EO = Validate.containsOperator(line.toCharArray()) != -1;
         EB = (line.indexOf("(") != -1) && ((opIndex > line.indexOf("("))) ||
                 (line.indexOf(")") != -1) && (opIndex > line.indexOf(")")) ||
                 (line.indexOf("[") != -1) && ((opIndex > line.indexOf("["))) ||
