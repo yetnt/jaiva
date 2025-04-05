@@ -1,6 +1,10 @@
 package com.jaiva.errors;
 
 import com.jaiva.interpreter.symbol.*;
+import com.jaiva.tokenizer.Token.TFuncCall;
+import com.jaiva.tokenizer.Token.TStatement;
+import com.jaiva.tokenizer.Token.TVarReassign;
+import com.jaiva.tokenizer.Token.TVarRef;
 
 public class IntErrs {
 
@@ -74,5 +78,99 @@ public class IntErrs {
                     + " has already been defined as either an array or some value. Do not reassign it as vice versa. If you know what you are doing however, place a ~ after the variable name in the declaration.");
         }
 
+    }
+
+    public static class TStatementResolutionException extends InterpreterException {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * When the lhs or rhs of a TStatement doesnt match the type of the entire
+         * statement.
+         * 
+         * @param s         The tstatement
+         * @param side      "lhs" or "rhs"
+         * @param incorrect The .toString() of the Object we received.
+         */
+        public TStatementResolutionException(TStatement s, String side, String incorrect) {
+            super("The " + side + " of the statement " + s.statement + " couldn't be resolved to the correct type." +
+                    " The statement is a " + (s.statementType == 0 ? "boolean" : "arithmetic")
+                    + " however I received a " + incorrect);
+        }
+    }
+
+    public static class UnknownVariableException extends InterpreterException {
+        private static final long serialVersionUID = 1L;
+
+        public UnknownVariableException(TVarRef s) {
+            super("Lowkey don't see the variable named " + s.varName
+                    + " anywhere. It prolly aint in this block's scope fr.");
+        }
+
+        public UnknownVariableException(TVarReassign s) {
+            super("Lowkey don't see the variable named " + s.name
+                    + " anywhere. It prolly aint in this block's scope fr.");
+        }
+    }
+
+    public static class WtfAreYouDoingException extends InterpreterException {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Overload for when the user tries to use a function as if it were a variable
+         * or vice versa
+         * 
+         * @param s            The symbol we got
+         * @param correctClass The correct class.
+         */
+        public WtfAreYouDoingException(Object s, Class<?> correctClass) {
+            super("Alright bub. if you're going to start mixing and mathcing, you might as well write lua code."
+                    + "(You tried using a " + s.getClass().getName() + " as if it were a " + correctClass.getName()
+                    + ".");
+        }
+
+        /**
+         * Overload for when the uyser's array index input doesnt resolve to an int.
+         * 
+         * @param s
+         */
+        public WtfAreYouDoingException(TVarRef s, Class<?> classWeGot) {
+            super(s.index
+                    + " could not be resolved to an int which can be used as an array index. deep. we instead got a "
+                    + classWeGot.getName());
+        }
+
+        /**
+         * These are for custom "wtf" errors.
+         * 
+         * @param s
+         */
+        public WtfAreYouDoingException(String s) {
+            super(s);
+        }
+
+    }
+
+    public static class WeirdAhhFunctionException extends InterpreterException {
+        /**
+         * When a function name does not resolve to a string that can actualy be used in
+         * the vfs HashMap.
+         * 
+         * @param tFuncCall
+         */
+        public WeirdAhhFunctionException(TFuncCall tFuncCall) {
+            super(tFuncCall.name + " could NOT be resolved to a poper function name. Idk what else to tell you zawg");
+        }
+    }
+
+    /**
+     * * This is a generic exception for when we don't know what the error is.
+     * And it's not the user's fault.
+     */
+    public static class GenericException extends InterpreterException {
+        private static final long serialVersionUID = 1L;
+
+        public GenericException(String message) {
+            super(message);
+        }
     }
 }

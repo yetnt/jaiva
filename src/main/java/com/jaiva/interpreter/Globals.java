@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TFunction;
 
 import com.jaiva.interpreter.symbol.*;
 
 public class Globals {
-    public HashMap<String, MapValue> vfs;
+    public HashMap<String, MapValue> vfs = new HashMap<>();
 
-    Globals() {
+    public Globals() {
         Token<?> container = new Token<>(null);
         vfs.put("khuluma", new MapValue(new FKhuluma(container)));
         vfs.put("logToken", new MapValue(new FLogToken(container)));
@@ -32,8 +32,8 @@ public class Globals {
         }
 
         @Override
-        public Object call(Object[] params) {
-            System.out.println(params[0]);
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs) {
+            System.out.println(params.get(0));
             return void.class;
         }
     }
@@ -49,7 +49,7 @@ public class Globals {
         }
 
         @Override
-        public Object call(Object[] params) {
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs) {
             System.out.println();
             return void.class;
         }
