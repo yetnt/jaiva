@@ -5,6 +5,8 @@ import java.io.FileNotFoundException; // Import this class to handle errors
 import java.util.ArrayList;
 import java.util.Scanner; // Import the Scanner class to read text files
 
+import com.jaiva.interpreter.Globals;
+import com.jaiva.interpreter.Interpreter;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Tokenizer;
 import com.jaiva.utils.BlockChain;
@@ -52,6 +54,9 @@ public class Main {
             }
             System.out.println(tokens.size());
             myReader.close();
+
+            Interpreter.interpret(tokens, "global", new Globals().vfs);
+
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
