@@ -1,6 +1,7 @@
 package com.jaiva.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.jaiva.tokenizer.Token;
@@ -281,30 +282,155 @@ public class Find {
         return -1;
     }
 
+    public class TStatementOpIndex {
+        public String op;
+        public int index;
+        public int tStatementType;
+
+        public TStatementOpIndex(String op, int index, int type) {
+            this.op = op;
+            this.index = index;
+            switch (type) {
+                case 0:
+                    tStatementType = 1; // Exponentiation
+                    break;
+                case 1:
+                    tStatementType = 1; // DivMult
+                    break;
+                case 2:
+                    tStatementType = 1; // AddSub
+                    break;
+                case 3:
+                    tStatementType = 0; // Bools
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid type: " + type);
+            }
+        }
+    }
+
+    public static class LeastImportantOperator {
+        public String op;
+        public int index;
+        public int tStatementType;
+
+        public LeastImportantOperator(String op, int index, int group) {
+            this.op = op;
+            this.index = index;
+            switch (group) {
+                case 0:
+                    tStatementType = 1; // Exponentiation
+                    break;
+                case 1:
+                    tStatementType = 1; // DivMult
+                    break;
+                case 2:
+                    tStatementType = 1; // AddSub
+                    break;
+                case 3:
+                    tStatementType = 0; // Bools
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid group: " + group);
+            }
+        }
+
+        /**
+         * Constructor for no return value.
+         */
+        public LeastImportantOperator() {
+            this.op = null;
+            this.index = -1;
+            this.tStatementType = -1;
+        }
+    }
+
     /**
      * Finds the oeprator index in respects to braces. This is meant for the
      * TStatement class.
      * <p>
-     * Rather use {@link Find#outermostOperatorIndex} which takes both () and []
      * into respects.
      * 
      * @param statement
      * @param operator
      * @return
      */
-    public static int operatorIndex(String statement, String operator) {
+    public static LeastImportantOperator leastImportantOperator(String statement) {
         int level = 0;
+        ArrayList<Integer> indexes1 = new ArrayList<>();
         for (int i = 0; i < statement.length(); i++) {
             char c = statement.charAt(i);
-            if (c == '(')
+            if (c == '(' || c == '[')
                 level++;
-            else if (c == ')')
+            else if (c == ')' || c == ']')
                 level--;
-            else if (level == 0 && statement.startsWith(operator, i)) {
-                return i;
+            else if (level == 0 && Validate.isOperator(c)) {
+                indexes1.add(i);
             }
         }
-        return -1;
+        if (indexes1.isEmpty())
+            return new LeastImportantOperator(); // exit early if no operators are found.
+        int group = -1; // 0 = Exponentiation, 1 = DivMult, 2 = AddSub, 3 = Bools
+        ArrayList<Integer> indexes2 = new ArrayList<>();
+        for (String op : BODMAS.getAll().reversed()) {
+            for (int opIndex : indexes1) {
+                String opString = statement.substring(opIndex, opIndex + op.length());
+                if (!opString.equals(op))
+                    continue;
+                if (group == -1) {
+                    group = BODMAS.getType(op);
+                    indexes2.add(opIndex);
+                } else if (group == BODMAS.getType(op)) {
+                    indexes2.add(opIndex);
+                } else {
+                    continue;
+                }
+            }
+        }
+
+        List<Character> multiOpChars = Arrays.asList('|', '&', '>', '<', '='); // If the op is 2 chars long, it's last
+                                                                               // char must be one of these.
+
+        // The operator can sometimes be the length of 2
+        String op = statement.substring(indexes2.getLast(),
+                multiOpChars.contains(statement.charAt(indexes2.getLast() + 1)) ? (indexes2.getLast() + 2)
+                        : (indexes2
+                                .getLast() + 1));
+
+        return indexes2.isEmpty() ? new LeastImportantOperator()
+                : new LeastImportantOperator(
+                        op, indexes2.getLast(),
+                        group);
     }
 
+}
+
+class BODMAS {
+    public static final String Exponentiation = "^";
+    public static final List<String> DivMult = Arrays.asList("/", "*", "%");
+    public static final List<String> AddSub = Arrays.asList("+", "-");
+    public static final List<String> Bools = Arrays.asList("|", "&", ">", "<", "=");
+    public static final List<String> DoubleBools = Arrays.asList("||", "&&", "!=", ">=", "<=");
+
+    public static List<String> getAll() {
+        List<String> all = new ArrayList<>();
+        all.add(Exponentiation);
+        all.addAll(DivMult);
+        all.addAll(AddSub);
+        all.addAll(DoubleBools);
+        all.addAll(Bools);
+        return all;
+    }
+
+    public static int getType(String op) {
+        if (Exponentiation.equals(op))
+            return 0;
+        else if (DivMult.contains(op))
+            return 1;
+        else if (AddSub.contains(op))
+            return 2;
+        else if (Bools.contains(op) || DoubleBools.contains(op))
+            return 3;
+        return -1;
+    }
 }

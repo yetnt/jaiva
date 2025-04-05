@@ -36,6 +36,25 @@ public class Token<T extends TokenDefault> {
     }
 
     /**
+     * * Represents a default token that can be used as a base class for other. it
+     * does nothing.
+     */
+    public class TVoidValue extends TokenDefault {
+        public TVoidValue() {
+            super("TVoidValue");
+        }
+
+        @Override
+        public String getContents(int depth) {
+            return name;
+        }
+
+        public Token<TVoidValue> toToken() {
+            return new Token<>(this);
+        }
+    }
+
+    /**
      * Represents a code block such as {@code -> maak x <- 10; maak y <- 20! <~}
      * This class usually isn't used directly, but rather as a part of another
      * instance
@@ -126,17 +145,22 @@ public class Token<T extends TokenDefault> {
     }
 
     /**
-     * Represents a integer variable such as {@code maak age <- 20};
+     * Represents a number variable such as {@code maak age <- 20};
      */
-    public class TIntVar extends TokenDefault {
+    public class TNumberVar extends TokenDefault {
         public Object value;
 
-        TIntVar(String name, int value) {
+        TNumberVar(String name, int value) {
             super(name);
             this.value = value;
         }
 
-        TIntVar(String name, Object value) {
+        TNumberVar(String name, double value) {
+            super(name);
+            this.value = value;
+        }
+
+        TNumberVar(String name, Object value) {
             super(name);
             this.value = value;
         }
@@ -147,7 +171,7 @@ public class Token<T extends TokenDefault> {
                     : ((TStatement) value).getContents(0));
         }
 
-        public Token<TIntVar> toToken() {
+        public Token<TNumberVar> toToken() {
             return new Token<>(this);
         }
     }
@@ -246,12 +270,12 @@ public class Token<T extends TokenDefault> {
     }
 
     public class TForLoop extends TokenDefault {
-        public TIntVar variable;
+        public TNumberVar variable;
         public Object condition;
         public String increment;
         public TCodeblock body;
 
-        TForLoop(TIntVar variable, Object condition, String increment, TCodeblock body) {
+        TForLoop(TNumberVar variable, Object condition, String increment, TCodeblock body) {
             super("TForLoop");
             this.variable = variable;
             this.condition = condition;
@@ -467,6 +491,7 @@ public class Token<T extends TokenDefault> {
         public Object lHandSide = "null";
         public String op;
         public Object rHandSide = "null";
+        public String statement;
         /**
          * 0 = boolean logic |
          * 1 = int arithmetic
@@ -504,35 +529,24 @@ public class Token<T extends TokenDefault> {
             if (d.getDeligation() == To.PROCESS_CONTENT) {
                 return processContext(statement);
             }
+            this.statement = statement;
 
             if (statement.startsWith("(") && statement.endsWith(")")) {
                 return parse(statement.substring(1, statement.length() - 1).trim());
             }
 
-            for (String op : Lang.BOOLEAN_OPERATORS) {
-                int index = Find.operatorIndex(statement, op);
-                if (index == -1)
-                    continue;
-
-                lHandSide = new TStatement().parse(statement.substring(0, index).trim());
-                this.op = op.trim();
-                rHandSide = new TStatement().parse(statement.substring(index + op.length()).trim());
-                statementType = 0;
-                return this.toToken();
+            Find.LeastImportantOperator info = Find.leastImportantOperator(statement);
+            if (info.index == -1) {
+                // no operator found, so its a single value
+                // TODO: Validate this, Copilot gave me this if but i'm not sure ngl.
+                return processContext(statement);
             }
 
-            for (String op : Lang.ARITHMATIC_OPERATIONS) {
-                int index = Find.operatorIndex(statement, op);
-                if (index == -1)
-                    continue;
-                lHandSide = new TStatement().parse(statement.substring(0, index).trim());
-                this.op = op.trim();
-                rHandSide = new TStatement().parse(statement.substring(index + op.length()).trim());
-                statementType = 1;
-                return this.toToken();
-            }
-
-            return null;
+            lHandSide = new TStatement().parse(statement.substring(0, info.index).trim());
+            this.op = info.op.trim();
+            rHandSide = new TStatement().parse(statement.substring(info.index + info.op.length()).trim());
+            statementType = info.tStatementType;
+            return this.toToken();
         }
 
         public Token<TStatement> toToken() {
