@@ -113,6 +113,11 @@ public class Token<T extends TokenDefault> {
             this.newValue = value;
         }
 
+        TVarReassign(Object name, Object value) {
+            super("TVarReassign");
+            this.newValue = value;
+        }
+
         @Override
         public String getContents(int depth) {
             return name + " <<- " + value.toString();
@@ -627,7 +632,8 @@ public class Token<T extends TokenDefault> {
             // name[index]
             String name = line.substring(0, index).trim();
             String arrayIndex = line.substring(index + 1, line.length() - 1).trim();
-            return new TVarRef(processContext(simplifyIdentifier(name, "V~")), processContext(arrayIndex)).toToken();
+            return new TVarRef(processContext(simplifyIdentifier(name, "V~")), processContext(arrayIndex))
+                    .toToken();
         } else {
             // here, processTFuncCall will try to parse "line" as a primitive type. (if not
             // a bool, int, or string)

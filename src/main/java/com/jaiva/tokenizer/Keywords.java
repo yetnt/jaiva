@@ -22,6 +22,7 @@ public class Keywords {
     public static String THROW = "cima";
     public static String LC_BREAK = "voetsek";
     public static String LC_CONTINUE = "nevermind";
+    public static String UNDEFINED = "idk";
 
     enum LoopControl {
         BREAK, CONTINUE

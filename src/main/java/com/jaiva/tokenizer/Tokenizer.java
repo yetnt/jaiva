@@ -5,7 +5,7 @@ import java.util.*;
 import com.jaiva.errors.TokErrs.*;
 import com.jaiva.tokenizer.Token.TCodeblock;
 import com.jaiva.tokenizer.Token.TIfStatement;
-import com.jaiva.tokenizer.Token.TIntVar;
+import com.jaiva.tokenizer.Token.TNumberVar;
 import com.jaiva.tokenizer.Token.TTryCatchStatement;
 import com.jaiva.utils.BlockChain;
 import com.jaiva.utils.Find;
@@ -189,7 +189,7 @@ public class Tokenizer {
                 break;
             }
             case "colonize": {
-                TIntVar variable = (Token<TIntVar>.TIntVar) ((ArrayList<Token<?>>) readLine(
+                TNumberVar variable = (Token<TNumberVar>.TNumberVar) ((ArrayList<Token<?>>) readLine(
                         "maak " + args[0] + "!", "", null, null)).get(0).getValue();
 
                 Object obj = tContainer.new TStatement().parse(args[1]);
@@ -263,25 +263,29 @@ public class Tokenizer {
             return tContainer.new TStringVar(parts[0], parts[1]).toToken();
         } else {
             try {
-                return tContainer.new TIntVar(parts[0], Integer.parseInt(parts[1])).toToken();
+                return tContainer.new TNumberVar(parts[0], Integer.parseInt(parts[1])).toToken();
             } catch (NumberFormatException e) {
-                if (parts[1].equals("true") || parts[1].equals("false") || parts[1].equals(Keywords.TRUE)
-                        || parts[1].equals(Keywords.FALSE)) {
-                    parts[1] = parts[1].replace(Keywords.TRUE, "true").replace(
-                            Keywords.FALSE,
-                            "false");
-                    return tContainer.new TBooleanVar(parts[0], Boolean.parseBoolean(parts[1])).toToken();
-                } else {
-                    Object output = tContainer.dispatchContext(parts[1]);
-                    if (output instanceof Token<?>) {
-                        TokenDefault g = ((Token<?>) output).getValue();
-                        if (g.name.equals("TStatement")) {
-                            return ((Token<?>.TStatement) g).statementType == 0
-                                    ? tContainer.new TBooleanVar(parts[0], output).toToken()
-                                    : tContainer.new TIntVar(parts[0], output).toToken();
+                try {
+                    return tContainer.new TNumberVar(parts[0], Double.parseDouble(parts[1])).toToken();
+                } catch (Exception e2) {
+                    if (parts[1].equals("true") || parts[1].equals("false") || parts[1].equals(Keywords.TRUE)
+                            || parts[1].equals(Keywords.FALSE)) {
+                        parts[1] = parts[1].replace(Keywords.TRUE, "true").replace(
+                                Keywords.FALSE,
+                                "false");
+                        return tContainer.new TBooleanVar(parts[0], Boolean.parseBoolean(parts[1])).toToken();
+                    } else {
+                        Object output = tContainer.dispatchContext(parts[1]);
+                        if (output instanceof Token<?>) {
+                            TokenDefault g = ((Token<?>) output).getValue();
+                            if (g.name.equals("TStatement")) {
+                                return ((Token<?>.TStatement) g).statementType == 0
+                                        ? tContainer.new TBooleanVar(parts[0], output).toToken()
+                                        : tContainer.new TNumberVar(parts[0], output).toToken();
+                            }
                         }
+                        return tContainer.new TUnknownVar(parts[0], output).toToken();
                     }
-                    return tContainer.new TUnknownVar(parts[0], output).toToken();
                 }
             }
         }
@@ -471,8 +475,23 @@ public class Tokenizer {
         // if it doesnt start with declaration nfor var, it might be a reassingment
         String[] parts = line.split(Lang.ASSIGNMENT);
         if (parts.length > 1) {
-            tokens.add(
-                    tContainer.new TVarReassign(parts[0].trim(), tContainer.processContext(parts[1].trim())).toToken());
+            String varName = parts[0].trim();
+            Object varValue = tContainer.processContext(parts[1].trim());
+            if (varName.contains("]") || varName.contains("[")) {
+                // This is an array reassignment.
+                tokens.add(tContainer.new TVarReassign(tContainer.processContext(varName), varValue).toToken());
+                return tokens;
+            } else {
+                tokens.add(
+                        tContainer.new TVarReassign(parts[0].trim(), tContainer.processContext(parts[1].trim()))
+                                .toToken());
+            }
+            return tokens;
+        }
+
+        // TODO: This token only exists for debugging purposes at the moment.
+        if (line.equals(Keywords.UNDEFINED)) {
+            tokens.add(tContainer.new TVoidValue().toToken());
             return tokens;
         }
 
