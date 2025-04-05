@@ -28,12 +28,10 @@ public class Validate {
      * This is made only for Context Dispatcher
      * <p>
      * Checks if a character is considered an operator.
-     * Modify this method if you have a specific set of operator characters.
      */
     public static boolean isOperator(char c) {
-        // Define your operators here. For example:
         return c == '+' || c == '-' || c == '*' || c == '/' || c == '|' || c == '>' || c == '<' || c == '&' || c == '!'
-                || c == '=';
+                || c == '=' | c == '%' || c == '^';
     }
 
     /**
@@ -56,6 +54,4 @@ public class Validate {
         }
         return -1;
     }
-
-    // public static Object
 }
