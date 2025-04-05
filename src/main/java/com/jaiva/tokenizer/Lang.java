@@ -40,8 +40,12 @@ public class Lang {
     public static String ASSIGNMENT = "<-";
     public static String THROW_ERROR = "<==";
     public static String ARRAY_ASSIGNMENT = "<-|";
-    public static Set<String> ARITHMATIC_OPERATIONS = Set.of("+", "-", "*", "/", "=");
-    public static Set<String> BOOLEAN_OPERATORS = Set.of(">=", "<=", "!=", "&&", "||", "<", ">", "&", "|");
+    @Deprecated
+    public static Set<String> ARITHMATIC_OPERATIONS = Set.of("+", "-", "*", "/",
+            "^", "%");
+    @Deprecated
+    public static Set<String> BOOLEAN_OPERATORS = Set.of(">=", "<=", "!=", "&&",
+            "||", "<", ">", "=", "&", "|");
 
     /**
      * Get the index of the operator in the given character array.
