@@ -7,6 +7,7 @@ import java.util.Scanner; // Import the Scanner class to read text files
 
 import com.jaiva.interpreter.Globals;
 import com.jaiva.interpreter.Interpreter;
+import com.jaiva.repl.REPL;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Tokenizer;
 import com.jaiva.utils.BlockChain;
@@ -15,7 +16,35 @@ import com.jaiva.utils.Find;
 public class Main {
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
-        File myObj = new File("C://Users//ACER//Documents//code//jaiva//src//main//resources//test2.jiv");
+        if (args.length == 0) {
+            System.out.println("Args length is 0, so ima lowkey just start a REPL");
+            new REPL(0);
+            return;
+        } else if (args[0].equals("-m")) {
+            if (args.length == 1) {
+                System.out.println("You need to specify a REPL mode.");
+                return;
+            }
+            switch (args[1]) {
+                case "standard", "s":
+                    System.out.println("Standard REPL mode.");
+                    new REPL(0);
+                    break;
+                case "print-tokens", "p":
+                    System.out.println("Print token REPL mode.");
+                    new REPL(1);
+                    break;
+                case "arithmetic-logic", "am":
+                    System.out.println("Arithmetic logic REPL mode.");
+                    new REPL(2);
+                    break;
+                default:
+                    System.out.println("Invalid REPL mode.");
+                    break;
+            }
+            return;
+        }
+        File myObj = new File(args[0]);
         try {
             ArrayList<Token<?>> tokens = new ArrayList<>();
             Find.MultipleLinesOutput m = null;
@@ -58,10 +87,10 @@ public class Main {
             Interpreter.interpret(tokens, "global", new Globals().vfs);
 
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
+            System.out.println("Ayo i cannot find the file " + args[0] + ". Make sure it exists homie.");
             e.printStackTrace();
         } catch (Exception e) {
-            System.out.println("errrorrrr");
+            System.out.println("Error.");
             e.printStackTrace();
         }
     }
