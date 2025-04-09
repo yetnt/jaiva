@@ -93,6 +93,8 @@ public class REPL {
                 }
                 Object something = read(line, (b != null ? "" : previousLine), m, b);
                 if (something instanceof ReadOuput) {
+                    m = null;
+                    b = null;
                     ReadOuput ro = (ReadOuput) something;
                     if (this.state == State.ERROR) {
                         System.out.println("Chaai an error: " + ro.getOutput());
@@ -105,9 +107,6 @@ public class REPL {
                 } else if (something instanceof BlockChain) {
                     m = null;
                     b = (BlockChain) something;
-                } else if (something instanceof Token<?>) {
-                    b = null;
-                    m = null;
                 } else {
                     b = null;
                     m = null;
@@ -167,7 +166,14 @@ public class REPL {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             this.state = State.ERROR;
-            return new ReadOuput(e.getMessage());
+            // add stack trace as a string separated by new lines.
+
+            StringBuilder stackTrace = new StringBuilder();
+            stackTrace.append(e.getMessage()).append("\n");
+            for (StackTraceElement element : e.getStackTrace()) {
+                stackTrace.append("\t").append(element.toString()).append("\n");
+            }
+            return new ReadOuput(stackTrace.toString());
         }
         return null;
     }

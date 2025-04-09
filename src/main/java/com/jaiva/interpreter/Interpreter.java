@@ -29,7 +29,33 @@ public class Interpreter {
                 || t instanceof Double || t instanceof String;
     }
 
-    private static Object handleVariables(TokenDefault t, HashMap<String, MapValue> vfs)
+    /**
+     * Handles variable operations such as creation, reassignment, and primitive
+     * parsing.
+     * This method processes different types of tokens representing variables or
+     * operations
+     * on variables and updates the provided variable storage map accordingly.
+     *
+     * @param t   The token representing the variable or operation to handle. This
+     *            can be
+     *            one of several types, including TNumberVar, TBooleanVar,
+     *            TStringVar,
+     *            TUnknownVar, TArrayVar, or TVarReassign.
+     * @param vfs A map storing variable names as keys and their corresponding
+     *            MapValue
+     *            objects as values. This map is updated based on the operation
+     *            performed.
+     * @return Returns the primitive value of the token if it is not a
+     *         variable-related
+     *         token, or null if the operation involves variable creation or
+     *         reassignment.
+     * @throws Exception If an error occurs during variable handling, such as
+     *                   referencing
+     *                   an unknown variable, attempting to reassign a frozen
+     *                   variable, or
+     *                   performing an invalid operation.
+     */
+    public static Object handleVariables(TokenDefault t, HashMap<String, MapValue> vfs)
             throws Exception {
         if (t instanceof TNumberVar) {
             Object number = Primitives.toPrimitive(((TNumberVar) t).value, vfs);
