@@ -234,7 +234,15 @@ public class Tokenizer {
             line = line.substring(4, line.length());
             String[] parts = line.split("<-\\|");
             parts[0] = parts[0].trim();
+            if (parts[0].isEmpty()) {
+                throw new SyntaxCriticalError("Bro defined a variable with no name lmao.");
+            }
             ArrayList<Object> parsedValues = new ArrayList<>();
+
+            if (parts.length == 1) {
+                // delcared with no value, empty array.
+                return tContainer.new TArrayVar(parts[0], parsedValues).toToken();
+            }
 
             tContainer.splitByTopLevelComma(parts[1]).forEach(value -> {
                 parsedValues.add(tContainer.processContext(value.trim()));
@@ -255,6 +263,13 @@ public class Tokenizer {
         parts[0] = parts[0].trim();
         if (parts.length == 1) {
             // they declared the variable with no value. Still valid syntax.
+            // unless the name is nothing, then we have a problem.
+            if (parts[0].isEmpty()) {
+                throw new SyntaxCriticalError("Bro defined a variable with no name or value lmao.");
+            }
+            if (parts.length == 1 && line.indexOf(Lang.ASSIGNMENT) != -1)
+                throw new SyntaxCriticalError(
+                        "if you're finna define a variable without a value, remove the assignment operator.");
             return tContainer.new TUnknownVar(parts[0], null).toToken();
         }
         parts[1] = parts[1].trim();
@@ -284,6 +299,7 @@ public class Tokenizer {
                                         : tContainer.new TNumberVar(parts[0], output).toToken();
                             }
                         }
+
                         return tContainer.new TUnknownVar(parts[0], output).toToken();
                     }
                 }
