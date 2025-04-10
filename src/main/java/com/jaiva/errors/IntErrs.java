@@ -2,6 +2,7 @@ package com.jaiva.errors;
 
 import com.jaiva.interpreter.symbol.*;
 import com.jaiva.tokenizer.Token.TFuncCall;
+import com.jaiva.tokenizer.Token.TFunction;
 import com.jaiva.tokenizer.Token.TStatement;
 import com.jaiva.tokenizer.Token.TVarReassign;
 import com.jaiva.tokenizer.Token.TVarRef;
@@ -59,7 +60,8 @@ public class IntErrs {
          * @param amtGiven the amount of parameters they gave.
          */
         public FunctionParametersException(BaseFunction s, int amtGiven) {
-            super(s.name + "() only needs [" + s.token.args.length + "] parameters, and your goofy ahh gave " + amtGiven
+            super(s.name + "() only needs [" + ((TFunction) s.token).args.length
+                    + "] parameters, and your goofy ahh gave " + amtGiven
                     + ". ☠️");
         }
 
@@ -106,8 +108,18 @@ public class IntErrs {
                     + " anywhere. It prolly aint in this block's scope fr.");
         }
 
+        public UnknownVariableException(String name) {
+            super("Lowkey don't see the variable named " + name
+                    + " anywhere. It prolly aint in this block's scope fr.");
+        }
+
         public UnknownVariableException(TVarReassign s) {
             super("Lowkey don't see the variable named " + s.name
+                    + " anywhere. It prolly aint in this block's scope fr.");
+        }
+
+        public UnknownVariableException(TFuncCall s) {
+            super("Lowkey don't see the function named " + s.name
                     + " anywhere. It prolly aint in this block's scope fr.");
         }
     }
