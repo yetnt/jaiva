@@ -9,25 +9,21 @@ import com.jaiva.tokenizer.TokenDefault;
 
 public class BaseVariable extends Symbol {
     private Object scalar;
-    public TokenDefault token;
     // we just give access to the array because why not.
     public ArrayList<Object> array = new ArrayList<>();
 
     public BaseVariable(String name, TokenDefault t, Object scalar) {
-        super(SymbolType.VARIABLE);
-        this.token = t;
+        super(SymbolType.VARIABLE, t);
         this.scalar = scalar;
     }
 
     public BaseVariable(String name, TokenDefault t, ArrayList<Object> arr) {
-        super(SymbolType.VARIABLE);
-        this.token = t;
+        super(SymbolType.VARIABLE, t);
         this.array.addAll(arr);
     }
 
     public BaseVariable(String name, TokenDefault t) {
-        super(SymbolType.VARIABLE);
-        this.token = t;
+        super(SymbolType.VARIABLE, t);
     }
 
     public BaseVariable(String name) {

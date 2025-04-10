@@ -11,11 +11,10 @@ import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TFunction;
 
 public class BaseFunction extends Symbol {
-    public TFunction token;
 
     @SuppressWarnings("rawtypes")
     public BaseFunction(TFunction token) {
-        super(SymbolType.FUNCTION);
+        super(SymbolType.FUNCTION, token);
         this.token = token;
     }
 
@@ -25,7 +24,7 @@ public class BaseFunction extends Symbol {
     }
 
     public BaseFunction(String name, TFunction token) {
-        super(SymbolType.FUNCTION);
+        super(SymbolType.FUNCTION, token);
         this.token = token;
         this.name = name;
     }
@@ -63,7 +62,7 @@ public class BaseFunction extends Symbol {
             // params contains the input for the function.
             // this DefinedFunction, contains a TFunction where qwe need to check the params
             // so we can make name value pairs.
-            String[] paramNames = this.token.args;
+            String[] paramNames = ((TFunction) this.token).args;
             HashMap<String, MapValue> newVfs = (HashMap) vfs.clone();
             if (paramNames.length != params.size())
                 throw new FunctionParametersException(this, params.size());
@@ -71,7 +70,7 @@ public class BaseFunction extends Symbol {
                 String name = paramNames[i];
                 newVfs.put(name, new MapValue(params.get(i)));
             }
-            return Interpreter.interpret((ArrayList<Token<?>>) this.token.body.lines, this, newVfs);
+            return Interpreter.interpret((ArrayList<Token<?>>) ((TFunction) this.token).body.lines, this, newVfs);
         }
     }
 }

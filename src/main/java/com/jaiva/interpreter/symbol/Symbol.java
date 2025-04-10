@@ -1,10 +1,7 @@
 package com.jaiva.interpreter.symbol;
 
 import com.jaiva.errors.IntErrs.*;
-
-enum SymbolType {
-    VARIABLE, FUNCTION
-}
+import com.jaiva.tokenizer.TokenDefault;
 
 /**
  * Base class for functions and variables
@@ -17,9 +14,15 @@ public class Symbol {
     public String name;
     public SymbolType symbolType;
     public boolean isFrozen = false;
+    public TokenDefault token;
 
     Symbol(SymbolType type) {
         this.symbolType = type;
+    }
+
+    Symbol(SymbolType type, TokenDefault token) {
+        this.symbolType = type;
+        this.token = token;
     }
 
     /**
