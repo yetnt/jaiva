@@ -5,6 +5,7 @@ import java.io.FileNotFoundException; // Import this class to handle errors
 import java.util.ArrayList;
 import java.util.Scanner; // Import the Scanner class to read text files
 
+import com.jaiva.interpreter.Context;
 import com.jaiva.interpreter.Globals;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.repl.REPL;
@@ -77,14 +78,14 @@ public class Main {
                 previousLine = line;
             }
 
-            for (Token<?> t : tokens) {
-                System.out.println(t.toString());
-                // System.out.println(t.getValue().getContents(0));
-            }
-            System.out.println(tokens.size());
+            // for (Token<?> t : tokens) {
+            // System.out.println(t.toString());
+            // // System.out.println(t.getValue().getContents(0));
+            // }
+            // System.out.println(tokens.size());
             myReader.close();
 
-            Interpreter.interpret(tokens, "global", new Globals().vfs);
+            Interpreter.interpret(tokens, Context.GLOBAL, new Globals().vfs);
 
         } catch (FileNotFoundException e) {
             System.out.println("Ayo i cannot find the file " + args[0] + ". Make sure it exists homie.");

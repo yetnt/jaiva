@@ -1,6 +1,7 @@
 package com.jaiva.errors;
 
 import com.jaiva.interpreter.symbol.*;
+import com.jaiva.tokenizer.TokenDefault;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TFunction;
 import com.jaiva.tokenizer.Token.TStatement;
@@ -97,6 +98,11 @@ public class IntErrs {
             super("The " + side + " of the statement " + s.statement + " couldn't be resolved to the correct type." +
                     " The statement is a " + (s.statementType == 0 ? "boolean" : "arithmetic")
                     + " however I received a " + incorrect);
+        }
+
+        public TStatementResolutionException(TokenDefault outer, TStatement s, String expected, String received) {
+            super("i expected [" + s.statement + "] to resolve to a " + expected + ". (I'm pretty sure a " + outer.name
+                    + " does not take in a" + received + ")");
         }
     }
 
