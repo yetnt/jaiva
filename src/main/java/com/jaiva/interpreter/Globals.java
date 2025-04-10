@@ -6,8 +6,10 @@ import java.util.HashMap;
 
 import com.jaiva.tokenizer.EscapeSequence;
 import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.TokenDefault;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TFunction;
+import com.jaiva.tokenizer.Token.TStatement;
 import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.errors.IntErrs.UnknownVariableException;
 import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
@@ -35,8 +37,24 @@ public class Globals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs) {
-            System.out.println(EscapeSequence.escape(params.get(0).toString()));
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs)
+                throws Exception {
+            String output;
+            Object o = params.get(0);
+            if (o instanceof Token<?> || (o instanceof TokenDefault && Interpreter.isVariableToken(o))) {
+                TokenDefault token = ((Token<?>) o).getValue();
+                // Only TokenDefault classes have the .toToken() method, but TokenDefualt itself
+                // doesnt, so we kinda need to check for every possible case unfortunately.
+                Object input = token instanceof TStatement || token instanceof TVarRef || token instanceof TFuncCall
+                        ? o
+                        : token;
+                Object value = Interpreter.handleVariables(input, vfs);
+                // System.out.println(value);
+                output = value.toString();
+            } else {
+                output = o.toString();
+            }
+            System.out.println(EscapeSequence.escape(output.toString()));
             return void.class;
         }
     }
