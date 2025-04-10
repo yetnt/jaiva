@@ -8,6 +8,7 @@ import com.jaiva.errors.IntErrs.WeirdAhhFunctionException;
 import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
+import com.jaiva.tokenizer.EscapeSequence;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TStatement;
@@ -39,14 +40,10 @@ public class Primitives {
      * @param token the token or primitive in question
      * @param vfs   The variable functions store
      * @return
-     * @throws TStatementResolutionException
-     * @throws UnknownVariableException
-     * @throws WtfAreYouDoingException
-     * @throws WeirdAhhFunctionException
+     * @throws Exception
      */
     public static Object toPrimitive(Object token, HashMap<String, MapValue> vfs)
-            throws TStatementResolutionException, UnknownVariableException, WtfAreYouDoingException,
-            WeirdAhhFunctionException {
+            throws Exception {
         if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TStatement) {
             // If the input is a TStatement, resolve the lhs and rhs.
             TStatement tStatement = (TStatement) ((Token<?>) token).getValue();
@@ -227,8 +224,18 @@ public class Primitives {
             Object funcName = toPrimitive(tFuncCall.functionName, vfs);
             if (!(funcName instanceof String))
                 throw new WeirdAhhFunctionException(tFuncCall);
+            String name = (String) funcName;
+            MapValue v = vfs.get(name);
+            if (v == null)
+                throw new UnknownVariableException(tFuncCall);
+            if (!(v.getValue() instanceof BaseFunction))
+                throw new WtfAreYouDoingException(v.getValue(), BaseFunction.class);
+            BaseFunction function = (BaseFunction) v.getValue();
+            Object returnValue = function.call(tFuncCall, tFuncCall.args, vfs);
+            return returnValue instanceof String ? EscapeSequence.escape((String) returnValue) : returnValue;
             // MapValue mapValue = vfs.get();
-        } else if (token instanceof Integer || token instanceof Double || token instanceof Boolean) {
+        } else if (token instanceof Integer || token instanceof Double || token instanceof Boolean
+                || token instanceof String) {
             // its not a token so its def jus a primitive, so we wanna parse it as a
             // primitive.
             // also for the above recursive call where it may already be a primitive.
