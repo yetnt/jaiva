@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import com.jaiva.interpreter.Context;
 import com.jaiva.interpreter.Globals;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
@@ -159,7 +160,7 @@ public class REPL {
                         Object value = Interpreter.handleVariables(input, this.vfs);
                         return new ReadOuput(value.toString());
                     } else {
-                        Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) something)), "global",
+                        Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) something)), Context.GLOBAL,
                                 this.vfs);
 
                         return new ReadOuput();
@@ -183,13 +184,14 @@ public class REPL {
                                     : new ReadOuput();
                         } else {
                             Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) tokens.get(
-                                    0))), "global",
+                                    0))),
+                                    Context.GLOBAL,
                                     this.vfs);
 
                             return new ReadOuput();
                         }
                     } else {
-                        Interpreter.interpret(tokens, "global", this.vfs);
+                        Interpreter.interpret(tokens, Context.GLOBAL, this.vfs);
                         return new ReadOuput();
                     }
                 } else if (mode == REPLMode.PRINT_TOKEN) {
