@@ -19,19 +19,21 @@ No types. Fuck types.
 Alot of the keywords refer to words from south african languages, so if you happen to know one, you've got the advantage
 here's a cheat table though
 
-| keyword   | meaning                              | language origin |
-| --------- | ------------------------------------ | --------------- |
-| maak      | make/new                             | Afrikaans       |
-| aowa      | no (false)                           | Sepedi          |
-| yebo      | yes (true)                           | Zulu            |
-| khuluma   | talk                                 | Zulu            |
-| mara      | but                                  | Sesotho         |
-| kwenza    | does (function)                      | Zulu            |
-| khutla    | return                               | Zulu            |
-| colonize  | for (for loop)                       | English         |
-| zama zama | try (try block)                      | Zulu            |
-| cima      | turn off (throw)                     | Zulu            |
-| chaai     | "oh no!" or "oh shit!" (catch block) | idk             |
+| keyword   | meaning                                 | language origin |
+| --------- | --------------------------------------- | --------------- |
+| maak      | make/new (variable declaration keyword) | Afrikaans       |
+| aowa      | no (`false`)                            | Sepedi          |
+| yebo      | yes (`true`)                            | Zulu            |
+| khuluma   | talk (print to console)                 | Zulu            |
+| mara      | but (`else` block)                      | Sesotho         |
+| kwenza    | does (defines a function)               | Zulu            |
+| khutla    | return (function return keyword)        | Zulu            |
+| colonize  | for (for loop)                          | English         |
+| zama zama | try (try block)                         | Zulu            |
+| cima      | turn off (throw)                        | Zulu            |
+| chaai     | "oh no!" or "oh shit!" (catch block)    | idk             |
+| voetsek   | "fuck off" (`break` keyword)            | idk             |
+| nevermind | Self-Explanatory (`continue` keyword)   | English         |
 
 ### Variables
 
