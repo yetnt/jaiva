@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.jaiva.errors.IntErrs.FunctionParametersException;
+import com.jaiva.interpreter.Context;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.tokenizer.Token;
@@ -70,7 +71,8 @@ public class BaseFunction extends Symbol {
                 String name = paramNames[i];
                 newVfs.put(name, new MapValue(params.get(i)));
             }
-            return Interpreter.interpret((ArrayList<Token<?>>) ((TFunction) this.token).body.lines, this, newVfs);
+            return Interpreter.interpret((ArrayList<Token<?>>) ((TFunction) this.token).body.lines, Context.FUNCTION,
+                    newVfs);
         }
     }
 }
