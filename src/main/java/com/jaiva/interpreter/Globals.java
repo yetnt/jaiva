@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import com.jaiva.tokenizer.EscapeSequence;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TFunction;
-
+import com.jaiva.tokenizer.Token.TVarRef;
+import com.jaiva.errors.IntErrs.UnknownVariableException;
+import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
 import com.jaiva.interpreter.symbol.*;
 
 public class Globals {
@@ -16,7 +19,7 @@ public class Globals {
     public Globals() {
         Token<?> container = new Token<>(null);
         vfs.put("khuluma", new MapValue(new FKhuluma(container)));
-        vfs.put("logToken", new MapValue(new FLogToken(container)));
+        vfs.put("getVarClass", new MapValue(new FGetVarClass(container)));
         vfs.put("reservedKeywords", new MapValue(new VReservedKeywords(container)));
     }
 
@@ -33,25 +36,45 @@ public class Globals {
 
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs) {
-            System.out.println(params.get(0));
+            System.out.println(EscapeSequence.escape(params.get(0).toString()));
             return void.class;
         }
     }
 
     /**
-     * logToken(variable)
-     * Possibly logs the Token to the console for debugging purpioses.
+     * getVarClass(variable)
+     * Returns the .toString() class representation of a variable's token.
      */
-    class FLogToken extends BaseFunction {
-        FLogToken(Token<?> container) {
-            super("logToken", container.new TFunction("logToken", new String[] { "var" }, null));
+    class FGetVarClass extends BaseFunction {
+        FGetVarClass(Token<?> container) {
+            super("getVarClass", container.new TFunction("getVarClass", new String[] { "var" }, null));
             this.freeze();
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs) {
-            System.out.println();
-            return void.class;
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs)
+                throws Exception {
+            String name;
+            if (params.get(0) instanceof String) {
+                name = (String) params.get(0);
+            } else if (params.get(0) instanceof Token && ((Token) params.get(0)).getValue() instanceof TVarRef) {
+                name = ((TVarRef) ((Token) params.get(0)).getValue()).varName.toString();
+            } else {
+                throw new WtfAreYouDoingException(
+                        "getVarClass() only accepts a variable reference or a string, whatever you sent is disgusting.");
+            }
+            MapValue var = vfs.get(name);
+            if (var == null) {
+                throw new UnknownVariableException(name);
+            }
+            if (!(var.getValue() instanceof Symbol)) {
+                throw new WtfAreYouDoingException(
+                        name + " is not a variable nor a function, wtf. this error shouldnt happen.");
+            }
+            Symbol symbol = (Symbol) var.getValue();
+            // We need to convert the named token to a raw token so we can call .toString()
+            // on it.
+            return symbol.token.toString();
         }
     }
 
