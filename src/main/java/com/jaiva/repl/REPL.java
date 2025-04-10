@@ -12,6 +12,11 @@ import com.jaiva.interpreter.Globals;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.Token.TFuncCall;
+import com.jaiva.tokenizer.Token.TStatement;
+import com.jaiva.tokenizer.Token.TVarReassign;
+import com.jaiva.tokenizer.Token.TVarRef;
+import com.jaiva.tokenizer.TokenDefault;
 import com.jaiva.tokenizer.Tokenizer;
 import com.jaiva.utils.BlockChain;
 import com.jaiva.utils.Find.MultipleLinesOutput;
@@ -144,17 +149,49 @@ public class REPL {
                 return something;
             } else if (something instanceof Token<?>) {
                 if (mode == REPLMode.STANDARD || mode == REPLMode.ARITHMETIC_LOGIC) {
-                    Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) something)), "global",
-                            this.vfs);
-                    return new ReadOuput();
+                    TokenDefault token = ((Token<?>) something).getValue();
+                    if (Interpreter.isVariableToken(token)) {
+                        boolean isReturnTokenClass = token instanceof TStatement || token instanceof TVarRef
+                                || token instanceof TFuncCall;
+                        Object input = isReturnTokenClass
+                                ? ((Token<?>) something)
+                                : token;
+                        Object value = Interpreter.handleVariables(input, this.vfs);
+                        return new ReadOuput(value.toString());
+                    } else {
+                        Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) something)), "global",
+                                this.vfs);
+
+                        return new ReadOuput();
+                    }
                 } else if (mode == REPLMode.PRINT_TOKEN) {
                     return new ReadOuput(((Token<?>) something).toString());
                 }
             } else if (something instanceof ArrayList<?>) {
                 ArrayList<Token<?>> tokens = (ArrayList<Token<?>>) something;
                 if (mode == REPLMode.STANDARD || mode == REPLMode.ARITHMETIC_LOGIC) {
-                    Interpreter.interpret(tokens, "global", this.vfs);
-                    return new ReadOuput();
+                    if (tokens.size() == 1) {
+                        TokenDefault token = ((Token<?>) tokens.get(0)).getValue();
+                        if (Interpreter.isVariableToken(token)) {
+                            boolean isReturnTokenClass = token instanceof TStatement || token instanceof TVarRef
+                                    || token instanceof TFuncCall;
+                            Object input = isReturnTokenClass
+                                    ? ((Token<?>) tokens.get(0))
+                                    : token;
+                            Object value = Interpreter.handleVariables(input, this.vfs);
+                            return isReturnTokenClass ? new ReadOuput(value.toString())
+                                    : new ReadOuput();
+                        } else {
+                            Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) tokens.get(
+                                    0))), "global",
+                                    this.vfs);
+
+                            return new ReadOuput();
+                        }
+                    } else {
+                        Interpreter.interpret(tokens, "global", this.vfs);
+                        return new ReadOuput();
+                    }
                 } else if (mode == REPLMode.PRINT_TOKEN) {
                     StringBuilder sb = new StringBuilder();
                     for (Token<?> t : tokens) {
