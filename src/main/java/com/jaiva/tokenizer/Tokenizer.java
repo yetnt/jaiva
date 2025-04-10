@@ -362,7 +362,7 @@ public class Tokenizer {
         // line.charAt(line.indexOf('-') - 1) != '$' && line
         // .charAt(line.indexOf('-') - 1) != '<'));
 
-        if (line.contains(Lang.BLOCK_OPEN) && type == null)
+        if (line.contains(Lang.BLOCK_OPEN) && type == null && !line.startsWith(Character.toString(Lang.COMMENT)))
             // A block of code but the type waws not catched, invaliud keyword then.
             // This is a syntax error.
             throw new SyntaxCriticalError(line.split(" ")[0] + " aint a real keyword homie.");
