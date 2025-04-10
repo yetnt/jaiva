@@ -4,7 +4,7 @@ package com.jaiva.tokenizer;
  * @class
  *        Class that handles how to escape characters.
  */
-class EscapeSequence {
+public class EscapeSequence {
 
     /**
      * Escape a string.
