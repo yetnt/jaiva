@@ -10,6 +10,8 @@ import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TArrayVar;
 import com.jaiva.tokenizer.Token.TBooleanVar;
 import com.jaiva.tokenizer.Token.TFuncCall;
+import com.jaiva.tokenizer.Token.TFuncReturn;
+import com.jaiva.tokenizer.Token.TIfStatement;
 import com.jaiva.tokenizer.Token.TNumberVar;
 import com.jaiva.tokenizer.Token.TStatement;
 import com.jaiva.tokenizer.Token.TStringVar;
@@ -106,11 +108,12 @@ public class Interpreter {
         return null; // return null because we are not returning anything.
     }
 
-    private static Object interpretWithoutContext(ArrayList<Token<?>> tokens, HashMap<String, MapValue> vfs) {
-        return void.class;
-    }
+    // private static Object interpretWithoutContext(ArrayList<Token<?>> tokens,
+    // HashMap<String, MapValue> vfs) {
+    // return void.class;
+    // }
 
-    public static Object interpret(ArrayList<Token<?>> tokens, Object context, HashMap<String, MapValue> vfs)
+    public static Object interpret(ArrayList<Token<?>> tokens, Context context, HashMap<String, MapValue> vfs)
             throws Exception {
         // The idea is that this method is context aware
         // and it will call another method which isnt context aware that will just
@@ -127,24 +130,70 @@ public class Interpreter {
 
         vfs = vfs != null ? ((HashMap<String, MapValue>) vfs.clone()) : vfs;
 
-        Object contextValue = null;
-
         // Step 2: go throguh eahc token
         for (Token<?> t : tokens) {
             TokenDefault token = t.getValue();
             if (isVariableToken(token)) {
+                Object contextValue = null;
                 // handles the following cases:
                 // TNumberVar, TBooleanVar, TStringVar, TUnknownVar, TVarReassign, TArrayVar
                 // including TStatement, TFuncCall and TVarRef. This also includes primitives.
-                contextValue = handleVariables(token, vfs);
+                contextValue = token instanceof TFuncCall || token instanceof TVarRef ? handleVariables(t, vfs)
+                        : handleVariables(token, vfs);
+                // If it returns a meaningful value, then oh well, because in this case they
+                // basically called a function that returned soemthing but dont use that value.
+            } else if (token instanceof TFuncReturn) {
+                if (context != Context.FUNCTION)
+                    throw new WtfAreYouDoingException(
+                            "What are you trying to return out of if we're not in a function??");
+                return handleVariables(((TFuncReturn) token).value, vfs);
             } else if (token instanceof TVoidValue) {
                 // void
-                System.out.println("dsfsdf");
                 continue;
+            } else if (token instanceof TIfStatement) {
+                // if statement handling below
+                TIfStatement ifStatement = (TIfStatement) token;
+                if (!(ifStatement.condition instanceof TStatement))
+                    throw new WtfAreYouDoingException("Okay well idk how i will check for true in " + ifStatement);
+                Object cond = handleVariables(((TStatement) ((TIfStatement) ifStatement).condition).toToken(), vfs);
+                if (!(cond instanceof Boolean))
+                    throw new TStatementResolutionException(ifStatement, ((TStatement) ifStatement.condition),
+                            "boolean", cond.getClass().getName());
+                // if if, lol i love coding
+                if (((Boolean) cond).booleanValue() == true) {
+                    // run if code.
+                    Interpreter.interpret(ifStatement.body.lines, Context.IF, vfs);
+                } else {
+                    // check for else branches first
+                    boolean runElseBlock = true;
+                    for (Object e : ifStatement.elseIfs) {
+                        TIfStatement elseIf = (TIfStatement) e;
+                        if (!(elseIf.condition instanceof TStatement))
+                            throw new WtfAreYouDoingException(
+                                    "Okay well idk how i will check for true in " + elseIf);
+                        Object cond2 = handleVariables(
+                                ((TStatement) ((TIfStatement) elseIf).condition).toToken(), vfs);
+                        if (!(cond2 instanceof Boolean))
+                            throw new TStatementResolutionException(
+                                    elseIf, ((TStatement) elseIf.condition),
+                                    "boolean", cond2.getClass().getName());
+                        if (((Boolean) cond2).booleanValue() == true) {
+                            // run else if code.
+                            Interpreter.interpret(elseIf.body.lines, Context.ELSE, vfs);
+                            runElseBlock = false;
+                            break;
+                        }
+                    }
+                    if (runElseBlock && ifStatement.elseBody != null) {
+                        // run else block.
+                        Interpreter.interpret(ifStatement.elseBody.lines, Context.ELSE, vfs);
+                    }
+                }
+                // if statement handling above
             }
             // return contextValue;
         }
-        System.out.println("heyy");
+        // System.out.println("heyy");
 
         return void.class;
     }
