@@ -22,8 +22,9 @@ import com.jaiva.tokenizer.TokenDefault;
 
 public class Interpreter {
 
-    private static boolean isVariableToken(Object t) {
-        return t instanceof TNumberVar || t instanceof TBooleanVar || t instanceof TArrayVar || t instanceof TStringVar
+    public static boolean isVariableToken(Object t) {
+        return t instanceof TStatement || t instanceof TNumberVar || t instanceof TBooleanVar || t instanceof TArrayVar
+                || t instanceof TStringVar
                 || t instanceof TUnknownVar || t instanceof TVarReassign || t instanceof TVarRef
                 || t instanceof TFuncCall || t instanceof TStatement || t instanceof Boolean || t instanceof Integer
                 || t instanceof Double || t instanceof String;
@@ -55,24 +56,29 @@ public class Interpreter {
      *                   variable, or
      *                   performing an invalid operation.
      */
-    public static Object handleVariables(TokenDefault t, HashMap<String, MapValue> vfs)
+    public static Object handleVariables(Object t, HashMap<String, MapValue> vfs)
             throws Exception {
         if (t instanceof TNumberVar) {
             Object number = Primitives.toPrimitive(((TNumberVar) t).value, vfs);
-            BaseVariable var = BaseVariable.create(t.name, t, new ArrayList<>(Arrays.asList(number)));
+            BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
+                    new ArrayList<>(Arrays.asList(number)));
             vfs.put(((TNumberVar) t).name, new MapValue(var));
         } else if (t instanceof TBooleanVar) {
             Object bool = Primitives.toPrimitive(((TBooleanVar) t).value, vfs);
-            BaseVariable var = BaseVariable.create(t.name, t, new ArrayList<>(Arrays.asList(bool)));
+            BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
+                    new ArrayList<>(Arrays.asList(bool)));
             vfs.put(((TBooleanVar) t).name, new MapValue(var));
         } else if (t instanceof TStringVar) {
-            BaseVariable var = BaseVariable.create(t.name, t, new ArrayList<>(Arrays.asList(((TStringVar) t).value)));
+            BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
+                    new ArrayList<>(Arrays.asList(((TStringVar) t).value)));
             vfs.put(((TStringVar) t).name, new MapValue(var));
         } else if (t instanceof TUnknownVar) {
-            BaseVariable var = BaseVariable.create(t.name, t, new ArrayList<>(Arrays.asList(((TUnknownVar) t).value)));
+            BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
+                    new ArrayList<>(Arrays.asList(((TUnknownVar) t).value)));
             vfs.put(((TUnknownVar) t).name, new MapValue(var));
         } else if (t instanceof TArrayVar) {
-            BaseVariable var = BaseVariable.create(t.name, t, new ArrayList<Object>(((TArrayVar) t).contents));
+            BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
+                    new ArrayList<Object>(((TArrayVar) t).contents));
             vfs.put(((TArrayVar) t).name, new MapValue(var));
         } else if (t instanceof TVarReassign) {
             // TODO: Handle array reassignment. like arr[0] <- 1 or arr[2][3][4] <- 1
