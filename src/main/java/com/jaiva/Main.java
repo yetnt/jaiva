@@ -45,6 +45,11 @@ public class Main {
             }
             return;
         }
+        // here, args[0] is the file name that must end in either .jaiva, .jiv or .jva
+        if (!args[0].endsWith(".jaiva") && !args[0].endsWith(".jiv") && !args[0].endsWith(".jva")) {
+            System.out.println("> File must end in .jaiva, .jiv or .jva");
+            return;
+        }
         File myObj = new File(args[0]);
         try {
             ArrayList<Token<?>> tokens = new ArrayList<>();
@@ -78,13 +83,33 @@ public class Main {
                 previousLine = line;
             }
 
-            // for (Token<?> t : tokens) {
-            // System.out.println(t.toString());
-            // // System.out.println(t.getValue().getContents(0));
-            // }
             // System.out.println(tokens.size());
             myReader.close();
 
+            if (args[1].equals("-t") || args[1].equals("--tokens")) {
+                // here, args[1] is the tokens mode
+                // return tokens mode.
+                if (args.length == 2) {
+                    for (Token<?> t : tokens) {
+                        System.out.println(t.toString());
+                        // System.out.println(t.getValue().getContents(0));
+                    }
+                    return;
+                }
+                if (args[2].equals("json")) {
+                    System.out.println("Json mode.");
+                    System.out.println("[");
+                    for (int i = 0; i < tokens.size(); i++) {
+                        Token<?> token = tokens.get(i);
+                        System.out.print(token.getValue().toJson());
+                        if (i != tokens.size() - 1) {
+                            System.out.print(",\n");
+                        }
+                    }
+                    System.out.println("]");
+                    return;
+                }
+            }
             Interpreter.interpret(tokens, Context.GLOBAL, new Globals().vfs);
 
         } catch (FileNotFoundException e) {
