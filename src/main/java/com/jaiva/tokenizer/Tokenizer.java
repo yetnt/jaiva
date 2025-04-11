@@ -190,7 +190,7 @@ public class Tokenizer {
             }
             case "colonize": {
                 TNumberVar variable = (Token<TNumberVar>.TNumberVar) ((ArrayList<Token<?>>) readLine(
-                        "maak " + args[0] + "!", "", null, null)).get(0).getValue();
+                        "maak " + args[0].replace("(", "") + "!", "", null, null)).get(0).getValue();
 
                 Object obj = tContainer.new TStatement().parse(args[1]);
                 if (Validate.isValidBoolInput(obj)) {
@@ -198,7 +198,8 @@ public class Tokenizer {
                 } else {
                     throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
                 }
-                specific = tContainer.new TForLoop(variable, obj, args[2], codeblock).toToken();
+                specific = tContainer.new TForLoop(variable, obj, args[2].substring(0, args[2].length() - 1).trim(),
+                        codeblock).toToken();
                 break;
             }
             case "kwenza": {
