@@ -1,21 +1,18 @@
 package com.jaiva;
 
-import java.io.File; // Import the File class
-import java.io.FileNotFoundException; // Import this class to handle errors
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner; // Import the Scanner class to read text files
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
 
-import com.jaiva.interpreter.Context;
-import com.jaiva.interpreter.Globals;
-import com.jaiva.interpreter.Interpreter;
+import com.jaiva.interpreter.*;
 import com.jaiva.repl.REPL;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Tokenizer;
-import com.jaiva.utils.BlockChain;
-import com.jaiva.utils.Find;
+import com.jaiva.utils.*;
 
 public class Main {
+    public static String version = "1.0.0-beta";
+    public static String author = "@yetnt or @prod.yetnt on some socials";
     public static String ASCII = """
                                                                         ,---,
                      ,---._                                           ,`--.' |
@@ -38,7 +35,8 @@ public class Main {
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         ArrayList<String> replArgs = new ArrayList<>(
-                Arrays.asList("--print-tokens", "-p", "--help", "-h", "--version", "-v"));
+                Arrays.asList("--print-tokens", "-p", "--help", "-h", "--version", "-v", "--test", "-t", "--update",
+                        "-u"));
         ArrayList<String> tokenArgs = new ArrayList<>(Arrays.asList("-s", "-j", "--string", "-json"));
         if (args.length == 0) {
             new REPL(0);
@@ -57,6 +55,8 @@ public class Main {
                     System.out.println("--print-tokens, -p: Print tokens REPL mode.");
                     System.out.println("--help, -h: Show this help message.");
                     System.out.println("--version, -v: Show the version of Jaiva.");
+                    System.out.println("--test -t: Test command.");
+                    System.out.println("--update, -u: Update Instructions.");
                     System.out.println();
                     System.out.println("Usage: jaiva <file.jiv> [options]");
                     System.out.println("Options:");
@@ -67,9 +67,21 @@ public class Main {
                     break;
                 case "--version", "-v":
                     System.out.println(ASCII);
-                    System.out.println("Jaiva! 1.0.0-beta");
+                    System.out.println("Jaiva! " + version);
                     System.out.println(
-                            "Jaiva is a programming language that is designed to be easy to use and understand. (I'm speaking out my ass)");
+                            "Jaiva is a programming language that is designed to be easy to use and understand. (I'm speaking out my ass, I made this cuz i was bored on a random january)");
+                    System.out.println("Made with love by: " + author);
+                    break;
+                case "--test", "-t":
+                    String workingDir = System.getProperty("user.dir");
+                    System.out.println(workingDir);
+                    System.out.println("Test cmd");
+                    break;
+                case "--update", "-u":
+                    System.out.println("");
+                    System.out.println(
+                            "Because i'm far too lazy to implement an auto upater, you'll have to just reinstall the jaiva folder into your existing one every time you want to update.");
+                    System.out.println("I'm not making it easier, you can make a PR on the github though.");
                     break;
                 default:
                     System.out.println("Invalid REPL mode.");
@@ -93,6 +105,7 @@ public class Main {
             BlockChain b = null;
             Scanner myReader = new Scanner(myObj);
             String previousLine = "";
+            int lineNum = 1;
             while (myReader.hasNextLine()) {
                 String line = (b != null ? b.getCurrentLine() : myReader.nextLine());
                 // System.out.println(line);
@@ -117,6 +130,7 @@ public class Main {
                     m = null;
                 }
                 previousLine = line;
+                lineNum++;
             }
 
             // System.out.println(tokens.size());
@@ -133,16 +147,16 @@ public class Main {
                         }
                         return;
                     case "-j", "--json":
-                        System.out.println("Json mode.");
-                        System.out.println("[");
+                        System.out.println();
+                        System.out.print("[");
                         for (int i = 0; i < tokens.size(); i++) {
                             Token<?> token = tokens.get(i);
                             System.out.print(token.getValue().toJson());
                             if (i != tokens.size() - 1) {
-                                System.out.print(",\n");
+                                System.out.print(",");
                             }
                         }
-                        System.out.println("]");
+                        System.out.print("]");
                         return;
                     default:
                         System.out.println("Invalid token mode.");
@@ -159,4 +173,5 @@ public class Main {
             e.printStackTrace();
         }
     }
+
 }
