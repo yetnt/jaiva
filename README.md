@@ -563,4 +563,4 @@ This is a list of global variables and functions that are accessible in any scop
 | `khuluma(param)`       | function | prints to console                                            |
 | `getVarClass(var)`     | function | gets the Java class representation of the specified variable |
 | `reservedKeywords`     | array    | an array of all the reserved keywords in the language.       |
-| `jaivaVersion`         | string   | the version of jaiva you are using.                          |
+| `version`              | string   | the version of jaiva you are using.                          |
