@@ -1,10 +1,53 @@
-# Jaiva!
+# <center> Jaiva!
 
 This esolang of mine is still in development, so expect alot of updates.
 
-An esolang of mine which is way better, here is how you do stuff in my lanuage
+Expect : Confusion, Regret, and a bit of fun.
 
-## Prerquisuiesdsfb
+Expect not : A good time, a good language, or a good experience.
+
+To setup, see [Install.md](./Install.md)
+To run, see [CLI.md](./CLI.md)
+
+## <center>Index
+
+-   **_[Jaiva!](#jaiva)_**
+    -   **[Index](#index)** <- you are here.
+    -   **[Prerquisuiesdsfb](#prerquisuiesdsfb)**
+    -   **[Syntax](#syntax)**
+        -   _[Comments.](#comments)_
+        -   _[Assignment operators](#assignment-operators)_
+        -   _[Primitives](#primitives)_
+            -   [Number](#number)
+            -   [Bools](#bools)
+            -   [Strings](#strings)
+                -   [Escaping characters](#escaping-characters)
+            -   [idk](#idk)
+        -   _[Arithmatic and Boolean Comparisons](#arithmatic-and-boolean-comparisons)_
+        -   _[Blocks](#blocks)_
+    -   **[Keywords](#keywords)**
+    -   **[Variables](#variables)**
+        -   _[Definition](#definition)_
+        -   _[Use](#use)_
+        -   _[Reassignment](#reassignment)_
+        -   _[Arrays](#arrays)_
+    -   **[Functions](#functions)**
+    -   **[If Statements](#if-statements)**
+        -   _[Basic If](#basic-if)_
+        -   _[mara (else)](#mara-else)_
+        -   _[mara (else) with if](#mara-else-with-if)_
+    -   **[Loops](#loops)**
+        -   _[Nikhil loops (while loops)](#nikhil-loops-while-loops)_
+        -   _[Colonize loops (for loops)](#colonize-loops-for-loops)_
+            -   [colonize with (for each)](#colonize-with-for-each)
+        -   _[Control flow](#control-flow)_
+    -   **[Error handling](#error-handling)**
+        -   _[Throw an error](#throw-an-error)_
+        -   _[zama zama (try) chaai (catch) block](#zama-zama-try-chaai-catch-block)_
+    -   **[Scopes](#scopes)**
+    -   **[Globals](#globals)**
+
+## <center>Prerquisuiesdsfb
 
 1. **Get and Install Java 21**
    yeah this isn't a good start 💀 but this shit is amde in java so ye man.
@@ -16,7 +59,7 @@ An esolang of mine which is way better, here is how you do stuff in my lanuage
 3. **CLI**
    The basic command to run your file is `jaiva <filePath>` but [CLI.md](./CLI.md) exists.
 
-## Syntax
+## <center>Syntax
 
 It's simple really
 
@@ -165,28 +208,29 @@ if (a = 10) ->
 <~
 ```
 
-## Keywords
+## <center>Keywords
 
 Alot of the keywords refer to words from south african languages, so if you happen to know one, you've got the advantage
 here's a cheat table though
 
-| keyword   | meaning and what it's assigned to       | language origin |
-| --------- | --------------------------------------- | --------------- |
-| maak      | make/new (variable declaration keyword) | Afrikaans       |
-| aowa      | no (`false`)                            | Sepedi          |
-| yebo      | yes (`true`)                            | Zulu            |
-| khuluma   | talk (print to console)                 | Zulu            |
-| mara      | but (`else` block)                      | Sesotho         |
-| kwenza    | does (defines a function)               | Zulu            |
-| khutla    | return (function return keyword)        | Zulu            |
-| colonize  | for (for loop)                          | English         |
-| zama zama | try (try block)                         | Zulu            |
-| cima      | turn off (throw)                        | Zulu            |
-| chaai     | "oh no!" or "oh shit!" (catch block)    | idk             |
-| voetsek   | "fuck off" (`break` keyword)            | Afrikaans       |
-| nevermind | Self-Explanatory (`continue` keyword)   | English         |
+| keyword   | meaning and what it's assigned to                        | language origin |
+| --------- | -------------------------------------------------------- | --------------- |
+| maak      | make/new (variable declaration keyword)                  | Afrikaans       |
+| aowa      | no (`false`)                                             | Sepedi          |
+| yebo      | yes (`true`)                                             | Zulu            |
+| khuluma   | talk (print to console)                                  | Zulu            |
+| mara      | but (`else` block)                                       | Sesotho         |
+| kwenza    | does (defines a function)                                | Zulu            |
+| khutla    | return (function return keyword)                         | Zulu            |
+| colonize  | for (for loop)                                           | English         |
+| zama zama | try (try block)                                          | Zulu            |
+| cima      | turn off (throw)                                         | Zulu            |
+| chaai     | "oh no!" or "oh shit!" (catch block)                     | idk             |
+| voetsek   | "fuck off" (`break` keyword)                             | Afrikaans       |
+| nevermind | Self-Explanatory (`continue` keyword)                    | English         |
+| with      | keyword used to define for each loop along with colonize | English         |
 
-## Variables
+## <center>Variables
 
 Variables are [scoped](#scopes) constructs.
 
@@ -251,7 +295,7 @@ maak a <-| 20, 23, 56, 324, 354!
 maak b <- a[0]! @ 20
 ```
 
-## Functions
+## <center>Functions
 
 Functions are [scoped](#scopes) constructs.
 
@@ -281,7 +325,7 @@ maak c <- addition(10, 20)! @ 30
 
 Function parameters can take any type of variable, including arrays and other functions.
 
-## If Statements
+## <center>If Statements
 
 For if statements, `if` is the keyword, and `mara` is the else statement.
 
@@ -347,7 +391,28 @@ You can also nest if statements. because why not.
 > [!WARNING]
 > You can use a normal `mara` block along with other `mara if` blocks. However the `mara` block must be the LAST block of the entire if chain.
 
-## Colonize loops (for loops)
+## <center>Loops
+
+### Nikhil loops (while loops)
+
+Shoutout to Nikhil for this one.
+
+[Twitter](https://x.com/NikhilLala11)
+[Instagram](https://www.instagram.com/_nikhil1707_/) <br>
+YouTube @nikhil17 (probably idk) <br>
+Discord @Nikx17 <br>
+
+```jiv
+nikhil (condition) ->
+    @ block to execute
+<~
+```
+
+Where
+
+> `condition` is the condition to check for the loop to continue. This is a boolean expression.
+
+### Colonize loops (for loops)
 
 This ones a bit weird.
 
@@ -373,7 +438,7 @@ colonize i <- 0 | i <= 10 | + ->
 <~
 ```
 
-### for each loops
+#### colonize with (for each)
 
 ```jiv
 colonize (variable name) with (array) ->
@@ -393,7 +458,29 @@ colonize word with reservedKeywords ->
 <~
 ```
 
-## Error handling
+### Control flow
+
+For all loops, to forcefully exit a loop, use the `voetsek` keyword. This is the break keyword.
+
+```jiv
+nikhil (a = 10) ->
+    khuluma(a)! @ 10
+    voetsek! @ this will break the loop.
+<~
+```
+
+To skip to the next iteration of a loop, use the `nevermind` keyword. This is the continue keyword.
+
+```jiv
+colonize i <- 0 | i <= 10 | + ->
+    khuluma(i)! @ 0, 1, 2, 3, 4, 5
+    if (i = 5) ->
+        nevermind! @ this will skip the rest of the loop and go to the next iteration.
+    <~
+<~
+```
+
+## <center>Error handling
 
 Jaiva has some sort of error handling. This is done using 2 constructs.
 
@@ -444,7 +531,7 @@ zama zama ->
 <~
 ```
 
-## Scopes
+## <center>Scopes
 
 Everytime you open a block, you create a new scope. This means that any variables or functions you define in that block are not accessible outside of that block.
 
@@ -467,7 +554,7 @@ if (a = 10) ->
 addition(10, 20)! @ Will also error, because addition() is not defined in this scope.
 ```
 
-## Globals
+## <center>Globals
 
 This is a list of global variables and functions that are accessible in any scope. Some (if not all) cannot be modified however.
 
