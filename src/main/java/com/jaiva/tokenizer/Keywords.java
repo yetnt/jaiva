@@ -29,7 +29,7 @@ public class Keywords {
     public static String[] all = { D_VAR, WHILE, IF, ELSE, FALSE, TRUE, CONSOLE_LOG, D_FUNCTION, RETURN, FOR,
             TRY, CATCH, THROW, LC_BREAK, LC_CONTINUE, UNDEFINED };
 
-    enum LoopControl {
+    public enum LoopControl {
         BREAK, CONTINUE
     }
 }

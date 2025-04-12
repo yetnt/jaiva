@@ -25,8 +25,8 @@ public class IntErrs {
          * Base error to throw. Use this when you REALLY don't know the symbol instance.
          * This is an esolang but try be as descriptive as possible.
          */
-        public FrozenSymbolException() {
-            super("You tried to modify a frozen symbol. Don't do that.");
+        public FrozenSymbolException(int lineNumber) {
+            super("You tried to modify a frozen symbol on line " + lineNumber + ". Don't do that.");
         }
 
         /**
@@ -34,8 +34,17 @@ public class IntErrs {
          * 
          * @param s The symbol in question
          */
+        public FrozenSymbolException(Symbol s, int lineNumber) {
+            super("The symbol [" + s.name + "] on line " + lineNumber + " is lowkey frozen. You can't modify it.");
+        }
+
+        /**
+         * Error to throw when we know the symbol but not the line number.
+         * 
+         * @param s The symbol in question
+         */
         public FrozenSymbolException(Symbol s) {
-            super("The symbol [" + s.name + "] is lowkey frozen. You can't modify it.");
+            super("The symbol [" + s.name + "] on line is lowkey frozen. You can't modify it.");
         }
 
         /**
@@ -44,9 +53,9 @@ public class IntErrs {
          * @param s        The symbol in question
          * @param isGlobal true
          */
-        public FrozenSymbolException(Symbol s, boolean isGlobal) {
+        public FrozenSymbolException(Symbol s, boolean isGlobal, int lineNumber) {
             super("Now tell me. How do you try and modify a global symbol? Specifically, [" + s.name
-                    + "]. Shame be upon you!");
+                    + "] on line " + lineNumber + " . Shame be upon you!");
         }
     }
 
@@ -60,24 +69,25 @@ public class IntErrs {
          * @param s        base function instance
          * @param amtGiven the amount of parameters they gave.
          */
-        public FunctionParametersException(BaseFunction s, int amtGiven) {
-            super(s.name + "() only needs [" + ((TFunction) s.token).args.length
+        public FunctionParametersException(BaseFunction s, int amtGiven, int lineNumber) {
+            super(s.name + "() on line " + lineNumber + " only needs [" + ((TFunction) s.token).args.length
                     + "] parameters, and your goofy ahh gave " + amtGiven
                     + ". ☠️");
         }
 
-        public FunctionParametersException(BaseFunction s) {
-            super(s.name + "() takes no input, why did you give it input??");
+        public FunctionParametersException(BaseFunction s, int lineNumber) {
+            super(s.name + "() takes no input, why did you give it input on line " + lineNumber + "??");
         }
     }
 
     public static class DualVariableReassignWarning extends InterpreterException {
         private static final long serialVersionUID = 1L;
 
-        public DualVariableReassignWarning(BaseVariable s) {
+        public DualVariableReassignWarning(BaseVariable s, int lineNumber) {
             // TODO: Implement the ~ as a flag that dual reassingment is allowed in the
             // tokenizer.
             super(s.name
+                    + " on line " + lineNumber
                     + " has already been defined as either an array or some value. Do not reassign it as vice versa. If you know what you are doing however, place a ~ after the variable name in the declaration.");
         }
 
@@ -95,13 +105,15 @@ public class IntErrs {
          * @param incorrect The .toString() of the Object we received.
          */
         public TStatementResolutionException(TStatement s, String side, String incorrect) {
-            super("The " + side + " of the statement " + s.statement + " couldn't be resolved to the correct type." +
+            super("The " + side + " of the statement " + s.statement + " on line " + s.lineNumber
+                    + " couldn't be resolved to the correct type." +
                     " The statement is a " + (s.statementType == 0 ? "boolean" : "arithmetic")
                     + " however I received a " + incorrect);
         }
 
         public TStatementResolutionException(TokenDefault outer, TStatement s, String expected, String received) {
-            super("i expected [" + s.statement + "] to resolve to a " + expected + ". (I'm pretty sure a " + outer.name
+            super("i expected [" + s.statement + "] on line " + outer.lineNumber + " to resolve to a " + expected
+                    + ". (I'm pretty sure a " + outer.name
                     + " does not take in a" + received + ")");
         }
     }
@@ -110,23 +122,18 @@ public class IntErrs {
         private static final long serialVersionUID = 1L;
 
         public UnknownVariableException(TVarRef s) {
-            super("Lowkey don't see the variable named " + s.varName
-                    + " anywhere. It prolly aint in this block's scope fr.");
+            super("Lowkey can't find variable named " + s.varName
+                    + " that you used on line " + s.lineNumber + " anywhere. It prolly aint in this block's scope fr.");
         }
 
-        public UnknownVariableException(String name) {
-            super("Lowkey don't see the variable named " + name
-                    + " anywhere. It prolly aint in this block's scope fr.");
+        public UnknownVariableException(String name, int lineNumber) {
+            super("Lowkey can't find the variable named " + name
+                    + " that you used on line " + lineNumber + " anywhere. It prolly aint in this block's scope fr.");
         }
 
-        public UnknownVariableException(TVarReassign s) {
-            super("Lowkey don't see the variable named " + s.name
-                    + " anywhere. It prolly aint in this block's scope fr.");
-        }
-
-        public UnknownVariableException(TFuncCall s) {
-            super("Lowkey don't see the function named " + s.name
-                    + " anywhere. It prolly aint in this block's scope fr.");
+        public UnknownVariableException(TokenDefault s) {
+            super("Lowkey can't find the variable named " + s.name
+                    + " that you used on line " + s.lineNumber + " anywhere. It prolly aint in this block's scope fr.");
         }
     }
 
@@ -140,10 +147,10 @@ public class IntErrs {
          * @param s            The symbol we got
          * @param correctClass The correct class.
          */
-        public WtfAreYouDoingException(Object s, Class<?> correctClass) {
+        public WtfAreYouDoingException(Object s, Class<?> correctClass, int lineNumber) {
             super("Alright bub. if you're going to start mixing and mathcing, you might as well write lua code."
                     + "(You tried using a " + s.getClass().getName() + " as if it were a " + correctClass.getName()
-                    + ".");
+                    + " on line " + lineNumber);
         }
 
         /**
@@ -153,7 +160,8 @@ public class IntErrs {
          */
         public WtfAreYouDoingException(TVarRef s, Class<?> classWeGot) {
             super(s.index
-                    + " could not be resolved to an int which can be used as an array index. deep. we instead got a "
+                    + " on line " + s.lineNumber
+                    + "could not be resolved to an int which can be used as an array index. deep. we instead got a "
                     + classWeGot.getName());
         }
 
@@ -176,7 +184,8 @@ public class IntErrs {
          * @param tFuncCall
          */
         public WeirdAhhFunctionException(TFuncCall tFuncCall) {
-            super(tFuncCall.name + " could NOT be resolved to a poper function name. Idk what else to tell you zawg");
+            super(tFuncCall.name + " on line " + tFuncCall.lineNumber
+                    + " could NOT be resolved to a poper function name. Idk what else to tell you zawg");
         }
     }
 

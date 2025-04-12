@@ -201,7 +201,8 @@ public class Tokenizer {
                 if (Validate.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
-                    throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
+                    throw new TokenizerSyntaxException(
+                            "Ayo the condition on line" + finalMOutput.lineNumber + "gotta resolve to a boolean dawg.");
                 }
                 TIfStatement ifStatement = tContainer.new TIfStatement(obj, codeblock, finalMOutput.lineNumber);
                 TIfStatement originalIf = ((TIfStatement) ((Find.MultipleLinesOutput) multipleLinesOutput).specialArg
@@ -225,7 +226,8 @@ public class Tokenizer {
                 if (Validate.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
-                    throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
+                    throw new TokenizerSyntaxException(
+                            "Ayo the condition on line" + finalMOutput.lineNumber + "gotta resolve to a boolean dawg.");
                 }
                 specific = tContainer.new TIfStatement(obj, codeblock, finalMOutput.lineNumber).toToken();
                 if (line.contains(Keywords.ELSE)) {
@@ -256,7 +258,8 @@ public class Tokenizer {
                     if (Validate.isValidBoolInput(obj)) {
                         obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                     } else {
-                        throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
+                        throw new TokenizerSyntaxException("Ayo the condition on line" + finalMOutput.lineNumber
+                                + "gotta resolve to a boolean dawg.");
                     }
                     specific = tContainer.new TForLoop(variable, obj, args[2].replace(")", "").trim(),
                             codeblock, finalMOutput.lineNumber).toToken();
@@ -284,7 +287,8 @@ public class Tokenizer {
                 if (Validate.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
-                    throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
+                    throw new TokenizerSyntaxException(
+                            "Ayo the condition on line" + finalMOutput.lineNumber + "gotta resolve to a boolean dawg.");
                 }
                 specific = tContainer.new TWhileLoop(obj, codeblock, finalMOutput.lineNumber).toToken();
                 break;
@@ -306,7 +310,7 @@ public class Tokenizer {
             String[] parts = line.split("<-\\|");
             parts[0] = parts[0].trim();
             if (parts[0].isEmpty()) {
-                throw new SyntaxCriticalError("Bro defined a variable with no name lmao.");
+                throw new SyntaxCriticalError("Bro defined a variable on line " + lineNumber + " with no name lmao.");
             }
             ArrayList<Object> parsedValues = new ArrayList<>();
 
@@ -336,11 +340,12 @@ public class Tokenizer {
             // they declared the variable with no value. Still valid syntax.
             // unless the name is nothing, then we have a problem.
             if (parts[0].isEmpty()) {
-                throw new SyntaxCriticalError("Bro defined a variable with no name or value lmao.");
+                throw new SyntaxCriticalError("Bro defined a variable on line " + lineNumber + " with no name lmao.");
             }
             if (parts.length == 1 && line.indexOf(Lang.ASSIGNMENT) != -1)
                 throw new SyntaxCriticalError(
-                        "if you're finna define a variable without a value, remove the assignment operator.");
+                        "if you're finna define a variable without a value, remove the assignment operator. (line "
+                                + lineNumber + ")");
             return tContainer.new TUnknownVar(parts[0], null, lineNumber).toToken();
         }
         parts[1] = parts[1].trim();
@@ -440,7 +445,8 @@ public class Tokenizer {
                 && !line.startsWith(Character.toString(Lang.COMMENT)))
             // A block of code but the type waws not catched, invaliud keyword then.
             // This is a syntax error.
-            throw new SyntaxCriticalError(line.split(" ")[0] + " aint a real keyword homie.");
+            throw new SyntaxCriticalError(
+                    line.split(" ")[0] + " on line " + lineNumber + " aint a real keyword homie.");
 
         ArrayList<Token<?>> tokens = new ArrayList<>();
         Token<?> tContainer = new Token<>(null);
@@ -519,7 +525,7 @@ public class Tokenizer {
 
         if (!line.isEmpty() && !line.equals(Lang.BLOCK_CLOSE) && !line.endsWith(Lang.BLOCK_OPEN)
                 && (!line.endsWith(Character.toString(Lang.END_LINE)))) {
-            throw new SyntaxCriticalError("Ye wena shout your code!");
+            throw new SyntaxCriticalError("Ye wena. On line " + lineNumber + " you don't shout your code. Sies.");
         }
 
         line = line.isEmpty() ? line : line.substring(0, line.length() - 1);
@@ -533,7 +539,9 @@ public class Tokenizer {
             // Split on the operator "<=="
             String[] parts = withoutKeyword.split(Lang.THROW_ERROR);
             if (parts.length != 2) {
-                throw new SyntaxCriticalError("Ehh baba you must use the right syntax if u wanna cima this process.");
+                throw new SyntaxCriticalError(
+                        "Ehh baba you must use the right syntax if u wanna cima this process. (line " + lineNumber
+                                + ")");
             }
             String errorMessage = parts[1].trim();
             if (errorMessage.startsWith("\"") && errorMessage.endsWith("\"") && errorMessage.length() >= 2) {
@@ -552,7 +560,9 @@ public class Tokenizer {
                 case "voetsek", "nevermind":
                     return tContainer.new TLoopControl(line, lineNumber).toToken();
                 default:
-                    throw new SyntaxCriticalError("Loop control keywords should be by themselves big bro.");
+                    throw new SyntaxCriticalError(
+                            "Loop control keywords should be by themselves big bro. Remove whatever is on line "
+                                    + lineNumber);
             }
         }
 

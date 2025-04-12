@@ -201,7 +201,7 @@ public class Primitives {
             if (v == null)
                 throw new UnknownVariableException(tVarRef);
             if (!(v.getValue() instanceof BaseVariable))
-                throw new WtfAreYouDoingException(v.getValue(), BaseVariable.class);
+                throw new WtfAreYouDoingException(v.getValue(), BaseVariable.class, tVarRef.lineNumber);
             BaseVariable variable = (BaseVariable) v.getValue();
             Object index = (tVarRef).index == null ? null : toPrimitive(tVarRef.index, vfs);
             if (index != null) {
@@ -229,7 +229,7 @@ public class Primitives {
             if (v == null)
                 throw new UnknownVariableException(tFuncCall);
             if (!(v.getValue() instanceof BaseFunction))
-                throw new WtfAreYouDoingException(v.getValue(), BaseFunction.class);
+                throw new WtfAreYouDoingException(v.getValue(), BaseFunction.class, tFuncCall.lineNumber);
             BaseFunction function = (BaseFunction) v.getValue();
             Object returnValue = function.call(tFuncCall, tFuncCall.args, vfs);
             return returnValue instanceof String ? EscapeSequence.escape((String) returnValue) : returnValue;

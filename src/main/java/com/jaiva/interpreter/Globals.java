@@ -87,7 +87,7 @@ public class Globals {
             }
             MapValue var = vfs.get(name);
             if (var == null) {
-                throw new UnknownVariableException(name);
+                throw new UnknownVariableException(name, tFuncCall.lineNumber);
             }
             if (!(var.getValue() instanceof Symbol)) {
                 throw new WtfAreYouDoingException(
