@@ -210,7 +210,7 @@ public class Primitives {
                     throw new WtfAreYouDoingException(tVarRef, tVarRef.getClass());
                 if ((Integer) index <= -1)
                     return new WtfAreYouDoingException("Now tell me, how do you access negative data in ana array?");
-                if (variable.array.size() < (Integer) index)
+                if (variable.array.size() <= (Integer) index)
                     return new WtfAreYouDoingException(
                             "Bro you're tryna access more data than there is in " + variable.name);
                 return variable.array.get((Integer) index);
