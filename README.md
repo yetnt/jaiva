@@ -1,5 +1,7 @@
 # <center> Jaiva!
 
+<center><h4>Version *1.0.0-beta.0*</h4></center>
+
 This esolang of mine is still in development, so expect alot of updates.
 
 Expect : Confusion, Regret, and a bit of fun.
