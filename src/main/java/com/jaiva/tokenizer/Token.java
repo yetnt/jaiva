@@ -8,6 +8,7 @@ import com.jaiva.utils.ContextDispatcher;
 import com.jaiva.utils.Find;
 import com.jaiva.utils.Validate;
 import com.jaiva.utils.ContextDispatcher.To;
+import com.jaiva.utils.Find.TStatementOpIndex;
 
 /**
  * The Token class represents a generic token that holds a value of type T.
@@ -76,6 +77,12 @@ public class Token<T extends TokenDefault> {
             return sb.toString();
         }
 
+        @Override
+        public ToJson toJsonInNest() {
+            json.append("lines", lines, true);
+            return super.toJsonInNest();
+        }
+
         // Return a Token<TCodeblockVar> on initialization
         public Token<TCodeblock> toToken() {
             return new Token<>(this);
@@ -98,6 +105,12 @@ public class Token<T extends TokenDefault> {
         @Override
         public String getContents(int depth) {
             return name + " <- " + value.toString();
+        }
+
+        @Override
+        public String toJson() {
+            json.append("value", value, true);
+            return super.toJson();
         }
 
         public Token<TUnknownVar> toToken() {
@@ -123,6 +136,12 @@ public class Token<T extends TokenDefault> {
             return name + " <<- " + value.toString();
         }
 
+        @Override
+        public String toJson() {
+            json.append("value", newValue, true);
+            return super.toJson();
+        }
+
         public Token<TVarReassign> toToken() {
             return new Token<>(this);
         }
@@ -134,7 +153,7 @@ public class Token<T extends TokenDefault> {
     public class TStringVar extends TokenDefault {
         public String value;
 
-        TStringVar(String name, String value) {
+        public TStringVar(String name, String value) {
             super(name);
             this.value = value;
         }
@@ -142,6 +161,12 @@ public class Token<T extends TokenDefault> {
         @Override
         public String getContents(int depth) {
             return name + " <- " + value;
+        }
+
+        @Override
+        public String toJson() {
+            json.append("value", value, true);
+            return super.toJson();
         }
 
         public Token<TStringVar> toToken() {
@@ -176,6 +201,12 @@ public class Token<T extends TokenDefault> {
                     : ((TStatement) value).getContents(0));
         }
 
+        @Override
+        public String toJson() {
+            json.append("value", value, true);
+            return super.toJson();
+        }
+
         public Token<TNumberVar> toToken() {
             return new Token<>(this);
         }
@@ -203,6 +234,12 @@ public class Token<T extends TokenDefault> {
                     : ((TStatement) value).getContents(0));
         }
 
+        @Override
+        public String toJson() {
+            json.append("value", value, true);
+            return super.toJson();
+        }
+
         public Token<TBooleanVar> toToken() {
             return new Token<>(this);
         }
@@ -223,6 +260,12 @@ public class Token<T extends TokenDefault> {
             return name + " <-| " + content;
         }
 
+        @Override
+        public String toJson() {
+            json.append("value", contents, true);
+            return super.toJson();
+        }
+
         // Return a Token<TArrayVar> on initialization
         public Token<TArrayVar> toToken() {
             return new Token<>(this);
@@ -240,6 +283,12 @@ public class Token<T extends TokenDefault> {
         @Override
         public String getContents(int depth) {
             return name + "RETURNS-> " + value.toString();
+        }
+
+        @Override
+        public String toJson() {
+            json.append("value", value, true);
+            return super.toJson();
         }
 
         // Return a Token<TFuncReturn> on initialization
@@ -266,6 +315,13 @@ public class Token<T extends TokenDefault> {
         @Override
         public String getContents(int depth) {
             return name + " " + Arrays.toString(args) + " " + body.getContents(depth + 1);
+        }
+
+        @Override
+        public String toJson() {
+            json.append("args", new ArrayList(Arrays.asList(args)), false);
+            json.append("body", body.toJsonInNest(), true);
+            return super.toJson();
         }
 
         // Return a Token<TFunction> on initialization
@@ -295,6 +351,15 @@ public class Token<T extends TokenDefault> {
                     + body.getContents(depth + 1);
         }
 
+        @Override
+        public String toJson() {
+            json.append("variable", variable.toJson(), false);
+            json.append("condition", condition, false);
+            json.append("increment", increment, false);
+            json.append("body", body.toJsonInNest(), true);
+            return super.toJson();
+        }
+
         public Token<TForLoop> toToken() {
             return new Token<>(this);
         }
@@ -313,6 +378,13 @@ public class Token<T extends TokenDefault> {
         @Override
         public String getContents(int depth) {
             return " [" + ((Token<?>.TStatement) condition).getContents(0) + "] " + body.getContents(depth + 1);
+        }
+
+        @Override
+        public String toJson() {
+            json.append("condition", condition, false);
+            json.append("body", body.toJsonInNest(), true);
+            return super.toJson();
         }
 
         public Token<TWhileLoop> toToken() {
@@ -366,6 +438,15 @@ public class Token<T extends TokenDefault> {
             return sb.toString();
         }
 
+        @Override
+        public String toJson() {
+            json.append("condition", condition, false);
+            json.append("body", body.toJsonInNest(), false);
+            json.append("elseIfs", elseIfs != null && elseIfs.size() > 0 ? elseIfs : "null", false);
+            json.append("elseBody", elseBody != null ? elseBody.toJsonInNest() : "null", false);
+            return super.toJson();
+        }
+
         public Token<TIfStatement> toToken() {
             return new Token<>(this);
         }
@@ -390,6 +471,13 @@ public class Token<T extends TokenDefault> {
                     + catchBlock.getContents(depth + 1);
         }
 
+        @Override
+        public String toJson() {
+            json.append("try", tryBlock.toJsonInNest(), false);
+            json.append("catch", catchBlock.toJsonInNest(), true);
+            return super.toJson();
+        }
+
         public Token<TTryCatchStatement> toToken() {
             return new Token<>(this);
         }
@@ -406,6 +494,12 @@ public class Token<T extends TokenDefault> {
         @Override
         public String getContents(int depth) {
             return name + ": " + errorMessage;
+        }
+
+        @Override
+        public String toJson() {
+            json.append("errorMessage", errorMessage, false);
+            return super.toJson();
         }
 
         public Token<TThrowError> toToken() {
@@ -426,6 +520,13 @@ public class Token<T extends TokenDefault> {
         @Override
         public String getContents(int depth) {
             return name + " " + args.toString();
+        }
+
+        @Override
+        public String toJson() {
+            json.append("functionName", functionName, false);
+            json.append("args", args, true);
+            return super.toJson();
         }
 
         public Token<TFuncCall> toToken() {
@@ -458,6 +559,13 @@ public class Token<T extends TokenDefault> {
             return name;
         }
 
+        @Override
+        public String toJson() {
+            json.append("varName", varName, false);
+            json.append("index", index != null ? index : "null", true);
+            return super.toJson();
+        }
+
         public Token<TVarRef> toToken() {
             return new Token<>(this);
         }
@@ -480,6 +588,12 @@ public class Token<T extends TokenDefault> {
         @Override
         public String getContents(int depth) {
             return name;
+        }
+
+        @Override
+        public String toJson() {
+            json.append("loopType", type.toString(), true);
+            return super.toJson();
         }
 
         public Token<TLoopControl> toToken() {
@@ -518,6 +632,17 @@ public class Token<T extends TokenDefault> {
             return getContents(0);
         }
 
+        @Override
+        public String toJson() {
+            json.append("lhs", lHandSide, false);
+            json.append("op", op, false);
+            json.append("rhs", rHandSide, false);
+            json.append("statementType", statementType, false);
+            json.append("statement", statement.replace("\"", "\\\""), true);
+
+            return super.toJson();
+        }
+
         /**
          * Parses a given string. This assumes you've already used braces to
          * indicate the correct order of operations.
@@ -547,16 +672,30 @@ public class Token<T extends TokenDefault> {
                 return processContext(statement);
             }
 
-            lHandSide = new TStatement().parse(statement.substring(0, info.index).trim());
+            lHandSide = handleNegatives(new TStatement().parse(statement.substring(0, info.index).trim()));
             this.op = info.op.trim();
-            rHandSide = new TStatement().parse(statement.substring(info.index + info.op.length()).trim());
+            rHandSide = handleNegatives(
+                    new TStatement().parse(statement.substring(info.index + info.op.length()).trim()));
             statementType = info.tStatementType;
-            return this.toToken();
+            return ((Token<?>.TStatement) handleNegatives(this)).toToken();
         }
 
         public Token<TStatement> toToken() {
             return new Token<>(this);
         }
+    }
+
+    private Object handleNegatives(Object s) {
+        if (s instanceof Token<?>.TStatement) {
+            Token<?>.TStatement statement = (Token<?>.TStatement) s;
+            if (statement.lHandSide == null && statement.op.equals("-")) {
+                statement.lHandSide = -1;
+                statement.op = "*";
+            }
+
+            return statement;
+        }
+        return s;
     }
 
     // Helper function that splits a string by commas that are at nesting level 0.
