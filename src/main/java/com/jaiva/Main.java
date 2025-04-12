@@ -5,7 +5,6 @@ import java.nio.file.*;
 import java.util.*;
 
 import com.jaiva.interpreter.*;
-import com.jaiva.repl.REPL;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Tokenizer;
 import com.jaiva.utils.*;

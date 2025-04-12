@@ -1,4 +1,4 @@
-package com.jaiva.repl;
+package com.jaiva;
 
 import java.io.BufferedReader;
 import java.io.IOException;
