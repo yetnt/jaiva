@@ -6,61 +6,12 @@ An esolang of mine which is way better, here is how you do stuff in my lanuage
 
 ## Prerquisuiesdsfb
 
-Step 1: Get Java 21. yeah this isn't a good start 💀
+1. **Get and Install Java 21**
+   yeah this isn't a good start 💀 but this shit is amde in java so ye man.
+   [Download and install the latest JDK 21](https://jdk.java.net/21)
 
-(TODO : Rest of the steps.)
-
-Step X : Run
-
-```sh
-> (command) filePath.jiv
-```
-
-And get your desired output.
-
-To make a jaiva file. Create a text file with the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
-
-## CLI
-
-Simple CLI Ngl.
-
-```sh
-> (command) [-p]
-> (command) <filePath> [-t | -s]
-```
-
-### REPL
-
-1. (No flags) launches basic interactive REPL.
-
-    ```sh
-    > (command)
-    ```
-
-2. Print tokens (more for debugging purposes)
-    ```sh
-    > (command) -p
-    > (command) --print-tokens
-    ```
-
-### Read File
-
-This command will attempt to find `<filePath>` and execute the jaiva code.
-
-1. Read file, (No flags.)
-    ```sh
-    > (command) <filePath>
-    ```
-2. Returns tokens as strings.
-    ```sh
-    > (command) <filePath> -s
-    > (command) <filePath> --string
-    ```
-3. Return tokens in JSON format.
-    ```sh
-    > (command) <filePath> -j
-    > (command) <filePath> --json
-    ```
+2. **Set Up Jaiva as a Global Command**  
+   Follow the instructions in [Install.md](./Install.md) to configure Jaiva so you can run the `jaiva` command from anywhere on your system.
 
 ## Syntax
 
