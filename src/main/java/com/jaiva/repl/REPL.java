@@ -93,7 +93,7 @@ public class REPL {
         while (state == State.ACTIVE || state == State.ERROR) {
             try {
                 state = State.ACTIVE;
-                System.out.print(m != null ? "Jaiva! >... " : "Jaiva! > ");
+                System.out.print(m != null || b != null ? "Jaiva! >... " : "Jaiva! > ");
                 String line = b != null ? b.getCurrentLine() : reader.readLine().trim();
                 if (line == null || line.equals("exit")) {
                     close();
