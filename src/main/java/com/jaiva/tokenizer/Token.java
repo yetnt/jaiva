@@ -331,16 +331,24 @@ public class Token<T extends TokenDefault> {
     }
 
     public class TForLoop extends TokenDefault {
-        public TNumberVar variable;
+        public TokenDefault variable;
+        public TVarRef array;
         public Object condition;
         public String increment;
         public TCodeblock body;
 
-        TForLoop(TNumberVar variable, Object condition, String increment, TCodeblock body) {
+        TForLoop(TokenDefault variable, Object condition, String increment, TCodeblock body) {
             super("TForLoop");
             this.variable = variable;
             this.condition = condition;
             this.increment = increment;
+            this.body = body;
+        }
+
+        TForLoop(TokenDefault variable, TVarRef array, TCodeblock body) {
+            super("TForLoop");
+            this.variable = variable;
+            this.array = array;
             this.body = body;
         }
 
@@ -354,6 +362,7 @@ public class Token<T extends TokenDefault> {
         @Override
         public String toJson() {
             json.append("variable", variable.toJson(), false);
+            json.append("arrayVariable", array != null ? array.toJson() : null, false);
             json.append("condition", condition, false);
             json.append("increment", increment, false);
             json.append("body", body.toJsonInNest(), true);
@@ -442,8 +451,8 @@ public class Token<T extends TokenDefault> {
         public String toJson() {
             json.append("condition", condition, false);
             json.append("body", body.toJsonInNest(), false);
-            json.append("elseIfs", elseIfs != null && elseIfs.size() > 0 ? elseIfs : "null", false);
-            json.append("elseBody", elseBody != null ? elseBody.toJsonInNest() : "null", false);
+            json.append("elseIfs", elseIfs != null && elseIfs.size() > 0 ? elseIfs : null, false);
+            json.append("elseBody", elseBody != null ? elseBody.toJsonInNest() : null, false);
             return super.toJson();
         }
 
@@ -562,7 +571,7 @@ public class Token<T extends TokenDefault> {
         @Override
         public String toJson() {
             json.append("varName", varName, false);
-            json.append("index", index != null ? index : "null", true);
+            json.append("index", index != null ? index : null, true);
             return super.toJson();
         }
 

@@ -18,6 +18,7 @@ public class Keywords {
     public static String D_FUNCTION = "kwenza";
     public static String RETURN = "khutla";
     public static String FOR = "colonize";
+    public static String FOR_EACH = "with";
     public static String TRY = "zama zama";
     public static String CATCH = "chaai";
     public static String THROW = "cima";

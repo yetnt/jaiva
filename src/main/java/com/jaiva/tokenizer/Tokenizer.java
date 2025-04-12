@@ -7,6 +7,8 @@ import com.jaiva.tokenizer.Token.TCodeblock;
 import com.jaiva.tokenizer.Token.TIfStatement;
 import com.jaiva.tokenizer.Token.TNumberVar;
 import com.jaiva.tokenizer.Token.TTryCatchStatement;
+import com.jaiva.tokenizer.Token.TUnknownVar;
+import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.utils.BlockChain;
 import com.jaiva.utils.Find;
 import com.jaiva.utils.Validate;
@@ -117,9 +119,19 @@ public class Tokenizer {
             }
             case "colonize": {
                 // colonize declaration | condition | increment ->
+                // colonize variableName with array name ->
+
                 // colonize i <- 0 | i <= 10 | + ->
-                String[] parts = line.split(Keywords.FOR)[1].trim().split(Lang.BLOCK_OPEN)[0].split("\\|");
-                return new String[] { parts[0].trim(), parts[1].trim(), parts[2].trim() };
+                // colonize pointer with arr ->
+
+                if (line.contains("|")) {
+                    String[] parts = line.split(Keywords.FOR)[1].trim().split(Lang.BLOCK_OPEN)[0].split("\\|");
+                    return new String[] { parts[0].trim(), parts[1].trim(), parts[2].trim() };
+                } else {
+                    String[] parts = line.split(Keywords.FOR)[1].trim().split(Lang.BLOCK_OPEN)[0]
+                            .split(Keywords.FOR_EACH);
+                    return new String[] { parts[0].trim(), parts[1].trim(), Keywords.FOR_EACH };
+                }
             }
             case "kwenza": {
                 // kwenza function_name(...args) ->
@@ -233,17 +245,25 @@ public class Tokenizer {
                 break;
             }
             case "colonize": {
-                TNumberVar variable = (Token<TNumberVar>.TNumberVar) ((ArrayList<Token<?>>) readLine(
-                        "maak " + args[0].replace("(", "").trim() + "!", "", null, null)).get(0).getValue();
+                if (!args[2].equals(Keywords.FOR_EACH)) {
+                    TNumberVar variable = (Token<TNumberVar>.TNumberVar) ((ArrayList<Token<?>>) readLine(
+                            "maak " + args[0].replace("(", "").trim() + "!", "", null, null)).get(0).getValue();
 
-                Object obj = tContainer.new TStatement().parse(args[1]);
-                if (Validate.isValidBoolInput(obj)) {
-                    obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
+                    Object obj = tContainer.new TStatement().parse(args[1]);
+                    if (Validate.isValidBoolInput(obj)) {
+                        obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
+                    } else {
+                        throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
+                    }
+                    specific = tContainer.new TForLoop(variable, obj, args[2].replace(")", "").trim(),
+                            codeblock).toToken();
                 } else {
-                    throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
+                    TUnknownVar variable = (Token<TUnknownVar>.TUnknownVar) ((ArrayList<Token<?>>) readLine(
+                            "maak " + args[0].replace("(", "").trim() + "!", "", null, null)).get(0).getValue();
+                    TVarRef arrayVar = (Token<TVarRef>.TVarRef) ((Token<?>) tContainer.processContext(args[1]))
+                            .getValue();
+                    specific = tContainer.new TForLoop(variable, arrayVar, codeblock).toToken();
                 }
-                specific = tContainer.new TForLoop(variable, obj, args[2].replace(")", "").trim(),
-                        codeblock).toToken();
                 break;
             }
             case "kwenza": {
