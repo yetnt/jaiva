@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.jaiva.tokenizer.Lang.BODMAS;
+import com.jaiva.tokenizer.Lang.Operators;
 import com.jaiva.tokenizer.Token;
 
 public class Find {
@@ -378,15 +378,15 @@ public class Find {
             return new LeastImportantOperator(); // exit early if no operators are found.
         int group = -1; // 0 = Exponentiation, 1 = DivMult, 2 = AddSub, 3 = Bools
         ArrayList<Integer> indexes2 = new ArrayList<>();
-        for (String op : BODMAS.getAll().reversed()) {
+        for (String op : Operators.getAll().reversed()) {
             for (int opIndex : indexes1) {
                 String opString = statement.substring(opIndex, opIndex + op.length());
                 if (!opString.equals(op))
                     continue;
                 if (group == -1) {
-                    group = BODMAS.getType(op);
+                    group = Operators.getType(op);
                     indexes2.add(opIndex);
-                } else if (group == BODMAS.getType(op)) {
+                } else if (group == Operators.getType(op)) {
                     indexes2.add(opIndex);
                 } else {
                     continue;

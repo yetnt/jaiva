@@ -1,7 +1,5 @@
 package com.jaiva.utils;
 
-import com.jaiva.tokenizer.Lang;
-
 /**
  * The ContextDispatcher class is used to determine the context of a given line
  * <p>
@@ -57,7 +55,8 @@ public class ContextDispatcher {
             bits |= 0b10000;
             return;
         }
-        int opIndex = Lang.getOperatorIndex(line.toCharArray()) != -1 ? Lang.getOperatorIndex(line.toCharArray())
+        int opIndex = Validate.getOperatorIndex(line.toCharArray()) != -1
+                ? Validate.getOperatorIndex(line.toCharArray())
                 : Integer.MAX_VALUE; // this is so EB can be handled properly.
         // SB = line.startsWith("(");
         EO = Validate.containsOperator(line.toCharArray()) != -1;

@@ -44,14 +44,14 @@ public class Lang {
     public static String THROW_ERROR = "<==";
     public static String ARRAY_ASSIGNMENT = "<-|";
 
-    public class BODMAS {
+    public class Operators {
         public static final String Exponentiation = "^";
         public static final List<String> DivMult = Arrays.asList("/", "*", "%");
         public static final List<String> AddSub = Arrays.asList("+", "-");
         public static final List<String> Bools = Arrays.asList("|", "&", ">", "<", "=");
         public static final List<String> DoubleBools = Arrays.asList("||", "&&", "!=", ">=", "<=");
 
-        public static List<String> ARITHMATIC_OPERATIONS() {
+        public static List<String> getArithmetic() {
             List<String> all = new ArrayList<>();
             all.add(Exponentiation);
             all.addAll(DivMult);
@@ -59,7 +59,7 @@ public class Lang {
             return all;
         }
 
-        public static List<String> BOOLEAN_OPERATORS() {
+        public static List<String> getBoolean() {
             List<String> all = new ArrayList<>();
             all.addAll(DoubleBools);
             all.addAll(Bools);

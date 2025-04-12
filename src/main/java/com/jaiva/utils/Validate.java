@@ -1,7 +1,7 @@
 package com.jaiva.utils;
 
 import com.jaiva.tokenizer.Lang;
-import com.jaiva.tokenizer.Lang.BODMAS;
+import com.jaiva.tokenizer.Lang.Operators;
 import com.jaiva.tokenizer.Token;
 
 /**
@@ -46,10 +46,10 @@ public class Validate {
      */
     public static int containsOperator(char[] string) {
         for (char c : string) {
-            if (Lang.BODMAS.ARITHMATIC_OPERATIONS().contains(String.valueOf(c))) {
+            if (Lang.Operators.getArithmetic().contains(String.valueOf(c))) {
                 return 1;
             }
-            if (Lang.BODMAS.BOOLEAN_OPERATORS().contains(String.valueOf(c))) {
+            if (Lang.Operators.getBoolean().contains(String.valueOf(c))) {
                 return 0;
             }
         }
@@ -64,10 +64,10 @@ public class Validate {
      */
     public static int getOperatorIndex(char[] string) {
         for (int i = 0; i < string.length; i++) {
-            if (BODMAS.ARITHMATIC_OPERATIONS().contains(String.valueOf(string[i]))) {
+            if (Operators.getArithmetic().contains(String.valueOf(string[i]))) {
                 return i;
             }
-            if (BODMAS.BOOLEAN_OPERATORS().contains(String.valueOf(string[i]))) {
+            if (Operators.getBoolean().contains(String.valueOf(string[i]))) {
                 return i;
             }
         }
