@@ -9,6 +9,8 @@ Expect not : A good time, a good language, or a good experience.
 To setup, see [Install.md](./Install.md)
 To run, see [CLI.md](./CLI.md)
 
+Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
+
 ## <center>Index
 
 -   **_[Jaiva!](#jaiva)_**

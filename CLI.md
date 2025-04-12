@@ -3,7 +3,7 @@
 Simple CLI Ngl.
 
 ```sh
-> jaiva [-p | -h]
+> jaiva [-p | -h | -v | -t | -u]
 > jaiva <filePath> [-t | -s]
 ```
 
@@ -21,9 +21,31 @@ Simple CLI Ngl.
     ```
 
 3. Launches REPL but also prints tokens only (more for debugging purposes)
+
     ```sh
     > jaiva -p
     > jaiva --print-tokens
+    ```
+
+4. Print the version of Jaiva.
+
+    ```sh
+    > jaiva -v
+    > jaiva --version
+    ```
+
+5. Run's a test command i have set. Because why not
+
+    ```sh
+    > jaiva -t
+    > jaiva --test
+    ```
+
+6. Get update instructions.
+
+    ```sh
+    > jaiva -u
+    > jaiva --update
     ```
 
 ## Read File
