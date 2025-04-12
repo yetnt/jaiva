@@ -67,7 +67,7 @@ public class Main {
                     break;
                 case "--version", "-v":
                     System.out.println(ASCII);
-                    System.out.println("Jaiva! 1.0.0");
+                    System.out.println("Jaiva! 1.0.0-beta");
                     System.out.println(
                             "Jaiva is a programming language that is designed to be easy to use and understand. (I'm speaking out my ass)");
                     break;
