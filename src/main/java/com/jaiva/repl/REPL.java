@@ -24,8 +24,7 @@ import com.jaiva.utils.Find.MultipleLinesOutput;
 
 enum REPLMode {
     STANDARD(0),
-    PRINT_TOKEN(1),
-    ARITHMETIC_LOGIC(2);
+    PRINT_TOKEN(1);
 
     private int mode;
 
@@ -88,10 +87,13 @@ public class REPL {
         BlockChain b = null;
         String previousLine = "";
 
+        System.out.println("type 'exit' to exit.");
+        System.out.println();
+
         while (state == State.ACTIVE || state == State.ERROR) {
             try {
                 state = State.ACTIVE;
-                System.out.print(m != null ? "Jaiva! ~>" : "Jaiva! > ");
+                System.out.print(m != null ? "Jaiva! >... " : "Jaiva! > ");
                 String line = b != null ? b.getCurrentLine() : reader.readLine().trim();
                 if (line == null || line.equals("exit")) {
                     close();
@@ -126,6 +128,14 @@ public class REPL {
         System.out.println("hai bye mfana.");
     }
 
+    /**
+     * Closes the reader resource associated with this instance.
+     * This method ensures that the reader is properly closed to release
+     * any system resources associated with it.
+     * 
+     * If an IOException occurs during the closing process, the exception
+     * is caught and its stack trace is printed.
+     */
     public void close() {
         try {
             reader.close();
@@ -149,7 +159,7 @@ public class REPL {
             } else if (something instanceof BlockChain) {
                 return something;
             } else if (something instanceof Token<?>) {
-                if (mode == REPLMode.STANDARD || mode == REPLMode.ARITHMETIC_LOGIC) {
+                if (mode == REPLMode.STANDARD) {
                     TokenDefault token = ((Token<?>) something).getValue();
                     if (Interpreter.isVariableToken(token)) {
                         boolean isReturnTokenClass = token instanceof TStatement || token instanceof TVarRef
@@ -170,7 +180,7 @@ public class REPL {
                 }
             } else if (something instanceof ArrayList<?>) {
                 ArrayList<Token<?>> tokens = (ArrayList<Token<?>>) something;
-                if (mode == REPLMode.STANDARD || mode == REPLMode.ARITHMETIC_LOGIC) {
+                if (mode == REPLMode.STANDARD) {
                     if (tokens.size() == 1) {
                         TokenDefault token = ((Token<?>) tokens.get(0)).getValue();
                         if (Interpreter.isVariableToken(token)) {
