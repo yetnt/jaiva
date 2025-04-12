@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.jaiva.tokenizer.Lang.BODMAS;
 import com.jaiva.tokenizer.Token;
 
 public class Find {
@@ -57,6 +58,8 @@ public class Find {
         public String[] args = new String[3]; // the arguments for it.
         public Token<?> specialArg = null; // these are for else if chains. This represents the original if
 
+        public int lineNumber = -1;
+
         public MultipleLinesOutput(int start, int end) {
             startCount = start;
             endCount = end;
@@ -76,13 +79,15 @@ public class Find {
             args = a;
         }
 
-        public MultipleLinesOutput(int start, int end, String pString, String t, String[] a, Token<?> sArg) {
+        public MultipleLinesOutput(int start, int end, String pString, String t, String[] a, Token<?> sArg,
+                int ln) {
             startCount = start;
             endCount = end;
             preLine = pString;
             type = t;
             args = a;
             specialArg = sArg;
+            lineNumber = ln;
         }
 
         public MultipleLinesOutput(int start, int end, String pString, boolean inBlockComment) {
@@ -117,7 +122,8 @@ public class Find {
      */
     public static MultipleLinesOutput closingCharIndexML(String line, String start,
             String end,
-            int startCount, int endCount, String previousLines, String type, String[] args, Token<?> blockChain) {
+            int startCount, int endCount, String previousLines, String type, String[] args, Token<?> blockChain,
+            int lineNumber) {
         if (start.length() > 2 || end.length() > 2)
             throw new IllegalArgumentException("Arguments must be at most 2 characters long!");
         boolean isStart = true;
@@ -131,13 +137,13 @@ public class Find {
                 }
                 if (startCount == endCount && startCount != 0) {
                     return new MultipleLinesOutput(startCount, endCount, previousLines + line, type,
-                            args, blockChain);
+                            args, blockChain, lineNumber);
                 }
             } else {
                 if (line.charAt(i) == end.charAt(0)) {
                     if (i + 1 < line.length() && line.charAt(i + 1) == end.charAt(1)) {
                         // if (!isStart) {
-                        return new MultipleLinesOutput(i, i, previousLines + line, type, args, blockChain);
+                        return new MultipleLinesOutput(i, i, previousLines + line, type, args, blockChain, lineNumber);
                         // }
                     }
                     // System.out.println("Found!");
@@ -145,7 +151,7 @@ public class Find {
                 }
             }
         }
-        return new MultipleLinesOutput(startCount, endCount, previousLines + line, type, args, blockChain);
+        return new MultipleLinesOutput(startCount, endCount, previousLines + line, type, args, blockChain, lineNumber);
     }
 
     /**
@@ -403,34 +409,4 @@ public class Find {
                         group);
     }
 
-}
-
-class BODMAS {
-    public static final String Exponentiation = "^";
-    public static final List<String> DivMult = Arrays.asList("/", "*", "%");
-    public static final List<String> AddSub = Arrays.asList("+", "-");
-    public static final List<String> Bools = Arrays.asList("|", "&", ">", "<", "=");
-    public static final List<String> DoubleBools = Arrays.asList("||", "&&", "!=", ">=", "<=");
-
-    public static List<String> getAll() {
-        List<String> all = new ArrayList<>();
-        all.add(Exponentiation);
-        all.addAll(DivMult);
-        all.addAll(AddSub);
-        all.addAll(DoubleBools);
-        all.addAll(Bools);
-        return all;
-    }
-
-    public static int getType(String op) {
-        if (Exponentiation.equals(op))
-            return 0;
-        else if (DivMult.contains(op))
-            return 1;
-        else if (AddSub.contains(op))
-            return 2;
-        else if (Bools.contains(op) || DoubleBools.contains(op))
-            return 3;
-        return -1;
-    }
 }

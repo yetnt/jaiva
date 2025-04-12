@@ -110,7 +110,7 @@ public class Main {
                 String line = (b != null ? b.getCurrentLine() : myReader.nextLine());
                 // System.out.println(line);
                 // System.out.println(line);
-                Object something = Tokenizer.readLine(line, (b != null ? "" : previousLine), m, b);
+                Object something = Tokenizer.readLine(line, (b != null ? "" : previousLine), m, b, lineNum);
                 if (something instanceof Find.MultipleLinesOutput) {
                     m = (Find.MultipleLinesOutput) something;
                     b = null;

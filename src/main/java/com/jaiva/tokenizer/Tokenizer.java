@@ -72,7 +72,7 @@ public class Tokenizer {
 
     private static Object handleBlocks(boolean isComment, String line,
             Find.MultipleLinesOutput multipleLinesOutput, String entireLine, String t, String[] args,
-            Token<?> blockChain) {
+            Token<?> blockChain, int lineNumber) {
         Find.MultipleLinesOutput m;
         if (multipleLinesOutput != null) {
             // multiple lines output exists. So we need to keep going until we find }
@@ -83,20 +83,19 @@ public class Tokenizer {
                             line, Lang.BLOCK_OPEN, Lang.BLOCK_CLOSE,
                             multipleLinesOutput.startCount,
                             multipleLinesOutput.endCount, multipleLinesOutput.preLine,
-                            t, args, blockChain);
+                            t, args, blockChain, lineNumber);
         } else {
             // Not given, but we need to find the closing tag.
             m = isComment ? Find.closingCharIndexML(
                     line, Lang.COMMENT_OPEN, Lang.COMMENT_CLOSE, 0, 0)
                     : Find.closingCharIndexML(line, Lang.BLOCK_OPEN, Lang.BLOCK_CLOSE, 0, 0, "",
-                            t, args, blockChain);
+                            t, args, blockChain, lineNumber);
         }
 
         if (m.endCount == m.startCount && m.startCount != 0 && m.startCount != -1) {
-            return isComment ? null : m.preLine;
+            return isComment ? null : m;
         } else {
             return m;
-
         }
     }
 
@@ -151,13 +150,15 @@ public class Tokenizer {
     private static Object processBlockLines(boolean isComment, String line,
             Find.MultipleLinesOutput multipleLinesOutput,
             String tokenizerLine, ArrayList<Token<?>> tokens, Token<?> tContainer, String type, String[] args,
-            Token<?> blockChain)
+            Token<?> blockChain, int lineNumber)
             throws Exception {
         type = multipleLinesOutput == null ? type : multipleLinesOutput.type;
         args = multipleLinesOutput == null ? args : multipleLinesOutput.args;
+        int newLineNumber = multipleLinesOutput == null ? lineNumber : multipleLinesOutput.lineNumber;
         line = decimateSingleComments(line);
         Object output = handleBlocks(isComment, line + "\n", (Find.MultipleLinesOutput) multipleLinesOutput,
-                tokenizerLine, type, args, multipleLinesOutput != null ? multipleLinesOutput.specialArg : blockChain);
+                tokenizerLine, type, args, multipleLinesOutput != null ? multipleLinesOutput.specialArg : blockChain,
+                newLineNumber);
         if (output == null)
             return output;
 
@@ -168,7 +169,8 @@ public class Tokenizer {
             if (endCount != startCount)
                 return output;
         }
-        String preLine = ((String) output);
+        Find.MultipleLinesOutput finalMOutput = ((Find.MultipleLinesOutput) output);
+        String preLine = finalMOutput.preLine;
         preLine = preLine.startsWith(Keywords.D_FUNCTION) ? preLine.replaceFirst(Keywords.D_FUNCTION, "") : preLine;
         preLine = preLine.startsWith(Keywords.IF) ? preLine.replaceFirst(Keywords.IF, "") : preLine;
         preLine = preLine.startsWith(Keywords.WHILE) ? preLine.replaceFirst(Keywords.WHILE, "") : preLine;
@@ -180,7 +182,7 @@ public class Tokenizer {
         preLine = preLine.substring(preLine.indexOf(Lang.BLOCK_OPEN) + 2);
         preLine = preLine.substring(0, preLine.lastIndexOf(Lang.BLOCK_CLOSE));
         ArrayList<Token<?>> nestedTokens = new ArrayList<>();
-        Object stuff = readLine(preLine, "", null, null);
+        Object stuff = readLine(preLine, "", null, null, finalMOutput.lineNumber + 1);
         try {
             if (stuff instanceof ArrayList) {
                 nestedTokens.addAll((ArrayList<Token<?>>) stuff);
@@ -190,18 +192,18 @@ public class Tokenizer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        TCodeblock codeblock = tContainer.new TCodeblock(nestedTokens);
+        TCodeblock codeblock = tContainer.new TCodeblock(nestedTokens, finalMOutput.lineNumber, lineNumber);
         // Okay cool, we've parsed everything, but what if its different types?
         Token<?> specific;
         switch (type) {
             case "mara if": {
-                Object obj = tContainer.new TStatement().parse(args[0]);
+                Object obj = tContainer.new TStatement(finalMOutput.lineNumber).parse(args[0]);
                 if (Validate.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
                     throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
                 }
-                TIfStatement ifStatement = tContainer.new TIfStatement(obj, codeblock);
+                TIfStatement ifStatement = tContainer.new TIfStatement(obj, codeblock, finalMOutput.lineNumber);
                 TIfStatement originalIf = ((TIfStatement) ((Find.MultipleLinesOutput) multipleLinesOutput).specialArg
                         .getValue());
                 originalIf.appendElseIf(ifStatement);
@@ -219,13 +221,13 @@ public class Tokenizer {
                 break;
             }
             case "if": {
-                Object obj = tContainer.new TStatement().parse(args[0].replace("(", ""));
+                Object obj = tContainer.new TStatement(finalMOutput.lineNumber).parse(args[0].replace("(", ""));
                 if (Validate.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
                     throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
                 }
-                specific = tContainer.new TIfStatement(obj, codeblock).toToken();
+                specific = tContainer.new TIfStatement(obj, codeblock, finalMOutput.lineNumber).toToken();
                 if (line.contains(Keywords.ELSE)) {
                     // will turn "~> mara <- ... " into "mara <- ..."
                     // and "~> mara if () <- ..." into "mara if () <- ..."
@@ -234,7 +236,7 @@ public class Tokenizer {
                 break;
             }
             case "zama zama": {
-                specific = tContainer.new TTryCatchStatement(codeblock).toToken();
+                specific = tContainer.new TTryCatchStatement(codeblock, finalMOutput.lineNumber).toToken();
                 return new BlockChain(specific, line.replaceFirst(Lang.BLOCK_CLOSE, "").trim());
             }
             case "chaai": {
@@ -247,22 +249,26 @@ public class Tokenizer {
             case "colonize": {
                 if (!args[2].equals(Keywords.FOR_EACH)) {
                     TNumberVar variable = (Token<TNumberVar>.TNumberVar) ((ArrayList<Token<?>>) readLine(
-                            "maak " + args[0].replace("(", "").trim() + "!", "", null, null)).get(0).getValue();
+                            "maak " + args[0].replace("(", "").trim() + "!", "", null, null, finalMOutput.lineNumber))
+                            .get(0).getValue();
 
-                    Object obj = tContainer.new TStatement().parse(args[1]);
+                    Object obj = tContainer.new TStatement(finalMOutput.lineNumber).parse(args[1]);
                     if (Validate.isValidBoolInput(obj)) {
                         obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                     } else {
                         throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
                     }
                     specific = tContainer.new TForLoop(variable, obj, args[2].replace(")", "").trim(),
-                            codeblock).toToken();
+                            codeblock, finalMOutput.lineNumber).toToken();
                 } else {
                     TUnknownVar variable = (Token<TUnknownVar>.TUnknownVar) ((ArrayList<Token<?>>) readLine(
-                            "maak " + args[0].replace("(", "").trim() + "!", "", null, null)).get(0).getValue();
-                    TVarRef arrayVar = (Token<TVarRef>.TVarRef) ((Token<?>) tContainer.processContext(args[1]))
+                            "maak " + args[0].replace("(", "").trim() + "!", "", null, null, finalMOutput.lineNumber))
+                            .get(0).getValue();
+                    TVarRef arrayVar = (Token<TVarRef>.TVarRef) ((Token<?>) tContainer.processContext(args[1],
+                            finalMOutput.lineNumber))
                             .getValue();
-                    specific = tContainer.new TForLoop(variable, arrayVar, codeblock).toToken();
+                    specific = tContainer.new TForLoop(variable, arrayVar, codeblock,
+                            finalMOutput.lineNumber).toToken();
                 }
                 break;
             }
@@ -270,17 +276,17 @@ public class Tokenizer {
                 String[] fArgs = args[1].split(",");
                 for (int i = 0; i < fArgs.length; i++)
                     fArgs[i] = fArgs[i].trim();
-                specific = tContainer.new TFunction(args[0], fArgs, codeblock).toToken();
+                specific = tContainer.new TFunction(args[0], fArgs, codeblock, finalMOutput.lineNumber).toToken();
                 break;
             }
             case "nikhil": {
-                Object obj = tContainer.new TStatement().parse(args[0]);
+                Object obj = tContainer.new TStatement(finalMOutput.lineNumber).parse(args[0]);
                 if (Validate.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
                     throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
                 }
-                specific = tContainer.new TWhileLoop(obj, codeblock).toToken();
+                specific = tContainer.new TWhileLoop(obj, codeblock, finalMOutput.lineNumber).toToken();
                 break;
             }
             default: {
@@ -291,7 +297,7 @@ public class Tokenizer {
         return tokens;
     }
 
-    private static Token<?> processVariable(String line, Token<?> tContainer)
+    private static Token<?> processVariable(String line, Token<?> tContainer, int lineNumber)
             throws SyntaxError, TokenizerException {
         boolean isString = false;
         if (line.indexOf(Lang.ARRAY_ASSIGNMENT) != -1) {
@@ -306,13 +312,13 @@ public class Tokenizer {
 
             if (parts.length == 1) {
                 // delcared with no value, empty array.
-                return tContainer.new TArrayVar(parts[0], parsedValues).toToken();
+                return tContainer.new TArrayVar(parts[0], parsedValues, lineNumber).toToken();
             }
 
             tContainer.splitByTopLevelComma(parts[1]).forEach(value -> {
-                parsedValues.add(tContainer.processContext(value.trim()));
+                parsedValues.add(tContainer.processContext(value.trim(), lineNumber));
             });
-            return tContainer.new TArrayVar(parts[0], parsedValues).toToken();
+            return tContainer.new TArrayVar(parts[0], parsedValues, lineNumber).toToken();
 
         }
         int stringStart = line.indexOf("\"");
@@ -335,37 +341,39 @@ public class Tokenizer {
             if (parts.length == 1 && line.indexOf(Lang.ASSIGNMENT) != -1)
                 throw new SyntaxCriticalError(
                         "if you're finna define a variable without a value, remove the assignment operator.");
-            return tContainer.new TUnknownVar(parts[0], null).toToken();
+            return tContainer.new TUnknownVar(parts[0], null, lineNumber).toToken();
         }
         parts[1] = parts[1].trim();
 
         if (isString) {
-            return tContainer.new TStringVar(parts[0], parts[1]).toToken();
+            return tContainer.new TStringVar(parts[0], parts[1], lineNumber).toToken();
         } else {
             try {
-                return tContainer.new TNumberVar(parts[0], Integer.parseInt(parts[1])).toToken();
+                return tContainer.new TNumberVar(parts[0], Integer.parseInt(parts[1]), lineNumber).toToken();
             } catch (NumberFormatException e) {
                 try {
-                    return tContainer.new TNumberVar(parts[0], Double.parseDouble(parts[1])).toToken();
+                    return tContainer.new TNumberVar(parts[0], Double.parseDouble(parts[1]), lineNumber).toToken();
                 } catch (Exception e2) {
                     if (parts[1].equals("true") || parts[1].equals("false") || parts[1].equals(Keywords.TRUE)
                             || parts[1].equals(Keywords.FALSE)) {
                         parts[1] = parts[1].replace(Keywords.TRUE, "true").replace(
                                 Keywords.FALSE,
                                 "false");
-                        return tContainer.new TBooleanVar(parts[0], Boolean.parseBoolean(parts[1])).toToken();
+                        return tContainer.new TBooleanVar(parts[0], Boolean.parseBoolean(parts[1]),
+                                lineNumber).toToken();
                     } else {
-                        Object output = tContainer.dispatchContext(parts[1]);
+                        Object output = tContainer.dispatchContext(parts[1], lineNumber);
                         if (output instanceof Token<?>) {
                             TokenDefault g = ((Token<?>) output).getValue();
                             if (g.name.equals("TStatement")) {
                                 return ((Token<?>.TStatement) g).statementType == 0
-                                        ? tContainer.new TBooleanVar(parts[0], output).toToken()
-                                        : tContainer.new TNumberVar(parts[0], output).toToken();
+                                        ? tContainer.new TBooleanVar(parts[0], output,
+                                                lineNumber).toToken()
+                                        : tContainer.new TNumberVar(parts[0], output, lineNumber).toToken();
                             }
                         }
 
-                        return tContainer.new TUnknownVar(parts[0], output).toToken();
+                        return tContainer.new TUnknownVar(parts[0], output, lineNumber).toToken();
                     }
                 }
             }
@@ -389,7 +397,8 @@ public class Tokenizer {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    public static Object readLine(String line, String previousLine, Object multipleLinesOutput, BlockChain blockChain)
+    public static Object readLine(String line, String previousLine, Object multipleLinesOutput, BlockChain blockChain,
+            int lineNumber)
             throws Exception {
         line = EscapeSequence.escapeAll(line).trim();
         line = line.trim();
@@ -443,6 +452,7 @@ public class Tokenizer {
             // multiple lines.
             Find.MultipleLinesOutput m = null;
             BlockChain b = null;
+            int ln = lineNumber;
             for (int i = 0; i != lines.length; i++) {
                 String l = "";
                 if (b instanceof BlockChain) {
@@ -455,7 +465,7 @@ public class Tokenizer {
                 String previousLine2 = i == 0 ? previousLine : lines[i - 1];
                 // System.out.println(previousLine2);
                 // System.out.println(lines[i]);
-                Object something = readLine(l, previousLine2, m, b);
+                Object something = readLine(l, previousLine2, m, b, ln);
                 if (something instanceof Find.MultipleLinesOutput) {
                     m = ((Find.MultipleLinesOutput) something);
                     b = null;
@@ -474,6 +484,7 @@ public class Tokenizer {
                     m = null;
                     b = null;
                 }
+                ln++;
             }
             return tokens;
         }
@@ -492,11 +503,12 @@ public class Tokenizer {
                     ? processBlockLines(isComment, line, (Find.MultipleLinesOutput) multipleLinesOutput,
                             tokenizerLine,
                             tokens, tContainer, type,
-                            new String[] { "" }, null)
+                            new String[] { "" }, null, lineNumber)
                     : processBlockLines(
                             isComment, line, (Find.MultipleLinesOutput) multipleLinesOutput, tokenizerLine,
                             tokens, tContainer, type,
-                            handleArgs(type, line), (blockChain != null ? blockChain.getInitialIf() : null));
+                            handleArgs(type, line), (blockChain != null ? blockChain.getInitialIf() : null),
+                            lineNumber);
 
         // if its anything after this the line has to end in a ! or else invalid syntax.
         // (All other methods which did the ! will be redundant as we can just check
@@ -529,7 +541,7 @@ public class Tokenizer {
                 // errorMessage = EscapeSequence.escape(errorMessage.substring(1,
                 // errorMessage.length() - 1));
             }
-            tokens.add(tContainer.new TThrowError(errorMessage).toToken());
+            tokens.add(tContainer.new TThrowError(errorMessage, lineNumber).toToken());
             return tokens;
         }
 
@@ -538,7 +550,7 @@ public class Tokenizer {
         if (line.startsWith(Keywords.LC_BREAK) || line.startsWith(Keywords.LC_CONTINUE)) {
             switch (line) {
                 case "voetsek", "nevermind":
-                    return tContainer.new TLoopControl(line).toToken();
+                    return tContainer.new TLoopControl(line, lineNumber).toToken();
                 default:
                     throw new SyntaxCriticalError("Loop control keywords should be by themselves big bro.");
             }
@@ -546,7 +558,9 @@ public class Tokenizer {
 
         if (line.startsWith(Keywords.RETURN)) {
             tokens.add(
-                    tContainer.new TFuncReturn(tContainer.processContext(line.replace(Keywords.RETURN, "")))
+                    tContainer.new TFuncReturn(tContainer.processContext(line.replace(Keywords.RETURN, ""),
+                            lineNumber),
+                            lineNumber)
                             .toToken());
             return tokens;
         }
@@ -554,7 +568,7 @@ public class Tokenizer {
         // #STRING# is a line which contains something that needs to be tokenized.
 
         if (line.startsWith(Keywords.D_VAR)) {
-            tokens.add(processVariable(line, tContainer));
+            tokens.add(processVariable(line, tContainer, lineNumber));
             return tokens;
         }
 
@@ -562,14 +576,17 @@ public class Tokenizer {
         String[] parts = line.split(Lang.ASSIGNMENT);
         if (parts.length > 1) {
             String varName = parts[0].trim();
-            Object varValue = tContainer.processContext(parts[1].trim());
+            Object varValue = tContainer.processContext(parts[1].trim(), lineNumber);
             if (varName.contains("]") || varName.contains("[")) {
                 // This is an array reassignment.
-                tokens.add(tContainer.new TVarReassign(tContainer.processContext(varName), varValue).toToken());
+                tokens.add(tContainer.new TVarReassign(tContainer.processContext(varName,
+                        lineNumber), varValue, lineNumber).toToken());
                 return tokens;
             } else {
                 tokens.add(
-                        tContainer.new TVarReassign(parts[0].trim(), tContainer.processContext(parts[1].trim()))
+                        tContainer.new TVarReassign(parts[0].trim(), tContainer.processContext(parts[1].trim(),
+                                lineNumber),
+                                lineNumber)
                                 .toToken());
             }
             return tokens;
@@ -577,7 +594,7 @@ public class Tokenizer {
 
         // TODO: This token only exists for debugging purposes at the moment.
         if (line.equals(Keywords.UNDEFINED)) {
-            tokens.add(tContainer.new TVoidValue().toToken());
+            tokens.add(tContainer.new TVoidValue(lineNumber).toToken());
             return tokens;
         }
 
@@ -585,7 +602,7 @@ public class Tokenizer {
         // TFuncCall
         // (You cant just place a variable out of nowhere with no context around it.)
         // (Therefore i wont parse it.)
-        Object token = tContainer.processContext(line);
+        Object token = tContainer.processContext(line, lineNumber);
         if (token instanceof Token<?>) {
             tokens.add((Token<?>) token);
             return tokens;

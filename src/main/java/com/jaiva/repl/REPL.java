@@ -140,7 +140,6 @@ public class REPL {
         try {
             reader.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -153,7 +152,7 @@ public class REPL {
     public Object read(String line, String previousLine, MultipleLinesOutput m, BlockChain b) {
         Object something;
         try {
-            something = Tokenizer.readLine(line, previousLine, m, b);
+            something = Tokenizer.readLine(line, previousLine, m, b, -1);
             if (something instanceof MultipleLinesOutput) {
                 return something;
             } else if (something instanceof BlockChain) {
@@ -213,7 +212,6 @@ public class REPL {
                 }
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             this.state = State.ERROR;
             // add stack trace as a string separated by new lines.
 

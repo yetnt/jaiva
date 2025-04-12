@@ -41,13 +41,8 @@ public class Token<T extends TokenDefault> {
      * does nothing.
      */
     public class TVoidValue extends TokenDefault {
-        public TVoidValue() {
-            super("TVoidValue");
-        }
-
-        @Override
-        public String getContents(int depth) {
-            return name;
+        public TVoidValue(int ln) {
+            super("TVoidValue", ln);
         }
 
         public Token<TVoidValue> toToken() {
@@ -62,23 +57,17 @@ public class Token<T extends TokenDefault> {
      */
     public class TCodeblock extends TokenDefault {
         public ArrayList<Token<?>> lines;
+        public int lineNumberEnd;
 
-        TCodeblock(ArrayList<Token<?>> lines) {
-            super("TCodeblock");
+        TCodeblock(ArrayList<Token<?>> lines, int ln, int endLn) {
+            super("TCodeblock", ln);
             this.lines = lines;
-        }
-
-        @Override
-        public String getContents(int depth) {
-            StringBuilder sb = new StringBuilder();
-            for (Token<?> t : lines) {
-                sb.append("\n" + "^ ".repeat(depth) + t.getValue().getContents(depth)).append("\n");
-            }
-            return sb.toString();
+            this.lineNumberEnd = endLn;
         }
 
         @Override
         public ToJson toJsonInNest() {
+            json.append("lineEnd", lineNumberEnd, false);
             json.append("lines", lines, true);
             return super.toJsonInNest();
         }
@@ -97,14 +86,9 @@ public class Token<T extends TokenDefault> {
     public class TUnknownVar extends TokenDefault {
         public Object value;
 
-        TUnknownVar(String name, Object value) {
-            super(name);
+        TUnknownVar(String name, Object value, int ln) {
+            super(name, ln);
             this.value = value;
-        }
-
-        @Override
-        public String getContents(int depth) {
-            return name + " <- " + value.toString();
         }
 
         @Override
@@ -121,19 +105,14 @@ public class Token<T extends TokenDefault> {
     public class TVarReassign extends TokenDefault {
         public Object newValue;
 
-        TVarReassign(String name, Object value) {
-            super(name);
+        TVarReassign(String name, Object value, int ln) {
+            super(name, ln);
             this.newValue = value;
         }
 
-        TVarReassign(Object name, Object value) {
-            super("TVarReassign");
+        TVarReassign(Object name, Object value, int ln) {
+            super("TVarReassign", ln);
             this.newValue = value;
-        }
-
-        @Override
-        public String getContents(int depth) {
-            return name + " <<- " + value.toString();
         }
 
         @Override
@@ -153,14 +132,9 @@ public class Token<T extends TokenDefault> {
     public class TStringVar extends TokenDefault {
         public String value;
 
-        public TStringVar(String name, String value) {
-            super(name);
+        public TStringVar(String name, String value, int ln) {
+            super(name, ln);
             this.value = value;
-        }
-
-        @Override
-        public String getContents(int depth) {
-            return name + " <- " + value;
         }
 
         @Override
@@ -180,25 +154,19 @@ public class Token<T extends TokenDefault> {
     public class TNumberVar extends TokenDefault {
         public Object value;
 
-        TNumberVar(String name, int value) {
-            super(name);
+        TNumberVar(String name, int value, int ln) {
+            super(name, ln);
             this.value = value;
         }
 
-        TNumberVar(String name, double value) {
-            super(name);
+        TNumberVar(String name, double value, int ln) {
+            super(name, ln);
             this.value = value;
         }
 
-        TNumberVar(String name, Object value) {
-            super(name);
+        TNumberVar(String name, Object value, int ln) {
+            super(name, ln);
             this.value = value;
-        }
-
-        @Override
-        public String getContents(int depth) {
-            return name + " <- " + (value instanceof Integer ? Integer.toString((Integer) value)
-                    : ((TStatement) value).getContents(0));
         }
 
         @Override
@@ -218,20 +186,14 @@ public class Token<T extends TokenDefault> {
     public class TBooleanVar extends TokenDefault {
         public Object value;
 
-        TBooleanVar(String name, boolean value) {
-            super(name);
+        TBooleanVar(String name, boolean value, int ln) {
+            super(name, ln);
             this.value = value;
         }
 
-        TBooleanVar(String name, Object value) {
-            super(name);
+        TBooleanVar(String name, Object value, int ln) {
+            super(name, ln);
             this.value = value;
-        }
-
-        @Override
-        public String getContents(int depth) {
-            return name + " <- " + (value instanceof Boolean ? Boolean.toString((Boolean) value)
-                    : ((TStatement) value).getContents(0));
         }
 
         @Override
@@ -248,16 +210,9 @@ public class Token<T extends TokenDefault> {
     public class TArrayVar extends TokenDefault {
         public ArrayList<Object> contents;
 
-        public TArrayVar(String name, ArrayList<Object> contents) {
-            super(name);
+        public TArrayVar(String name, ArrayList<Object> contents, int ln) {
+            super(name, ln);
             this.contents = contents;
-        }
-
-        @Override
-        public String getContents(int depth) {
-            ArrayList<String> content = new ArrayList<>();
-            Arrays.asList(contents).forEach(g -> content.add(g.toString()));
-            return name + " <-| " + content;
         }
 
         @Override
@@ -275,14 +230,9 @@ public class Token<T extends TokenDefault> {
     public class TFuncReturn extends TokenDefault {
         public Object value;
 
-        TFuncReturn(Object value) {
-            super("TFuncReturn");
+        TFuncReturn(Object value, int ln) {
+            super("TFuncReturn", ln);
             this.value = value;
-        }
-
-        @Override
-        public String getContents(int depth) {
-            return name + "RETURNS-> " + value.toString();
         }
 
         @Override
@@ -306,15 +256,10 @@ public class Token<T extends TokenDefault> {
         public String[] args;
         public TCodeblock body;
 
-        public TFunction(String name, String[] args, TCodeblock body) {
-            super("F~" + name);
+        public TFunction(String name, String[] args, TCodeblock body, int ln) {
+            super("F~" + name, ln);
             this.args = args;
             this.body = body;
-        }
-
-        @Override
-        public String getContents(int depth) {
-            return name + " " + Arrays.toString(args) + " " + body.getContents(depth + 1);
         }
 
         @Override
@@ -337,26 +282,19 @@ public class Token<T extends TokenDefault> {
         public String increment;
         public TCodeblock body;
 
-        TForLoop(TokenDefault variable, Object condition, String increment, TCodeblock body) {
-            super("TForLoop");
+        TForLoop(TokenDefault variable, Object condition, String increment, TCodeblock body, int ln) {
+            super("TForLoop", ln);
             this.variable = variable;
             this.condition = condition;
             this.increment = increment;
             this.body = body;
         }
 
-        TForLoop(TokenDefault variable, TVarRef array, TCodeblock body) {
-            super("TForLoop");
+        TForLoop(TokenDefault variable, TVarRef array, TCodeblock body, int ln) {
+            super("TForLoop", ln);
             this.variable = variable;
             this.array = array;
             this.body = body;
-        }
-
-        @Override
-        public String getContents(int depth) {
-            return " [" + variable.getContents(0) + " " + ((Token<?>.TStatement) condition).getContents(0) + " "
-                    + increment + "] "
-                    + body.getContents(depth + 1);
         }
 
         @Override
@@ -378,15 +316,10 @@ public class Token<T extends TokenDefault> {
         public Object condition;
         public TCodeblock body;
 
-        TWhileLoop(Object condition, TCodeblock body) {
-            super("TWhileLoop");
+        TWhileLoop(Object condition, TCodeblock body, int ln) {
+            super("TWhileLoop", ln);
             this.condition = condition;
             this.body = body;
-        }
-
-        @Override
-        public String getContents(int depth) {
-            return " [" + ((Token<?>.TStatement) condition).getContents(0) + "] " + body.getContents(depth + 1);
         }
 
         @Override
@@ -407,13 +340,12 @@ public class Token<T extends TokenDefault> {
         public TCodeblock elseBody = null;
         public ArrayList<TIfStatement> elseIfs = new ArrayList<>();
 
-        TIfStatement(Object condition, TCodeblock body) {
-            super("TIfStatement");
+        TIfStatement(Object condition, TCodeblock body, int ln) {
+            super("TIfStatement", ln);
             this.condition = condition;
             this.body = body;
         }
 
-        // TODO: Add support for else if statements
         public void appendElseIf(TIfStatement body) {
             if (elseIfs == null) {
                 elseIfs = new ArrayList<>();
@@ -428,23 +360,6 @@ public class Token<T extends TokenDefault> {
          */
         public void appendElse(TCodeblock elseBody) {
             this.elseBody = elseBody;
-        }
-
-        @Override
-        // This was made by Copilot
-        // TODO: Test if this actually works
-        public String getContents(int depth) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("[" + ((Token<?>.TStatement) condition).getContents(0) + "] " + body.getContents(depth + 1));
-            if (elseIfs != null) {
-                for (TIfStatement t : elseIfs) {
-                    sb.append("\n" + "^ ".repeat(depth) + t.getContents(depth));
-                }
-            }
-            if (elseBody != null) {
-                sb.append("\n" + "^ ".repeat(depth) + "else " + elseBody.getContents(depth + 1));
-            }
-            return sb.toString();
         }
 
         @Override
@@ -465,19 +380,13 @@ public class Token<T extends TokenDefault> {
         public TCodeblock tryBlock;
         public TCodeblock catchBlock;
 
-        TTryCatchStatement(TCodeblock tryBlock) {
-            super("TTryCatchStatement");
+        TTryCatchStatement(TCodeblock tryBlock, int ln) {
+            super("TTryCatchStatement", ln);
             this.tryBlock = tryBlock;
         }
 
         public void appendCatchBlock(TCodeblock catchBlock) {
             this.catchBlock = catchBlock;
-        }
-
-        @Override
-        public String getContents(int depth) {
-            return "try " + tryBlock.getContents(depth + 1) + "\n" + "^ ".repeat(depth) + "catch "
-                    + catchBlock.getContents(depth + 1);
         }
 
         @Override
@@ -495,14 +404,9 @@ public class Token<T extends TokenDefault> {
     public class TThrowError extends TokenDefault {
         public String errorMessage;
 
-        TThrowError(String errorMessage) {
-            super("TThrowError");
+        TThrowError(String errorMessage, int ln) {
+            super("TThrowError", ln);
             this.errorMessage = errorMessage;
-        }
-
-        @Override
-        public String getContents(int depth) {
-            return name + ": " + errorMessage;
         }
 
         @Override
@@ -520,15 +424,10 @@ public class Token<T extends TokenDefault> {
         public Object functionName;
         public ArrayList<Object> args; // can be a TStatement, TFuncCall, TVarRef, or a primitive type
 
-        TFuncCall(Object name, ArrayList<Object> args) {
-            super("TFuncCall");
+        TFuncCall(Object name, ArrayList<Object> args, int ln) {
+            super("TFuncCall", ln);
             this.functionName = name;
             this.args = args;
-        }
-
-        @Override
-        public String getContents(int depth) {
-            return name + " " + args.toString();
         }
 
         @Override
@@ -552,20 +451,15 @@ public class Token<T extends TokenDefault> {
         public Object varName;
         public Object index = null;
 
-        TVarRef(Object name) {
-            super("TVarRef");
+        TVarRef(Object name, int ln) {
+            super("TVarRef", ln);
             this.varName = name;
         }
 
-        TVarRef(Object name, Object index) {
-            super("TVarRef");
+        TVarRef(Object name, Object index, int ln) {
+            super("TVarRef", ln);
             this.index = index;
             this.varName = name;
-        }
-
-        @Override
-        public String getContents(int depth) {
-            return name;
         }
 
         @Override
@@ -583,8 +477,8 @@ public class Token<T extends TokenDefault> {
     public class TLoopControl extends TokenDefault {
         public Keywords.LoopControl type;
 
-        TLoopControl(String type) throws UnknownSyntaxError {
-            super("TLoopControl");
+        TLoopControl(String type, int ln) throws UnknownSyntaxError {
+            super("TLoopControl", ln);
             if (type.equals(Keywords.LC_CONTINUE)) {
                 this.type = LoopControl.CONTINUE;
             } else if (type.equals(Keywords.LC_BREAK)) {
@@ -592,11 +486,6 @@ public class Token<T extends TokenDefault> {
             } else {
                 throw new UnknownSyntaxError("So we're in LoopControl but not correctly?");
             }
-        }
-
-        @Override
-        public String getContents(int depth) {
-            return name;
         }
 
         @Override
@@ -626,20 +515,21 @@ public class Token<T extends TokenDefault> {
          */
         public int statementType;
 
-        TStatement() {
-            super("TStatement");
+        TStatement(int ln) {
+            super("TStatement", ln);
         }
 
-        @Override
-        public String getContents(int depth) {
-            return (lHandSide == null || lHandSide == "null" ? "" : lHandSide.toString()) + " " + (op == null ? "" : op)
-                    + " " + (rHandSide == null || rHandSide == "null" ? "" : rHandSide.toString());
-        }
-
-        @Override
-        public String toString() {
-            return getContents(0);
-        }
+        // public String getContents(int depth) {
+        // return (lHandSide == null || lHandSide == "null" ? "" : lHandSide.toString())
+        // + " " + (op == null ? "" : op)
+        // + " " + (rHandSide == null || rHandSide == "null" ? "" :
+        // rHandSide.toString());
+        // }
+        // TODO: This is in a comment because it might be used somewhere, check that.
+        // @Override
+        // public String toString() {
+        // return getContents(0);
+        // }
 
         @Override
         public String toJson() {
@@ -666,7 +556,7 @@ public class Token<T extends TokenDefault> {
 
             ContextDispatcher d = new ContextDispatcher(statement);
             if (d.getDeligation() == To.PROCESS_CONTENT) {
-                return processContext(statement);
+                return processContext(statement, lineNumber);
             }
             this.statement = statement;
 
@@ -678,13 +568,13 @@ public class Token<T extends TokenDefault> {
             if (info.index == -1) {
                 // no operator found, so its a single value
                 // TODO: Validate this, Copilot gave me this if but i'm not sure ngl.
-                return processContext(statement);
+                return processContext(statement, lineNumber);
             }
 
-            lHandSide = handleNegatives(new TStatement().parse(statement.substring(0, info.index).trim()));
+            lHandSide = handleNegatives(new TStatement(lineNumber).parse(statement.substring(0, info.index).trim()));
             this.op = info.op.trim();
             rHandSide = handleNegatives(
-                    new TStatement().parse(statement.substring(info.index + info.op.length()).trim()));
+                    new TStatement(lineNumber).parse(statement.substring(info.index + info.op.length()).trim()));
             statementType = info.tStatementType;
             return ((Token<?>.TStatement) handleNegatives(this)).toToken();
         }
@@ -751,19 +641,19 @@ public class Token<T extends TokenDefault> {
      * @param line
      * @return
      */
-    public Object processContext(String line) {
+    public Object processContext(String line, int lineNumber) {
         line = line.trim(); // gotta trim da line fr
 
         ContextDispatcher d = new ContextDispatcher(line);
         if (d.getDeligation() == To.TSTATEMENT) {
-            return new TStatement().parse(line);
+            return new TStatement(lineNumber).parse(line);
         }
         int index = Find.lastOutermostBracePair(line);
 
         if (index == 0) {
             // the outmost pair is just () so its prolly a TStatement, remove the stuff then
             // parse as TStatement
-            return new TStatement().parse(line.substring(1, line.length() - 1));
+            return new TStatement(lineNumber).parse(line.substring(1, line.length() - 1));
         }
 
         if (index != -1 && (line.charAt(index) == '(')) {
@@ -773,14 +663,19 @@ public class Token<T extends TokenDefault> {
 
             ArrayList<String> args = new ArrayList<>(splitByTopLevelComma(params));
             ArrayList<Object> parsedArgs = new ArrayList<>();
-            args.forEach(arg -> parsedArgs.add(processContext((String) arg)));
-            return new TFuncCall(processContext(simplifyIdentifier(name, "F~")), parsedArgs).toToken();
+            args.forEach(arg -> parsedArgs.add(processContext((String) arg, lineNumber)));
+            return new TFuncCall(processContext(simplifyIdentifier(name, "F~"), lineNumber), parsedArgs,
+                    lineNumber).toToken();
         } else if (index != -1 && (line.charAt(index) == '[')) {
             // then its a variable call an array one to be specific
             // name[index]
             String name = line.substring(0, index).trim();
             String arrayIndex = line.substring(index + 1, line.length() - 1).trim();
-            return new TVarRef(processContext(simplifyIdentifier(name, "V~")), processContext(arrayIndex))
+            return new TVarRef(processContext(simplifyIdentifier(name, "V~"),
+                    lineNumber),
+                    processContext(arrayIndex,
+                            lineNumber),
+                    lineNumber)
                     .toToken();
         } else {
             // here, processTFuncCall will try to parse "line" as a primitive type. (if not
@@ -802,21 +697,21 @@ public class Token<T extends TokenDefault> {
                     if (line.startsWith("V~") || line.startsWith("F~")) {
                         return line.substring(2);
                     } else {
-                        return new TVarRef(line).toToken();
+                        return new TVarRef(line, lineNumber).toToken();
                     }
                 }
             }
         }
     }
 
-    public Object dispatchContext(String line) throws SyntaxCriticalError, SyntaxError {
+    public Object dispatchContext(String line, int lineNumber) throws SyntaxCriticalError, SyntaxError {
         line = line.trim();
         ContextDispatcher d = new ContextDispatcher(line);
         switch (d.getDeligation()) {
             case TSTATEMENT:
-                return new TStatement().parse(line);
+                return new TStatement(lineNumber).parse(line);
             case PROCESS_CONTENT:
-                return processContext(line);
+                return processContext(line, lineNumber);
             case SINGLE_BRACE, EMPTY_STRING:
                 throw new SyntaxError("malformed string.");
             default:

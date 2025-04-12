@@ -138,10 +138,6 @@ public class TokenDefault {
     public int lineNumber = 0;
     public ToJson json;
 
-    public String getContents(int depth) {
-        return "";
-    }
-
     public TokenDefault(String name) {
         this.name = name;
         this.json = new ToJson(name, getClass().getSimpleName(), -1);

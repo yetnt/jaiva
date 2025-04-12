@@ -36,7 +36,7 @@ public class Globals {
     class FKhuluma extends BaseFunction {
 
         FKhuluma(Token<?> container) {
-            super("khuluma", container.new TFunction("khuluma", new String[] { "msg" }, null));
+            super("khuluma", container.new TFunction("khuluma", new String[] { "msg" }, null, -1));
             this.freeze();
         }
 
@@ -69,7 +69,7 @@ public class Globals {
      */
     class FGetVarClass extends BaseFunction {
         FGetVarClass(Token<?> container) {
-            super("getVarClass", container.new TFunction("getVarClass", new String[] { "var" }, null));
+            super("getVarClass", container.new TFunction("getVarClass", new String[] { "var" }, null, -1));
             this.freeze();
         }
 
@@ -107,7 +107,7 @@ public class Globals {
     class VReservedKeywords extends BaseVariable {
         VReservedKeywords(Token<?> container) {
             super("reservedKeywords",
-                    container.new TArrayVar("reservedKeywords", new ArrayList<>(Arrays.asList(Keywords.all))));
+                    container.new TArrayVar("reservedKeywords", new ArrayList<>(Arrays.asList(Keywords.all)), -1));
             this.array.addAll(Arrays.asList(Keywords.all));
             this.freeze();
         }
@@ -115,7 +115,7 @@ public class Globals {
 
     class VJaivaVersion extends BaseVariable {
         VJaivaVersion(Token<?> container) {
-            super("version", container.new TStringVar("version", Main.version));
+            super("version", container.new TStringVar("version", Main.version, -1));
             try {
                 this.setScalar(Main.version);
             } catch (FrozenSymbolException e) {

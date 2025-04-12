@@ -1,5 +1,8 @@
 package com.jaiva.tokenizer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -40,28 +43,49 @@ public class Lang {
     public static String ASSIGNMENT = "<-";
     public static String THROW_ERROR = "<==";
     public static String ARRAY_ASSIGNMENT = "<-|";
-    @Deprecated
-    public static Set<String> ARITHMATIC_OPERATIONS = Set.of("+", "-", "*", "/",
-            "^", "%");
-    @Deprecated
-    public static Set<String> BOOLEAN_OPERATORS = Set.of(">=", "<=", "!=", "&&",
-            "||", "<", ">", "=", "&", "|");
 
-    /**
-     * Get the index of the operator in the given character array.
-     * 
-     * @param string
-     * @return
-     */
-    public static int getOperatorIndex(char[] string) {
-        for (int i = 0; i < string.length; i++) {
-            if (ARITHMATIC_OPERATIONS.contains(String.valueOf(string[i]))) {
-                return i;
-            }
-            if (BOOLEAN_OPERATORS.contains(String.valueOf(string[i]))) {
-                return i;
-            }
+    public class BODMAS {
+        public static final String Exponentiation = "^";
+        public static final List<String> DivMult = Arrays.asList("/", "*", "%");
+        public static final List<String> AddSub = Arrays.asList("+", "-");
+        public static final List<String> Bools = Arrays.asList("|", "&", ">", "<", "=");
+        public static final List<String> DoubleBools = Arrays.asList("||", "&&", "!=", ">=", "<=");
+
+        public static List<String> ARITHMATIC_OPERATIONS() {
+            List<String> all = new ArrayList<>();
+            all.add(Exponentiation);
+            all.addAll(DivMult);
+            all.addAll(AddSub);
+            return all;
         }
-        return -1;
+
+        public static List<String> BOOLEAN_OPERATORS() {
+            List<String> all = new ArrayList<>();
+            all.addAll(DoubleBools);
+            all.addAll(Bools);
+            return all;
+        }
+
+        public static List<String> getAll() {
+            List<String> all = new ArrayList<>();
+            all.add(Exponentiation);
+            all.addAll(DivMult);
+            all.addAll(AddSub);
+            all.addAll(DoubleBools);
+            all.addAll(Bools);
+            return all;
+        }
+
+        public static int getType(String op) {
+            if (Exponentiation.equals(op))
+                return 0;
+            else if (DivMult.contains(op))
+                return 1;
+            else if (AddSub.contains(op))
+                return 2;
+            else if (Bools.contains(op) || DoubleBools.contains(op))
+                return 3;
+            return -1;
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.jaiva.utils;
 
 import com.jaiva.tokenizer.Lang;
+import com.jaiva.tokenizer.Lang.BODMAS;
 import com.jaiva.tokenizer.Token;
 
 /**
@@ -39,17 +40,35 @@ public class Validate {
      * operators.
      * Returns 1 if an arithmetic operator is found, 0 if a boolean operator is
      * found, and -1 if no operators are found.
-     * 
+     *
      * @param string
      * @return
      */
     public static int containsOperator(char[] string) {
         for (char c : string) {
-            if (Lang.ARITHMATIC_OPERATIONS.contains(String.valueOf(c))) {
+            if (Lang.BODMAS.ARITHMATIC_OPERATIONS().contains(String.valueOf(c))) {
                 return 1;
             }
-            if (Lang.BOOLEAN_OPERATORS.contains(String.valueOf(c))) {
+            if (Lang.BODMAS.BOOLEAN_OPERATORS().contains(String.valueOf(c))) {
                 return 0;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Get the index of the operator in the given character array.
+     * 
+     * @param string
+     * @return
+     */
+    public static int getOperatorIndex(char[] string) {
+        for (int i = 0; i < string.length; i++) {
+            if (BODMAS.ARITHMATIC_OPERATIONS().contains(String.valueOf(string[i]))) {
+                return i;
+            }
+            if (BODMAS.BOOLEAN_OPERATORS().contains(String.valueOf(string[i]))) {
+                return i;
             }
         }
         return -1;
