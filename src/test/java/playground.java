@@ -2,48 +2,24 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.yetnt.tokenizer.ContextDispatcher;;
+import com.jaiva.tokenizer.Token;
+import com.jaiva.utils.ContextDispatcher;
 
 public class playground {
 
     public static void main(String[] args) {
-        ArrayList<String> testCases = new ArrayList<>(Arrays.asList(
-                "()",
-                "arr[2]",
-                "arr[2 - 4]",
-                "func(arr[2]) - arr[200]",
-                "[]",
-                "",
-                "a",
-                "1 + a",
-                "a + func(b)",
-                "1 + a - (a / b)",
-                ")",
-                "(",
-                "func()",
-                "func(func(d))",
-                "(1 - c) + n",
-                "func(a + b)",
-                "func(a + (b - a))",
-                "func(func(a - b))",
-                "func(func(a) | b)",
-                "func((1 > 1) | func(10))",
-                "(1 > 1) | func(10)",
-                "func(a) + b",
-                "func(func(b)) - a",
-                "func(a + func(c)) + v",
-                "func(2) > func(4)",
-                "func(func(b - g)) - func(c)",
-                "func(c) - func(c) -func(c) - func(func(c))",
-                "func(l) | (f > b)",
-                "arr[func(c) - func(c) -func(c) - func(func(c))]",
-                "func(c) - func(c) -func(c) - arr[func(c)]"));
+        // ContextDispatcher f = new ContextDispatcher("( 2 - h(10)[3] )");
+        // System.out.println(f.printCase());
 
-        testCases.forEach(c -> {
-            System.out.println();
-            ContextDispatcher d = new ContextDispatcher(c);
-            System.out.println(d.bits + " " + c + "\t\t| " + d.printCase() + " | " + d.toBitString());
-        });
+        // Token<?> tContainer = new Token<>(null);
+        // String input = "h(10)[3]";
 
+        // int index = tContainer.findLastOutermostBracePair(input);
+        // String name = input.substring(0, index);
+        // String params = input.substring(index + 1, input.length() - 1);
+
+        // System.out.println("Input Array:\t\t" + input);
+        // System.out.println("Array name :\t\t" + name);
+        // System.out.println("Array index:\t\t" + params);
     }
 }
