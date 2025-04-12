@@ -22,7 +22,50 @@ public class Tokenizer {
         if (line.indexOf(Lang.COMMENT) == -1)
             return line;
 
-        return line.substring(0, line.indexOf(Lang.COMMENT));
+        line = line.substring(0, line.indexOf(Lang.COMMENT));
+
+        return line;
+    }
+
+    /**
+     * Check if the array is only comments. This is used to check if the line
+     * contains only comments or not.
+     * 
+     * This is a helper method where a ! may be splitting inside a comment which had
+     * a double @ symbol.
+     * 
+     * @param arr
+     * @return
+     */
+    private static boolean arrayIsOnlyComments(String[] arr) {
+        if (arr.length > 2) {
+            for (String s : arr) {
+                if (!s.trim().isEmpty() && !s.trim().startsWith(Character.toString(Lang.COMMENT))) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            // if one of the elements is a comment, and the other isnt, return true.
+            // check both elements.
+            // otherwise return false.
+            if (arr[0].trim().isEmpty() && arr[1].trim().isEmpty()) {
+                return true;
+            } else if (arr[0].trim().isEmpty() && arr[1].trim().startsWith(Character.toString(Lang.COMMENT))) {
+                return true;
+            } else if (arr[0].trim().startsWith(Character.toString(Lang.COMMENT)) && arr[1].trim().isEmpty()) {
+                return true;
+            } else if (arr[0].trim().startsWith(Character.toString(Lang.COMMENT))
+                    && !arr[1].trim().startsWith(Character.toString(Lang.COMMENT))
+                    || !arr[0].trim()
+                            .startsWith(Character.toString(Lang.COMMENT))
+                            && arr[1].trim().startsWith(Character.toString(Lang.COMMENT))) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }
     }
 
     private static Object handleBlocks(boolean isComment, String line,
@@ -100,6 +143,7 @@ public class Tokenizer {
             throws Exception {
         type = multipleLinesOutput == null ? type : multipleLinesOutput.type;
         args = multipleLinesOutput == null ? args : multipleLinesOutput.args;
+        line = decimateSingleComments(line);
         Object output = handleBlocks(isComment, line + "\n", (Find.MultipleLinesOutput) multipleLinesOutput,
                 tokenizerLine, type, args, multipleLinesOutput != null ? multipleLinesOutput.specialArg : blockChain);
         if (output == null)
@@ -190,7 +234,7 @@ public class Tokenizer {
             }
             case "colonize": {
                 TNumberVar variable = (Token<TNumberVar>.TNumberVar) ((ArrayList<Token<?>>) readLine(
-                        "maak " + args[0].replace("(", "") + "!", "", null, null)).get(0).getValue();
+                        "maak " + args[0].replace("(", "").trim() + "!", "", null, null)).get(0).getValue();
 
                 Object obj = tContainer.new TStatement().parse(args[1]);
                 if (Validate.isValidBoolInput(obj)) {
@@ -198,7 +242,7 @@ public class Tokenizer {
                 } else {
                     throw new TokenizerSyntaxException("Ayo the condiiton gotta resolve to a boolean dawg.");
                 }
-                specific = tContainer.new TForLoop(variable, obj, args[2].substring(0, args[2].length() - 1).trim(),
+                specific = tContainer.new TForLoop(variable, obj, args[2].replace(")", "").trim(),
                         codeblock).toToken();
                 break;
             }
@@ -363,7 +407,8 @@ public class Tokenizer {
         // line.charAt(line.indexOf('-') - 1) != '$' && line
         // .charAt(line.indexOf('-') - 1) != '<'));
 
-        if (line.contains(Lang.BLOCK_OPEN) && type == null && !line.startsWith(Character.toString(Lang.COMMENT)))
+        if ((line.contains(Lang.BLOCK_OPEN) && line.indexOf(Lang.BLOCK_OPEN) < line.indexOf("\n")) && type == null
+                && !line.startsWith(Character.toString(Lang.COMMENT)))
             // A block of code but the type waws not catched, invaliud keyword then.
             // This is a syntax error.
             throw new SyntaxCriticalError(line.split(" ")[0] + " aint a real keyword homie.");
@@ -373,7 +418,7 @@ public class Tokenizer {
         boolean containsNewln = line.contains("\n");
         String[] lines = containsNewln ? line.split("\n") : line.split("(?<!\\$)!(?!\\=)");
 
-        if (lines.length > 1 && !lines[1].isEmpty()) {
+        if (lines.length > 1 && !lines[1].isEmpty() && !arrayIsOnlyComments(lines)) {
             // System.out.println("Multiple lines detected!");
             // multiple lines.
             Find.MultipleLinesOutput m = null;
@@ -412,7 +457,6 @@ public class Tokenizer {
             }
             return tokens;
         }
-        line = line.trim(); // The actual current line.
         String tokenizerLine = previousLine.trim() + line; // The entire line to the tokenizer.
 
         // System.out.println("sdfsdfd");
@@ -437,7 +481,7 @@ public class Tokenizer {
         // if its anything after this the line has to end in a ! or else invalid syntax.
         // (All other methods which did the ! will be redundant as we can just check
         // here.)
-        line = decimateSingleComments(line);
+        line = decimateSingleComments(line).trim();
         if (line.isEmpty())
             return null;
 
@@ -450,14 +494,14 @@ public class Tokenizer {
 
         // #STRING# is (khutla 100!) syntax which is a function return.
 
-        if (line.startsWith(Keywords.THROW) && line.contains(Lang.THROW_ERROR)) {
+        if (line.startsWith(Keywords.THROW)) {
             // Remove keyword 'cima' and operator '<=='
             line = line.trim();
             String withoutKeyword = line.substring(Keywords.THROW.length()).trim();
             // Split on the operator "<=="
             String[] parts = withoutKeyword.split(Lang.THROW_ERROR);
             if (parts.length != 2) {
-                throw new SyntaxCriticalError("Ehh baba you must use the right syntax to throw an error.");
+                throw new SyntaxCriticalError("Ehh baba you must use the right syntax if u wanna cima this process.");
             }
             String errorMessage = parts[1].trim();
             if (errorMessage.startsWith("\"") && errorMessage.endsWith("\"") && errorMessage.length() >= 2) {
