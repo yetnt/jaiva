@@ -5,12 +5,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import com.jaiva.tokenizer.EscapeSequence;
+import com.jaiva.tokenizer.Keywords;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.TokenDefault;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TFunction;
 import com.jaiva.tokenizer.Token.TStatement;
 import com.jaiva.tokenizer.Token.TVarRef;
+import com.jaiva.errors.IntErrs.FrozenSymbolException;
 import com.jaiva.errors.IntErrs.UnknownVariableException;
 import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
 import com.jaiva.interpreter.symbol.*;
@@ -23,6 +25,7 @@ public class Globals {
         vfs.put("khuluma", new MapValue(new FKhuluma(container)));
         vfs.put("getVarClass", new MapValue(new FGetVarClass(container)));
         vfs.put("reservedKeywords", new MapValue(new VReservedKeywords(container)));
+        vfs.put("version", new MapValue(new VJaivaVersion(container)));
     }
 
     /**
@@ -102,14 +105,23 @@ public class Globals {
      */
     class VReservedKeywords extends BaseVariable {
         VReservedKeywords(Token<?> container) {
-            super("reservedKeywords", container.new TArrayVar("reservedKeywords", new ArrayList<>(Arrays.asList(
-                    "maak", "if", "mara", "zama zama",
-                    "kwenza", "cima", "colonize", "chaai", "khutla", "with",
-                    "nikhil", "kota", "voetsek", "nevermind"))));
-            this.array.addAll(Arrays.asList(
-                    "maak", "if", "mara", "zama zama",
-                    "kwenza", "cima", "colonize", "chaai", "khutla", "with",
-                    "nikhil", "kota", "voetsek", "nevermind"));
+            super("reservedKeywords",
+                    container.new TArrayVar("reservedKeywords", new ArrayList<>(Arrays.asList(Keywords.all))));
+            this.array.addAll(Arrays.asList(Keywords.all));
+            this.freeze();
+        }
+    }
+
+    class VJaivaVersion extends BaseVariable {
+        VJaivaVersion(Token<?> container) {
+            super("version", container.new TStringVar("version", "0.1.0"));
+            try {
+                this.setScalar("0.1.0");
+            } catch (FrozenSymbolException e) {
+                // This should never happen, but catch it so java doesnt complain. Damn you
+                // java.
+                e.printStackTrace();
+            }
             this.freeze();
         }
     }
