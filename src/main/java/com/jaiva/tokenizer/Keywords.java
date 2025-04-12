@@ -7,6 +7,7 @@ package com.jaiva.tokenizer;
  * These keywords are mapped to specific string values.
  */
 public class Keywords {
+
     public static String WHILE = "nikhil";
     public static String D_VAR = "maak";
     public static String IF = "if";
@@ -23,6 +24,9 @@ public class Keywords {
     public static String LC_BREAK = "voetsek";
     public static String LC_CONTINUE = "nevermind";
     public static String UNDEFINED = "idk";
+
+    public static String[] all = { D_VAR, WHILE, IF, ELSE, FALSE, TRUE, CONSOLE_LOG, D_FUNCTION, RETURN, FOR,
+            TRY, CATCH, THROW, LC_BREAK, LC_CONTINUE, UNDEFINED };
 
     enum LoopControl {
         BREAK, CONTINUE
