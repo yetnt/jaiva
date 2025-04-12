@@ -12,6 +12,7 @@ import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TFunction;
 import com.jaiva.tokenizer.Token.TStatement;
 import com.jaiva.tokenizer.Token.TVarRef;
+import com.jaiva.Main;
 import com.jaiva.errors.IntErrs.FrozenSymbolException;
 import com.jaiva.errors.IntErrs.UnknownVariableException;
 import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
@@ -114,9 +115,9 @@ public class Globals {
 
     class VJaivaVersion extends BaseVariable {
         VJaivaVersion(Token<?> container) {
-            super("version", container.new TStringVar("version", "0.1.0"));
+            super("version", container.new TStringVar("version", Main.version));
             try {
-                this.setScalar("0.1.0");
+                this.setScalar(Main.version);
             } catch (FrozenSymbolException e) {
                 // This should never happen, but catch it so java doesnt complain. Damn you
                 // java.
