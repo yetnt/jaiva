@@ -55,8 +55,8 @@ public class ContextDispatcher {
             bits |= 0b10000;
             return;
         }
-        int opIndex = Validate.getOperatorIndex(line.toCharArray()) != -1
-                ? Validate.getOperatorIndex(line.toCharArray())
+        int opIndex = Find.operatorIndex(line.toCharArray()) != -1
+                ? Find.operatorIndex(line.toCharArray())
                 : Integer.MAX_VALUE; // this is so EB can be handled properly.
         // SB = line.startsWith("(");
         EO = Validate.containsOperator(line.toCharArray()) != -1;

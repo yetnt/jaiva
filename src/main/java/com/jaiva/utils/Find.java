@@ -352,14 +352,40 @@ public class Find {
     }
 
     /**
-     * Finds the oeprator index in respects to braces. This is meant for the
-     * TStatement class.
-     * <p>
-     * into respects.
+     * Determines the least important operator in a given mathematical or logical
+     * statement.
+     * The method analyzes the statement to find operators outside of parentheses or
+     * brackets,
+     * categorizes them by precedence, and identifies the least important operator
+     * based on
+     * its type and position.
      * 
-     * @param statement
-     * @param operator
-     * @return
+     * This is for the TStatement class to use.
+     *
+     * @param statement The input string representing a mathematical or logical
+     *                  expression.
+     *                  It may contain operators, parentheses, and brackets.
+     * @return A {@code LeastImportantOperator} object containing the operator, its
+     *         position,
+     *         and its precedence group. If no operator is found, an empty
+     *         {@code LeastImportantOperator} object is returned.<br>
+     *
+     *         The method works as follows:<br>
+     *         1. Iterates through the statement to identify operators outside of
+     *         parentheses or brackets.<br>
+     *         2. Categorizes operators by precedence groups (e.g., exponentiation,
+     *         multiplication/division,
+     *         addition/subtraction, boolean operators).<br>
+     *         3. Identifies the least important operator based on its precedence
+     *         group and position.<br>
+     *         4. Handles multi-character operators (e.g., "&&", "||", ">=", "<=",
+     *         "==").<br>
+     *         <br>
+     *
+     *         Note: The method assumes the existence of helper classes and methods
+     *         such as<br>
+     *         {@code Validate.isOperator(char)}, {@code Operators.getAll()}, and
+     *         {@code Operators.getType(String)}.
      */
     public static LeastImportantOperator leastImportantOperator(String statement) {
         int level = 0;
@@ -397,16 +423,43 @@ public class Find {
         List<Character> multiOpChars = Arrays.asList('|', '&', '>', '<', '='); // If the op is 2 chars long, it's last
                                                                                // char must be one of these.
 
-        // The operator can sometimes be the length of 2
-        String op = statement.substring(indexes2.getLast(),
-                multiOpChars.contains(statement.charAt(indexes2.getLast() + 1)) ? (indexes2.getLast() + 2)
-                        : (indexes2
-                                .getLast() + 1));
+        if (indexes2.isEmpty())
+            return new LeastImportantOperator();
+        int finalIndex = indexes2.getLast();
 
-        return indexes2.isEmpty() ? new LeastImportantOperator()
-                : new LeastImportantOperator(
-                        op, indexes2.getLast(),
-                        group);
+        if (indexes2.size() > 1 && (statement.charAt(indexes2.getLast()) == '-')) {
+            int opBeforePossiblyUnary = indexes2.get(indexes2.size() - 2);
+            finalIndex = Validate.isUnaryMinus(indexes2.getLast(), opBeforePossiblyUnary, statement)
+                    ? opBeforePossiblyUnary
+                    : indexes2.getLast();
+        }
+
+        // The operator can sometimes be the length of 2
+        String op = statement.substring(finalIndex,
+                multiOpChars.contains(statement.charAt(finalIndex + 1)) ? (finalIndex + 2)
+                        : (finalIndex + 1));
+
+        return new LeastImportantOperator(
+                op, finalIndex,
+                group);
+    }
+
+    /**
+     * Get the index of the operator in the given character array.
+     * 
+     * @param string
+     * @return
+     */
+    public static int operatorIndex(char[] string) {
+        for (int i = 0; i < string.length; i++) {
+            if (Operators.getArithmetic().contains(String.valueOf(string[i]))) {
+                return i;
+            }
+            if (Operators.getBoolean().contains(String.valueOf(string[i]))) {
+                return i;
+            }
+        }
+        return -1;
     }
 
 }

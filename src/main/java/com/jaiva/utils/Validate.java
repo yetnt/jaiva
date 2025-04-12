@@ -1,7 +1,6 @@
 package com.jaiva.utils;
 
 import com.jaiva.tokenizer.Lang;
-import com.jaiva.tokenizer.Lang.Operators;
 import com.jaiva.tokenizer.Token;
 
 /**
@@ -56,21 +55,7 @@ public class Validate {
         return -1;
     }
 
-    /**
-     * Get the index of the operator in the given character array.
-     * 
-     * @param string
-     * @return
-     */
-    public static int getOperatorIndex(char[] string) {
-        for (int i = 0; i < string.length; i++) {
-            if (Operators.getArithmetic().contains(String.valueOf(string[i]))) {
-                return i;
-            }
-            if (Operators.getBoolean().contains(String.valueOf(string[i]))) {
-                return i;
-            }
-        }
-        return -1;
+    public static boolean isUnaryMinus(int unaryMinusIndex, int opBeforeUnaryMinusIndex, String inputString) {
+        return inputString.substring(opBeforeUnaryMinusIndex + 1, unaryMinusIndex).trim().isEmpty();
     }
 }
