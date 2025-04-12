@@ -12,7 +12,7 @@ After unzipping the distribution, follow these instructions based on your operat
     chmod +x /opt/jaiva/jaiva
     ```
 
-    > ![WARNING]
+    > [!WARNING]
     > If you install an update, which means replacing the old foler with the new one, you may want to run the above script again, just to make sure the permissions are ight yknow.
 
 4. Add the folder to your PATH by adding this line to your shell configuration file (e.g., `~/.bashrc`):

@@ -7,7 +7,7 @@ Simple CLI Ngl.
 > jaiva <filePath> [-t | -s]
 ```
 
-1. (No flags) launches basic interactive REPL.
+1. (No flags) launches interactive REPL.
 
     ```sh
     > jaiva
