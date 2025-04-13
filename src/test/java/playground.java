@@ -1,25 +1,17 @@
-
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import com.jaiva.tokenizer.Token;
-import com.jaiva.utils.ContextDispatcher;
+import com.jaiva.utils.Find;
+import com.jaiva.utils.Tuple2;
 
 public class playground {
 
     public static void main(String[] args) {
-        // ContextDispatcher f = new ContextDispatcher("( 2 - h(10)[3] )");
-        // System.out.println(f.printCase());
+        System.out.println("sfddf".equals("sfddf"));
+        // String line = "A string with\" some more strings\" inside fr \" lol \"";
+        // ArrayList<Tuple2<Integer, Integer>> arr = Find.quotationPairs(line);
 
-        // Token<?> tContainer = new Token<>(null);
-        // String input = "h(10)[3]";
-
-        // int index = tContainer.findLastOutermostBracePair(input);
-        // String name = input.substring(0, index);
-        // String params = input.substring(index + 1, input.length() - 1);
-
-        // System.out.println("Input Array:\t\t" + input);
-        // System.out.println("Array name :\t\t" + name);
-        // System.out.println("Array index:\t\t" + params);
+        // for (Tuple2<Integer, Integer> tuple2 : arr) {
+        // System.out.println(line.substring(tuple2.first + 1, tuple2.second));
+        // }
     }
 }
