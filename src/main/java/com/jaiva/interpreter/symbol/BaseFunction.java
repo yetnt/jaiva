@@ -1,15 +1,20 @@
 package com.jaiva.interpreter.symbol;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import com.jaiva.errors.IntErrs.FunctionParametersException;
+import com.jaiva.errors.IntErrs.UnknownVariableException;
+import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
 import com.jaiva.interpreter.Context;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
+import com.jaiva.interpreter.Primitives;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TFunction;
+import com.jaiva.tokenizer.Token.TVarRef;
 
 public class BaseFunction extends Symbol {
 
@@ -58,6 +63,7 @@ public class BaseFunction extends Symbol {
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs)
                 throws Exception {
+            Token<?> tContainer = new Token<>(null);
             // tFuncCall contains the the token, we pass it for any extra checks we need to
             // do later.
             // params contains the input for the function.
@@ -69,10 +75,61 @@ public class BaseFunction extends Symbol {
                 throw new FunctionParametersException(this, params.size());
             for (int i = 0; i < paramNames.length; i++) {
                 String name = paramNames[i];
-                newVfs.put(name, new MapValue(params.get(i)));
+                Object value = params.get(i);
+                Object wrappedValue = null;
+
+                if (name.startsWith("F~")
+                        && (value instanceof Token<?> && ((Token<?>) value).getValue() instanceof TVarRef)) {
+                    // value is definitely a TVarRef, so look for the function in vfs, if not found
+                    // throw an error
+                    // if found, create aq copy of that MapValue, and name it to instead this new
+                    // name and add to the vfs.
+                    TVarRef tVarRef = (TVarRef) ((Token<?>) value).getValue();
+                    MapValue v = vfs.get(tVarRef.varName);
+                    if (v == null)
+                        throw new UnknownVariableException(tVarRef);
+                    if (!(v.getValue() instanceof BaseFunction))
+                        throw new WtfAreYouDoingException(v.getValue(), BaseFunction.class, tVarRef.lineNumber);
+
+                    wrappedValue = v.getValue();
+
+                } else if (name.startsWith("V~")
+                        || (value instanceof Token<?> && ((Token<?>) value).getValue() instanceof TVarRef)) {
+                    // value is definitely a TVarRef, so look for the variable in vfs, if not found
+                    // throw an error
+                    // if found, create aq copy of that MapValue, and name it to instead this new
+                    // name and add to the vfs.
+                    TVarRef tVarRef = (TVarRef) ((Token<?>) value).getValue();
+                    MapValue v = vfs.get(tVarRef.varName);
+                    if (v == null)
+                        throw new UnknownVariableException(tVarRef);
+                    if (!(v.getValue() instanceof BaseVariable))
+                        throw new WtfAreYouDoingException(v.getValue(), BaseVariable.class, tVarRef.lineNumber);
+
+                    wrappedValue = v.getValue();
+                } else if (Primitives.isPrimitive(value)) {
+                    // primitivers ong
+                    wrappedValue = BaseVariable.create(name,
+                            tContainer.new TUnknownVar(name, value, tFuncCall.lineNumber),
+                            new ArrayList<>(Arrays.asList(value)));
+
+                } else {
+                    // cacthes nested calls, operations and others
+                    Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), vfs);
+                    wrappedValue = BaseVariable.create(name,
+                            tContainer.new TUnknownVar(name, o, tFuncCall.lineNumber),
+                            new ArrayList<>(Arrays.asList(o)));
+                }
+                newVfs.put(name.replace("F~", "").replace("V~", ""), new MapValue(wrappedValue));
             }
-            return Interpreter.interpret((ArrayList<Token<?>>) ((TFunction) this.token).body.lines, Context.FUNCTION,
+            Object t = Interpreter.interpret((ArrayList<Token<?>>) ((TFunction) this.token).body.lines,
+                    Context.FUNCTION,
                     newVfs);
+            if (t instanceof Interpreter.ThrowIfGlobalContext) {
+                return ((Interpreter.ThrowIfGlobalContext) t).c;
+            } else {
+                return void.class;
+            }
         }
     }
 }
