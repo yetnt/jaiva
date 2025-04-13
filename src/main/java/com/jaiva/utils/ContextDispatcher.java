@@ -52,6 +52,11 @@ public class ContextDispatcher {
 
     public ContextDispatcher(String line) {
         line = line.trim();
+        // Extra special case, encased in quotes, so go to processContext
+        if (line.startsWith("\"") && line.endsWith("\"") && Find.quotationPairs(line).size() == 1) {
+            bits = 0b10001;
+            return;
+        }
         if (line.isEmpty()) {
             SE = true;
             bits |= 0b10000;
@@ -90,10 +95,6 @@ public class ContextDispatcher {
                             // function call
                             // so bump brac es closed bit
 
-        // Extra special case, encased in quotes, so go to processContext
-        ArrayList<Tuple2<Integer, Integer>> quotes = Find.quotationPairs(line);
-        if (line.startsWith("\"") && line.endsWith("\"") && quotes.size() == 1)
-            bits = 0b10001;
     }
 
     public String toBitString() {
