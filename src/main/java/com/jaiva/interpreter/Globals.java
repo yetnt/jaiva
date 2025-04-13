@@ -107,23 +107,17 @@ public class Globals {
     class VReservedKeywords extends BaseVariable {
         VReservedKeywords(Token<?> container) {
             super("reservedKeywords",
-                    container.new TArrayVar("reservedKeywords", new ArrayList<>(Arrays.asList(Keywords.all)), -1));
-            this.array.addAll(Arrays.asList(Keywords.all));
+                    container.new TArrayVar("reservedKeywords", new ArrayList<>(Arrays.asList(Keywords.all)), -1),
+                    new ArrayList<>(Arrays.asList(Keywords.all)));
             this.freeze();
         }
     }
 
     class VJaivaVersion extends BaseVariable {
         VJaivaVersion(Token<?> container) {
-            super("version", container.new TStringVar("version", Main.version, -1));
-            try {
-                this.setScalar(Main.version);
-            } catch (FrozenSymbolException e) {
-                // This should never happen, but catch it so java doesnt complain. Damn you
-                // java.
-                e.printStackTrace();
-            }
+            super("version", container.new TStringVar("version", Main.version, -1), Main.version);
             this.freeze();
         }
     }
+
 }

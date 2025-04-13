@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import com.jaiva.errors.IntErrs.*;
+import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.tokenizer.Keywords;
 import com.jaiva.tokenizer.Token;
@@ -12,6 +13,7 @@ import com.jaiva.tokenizer.Token.TArrayVar;
 import com.jaiva.tokenizer.Token.TBooleanVar;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TFuncReturn;
+import com.jaiva.tokenizer.Token.TFunction;
 import com.jaiva.tokenizer.Token.TIfStatement;
 import com.jaiva.tokenizer.Token.TLoopControl;
 import com.jaiva.tokenizer.Token.TNumberVar;
@@ -22,42 +24,48 @@ import com.jaiva.tokenizer.Token.TVarReassign;
 import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.tokenizer.Token.TVoidValue;
 import com.jaiva.tokenizer.Token.TWhileLoop;
-import com.jaiva.utils.Validate;
 import com.jaiva.tokenizer.TokenDefault;
-import com.jaiva.tokenizer.Keywords.LoopControl;
 
 public class Interpreter {
 
-    public static boolean isPrimitive(Object t) {
-        return t instanceof Boolean || t instanceof Integer
-                || t instanceof Double || t instanceof String;
+    public static class ThrowIfGlobalContext {
+        public int lineNumber = 0;
+        public Object c;
+
+        public ThrowIfGlobalContext(Object cObject, int ln) {
+            c = cObject;
+            lineNumber = ln;
+        }
+    }
+
+    public static ThrowIfGlobalContext throwIfGlobalContext(Context context, Object lc, int lineNumber)
+            throws WtfAreYouDoingException {
+        if (lc instanceof ThrowIfGlobalContext) {
+            lc = ((ThrowIfGlobalContext) lc).c;
+        }
+        if (lc instanceof Keywords.LoopControl) {
+            if (context == Context.GLOBAL)
+                throw new WtfAreYouDoingException("So. You tried using "
+                        + (lc.toString().equals("BREAK") ? Keywords.LC_BREAK : Keywords.LC_CONTINUE) + " on line "
+                        + lineNumber
+                        + ". But like, we're not in a loop yknow? ");
+        } else if (Primitives.isPrimitive(lc)) {
+            // a function return thing then
+            if (context == Context.GLOBAL)
+                throw new WtfAreYouDoingException(
+                        "What are you trying to return out of on line " + lineNumber
+                                + " if we're not in a function??");
+
+        }
+        return new ThrowIfGlobalContext(lc, lineNumber);
     }
 
     public static boolean isVariableToken(Object t) {
         return t instanceof TStatement || t instanceof TNumberVar || t instanceof TBooleanVar || t instanceof TArrayVar
                 || t instanceof TStringVar
                 || t instanceof TUnknownVar || t instanceof TVarReassign || t instanceof TVarRef
-                || t instanceof TFuncCall || t instanceof TStatement || isPrimitive(t);
-    }
-
-    /**
-     * Parses a non-primitive object and converts it to a token representation if
-     * applicable.
-     * 
-     * @param t The object to be parsed. It can be an instance of TStatement,
-     *          TVarRef, TFuncCall,
-     *          or any other type.
-     * @return If the object is an instance of TStatement, TVarRef, or TFuncCall, it
-     *         returns the
-     *         result of their respective `toToken()` method. Otherwise, it returns
-     *         the object itself.
-     */
-    public static Object parseNonPrimitive(Object t) {
-        return t instanceof TStatement
-                ? ((TStatement) t).toToken()
-                : t instanceof TVarRef ? ((TVarRef) t).toToken()
-                        : t instanceof TFuncCall ? ((TFuncCall) t).toToken()
-                                : t;
+                || t instanceof TFuncCall || t instanceof TStatement || t instanceof TFunction
+                || Primitives.isPrimitive(t);
     }
 
     /**
@@ -99,17 +107,24 @@ public class Interpreter {
                     new ArrayList<>(Arrays.asList(bool)));
             vfs.put(((TBooleanVar) t).name, new MapValue(var));
         } else if (t instanceof TStringVar) {
+            Object string = Primitives.toPrimitive(((TStringVar) t).value, vfs);
             BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
-                    new ArrayList<>(Arrays.asList(((TStringVar) t).value)));
+                    new ArrayList<>(Arrays.asList(string)));
             vfs.put(((TStringVar) t).name, new MapValue(var));
         } else if (t instanceof TUnknownVar) {
+            Object something = Primitives.toPrimitive(((TUnknownVar) t).value, vfs);
             BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
-                    new ArrayList<>(Arrays.asList(((TUnknownVar) t).value)));
+                    something instanceof ArrayList ? (ArrayList) something : new ArrayList<>(Arrays.asList(something)));
             vfs.put(((TUnknownVar) t).name, new MapValue(var));
         } else if (t instanceof TArrayVar) {
             BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                     new ArrayList<Object>(((TArrayVar) t).contents));
             vfs.put(((TArrayVar) t).name, new MapValue(var));
+        } else if (t instanceof TFunction) {
+            TFunction function = (TFunction) t;
+            String name = function.name.replace("F~", "");
+            BaseFunction func = BaseFunction.create(name, function);
+            vfs.put(name, new MapValue(func));
         } else if (t instanceof TVarReassign) {
             // TODO: Handle array reassignment. like arr[0] <- 1 or arr[2][3][4] <- 1
             MapValue mapValue = vfs.get(((TVarReassign) t).name);
@@ -120,12 +135,12 @@ public class Interpreter {
 
             BaseVariable var = (BaseVariable) mapValue.getValue();
             if (var.isFrozen)
-                throw new FrozenSymbolException(var);
+                throw new FrozenSymbolException(var, ((TVarReassign) t).lineNumber);
             // if (!isVariableToken(((TVarReassign) t).newValue))
             // throw new WtfAreYouDoingException(
             // ((TVarReassign) t).newValue + " isn't like a valid var thingy yknow??");
 
-            var.setScalar(Primitives.toPrimitive(((TVarReassign) t).newValue, vfs));
+            var.s_set(Primitives.toPrimitive(((TVarReassign) t).newValue, vfs));
             // so hopefully this chanegs the instance and yeah 👍
         } else {
             // here its a primitive being parsed or recursively called
@@ -170,11 +185,13 @@ public class Interpreter {
                         : handleVariables(token, vfs);
                 // If it returns a meaningful value, then oh well, because in this case they
                 // basically called a function that returned soemthing but dont use that value.
+            } else if (token instanceof TVoidValue) {
+                // void
+                continue;
             } else if (token instanceof TFuncReturn) {
-                if (context != Context.FUNCTION)
-                    throw new WtfAreYouDoingException(
-                            "What are you trying to return out of if we're not in a function??");
-                return handleVariables(((TFuncReturn) token).value, vfs);
+                Object c = handleVariables(((TFuncReturn) token).value, vfs);
+                ThrowIfGlobalContext g = throwIfGlobalContext(context, c, token.lineNumber);
+                return g;
             } else if (token instanceof TLoopControl) {
                 TLoopControl loopControl = (TLoopControl) token;
                 // if (loopControl.type == Keywords.LoopControl.CONTINUE && context !=
@@ -186,15 +203,14 @@ public class Interpreter {
                 // throw new WtfAreYouDoingException(
                 // "kanti why is there a voetsek on line " + loopControl.lineNumber);
 
-                return loopControl.type;
+                Object lc = loopControl.type;
+                ThrowIfGlobalContext g = throwIfGlobalContext(context, lc, loopControl.lineNumber);
+                return g;
 
-            } else if (token instanceof TVoidValue) {
-                // void
-                continue;
             } else if (token instanceof TWhileLoop) {
                 // while loop
                 TWhileLoop whileLoop = (TWhileLoop) token;
-                Object cond = handleVariables(parseNonPrimitive(whileLoop.condition), vfs);
+                Object cond = handleVariables(Primitives.parseNonPrimitive(whileLoop.condition), vfs);
                 if (!(cond instanceof Boolean))
                     throw new TStatementResolutionException(
                             whileLoop, ((TStatement) whileLoop.condition),
@@ -204,13 +220,21 @@ public class Interpreter {
 
                 while (((Boolean) cond).booleanValue() && !terminate) {
                     Object out = Interpreter.interpret(whileLoop.body.lines, Context.WHILE, vfs);
-                    if (out instanceof Keywords.LoopControl && (Keywords.LoopControl) out == Keywords.LoopControl.BREAK)
-                        break;
+                    if (out instanceof ThrowIfGlobalContext) {
+                        ThrowIfGlobalContext g = (ThrowIfGlobalContext) out;
+                        ThrowIfGlobalContext checker = throwIfGlobalContext(context, out, g.lineNumber);
+                        // if (Primitives.isPrimitive(checker.c))
+                        // return checker;
+
+                        if (checker.c instanceof Keywords.LoopControl && checker.c == Keywords.LoopControl.BREAK)
+                            break;
+                        return checker;
+                    }
 
                     // they may re assign it midway, so lets check for dat fr
                     // TODO: comeacvkl
 
-                    cond = handleVariables(parseNonPrimitive(whileLoop.condition), vfs);
+                    cond = handleVariables(Primitives.parseNonPrimitive(whileLoop.condition), vfs);
                     if (!(cond instanceof Boolean))
                         throw new TStatementResolutionException(
                                 whileLoop, ((TStatement) whileLoop.condition),
@@ -222,7 +246,7 @@ public class Interpreter {
                 TIfStatement ifStatement = (TIfStatement) token;
                 if (!(ifStatement.condition instanceof TStatement))
                     throw new WtfAreYouDoingException("Okay well idk how i will check for true in " + ifStatement);
-                Object cond = handleVariables(parseNonPrimitive(ifStatement.condition), vfs);
+                Object cond = handleVariables(Primitives.parseNonPrimitive(ifStatement.condition), vfs);
                 if (!(cond instanceof Boolean))
                     throw new TStatementResolutionException(ifStatement, ((TStatement) ifStatement.condition),
                             "boolean", cond.getClass().getName());
@@ -231,8 +255,11 @@ public class Interpreter {
                 if (((Boolean) cond).booleanValue()) {
                     // run if code.
                     Object out = Interpreter.interpret(ifStatement.body.lines, Context.IF, vfs);
-                    if (out instanceof Keywords.LoopControl || isPrimitive(out))
-                        return out;
+                    if (out instanceof ThrowIfGlobalContext) {
+                        ThrowIfGlobalContext g = (ThrowIfGlobalContext) out;
+                        ThrowIfGlobalContext checker = throwIfGlobalContext(context, out, g.lineNumber);
+                        return checker;
+                    }
                 } else {
                     // check for else branches first
                     boolean runElseBlock = true;
@@ -242,7 +269,7 @@ public class Interpreter {
                             throw new WtfAreYouDoingException(
                                     "Okay well idk how i will check for true in " + elseIf);
                         Object cond2 = handleVariables(
-                                parseNonPrimitive(elseIf.condition), vfs);
+                                Primitives.parseNonPrimitive(elseIf.condition), vfs);
                         if (!(cond2 instanceof Boolean))
                             throw new TStatementResolutionException(
                                     elseIf, ((TStatement) elseIf.condition),
@@ -250,8 +277,11 @@ public class Interpreter {
                         if (((Boolean) cond2).booleanValue() == true) {
                             // run else if code.
                             Object out = Interpreter.interpret(elseIf.body.lines, Context.ELSE, vfs);
-                            if (out instanceof Keywords.LoopControl || isPrimitive(out))
-                                return out;
+                            if (out instanceof ThrowIfGlobalContext) {
+                                ThrowIfGlobalContext g = (ThrowIfGlobalContext) out;
+                                ThrowIfGlobalContext checker = throwIfGlobalContext(context, out, g.lineNumber);
+                                return checker;
+                            }
                             runElseBlock = false;
                             break;
                         }
@@ -259,8 +289,11 @@ public class Interpreter {
                     if (runElseBlock && ifStatement.elseBody != null) {
                         // run else block.
                         Object out = Interpreter.interpret(ifStatement.elseBody.lines, Context.ELSE, vfs);
-                        if (out instanceof Keywords.LoopControl || isPrimitive(out))
-                            return out;
+                        if (out instanceof ThrowIfGlobalContext) {
+                            ThrowIfGlobalContext g = (ThrowIfGlobalContext) out;
+                            ThrowIfGlobalContext checker = throwIfGlobalContext(context, out, g.lineNumber);
+                            return checker;
+                        }
                     }
                 }
                 // if statement handling above

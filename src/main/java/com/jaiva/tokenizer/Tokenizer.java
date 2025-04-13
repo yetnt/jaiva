@@ -11,6 +11,7 @@ import com.jaiva.tokenizer.Token.TUnknownVar;
 import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.utils.BlockChain;
 import com.jaiva.utils.Find;
+import com.jaiva.utils.Tuple2;
 import com.jaiva.utils.Validate;
 
 public class Tokenizer {
@@ -327,7 +328,9 @@ public class Tokenizer {
         }
         int stringStart = line.indexOf("\"");
         int stringEnd = Find.closingCharIndex(line, '"', '"');
-        if (stringStart != -1 && stringEnd != -1) {
+        ArrayList<Tuple2<Integer, Integer>> quotepairs = Find.quotationPairs(line);
+        if (stringStart != -1 && stringEnd != -1 && quotepairs.size() == 1
+                && (line.charAt(line.length() - 1) == '"' && line.split(Lang.ASSIGNMENT)[1].trim().charAt(0) == '"')) {
             isString = true;
             String encasedString = line.substring(stringStart + 1, stringEnd);
             line = line.substring(0, stringStart - 1) + encasedString;

@@ -1,13 +1,17 @@
 package com.jaiva.interpreter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
+import com.jaiva.errors.IntErrs.StringCalcException;
 import com.jaiva.errors.IntErrs.TStatementResolutionException;
 import com.jaiva.errors.IntErrs.UnknownVariableException;
 import com.jaiva.errors.IntErrs.WeirdAhhFunctionException;
 import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
+import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
 import com.jaiva.tokenizer.EscapeSequence;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
@@ -19,6 +23,68 @@ import com.jaiva.tokenizer.Token.TVarRef;
  * The name may change.
  */
 public class Primitives {
+
+    public static Object resolveStringOperations(Object lhs, Object rhs, String op, TStatement ts)
+            throws StringCalcException {
+        String I = Integer.class.getSimpleName().substring(0, 1);
+        String S = String.class.getSimpleName().substring(0, 1);
+        String D = Double.class.getSimpleName().substring(0, 1);
+        String B = Boolean.class.getSimpleName().substring(0, 1);
+
+        String leftHandSide = lhs instanceof String ? S
+                : lhs instanceof Integer ? I
+                        : lhs instanceof Double ? D
+                                : lhs instanceof Boolean ? B : "idk";
+
+        String rightHandSide = rhs instanceof String ? S
+                : rhs instanceof Integer ? I
+                        : rhs instanceof Double ? D
+                                : rhs instanceof Boolean ? B : "idk";
+        String switchTing = leftHandSide + rightHandSide;
+
+        ArrayList<String> IS = new ArrayList<>(Arrays.asList("+", "-", "*", "/", "=", "!="));
+        ArrayList<String> SS = new ArrayList<>(Arrays.asList("+", "-", "=", "!="));
+
+        try {
+            switch (switchTing) {
+                case "IS":
+                    if (!IS.contains(op))
+                        throw new StringCalcException(ts);
+                    return op.equals("+") ? ((Integer) lhs) + ((String) rhs)
+                            : op.equals("-") ? ((String) rhs).substring(
+                                    ((Integer) lhs))
+                                    : op.equals("*") ? ((String) rhs).repeat((Integer) lhs)
+                                            : op.equals("/")
+                                                    ? ((String) rhs)
+                                                            .substring(((String) rhs).length() / ((Integer) lhs))
+                                                    : op.equals("=") ? false : op.equals("!=") ? true : ((String) rhs);
+                case "SI":
+                    if (!IS.contains(op))
+                        throw new StringCalcException(ts);
+                    return op.equals("+") ? ((String) lhs) + ((Integer) rhs)
+                            : op.equals("-") ? ((String) lhs).substring(0, ((String) lhs).length() - ((Integer) rhs))
+                                    : op.equals("*") ? ((String) lhs).repeat((Integer) rhs)
+                                            : op.equals("/")
+                                                    ? ((String) lhs)
+                                                            .substring(((String) lhs).length() / ((Integer) rhs))
+                                                    : op.equals("=") ? false : op.equals("!=") ? true : ((String) lhs);
+                case "SS":
+                    if (!SS.contains(op))
+                        throw new StringCalcException(ts);
+                    return op.equals("+") ? (String) lhs + (String) rhs
+                            : op.equals("-") ? ((String) lhs).replaceAll((String) rhs, "")
+                                    : op.equals("=") ? ((String) lhs).equals((String) rhs)
+                                            : op.equals("!=") ? !((String) lhs).equals((String) rhs) : ((String) lhs);
+            }
+        } catch (StringIndexOutOfBoundsException e) {
+            // too big or too small of a number
+            throw new StringCalcException(ts, e);
+        } catch (IllegalArgumentException e) {
+            // something received a negative number, when it shouldn't have.
+            throw new StringCalcException(ts, e);
+        }
+        return void.class;
+    }
 
     /**
      * The bane of my existance
@@ -50,6 +116,10 @@ public class Primitives {
             Object lhs = toPrimitive(tStatement.lHandSide, vfs);
             String op = tStatement.op;
             Object rhs = toPrimitive(tStatement.rHandSide, vfs);
+
+            Object sTuff = resolveStringOperations(lhs, rhs, op, tStatement);
+            if (sTuff != void.class)
+                return sTuff;
 
             // Check the input type, where input 1 is arithmatic, and 0 is boolean.
             if (tStatement.statementType == 1) {
@@ -204,19 +274,26 @@ public class Primitives {
                 throw new WtfAreYouDoingException(v.getValue(), BaseVariable.class, tVarRef.lineNumber);
             BaseVariable variable = (BaseVariable) v.getValue();
             Object index = (tVarRef).index == null ? null : toPrimitive(tVarRef.index, vfs);
-            if (index != null) {
+            if (index != null && (variable.variableType == VariableType.ARRAY
+                    || variable.variableType == VariableType.A_FUCKING_AMALGAMATION)) {
                 // it's an array ref, where we have an index
                 if (!(index instanceof Integer) && index != null)
                     throw new WtfAreYouDoingException(tVarRef, tVarRef.getClass());
                 if ((Integer) index <= -1)
                     return new WtfAreYouDoingException("Now tell me, how do you access negative data in ana array?");
-                if (variable.array.size() <= (Integer) index)
+                if (variable.a_size() <= (Integer) index)
                     return new WtfAreYouDoingException(
                             "Bro you're tryna access more data than there is in " + variable.name);
-                return variable.array.get((Integer) index);
+                return variable.a_get((Integer) index);
+            } else if (index == null && (variable.variableType == VariableType.ARRAY
+                    || variable.variableType == VariableType.A_FUCKING_AMALGAMATION)) {
+                // return the arraylist of variables. and hjope something up the chain catches
+                // the array list.
+                // thats what we assume to happen since they just like passed a reference yknow.
+                return variable.a_getAll();
             } else {
                 // normal variable ref, return it
-                return variable.getScalar();
+                return variable.s_get();
             }
 
         } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TFuncCall) {
@@ -242,6 +319,45 @@ public class Primitives {
             return token;
         }
         return void.class;
+    }
+
+    /**
+     * Checks if the given object is a primitive type supported by the interpreter.
+     * The supported types are:
+     * <ul>
+     * <li>Boolean</li>
+     * <li>Integer</li>
+     * <li>Double</li>
+     * <li>String</li>
+     * </ul>
+     *
+     * @param t the object to check
+     * @return {@code true} if the object is an instance of one of the supported
+     *         primitive types; {@code false} otherwise
+     */
+    public static boolean isPrimitive(Object t) {
+        return t instanceof Boolean || t instanceof Integer
+                || t instanceof Double || t instanceof String;
+    }
+
+    /**
+     * Parses a non-primitive object and converts it to a token representation if
+     * applicable.
+     * 
+     * @param t The object to be parsed. It can be an instance of TStatement,
+     *          TVarRef, TFuncCall,
+     *          or any other type.
+     * @return If the object is an instance of TStatement, TVarRef, or TFuncCall, it
+     *         returns the
+     *         result of their respective `toToken()` method. Otherwise, it returns
+     *         the object itself.
+     */
+    public static Object parseNonPrimitive(Object t) {
+        return t instanceof TStatement
+                ? ((TStatement) t).toToken()
+                : t instanceof TVarRef ? ((TVarRef) t).toToken()
+                        : t instanceof TFuncCall ? ((TFuncCall) t).toToken()
+                                : t;
     }
 
 }

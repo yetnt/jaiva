@@ -177,6 +177,8 @@ public class IntErrs {
     }
 
     public static class WeirdAhhFunctionException extends InterpreterException {
+        private static final long serialVersionUID = 1L;
+
         /**
          * When a function name does not resolve to a string that can actualy be used in
          * the vfs HashMap.
@@ -186,6 +188,23 @@ public class IntErrs {
         public WeirdAhhFunctionException(TFuncCall tFuncCall) {
             super(tFuncCall.name + " on line " + tFuncCall.lineNumber
                     + " could NOT be resolved to a poper function name. Idk what else to tell you zawg");
+        }
+    }
+
+    public static class StringCalcException extends InterpreterException {
+        private static final long serialVersionUID = 1L;
+
+        public StringCalcException(TStatement st) {
+            super(st.statement + " on line " + st.lineNumber
+                    + " contains invalid string operations. Not telling u what tho lolol.");
+        }
+
+        public StringCalcException(TStatement s, Exception e) {
+            super(
+                    e instanceof StringIndexOutOfBoundsException ? "Bro, whatever you did on line " + s.lineNumber
+                            + ", it's out of the string's bounbds. fix it pls 🙏"
+                            : "So something on line " + s.lineNumber
+                                    + " parsed to a negative number, when sum else shouldnt have it yknow. I'm too lazy to finish writing this error tho.");
         }
     }
 
@@ -200,4 +219,5 @@ public class IntErrs {
             super(message);
         }
     }
+
 }

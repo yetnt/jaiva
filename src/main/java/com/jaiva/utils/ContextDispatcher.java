@@ -1,5 +1,7 @@
 package com.jaiva.utils;
 
+import java.util.ArrayList;
+
 /**
  * The ContextDispatcher class is used to determine the context of a given line
  * <p>
@@ -88,6 +90,10 @@ public class ContextDispatcher {
                             // function call
                             // so bump brac es closed bit
 
+        // Extra special case, encased in quotes, so go to processContext
+        ArrayList<Tuple2<Integer, Integer>> quotes = Find.quotationPairs(line);
+        if (line.startsWith("\"") && line.endsWith("\"") && quotes.size() == 1)
+            bits = 0b10001;
     }
 
     public String toBitString() {
@@ -98,7 +104,7 @@ public class ContextDispatcher {
         switch (bits) {
             case 6, 7, 12, 14, 15:
                 return "TStatement";
-            case 0, 11, 13:
+            case 0, 11, 13, 17:
                 return "processContext";
             case 9, 8:
                 return "single brace";
@@ -117,7 +123,7 @@ public class ContextDispatcher {
         switch (bits) {
             case 6, 7, 12, 14, 15:
                 return To.TSTATEMENT;
-            case 0, 11, 13:
+            case 0, 11, 13, 17:
                 return To.PROCESS_CONTENT;
             case 9, 8:
                 return To.SINGLE_BRACE;

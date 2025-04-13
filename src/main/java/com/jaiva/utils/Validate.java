@@ -1,5 +1,7 @@
 package com.jaiva.utils;
 
+import java.util.ArrayList;
+
 import com.jaiva.tokenizer.Lang;
 import com.jaiva.tokenizer.Token;
 
@@ -55,7 +57,44 @@ public class Validate {
         return -1;
     }
 
+    /**
+     * Determines if a '-' character at a specified index in the input string
+     * is a unary minus (as opposed to a subtraction operator).
+     *
+     * A '-' is considered a unary minus if the substring between the operator
+     * before it and the '-' itself is empty or contains only whitespace.
+     *
+     * @param unaryMinusIndex         The index of the '-' character in the input
+     *                                string.
+     * @param opBeforeUnaryMinusIndex The index of the operator before the '-'
+     *                                character.
+     * @param inputString             The input string to analyze.
+     * @return {@code true} if the '-' is a unary minus; {@code false} otherwise.
+     * @throws StringIndexOutOfBoundsException if the indices are out of bounds
+     *                                         for the given input string.
+     */
     public static boolean isUnaryMinus(int unaryMinusIndex, int opBeforeUnaryMinusIndex, String inputString) {
         return inputString.substring(opBeforeUnaryMinusIndex + 1, unaryMinusIndex).trim().isEmpty();
+    }
+
+    /**
+     * Checks if the given operator index is within any pair of quotation marks in
+     * the provided line.
+     *
+     * @param line    The input string to be analyzed.
+     * @param opIndex The index of the operator to check within the line.
+     * @return The index of the quotation pair (0-based) that contains the operator
+     *         index,
+     *         or -1 if the operator index is not within any quotation pair.
+     */
+    public static int isOpInQuotePair(String line, int opIndex) {
+        ArrayList<Tuple2<Integer, Integer>> quotePairs = Find.quotationPairs(line);
+        for (int i = 0; i < quotePairs.size(); i++) {
+            Tuple2<Integer, Integer> tuple2 = quotePairs.get(i);
+            if (opIndex > tuple2.first && opIndex < tuple2.second) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

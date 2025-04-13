@@ -86,7 +86,7 @@ public class Token<T extends TokenDefault> {
     public class TUnknownVar extends TokenDefault {
         public Object value;
 
-        TUnknownVar(String name, Object value, int ln) {
+        public TUnknownVar(String name, Object value, int ln) {
             super(name, ln);
             this.value = value;
         }
@@ -519,18 +519,6 @@ public class Token<T extends TokenDefault> {
             super("TStatement", ln);
         }
 
-        // public String getContents(int depth) {
-        // return (lHandSide == null || lHandSide == "null" ? "" : lHandSide.toString())
-        // + " " + (op == null ? "" : op)
-        // + " " + (rHandSide == null || rHandSide == "null" ? "" :
-        // rHandSide.toString());
-        // }
-        // TODO: This is in a comment because it might be used somewhere, check that.
-        // @Override
-        // public String toString() {
-        // return getContents(0);
-        // }
-
         @Override
         public String toJson() {
             json.append("lhs", lHandSide, false);
@@ -559,6 +547,9 @@ public class Token<T extends TokenDefault> {
                 return processContext(statement, lineNumber);
             }
             this.statement = statement;
+
+            // if (statement.startsWith("\"") && statement.endsWith("\""))
+            // return processContext(statement, lineNumber);
 
             if (statement.startsWith("(") && statement.endsWith(")")) {
                 return parse(statement.substring(1, statement.length() - 1).trim());
@@ -608,9 +599,14 @@ public class Token<T extends TokenDefault> {
                 level++;
             } else if (c == ')' /* || c == ']' */) {
                 level--;
-            } else if ((c == ',' && level == 0) && (i - 1 > 0 && (argsString.charAt(i - 1) != '$'))) {
-                parts.add(argsString.substring(lastSplit, i).trim());
-                lastSplit = i + 1;
+            } else if ((c == ',' && level == 0)) {
+                if (i == 0) {
+                    parts.add(argsString.substring(lastSplit, i).trim());
+                    lastSplit = i + 1;
+                } else if ((argsString.charAt(i - 1) != '$')) {
+                    parts.add(argsString.substring(lastSplit, i).trim());
+                    lastSplit = i + 1;
+                }
             }
         }
         parts.add(argsString.substring(lastSplit).trim());

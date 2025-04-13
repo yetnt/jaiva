@@ -392,11 +392,11 @@ public class Find {
         ArrayList<Integer> indexes1 = new ArrayList<>();
         for (int i = 0; i < statement.length(); i++) {
             char c = statement.charAt(i);
-            if (c == '(' || c == '[')
+            if ((c == '(' || c == '[') && Validate.isOpInQuotePair(statement, i) == -1)
                 level++;
-            else if (c == ')' || c == ']')
+            else if ((c == ')' || c == ']') && Validate.isOpInQuotePair(statement, i) == -1)
                 level--;
-            else if (level == 0 && Validate.isOperator(c)) {
+            else if (level == 0 && Validate.isOperator(c) && (Validate.isOpInQuotePair(statement, i) == -1)) {
                 indexes1.add(i);
             }
         }
@@ -427,11 +427,19 @@ public class Find {
             return new LeastImportantOperator();
         int finalIndex = indexes2.getLast();
 
-        if (indexes2.size() > 1 && (statement.charAt(indexes2.getLast()) == '-')) {
-            int opBeforePossiblyUnary = indexes2.get(indexes2.size() - 2);
-            finalIndex = Validate.isUnaryMinus(indexes2.getLast(), opBeforePossiblyUnary, statement)
-                    ? opBeforePossiblyUnary
-                    : indexes2.getLast();
+        // check if op is part of a string pair
+        for (int opIndex : indexes2.reversed()) {
+            int inStringPair = Validate.isOpInQuotePair(statement, opIndex);
+            if (inStringPair == -1)
+                finalIndex = opIndex;
+        }
+
+        if (indexes2.size() > 1 && (statement.charAt(finalIndex) == '-') && ((indexes2.indexOf(finalIndex) - 1) < 0)) {
+            int opBeforePossiblyUnary = indexes2.get(indexes2.indexOf(finalIndex) - 1);
+            finalIndex = Validate.isUnaryMinus(
+                    finalIndex, opBeforePossiblyUnary, statement)
+                            ? opBeforePossiblyUnary
+                            : finalIndex;
         }
 
         // The operator can sometimes be the length of 2
@@ -460,6 +468,37 @@ public class Find {
             }
         }
         return -1;
+    }
+
+    /**
+     * Finds and returns all pairs of indices representing the positions of matching
+     * quotation marks in the given string. Each pair consists of the starting index
+     * of an opening quotation mark and the ending index of the corresponding
+     * closing
+     * quotation mark.
+     *
+     * @param line The input string to search for quotation mark pairs.
+     * @return An ArrayList of Tuple2 objects, where each Tuple2 contains two
+     *         integers:
+     *         the starting and ending indices of a pair of matching quotation
+     *         marks.
+     *         If no pairs are found, an empty list is returned.
+     */
+    public static ArrayList<Tuple2<Integer, Integer>> quotationPairs(String line) {
+        ArrayList<Tuple2<Integer, Integer>> arr = new ArrayList<>();
+        int oldCharIndex = -1;
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == '"') {
+                if (oldCharIndex == -1) {
+                    oldCharIndex = i;
+                } else {
+                    arr.add(new Tuple2<Integer, Integer>(oldCharIndex, i));
+                    oldCharIndex = -1;
+                }
+            }
+        }
+        return arr;
     }
 
 }
