@@ -277,12 +277,29 @@ public class Primitives {
             MapValue v = vfs.get(tVarRef.varName instanceof Token<?>
                     ? Primitives.toPrimitive(tVarRef.varName, vfs, true)
                     : (tVarRef).varName);
+            Object index = (tVarRef).index == null ? null : toPrimitive(tVarRef.index, vfs, false);
+            if (index != null && (Integer) index <= -1)
+                return new WtfAreYouDoingException("Now tell me, how do you access negative data in ana array?");
             if (v == null)
                 throw new UnknownVariableException(tVarRef);
-            if (!(v.getValue() instanceof BaseVariable))
-                throw new WtfAreYouDoingException(v.getValue(), BaseVariable.class, tVarRef.lineNumber);
+            if (!(v.getValue() instanceof BaseVariable)) {
+                if (v.getValue() instanceof BaseFunction) {
+                    if (index == null || !(index instanceof Integer))
+                        return v.getValue();
+                    // in this case, index is something so we need to call the function and it
+                    // SHOULD return an array.
+                    // therefore, we want to call toPrimitive on it again
+                    // If we got BaseFunction, that means tVarRef.varName is a TFuncCall.
+                    Object ret = toPrimitive(parseNonPrimitive(tVarRef.varName), vfs, false);
+                    if (!(ret instanceof ArrayList))
+                        throw new WtfAreYouDoingException("On line " + tVarRef.lineNumber
+                                + " right, The function you used there did not return an array, and you expect to be able to index into that?");
+                    return ((ArrayList) ret).get((Integer) index);
+                } else {
+                    throw new WtfAreYouDoingException(v.getValue(), BaseVariable.class, tVarRef.lineNumber);
+                }
+            }
             BaseVariable variable = (BaseVariable) v.getValue();
-            Object index = (tVarRef).index == null ? null : toPrimitive(tVarRef.index, vfs, false);
             if (index != null && (variable.variableType == VariableType.ARRAY
                     || variable.variableType == VariableType.A_FUCKING_AMALGAMATION
                     || tVarRef.varName instanceof TVarRef)) {
@@ -290,8 +307,6 @@ public class Primitives {
                 ArrayList<Object> arr = variable.a_getAll();
                 if (!(index instanceof Integer) && index != null)
                     throw new WtfAreYouDoingException(tVarRef, tVarRef.getClass());
-                if ((Integer) index <= -1)
-                    return new WtfAreYouDoingException("Now tell me, how do you access negative data in ana array?");
                 if (tVarRef.varName instanceof Token) {
                     Object t = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarRef.varName), vfs, returnName);
                     if (t instanceof ArrayList) {
@@ -317,7 +332,15 @@ public class Primitives {
 
         } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TFuncCall) {
             TFuncCall tFuncCall = (TFuncCall) ((Token<?>) token).getValue();
-            Object funcName = toPrimitive(tFuncCall.functionName, vfs, false);
+            if (returnName) {
+                Object t = toPrimitive(parseNonPrimitive(tFuncCall.functionName), vfs, returnName);
+                if (t instanceof String) {
+                    return t;
+                }
+            }
+            Object funcName = toPrimitive(tFuncCall.functionName instanceof Token
+                    ? toPrimitive(parseNonPrimitive(tFuncCall.functionName), vfs, true)
+                    : tFuncCall.functionName, vfs, false);
             if (!(funcName instanceof String))
                 throw new WeirdAhhFunctionException(tFuncCall);
             String name = (String) funcName;
@@ -327,6 +350,15 @@ public class Primitives {
             if (!(v.getValue() instanceof BaseFunction))
                 throw new WtfAreYouDoingException(v.getValue(), BaseFunction.class, tFuncCall.lineNumber);
             BaseFunction function = (BaseFunction) v.getValue();
+            if (tFuncCall.functionName instanceof Token) {
+                Object t = Primitives.toPrimitive(Primitives.parseNonPrimitive(tFuncCall.functionName), vfs,
+                        returnName);
+                if (t instanceof BaseFunction) {
+                    function = (BaseFunction) (t);
+                } else if (t instanceof String) {
+                    return t;
+                }
+            }
             Object returnValue = function.call(tFuncCall, tFuncCall.args, vfs);
             return returnValue instanceof String ? EscapeSequence.escape((String) returnValue) : returnValue;
             // MapValue mapValue = vfs.get();
