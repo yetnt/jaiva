@@ -111,14 +111,14 @@ public class BaseFunction extends Symbol {
                     // primitivers ong
                     wrappedValue = BaseVariable.create(name,
                             tContainer.new TUnknownVar(name, value, tFuncCall.lineNumber),
-                            new ArrayList<>(Arrays.asList(value)));
+                            new ArrayList<>(Arrays.asList(value)), false);
 
                 } else {
                     // cacthes nested calls, operations and others
-                    Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), vfs);
+                    Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), vfs, false);
                     wrappedValue = BaseVariable.create(name,
                             tContainer.new TUnknownVar(name, o, tFuncCall.lineNumber),
-                            new ArrayList<>(Arrays.asList(o)));
+                            new ArrayList<>(Arrays.asList(o)), false);
                 }
                 newVfs.put(name.replace("F~", "").replace("V~", ""), new MapValue(wrappedValue));
             }

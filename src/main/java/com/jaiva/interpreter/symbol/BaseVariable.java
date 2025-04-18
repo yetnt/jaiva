@@ -124,8 +124,8 @@ public class BaseVariable extends Symbol {
      * @param arr  The arraylist.
      * @return
      */
-    public static DefinedVariable create(String name, TokenDefault t, ArrayList<Object> arr) {
-        if (arr.size() == 1)
+    public static DefinedVariable create(String name, TokenDefault t, ArrayList<Object> arr, boolean setArray) {
+        if (arr.size() == 1 && !setArray)
             return new DefinedVariable(name, t, arr.get(0));
         return new DefinedVariable(name, t, arr);
     }

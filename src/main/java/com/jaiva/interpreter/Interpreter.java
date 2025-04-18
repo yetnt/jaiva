@@ -97,28 +97,40 @@ public class Interpreter {
     public static Object handleVariables(Object t, HashMap<String, MapValue> vfs)
             throws Exception {
         if (t instanceof TNumberVar) {
-            Object number = Primitives.toPrimitive(((TNumberVar) t).value, vfs);
+            Object number = Primitives.toPrimitive(((TNumberVar) t).value, vfs, false);
             BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
-                    new ArrayList<>(Arrays.asList(number)));
+                    new ArrayList<>(Arrays.asList(number)), false);
             vfs.put(((TNumberVar) t).name, new MapValue(var));
         } else if (t instanceof TBooleanVar) {
-            Object bool = Primitives.toPrimitive(((TBooleanVar) t).value, vfs);
+            Object bool = Primitives.toPrimitive(((TBooleanVar) t).value, vfs, false);
             BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
-                    new ArrayList<>(Arrays.asList(bool)));
+                    new ArrayList<>(Arrays.asList(bool)), false);
             vfs.put(((TBooleanVar) t).name, new MapValue(var));
         } else if (t instanceof TStringVar) {
-            Object string = Primitives.toPrimitive(((TStringVar) t).value, vfs);
+            Object string = Primitives.toPrimitive(((TStringVar) t).value, vfs, false);
             BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
-                    new ArrayList<>(Arrays.asList(string)));
+                    new ArrayList<>(Arrays.asList(string)), false);
             vfs.put(((TStringVar) t).name, new MapValue(var));
         } else if (t instanceof TUnknownVar) {
-            Object something = Primitives.toPrimitive(((TUnknownVar) t).value, vfs);
+            Object something = Primitives.toPrimitive(((TUnknownVar) t).value, vfs, false);
             BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
-                    something instanceof ArrayList ? (ArrayList) something : new ArrayList<>(Arrays.asList(something)));
+                    something instanceof ArrayList ? (ArrayList) something : new ArrayList<>(Arrays.asList(something)),
+                    false);
             vfs.put(((TUnknownVar) t).name, new MapValue(var));
         } else if (t instanceof TArrayVar) {
-            BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
-                    new ArrayList<Object>(((TArrayVar) t).contents));
+            ArrayList<Object> arr = new ArrayList<>();
+            ((TArrayVar) t).contents.forEach(obj -> {
+                try {
+                    if (obj instanceof ArrayList) {
+                        arr.add(obj);
+                    } else {
+                        arr.add(Primitives.toPrimitive(Primitives.parseNonPrimitive(obj), vfs, false));
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t, arr, true);
             vfs.put(((TArrayVar) t).name, new MapValue(var));
         } else if (t instanceof TFunction) {
             TFunction function = (TFunction) t;
@@ -140,12 +152,12 @@ public class Interpreter {
             // throw new WtfAreYouDoingException(
             // ((TVarReassign) t).newValue + " isn't like a valid var thingy yknow??");
 
-            var.s_set(Primitives.toPrimitive(((TVarReassign) t).newValue, vfs));
+            var.s_set(Primitives.toPrimitive(((TVarReassign) t).newValue, vfs, false));
             // so hopefully this chanegs the instance and yeah 👍
         } else {
             // here its a primitive being parsed or recursively called
             // or TVarRef or TFuncCall or TStatement
-            return Primitives.toPrimitive(t, vfs);
+            return Primitives.toPrimitive(t, vfs, false);
         }
 
         return null; // return null because we are not returning anything.

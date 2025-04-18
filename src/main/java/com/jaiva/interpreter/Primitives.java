@@ -1,5 +1,6 @@
 package com.jaiva.interpreter;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -108,14 +109,14 @@ public class Primitives {
      * @return
      * @throws Exception
      */
-    public static Object toPrimitive(Object token, HashMap<String, MapValue> vfs)
+    public static Object toPrimitive(Object token, HashMap<String, MapValue> vfs, boolean returnName)
             throws Exception {
         if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TStatement) {
             // If the input is a TStatement, resolve the lhs and rhs.
             TStatement tStatement = (TStatement) ((Token<?>) token).getValue();
-            Object lhs = toPrimitive(tStatement.lHandSide, vfs);
+            Object lhs = toPrimitive(tStatement.lHandSide, vfs, false);
             String op = tStatement.op;
-            Object rhs = toPrimitive(tStatement.rHandSide, vfs);
+            Object rhs = toPrimitive(tStatement.rHandSide, vfs, false);
 
             Object sTuff = resolveStringOperations(lhs, rhs, op, tStatement);
             if (sTuff != void.class)
@@ -267,24 +268,42 @@ public class Primitives {
         } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TVarRef) {
             // just find the reference in the table and return whatever it is
             TVarRef tVarRef = (TVarRef) ((Token<?>) token).getValue();
-            MapValue v = vfs.get((tVarRef).varName);
+            if (returnName) {
+                Object t = Primitives.toPrimitive(tVarRef.varName, vfs, returnName);
+                if (t instanceof String) {
+                    return t;
+                }
+            }
+            MapValue v = vfs.get(tVarRef.varName instanceof Token<?>
+                    ? Primitives.toPrimitive(tVarRef.varName, vfs, true)
+                    : (tVarRef).varName);
             if (v == null)
                 throw new UnknownVariableException(tVarRef);
             if (!(v.getValue() instanceof BaseVariable))
                 throw new WtfAreYouDoingException(v.getValue(), BaseVariable.class, tVarRef.lineNumber);
             BaseVariable variable = (BaseVariable) v.getValue();
-            Object index = (tVarRef).index == null ? null : toPrimitive(tVarRef.index, vfs);
+            Object index = (tVarRef).index == null ? null : toPrimitive(tVarRef.index, vfs, false);
             if (index != null && (variable.variableType == VariableType.ARRAY
-                    || variable.variableType == VariableType.A_FUCKING_AMALGAMATION)) {
+                    || variable.variableType == VariableType.A_FUCKING_AMALGAMATION
+                    || tVarRef.varName instanceof TVarRef)) {
                 // it's an array ref, where we have an index
+                ArrayList<Object> arr = variable.a_getAll();
                 if (!(index instanceof Integer) && index != null)
                     throw new WtfAreYouDoingException(tVarRef, tVarRef.getClass());
                 if ((Integer) index <= -1)
                     return new WtfAreYouDoingException("Now tell me, how do you access negative data in ana array?");
-                if (variable.a_size() <= (Integer) index)
+                if (tVarRef.varName instanceof Token) {
+                    Object t = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarRef.varName), vfs, returnName);
+                    if (t instanceof ArrayList) {
+                        arr = (ArrayList) (t);
+                    } else if (t instanceof String) {
+                        return t;
+                    }
+                }
+                if (arr.size() <= (Integer) index)
                     return new WtfAreYouDoingException(
                             "Bro you're tryna access more data than there is in " + variable.name);
-                return variable.a_get((Integer) index);
+                return arr.get((Integer) index);
             } else if (index == null && (variable.variableType == VariableType.ARRAY
                     || variable.variableType == VariableType.A_FUCKING_AMALGAMATION)) {
                 // return the arraylist of variables. and hjope something up the chain catches
@@ -298,7 +317,7 @@ public class Primitives {
 
         } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TFuncCall) {
             TFuncCall tFuncCall = (TFuncCall) ((Token<?>) token).getValue();
-            Object funcName = toPrimitive(tFuncCall.functionName, vfs);
+            Object funcName = toPrimitive(tFuncCall.functionName, vfs, false);
             if (!(funcName instanceof String))
                 throw new WeirdAhhFunctionException(tFuncCall);
             String name = (String) funcName;
