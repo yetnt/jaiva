@@ -220,4 +220,13 @@ public class IntErrs {
         }
     }
 
+    public static class CimaException extends InterpreterException {
+
+        private static final long serialVersionUID = 1L;
+
+        public CimaException(String message, int lineNumber) {
+            super("Ight. Stopped program on line " + lineNumber + ". Reason: " + message);
+        }
+    }
+
 }
