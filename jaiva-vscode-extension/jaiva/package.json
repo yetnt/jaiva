@@ -2,21 +2,18 @@
     "name": "jaiva",
     "displayName": "Jaiva Coloring",
     "description": "Colouring for jaiva code. If you use lol",
-    "version": "1.0.0",
+    "version": "1.0.0-beta.0",
     "engines": {
         "vscode": "^1.96.0"
     },
     "categories": [
         "Programming Languages"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/yetnt/jaiva"
+    },
     "contributes": {
-        "themes": [
-            {
-                "label": "My Custom Theme",
-                "uiTheme": "vs-dark",
-                "path": "./themes/jaiva-color-theme.json"
-            }
-        ],
         "languages": [
             {
                 "id": "jaiva",
@@ -30,13 +27,6 @@
                     ".jaiva"
                 ],
                 "configuration": "./language-configuration.json"
-            }
-        ],
-        "iconThemes": [
-            {
-                "id": "jaiva-icons",
-                "label": "Jaiva Icons",
-                "path": "./file-icons/jaiva-icon-theme.json"
             }
         ],
         "grammars": [
