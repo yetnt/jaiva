@@ -35,6 +35,11 @@ public class BaseFunction extends Symbol {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return name + Arrays.asList(((TFunction) token).args).toString().replace("[", "(").replace("]", ")");
+    }
+
     /**
      * Calls the specified function.
      * 
