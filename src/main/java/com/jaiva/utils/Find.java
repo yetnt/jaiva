@@ -281,7 +281,7 @@ public class Find {
             String sString = line.substring(i, line.length());
             char openingChar = line.charAt(i);
             int closingCharI = closingCharIndex(sString, openingChar, openingChar == '(' ? ')' : ']');
-            if (closingCharI == sString.length() - 1)
+            if (closingCharI == sString.length() - 1 || closingCharI == sString.length() - 2)
                 return i;
         }
 
