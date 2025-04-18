@@ -48,20 +48,28 @@ public class Main {
                     break;
                 case "--help", "-h":
                     System.out.println();
+                    System.out.println("Usage: jaiva-src");
+                    System.out.println();
+                    System.out.println("\tReturns the source folder of the jaiva source stuff");
+                    System.out.println();
                     System.out.println("Usage: jaiva [options]");
-                    System.out.println("Options:");
-                    System.out.println("(no flag): Starts a REPL.");
-                    System.out.println("--print-tokens, -p: Print tokens REPL mode.");
-                    System.out.println("--help, -h: Show this help message.");
-                    System.out.println("--version, -v: Show the version of Jaiva.");
-                    System.out.println("--test -t: Test command.");
-                    System.out.println("--update, -u: Update Instructions.");
+                    System.out.println();
+                    System.out.println("\tOptions:");
+                    System.out.println();
+                    System.out.println("\t\t(no flag): Starts a REPL.");
+                    System.out.println("\t\t--print-tokens, -p: Print tokens REPL mode.");
+                    System.out.println("\t\t--help, -h: Show this help message.");
+                    System.out.println("\t\t--version, -v: Show the version of Jaiva.");
+                    System.out.println("\t\t--test -t: Test command.");
+                    System.out.println("\t\t--update, -u: Update Instructions.");
                     System.out.println();
                     System.out.println("Usage: jaiva <file.jiv> [options]");
+                    System.out.println();
                     System.out.println("Options:");
-                    System.out.println("(no flag): Run the file.");
-                    System.out.println("--json, -j: Print tokens in JSON format.");
-                    System.out.println("--string, -s: Print tokens in string format.");
+                    System.out.println();
+                    System.out.println("\t\t(no flag): Run the file.");
+                    System.out.println("\t\t--json, -j: Print tokens in JSON format.");
+                    System.out.println("\t\t--string, -s: Print tokens in string format.");
                     System.out.println();
                     break;
                 case "--version", "-v":
