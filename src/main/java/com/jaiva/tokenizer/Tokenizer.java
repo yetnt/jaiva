@@ -456,7 +456,7 @@ public class Tokenizer {
         boolean containsNewln = line.contains("\n");
         String[] lines = containsNewln ? line.split("\n") : line.split("(?<!\\$)!(?!\\=)");
 
-        if (lines.length > 1 && !lines[1].isEmpty() && !arrayIsOnlyComments(lines)) {
+        if (lines.length > 1 || ((lines.length == 2 && !lines[1].isEmpty()) && !arrayIsOnlyComments(lines))) {
             // System.out.println("Multiple lines detected!");
             // multiple lines.
             Find.MultipleLinesOutput m = null;
