@@ -97,4 +97,27 @@ public class Validate {
         }
         return -1;
     }
+
+    public static class IsValidSymbolName {
+        public String op;
+        public boolean isValid = true;
+
+        public IsValidSymbolName(String o, boolean v) {
+            op = o;
+            isValid = v;
+        }
+
+        public IsValidSymbolName() {
+
+        }
+    }
+
+    public static IsValidSymbolName isValidSymbolName(String line) {
+        for (char c : line.toCharArray()) {
+            if (Lang.dissalowedChars().contains(Character.toString(c))) {
+                return new IsValidSymbolName(Character.toString(c), false);
+            }
+        }
+        return new IsValidSymbolName();
+    }
 }

@@ -2,6 +2,7 @@ package com.jaiva.tokenizer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,9 +41,18 @@ public class Lang {
     public static char COMMENT_CLOSE = '}';
     public static String BLOCK_OPEN = "->";
     public static String BLOCK_CLOSE = "<~";
+    public static char STATEMENT_OPEN = '(';
+    public static char STATEMENT_CLOSE = ')';
     public static String ASSIGNMENT = "<-";
     public static String THROW_ERROR = "<==";
     public static String ARRAY_ASSIGNMENT = "<-|";
+
+    public static char ARRAY_OPEN = '[';
+    public static char ARRAY_CLOSE = ']';
+    public static char LENGTH_CHAR = '~';
+    public static char FOR_SEPARATOR = '|';
+    public static char ARGS_SEPARATOR = ',';
+    public static char STRING = '"';
 
     public class Operators {
         public static final String Exponentiation = "^";
@@ -87,5 +97,30 @@ public class Lang {
                 return 3;
             return -1;
         }
+    }
+
+    public static ArrayList<String> dissalowedChars() {
+        StringBuilder all = new StringBuilder();
+        all.append(Operators.getAll().toString().replaceAll(",", "").replaceAll(" ", "").replace("[", "").replace("]",
+                ""));
+        all.append(Character.toString(ESCAPE));
+        all.append(Character.toString(END_LINE));
+        all.append(Character.toString(COMMENT));
+        all.append(Character.toString(COMMENT_OPEN));
+        all.append(Character.toString(COMMENT_CLOSE));
+        all.append(Character.toString(STATEMENT_OPEN));
+        all.append(Character.toString(STATEMENT_CLOSE));
+        all.append(BLOCK_OPEN);
+        all.append(BLOCK_CLOSE);
+        all.append(ASSIGNMENT);
+        all.append(THROW_ERROR);
+        all.append(ARRAY_ASSIGNMENT);
+        all.append(Character.toString(LENGTH_CHAR));
+        all.append(Character.toString(ARRAY_OPEN));
+        all.append(Character.toString(ARRAY_CLOSE));
+        all.append(Character.toString(ARGS_SEPARATOR));
+        all.append(Character.toString(FOR_SEPARATOR));
+        all.append(Character.toString(STRING));
+        return new ArrayList<>(new HashSet<>(Arrays.asList(all.toString().split(""))));
     }
 }
