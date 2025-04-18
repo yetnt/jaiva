@@ -15,14 +15,14 @@ import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
 import com.jaiva.tokenizer.EscapeSequence;
 import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.Token.TForLoop;
 import com.jaiva.tokenizer.Token.TFuncCall;
+import com.jaiva.tokenizer.Token.TIfStatement;
 import com.jaiva.tokenizer.Token.TStatement;
 import com.jaiva.tokenizer.Token.TVarRef;
+import com.jaiva.tokenizer.Token.TWhileLoop;
+import com.jaiva.tokenizer.TokenDefault;
 
-/**
- * Class to han dle primitives.
- * The name may change.
- */
 public class Primitives {
 
     public static Object resolveStringOperations(Object lhs, Object rhs, String op, TStatement ts)
@@ -41,6 +41,12 @@ public class Primitives {
                 : rhs instanceof Integer ? I
                         : rhs instanceof Double ? D
                                 : rhs instanceof Boolean ? B : "idk";
+        if (rhs instanceof String) {
+            lhs = EscapeSequence.escape((String) rhs);
+        }
+        if (lhs instanceof String) {
+            lhs = EscapeSequence.escape((String) lhs);
+        }
         String switchTing = leftHandSide + rightHandSide;
 
         ArrayList<String> IS = new ArrayList<>(Arrays.asList("+", "-", "*", "/", "=", "!="));
@@ -274,6 +280,8 @@ public class Primitives {
                     return t;
                 }
             }
+            if (tVarRef.varName instanceof String)
+                tVarRef.varName = ((String) tVarRef.varName).replace("~", "");
             MapValue v = vfs.get(tVarRef.varName instanceof Token<?>
                     ? Primitives.toPrimitive(tVarRef.varName, vfs, true)
                     : (tVarRef).varName);
@@ -294,7 +302,10 @@ public class Primitives {
                     if (!(ret instanceof ArrayList))
                         throw new WtfAreYouDoingException("On line " + tVarRef.lineNumber
                                 + " right, The function you used there did not return an array, and you expect to be able to index into that?");
-                    return ((ArrayList) ret).get((Integer) index);
+                    return ((ArrayList) ret).get((Integer) index) instanceof ArrayList && tVarRef.getLength
+                            ? ((ArrayList) ((ArrayList) ret).get((Integer) index)).size()
+                            : ((ArrayList) ret)
+                                    .get((Integer) index);
                 } else {
                     throw new WtfAreYouDoingException(v.getValue(), BaseVariable.class, tVarRef.lineNumber);
                 }
@@ -318,16 +329,20 @@ public class Primitives {
                 if (arr.size() <= (Integer) index)
                     return new WtfAreYouDoingException(
                             "Bro you're tryna access more data than there is in " + variable.name);
-                return arr.get((Integer) index);
+                return arr.get((Integer) index) instanceof ArrayList && tVarRef.getLength
+                        ? ((ArrayList) arr.get((Integer) index)).size()
+                        : arr
+                                .get((Integer) index);
             } else if (index == null && (variable.variableType == VariableType.ARRAY
                     || variable.variableType == VariableType.A_FUCKING_AMALGAMATION)) {
                 // return the arraylist of variables. and hjope something up the chain catches
                 // the array list.
                 // thats what we assume to happen since they just like passed a reference yknow.
-                return variable.a_getAll();
+                return tVarRef.getLength ? variable.a_size() : variable.a_getAll();
             } else {
                 // normal variable ref, return it
-                return variable.s_get();
+                return variable.s_get() instanceof String && tVarRef.getLength ? ((String) variable
+                        .s_get()).length() : variable.s_get();
             }
 
         } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TFuncCall) {
@@ -341,15 +356,40 @@ public class Primitives {
             Object funcName = toPrimitive(tFuncCall.functionName instanceof Token
                     ? toPrimitive(parseNonPrimitive(tFuncCall.functionName), vfs, true)
                     : tFuncCall.functionName, vfs, false);
+
             if (!(funcName instanceof String))
                 throw new WeirdAhhFunctionException(tFuncCall);
             String name = (String) funcName;
+            BaseFunction f = null;
+            if (!(tFuncCall.functionName instanceof String)) {
+                Object j = toPrimitive(tFuncCall.functionName, vfs, false);
+                if (j instanceof BaseFunction) {
+                    f = (BaseFunction) j;
+                } else {
+                    return j;
+                }
+            }
             MapValue v = vfs.get(name);
             if (v == null)
                 throw new UnknownVariableException(tFuncCall);
-            if (!(v.getValue() instanceof BaseFunction))
-                throw new WtfAreYouDoingException(v.getValue(), BaseFunction.class, tFuncCall.lineNumber);
-            BaseFunction function = (BaseFunction) v.getValue();
+            // if (!(v.getValue() instanceof BaseFunction)) {
+            // if (v.getValue() instanceof BaseVariable) {
+            // ret = toPrimitive(parseNonPrimitive(name), vfs, false);
+            // if (!(ret instanceof BaseFunction) && !(name instanceof String)) {
+            // return ret;
+            // }
+            // } else {
+            // throw new WtfAreYouDoingException(v.getValue(), BaseFunction.class,
+            // tFuncCall.lineNumber);
+            // }
+            // }
+            BaseFunction function = f == null ? (BaseFunction) v.getValue() : f; /*
+                                                                                  * ret != null && ret instanceof
+                                                                                  * BaseFunction ?
+                                                                                  * (BaseFunction) ret
+                                                                                  * :
+                                                                                  */
+
             if (tFuncCall.functionName instanceof Token) {
                 Object t = Primitives.toPrimitive(Primitives.parseNonPrimitive(tFuncCall.functionName), vfs,
                         returnName);
@@ -360,13 +400,19 @@ public class Primitives {
                 }
             }
             Object returnValue = function.call(tFuncCall, tFuncCall.args, vfs);
-            return returnValue instanceof String ? EscapeSequence.escape((String) returnValue) : returnValue;
+            return returnValue instanceof String && tFuncCall.getLength
+                    ? EscapeSequence.escape((String) returnValue).length()
+                    : returnValue instanceof ArrayList && tFuncCall.getLength ? ((ArrayList) returnValue).size()
+                            : returnValue;
             // MapValue mapValue = vfs.get();
         } else if (token instanceof Integer || token instanceof Double || token instanceof Boolean
                 || token instanceof String) {
             // its not a token so its def jus a primitive, so we wanna parse it as a
             // primitive.
             // also for the above recursive call where it may already be a primitive.
+            if (token instanceof String) {
+                return EscapeSequence.escape((String) token);
+            }
             return token;
         }
         return void.class;
@@ -409,6 +455,75 @@ public class Primitives {
                 : t instanceof TVarRef ? ((TVarRef) t).toToken()
                         : t instanceof TFuncCall ? ((TFuncCall) t).toToken()
                                 : t;
+    }
+
+    /**
+     * Evaluates and sets the condition for a `TForLoop` statement.
+     *
+     * @param t   The `TForLoop` object containing the condition to be evaluated.
+     * @param vfs A `HashMap` representing the variable frame stack, where variable
+     *            names are mapped to their corresponding `MapValue` objects.
+     * @return The evaluated condition as an `Object`. The returned value is
+     *         expected
+     *         to be a `Boolean`.
+     * @throws Exception If the condition cannot be resolved to a `Boolean` or if
+     *                   there is an error during variable handling or parsing.
+     */
+    public static Object setCondition(TForLoop t, HashMap<String, MapValue> vfs) throws Exception {
+        Object condition = Interpreter.handleVariables(
+                parseNonPrimitive(t.condition), vfs);
+        if (!(condition instanceof Boolean))
+            throw new TStatementResolutionException(
+                    t, ((TStatement) t.condition),
+                    "boolean", condition.getClass().getName());
+
+        return condition;
+    }
+
+    /**
+     * Evaluates and sets the condition for a TWhileLoop statement.
+     *
+     * @param t   The TWhileLoop object containing the condition to be evaluated.
+     * @param vfs A HashMap representing the variable function scope, where variable
+     *            names are mapped to their corresponding MapValue objects.
+     * @return The evaluated condition as an Object, which must be a Boolean.
+     * @throws Exception If the condition cannot be resolved to a Boolean or if
+     *                   there is an error during variable handling or parsing.
+     */
+    public static Object setCondition(TWhileLoop t, HashMap<String, MapValue> vfs) throws Exception {
+        Object condition = Interpreter.handleVariables(
+                parseNonPrimitive(t.condition), vfs);
+        if (!(condition instanceof Boolean))
+            throw new TStatementResolutionException(
+                    t, ((TStatement) t.condition),
+                    "boolean", condition.getClass().getName());
+
+        return condition;
+    }
+
+    /**
+     * Evaluates and sets the condition for an `if` statement by parsing and
+     * resolving
+     * the provided condition expression. Ensures that the condition evaluates to a
+     * boolean value.
+     *
+     * @param t   The `TIfStatement` object containing the condition to be
+     *            evaluated.
+     * @param vfs A map of variable names to their corresponding `MapValue` objects,
+     *            used for resolving variables in the condition.
+     * @return The evaluated condition as a boolean object.
+     * @throws Exception If the condition cannot be resolved to a boolean or if any
+     *                   error occurs during variable handling or parsing.
+     */
+    public static Object setCondition(TIfStatement t, HashMap<String, MapValue> vfs) throws Exception {
+        Object condition = Interpreter.handleVariables(
+                parseNonPrimitive(t.condition), vfs);
+        if (!(condition instanceof Boolean))
+            throw new TStatementResolutionException(
+                    t, ((TStatement) t.condition),
+                    "boolean", condition.getClass().getName());
+
+        return condition;
     }
 
 }
