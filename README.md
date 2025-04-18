@@ -1,6 +1,6 @@
 # <center> <img src="images/jaiva-full-logo.png" width="50"> Jaiva!
 
-<center><h4>Version *1.0.0-beta.0*</h4></center>
+<center><h4>Version *1.0.0-beta.1*</h4></center>
 
 This esolang of mine is still in development, so expect alot of updates.
 
@@ -15,39 +15,43 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
 
 ## <center>Index
 
--   **_[Jaiva!](#jaiva)_**
+-   **[Jaiva!](#jaiva)**
     -   **[Index](#index)** <- you are here.
-    -   **[Prerquisuiesdsfb](#prerquisuiesdsfb)**
+    -   **[Prerequisites](#prerequisites)**
     -   **[Syntax](#syntax)**
-        -   _[Comments.](#comments)_
-        -   _[Assignment operators](#assignment-operators)_
+        -   _[Comments](#comments)_
+        -   _[Assignment Operators](#assignment-operators)_
         -   _[Primitives](#primitives)_
             -   [Number](#number)
-            -   [Bools](#bools)
+            -   [Booleans](#booleans)
             -   [Strings](#strings)
-                -   [Escaping characters](#escaping-characters)
+                -   [String Operations](#string-operations)
+                -   [Escaping Characters](#escaping-characters)
             -   [idk](#idk)
-        -   _[Arithmatic and Boolean Comparisons](#arithmatic-and-boolean-comparisons)_
+        -   _[Pre and Postfix Operations](#pre-and-postfix-operations)_
+        -   _[Arithmetic and Boolean Comparisons](#arithmetic-and-boolean-comparisons)_
         -   _[Blocks](#blocks)_
     -   **[Keywords](#keywords)**
     -   **[Variables](#variables)**
         -   _[Definition](#definition)_
-        -   _[Use](#use)_
+        -   _[Usage](#usage)_
         -   _[Reassignment](#reassignment)_
         -   _[Arrays](#arrays)_
     -   **[Functions](#functions)**
+        -   _[Definition](#definition-1)_
+        -   _[Calling](#calling)_
     -   **[If Statements](#if-statements)**
         -   _[Basic If](#basic-if)_
         -   _[mara (else)](#mara-else)_
         -   _[mara (else) with if](#mara-else-with-if)_
     -   **[Loops](#loops)**
-        -   _[Nikhil loops (while loops)](#nikhil-loops-while-loops)_
-        -   _[Colonize loops (for loops)](#colonize-loops-for-loops)_
-            -   [colonize with (for each)](#colonize-with-for-each)
-        -   _[Control flow](#control-flow)_
-    -   **[Error handling](#error-handling)**
-        -   _[Throw an error](#throw-an-error)_
-        -   _[zama zama (try) chaai (catch) block](#zama-zama-try-chaai-catch-block)_
+        -   _[Nikhil Loops (While Loops)](#nikhil-loops-while-loops)_
+        -   _[Colonize Loops (For Loops)](#colonize-loops-for-loops)_
+            -   [Colonize with (For Each)](#colonize-with-for-each)
+        -   _[Control Flow](#control-flow)_
+    -   **[Error Handling](#error-handling)**
+        -   _[Throw an Error](#throw-an-error)_
+        -   _[zama zama (Try) chaai (Catch) Block](#zama-zama-try-chaai-catch-block)_
     -   **[Scopes](#scopes)**
     -   **[Globals](#globals)**
 

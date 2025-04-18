@@ -10,7 +10,7 @@ import com.jaiva.tokenizer.Tokenizer;
 import com.jaiva.utils.*;
 
 public class Main {
-    public static String version = "1.0.0-beta";
+    public static String version = "1.0.0-beta.1";
     public static String author = "@yetnt or @prod.yetnt on some socials";
     public static String ASCII = """
                                                                         ,---,
