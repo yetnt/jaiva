@@ -423,6 +423,7 @@ public class Token<T extends TokenDefault> {
     public class TFuncCall extends TokenDefault {
         public Object functionName;
         public ArrayList<Object> args; // can be a TStatement, TFuncCall, TVarRef, or a primitive type
+        public boolean getLength = false;
 
         TFuncCall(Object name, ArrayList<Object> args, int ln) {
             super("TFuncCall", ln);
@@ -430,9 +431,17 @@ public class Token<T extends TokenDefault> {
             this.args = args;
         }
 
+        TFuncCall(Object name, ArrayList<Object> args, int ln, boolean getL) {
+            super("TFuncCall", ln);
+            this.functionName = name;
+            this.args = args;
+            this.getLength = getL;
+        }
+
         @Override
         public String toJson() {
             json.append("functionName", functionName, false);
+            json.append("getLength", getLength, false);
             json.append("args", args, true);
             return super.toJson();
         }
@@ -450,21 +459,25 @@ public class Token<T extends TokenDefault> {
         public int type;
         public Object varName;
         public Object index = null;
+        public boolean getLength = false;
 
-        TVarRef(Object name, int ln) {
+        TVarRef(Object name, int ln, boolean getLength) {
             super("TVarRef", ln);
             this.varName = name;
+            this.getLength = getLength;
         }
 
-        TVarRef(Object name, Object index, int ln) {
+        TVarRef(Object name, Object index, int ln, boolean getLength) {
             super("TVarRef", ln);
             this.index = index;
             this.varName = name;
+            this.getLength = getLength;
         }
 
         @Override
         public String toJson() {
             json.append("varName", varName, false);
+            json.append("getLength", getLength, false);
             json.append("index", index != null ? index : null, true);
             return super.toJson();
         }
@@ -561,6 +574,18 @@ public class Token<T extends TokenDefault> {
                 // TODO: Validate this, Copilot gave me this if but i'm not sure ngl.
                 return processContext(statement, lineNumber);
             }
+            if (info.op.equals("=") && statement.charAt(info.index - 1) == '!') {
+                info.index--;
+                info.op = "!=";
+            }
+            if (info.op.equals("=") && statement.charAt(info.index - 1) == '<') {
+                info.index--;
+                info.op = "<=";
+            }
+            if (info.op.equals("=") && statement.charAt(info.index - 1) == '>') {
+                info.index--;
+                info.op = ">=";
+            }
 
             lHandSide = handleNegatives(new TStatement(lineNumber).parse(statement.substring(0, info.index).trim()));
             this.op = info.op.trim();
@@ -655,23 +680,23 @@ public class Token<T extends TokenDefault> {
         if (index != -1 && (line.charAt(index) == '(')) {
             // then its a TFuncCall
             String name = line.substring(0, index).trim();
-            String params = line.substring(index + 1, line.length() - 1).trim();
+            String params = line.substring(index + 1, line.lastIndexOf(")")).trim();
 
             ArrayList<String> args = new ArrayList<>(splitByTopLevelComma(params));
             ArrayList<Object> parsedArgs = new ArrayList<>();
             args.forEach(arg -> parsedArgs.add(processContext((String) arg, lineNumber)));
             return new TFuncCall(processContext(simplifyIdentifier(name, "F~"), lineNumber), parsedArgs,
-                    lineNumber).toToken();
+                    lineNumber, line.charAt(line.length() - 1) == '~').toToken();
         } else if (index != -1 && (line.charAt(index) == '[')) {
             // then its a variable call an array one to be specific
             // name[index]
             String name = line.substring(0, index).trim();
-            String arrayIndex = line.substring(index + 1, line.length() - 1).trim();
+            String arrayIndex = line.substring(index + 1, line.lastIndexOf("]")).trim();
             return new TVarRef(processContext(simplifyIdentifier(name, "V~"),
                     lineNumber),
                     processContext(arrayIndex,
                             lineNumber),
-                    lineNumber)
+                    lineNumber, line.charAt(line.length() - 1) == '~')
                     .toToken();
         } else {
             // here, processTFuncCall will try to parse "line" as a primitive type. (if not
@@ -693,7 +718,7 @@ public class Token<T extends TokenDefault> {
                     if (line.startsWith("V~") || line.startsWith("F~")) {
                         return line.substring(2);
                     } else {
-                        return new TVarRef(line, lineNumber).toToken();
+                        return new TVarRef(line, lineNumber, line.charAt(line.length() - 1) == '~').toToken();
                     }
                 }
             }
