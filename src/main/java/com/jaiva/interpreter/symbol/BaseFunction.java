@@ -11,6 +11,7 @@ import com.jaiva.interpreter.Context;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
+import com.jaiva.tokenizer.EscapeSequence;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TFunction;
@@ -81,6 +82,8 @@ public class BaseFunction extends Symbol {
             for (int i = 0; i < paramNames.length; i++) {
                 String name = paramNames[i];
                 Object value = params.get(i);
+                if (value instanceof String)
+                    value = EscapeSequence.escape((String) value);
                 Object wrappedValue = null;
 
                 if (name.startsWith("F~")
