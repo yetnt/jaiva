@@ -13,6 +13,7 @@ import com.jaiva.utils.BlockChain;
 import com.jaiva.utils.Find;
 import com.jaiva.utils.Tuple2;
 import com.jaiva.utils.Validate;
+import com.jaiva.utils.Validate.IsValidSymbolName;
 
 public class Tokenizer {
     /**
@@ -105,17 +106,22 @@ public class Tokenizer {
             case "mara if": {
                 // mara condition ->
                 // mara (i < 10) ->
-                return new String[] { line.substring(line.indexOf("(") + 1, line.lastIndexOf(")")), "" };
+                return new String[] {
+                        line.substring(line.indexOf(Lang.STATEMENT_OPEN) + 1, line.lastIndexOf(Lang.STATEMENT_CLOSE)),
+                        "" };
             }
             case "if": {
                 // if (condition) ->
                 // if (variable != 100) ->
-                return new String[] { line.substring(line.indexOf("("), line.lastIndexOf(")")), "" };
+                return new String[] {
+                        line.substring(line.indexOf(Lang.STATEMENT_OPEN), line.lastIndexOf(Lang.STATEMENT_CLOSE)), "" };
             }
             case "nikhil": {
                 // nikhil (condition) ->
                 // nikhil (i < 10) ->
-                return new String[] { line.substring(line.indexOf("(") + 1, line.lastIndexOf(")")), "" };
+                return new String[] {
+                        line.substring(line.indexOf(Lang.STATEMENT_OPEN) + 1, line.lastIndexOf(Lang.STATEMENT_CLOSE)),
+                        "" };
             }
             case "colonize": {
                 // colonize declaration | condition | increment ->
@@ -124,7 +130,7 @@ public class Tokenizer {
                 // colonize i <- 0 | i <= 10 | + ->
                 // colonize pointer with arr ->
 
-                if (line.contains("|")) {
+                if (line.contains(Character.toString(Lang.FOR_SEPARATOR))) {
                     String[] parts = line.split(Keywords.FOR)[1].trim().split(Lang.BLOCK_OPEN)[0].split("\\|");
                     return new String[] { parts[0].trim(), parts[1].trim(), parts[2].trim() };
                 } else {
@@ -137,8 +143,9 @@ public class Tokenizer {
                 // kwenza function_name(...args) ->
                 // kwenza addition(param1, param2) ->
                 String[] parts = line.split(Keywords.D_FUNCTION)[1].trim().split(Lang.BLOCK_OPEN);
-                String functionName = parts[0].substring(0, parts[0].indexOf("("));
-                String args = parts[0].substring(parts[0].indexOf("(") + 1, parts[0].indexOf(")"));
+                String functionName = parts[0].substring(0, parts[0].indexOf(Lang.STATEMENT_OPEN));
+                String args = parts[0].substring(parts[0].indexOf(Lang.STATEMENT_OPEN) + 1,
+                        parts[0].indexOf(Lang.STATEMENT_CLOSE));
                 return new String[] { functionName, args };
             }
             default: {
@@ -223,7 +230,8 @@ public class Tokenizer {
                 break;
             }
             case "if": {
-                Object obj = tContainer.new TStatement(finalMOutput.lineNumber).parse(args[0].replace("(", ""));
+                Object obj = tContainer.new TStatement(finalMOutput.lineNumber)
+                        .parse(args[0].replace(Lang.STATEMENT_OPEN, ' '));
                 if (Validate.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
@@ -232,8 +240,6 @@ public class Tokenizer {
                 }
                 specific = tContainer.new TIfStatement(obj, codeblock, finalMOutput.lineNumber).toToken();
                 if (line.contains(Keywords.ELSE)) {
-                    // will turn "~> mara <- ... " into "mara <- ..."
-                    // and "~> mara if () <- ..." into "mara if () <- ..."
                     return new BlockChain(specific, line.replaceFirst(Lang.BLOCK_CLOSE, "").trim());
                 }
                 break;
@@ -251,8 +257,11 @@ public class Tokenizer {
             }
             case "colonize": {
                 if (!args[2].equals(Keywords.FOR_EACH)) {
-                    TNumberVar variable = (Token<TNumberVar>.TNumberVar) ((ArrayList<Token<?>>) readLine(
-                            "maak " + args[0].replace("(", "").trim() + "!", "", null, null, finalMOutput.lineNumber))
+                    TokenDefault var = (TokenDefault) ((ArrayList<Token<?>>) readLine(
+                            Keywords.D_VAR + " " + args[0].replace(Lang.STATEMENT_OPEN, ' ').trim()
+                                    + Character.toString(Lang.END_LINE),
+                            "", null,
+                            null, finalMOutput.lineNumber))
                             .get(0).getValue();
 
                     Object obj = tContainer.new TStatement(finalMOutput.lineNumber).parse(args[1]);
@@ -262,13 +271,19 @@ public class Tokenizer {
                         throw new TokenizerSyntaxException("Ayo the condition on line" + finalMOutput.lineNumber
                                 + "gotta resolve to a boolean dawg.");
                     }
-                    specific = tContainer.new TForLoop(variable, obj, args[2].replace(")", "").trim(),
+                    specific = tContainer.new TForLoop(
+                            var instanceof TUnknownVar ? (TUnknownVar) var : (TNumberVar) var, obj,
+                            args[2].replace(Lang.STATEMENT_CLOSE, ' ').trim(),
                             codeblock, finalMOutput.lineNumber).toToken();
                 } else {
                     TUnknownVar variable = (Token<TUnknownVar>.TUnknownVar) ((ArrayList<Token<?>>) readLine(
-                            "maak " + args[0].replace("(", "").trim() + "!", "", null, null, finalMOutput.lineNumber))
+                            Keywords.D_VAR + " " + args[0].replace(Lang.STATEMENT_OPEN, ' ').trim() + Lang.END_LINE, "",
+                            null, null,
+                            finalMOutput.lineNumber))
                             .get(0).getValue();
-                    TVarRef arrayVar = (Token<TVarRef>.TVarRef) ((Token<?>) tContainer.processContext(args[1],
+                    TVarRef arrayVar = (Token<TVarRef>.TVarRef) ((Token<?>) tContainer.processContext(args[1]
+                            .replace(Lang.STATEMENT_CLOSE, ' ')
+                            .trim(),
                             finalMOutput.lineNumber))
                             .getValue();
                     specific = tContainer.new TForLoop(variable, arrayVar, codeblock,
@@ -277,9 +292,13 @@ public class Tokenizer {
                 break;
             }
             case "kwenza": {
-                String[] fArgs = args[1].split(",");
+                String[] fArgs = args[1].split(Character.toString(Lang.ARGS_SEPARATOR));
                 for (int i = 0; i < fArgs.length; i++)
                     fArgs[i] = fArgs[i].trim();
+
+                IsValidSymbolName IVSN = Validate.isValidSymbolName(args[0]);
+                if (!IVSN.isValid)
+                    throw new SyntaxCriticalError(IVSN.op + " cannot be used in a variable name zawg.");
                 specific = tContainer.new TFunction(args[0], fArgs, codeblock, finalMOutput.lineNumber).toToken();
                 break;
             }
@@ -326,11 +345,12 @@ public class Tokenizer {
             return tContainer.new TArrayVar(parts[0], parsedValues, lineNumber).toToken();
 
         }
-        int stringStart = line.indexOf("\"");
-        int stringEnd = Find.closingCharIndex(line, '"', '"');
+        int stringStart = line.indexOf(Lang.STRING);
+        int stringEnd = Find.closingCharIndex(line, Lang.STRING, Lang.STRING);
         ArrayList<Tuple2<Integer, Integer>> quotepairs = Find.quotationPairs(line);
         if (stringStart != -1 && stringEnd != -1 && quotepairs.size() == 1
-                && (line.charAt(line.length() - 1) == '"' && line.split(Lang.ASSIGNMENT)[1].trim().charAt(0) == '"')) {
+                && (line.charAt(line.length() - 1) == Lang.STRING
+                        && line.split(Lang.ASSIGNMENT)[1].trim().charAt(0) == Lang.STRING)) {
             isString = true;
             String encasedString = line.substring(stringStart + 1, stringEnd);
             line = line.substring(0, stringStart - 1) + encasedString;
@@ -339,6 +359,9 @@ public class Tokenizer {
         line = line.substring(4, line.length());
         String[] parts = line.split(Lang.ASSIGNMENT);
         parts[0] = parts[0].trim();
+        IsValidSymbolName IVSN = Validate.isValidSymbolName(parts[0]);
+        if (!IVSN.isValid)
+            throw new SyntaxCriticalError(IVSN.op + " cannot be used in a variable name zawg.");
         if (parts.length == 1) {
             // they declared the variable with no value. Still valid syntax.
             // unless the name is nothing, then we have a problem.
