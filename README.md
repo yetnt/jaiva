@@ -129,6 +129,38 @@ These are the only characters for strings. No string literals or multi line stri
 maak b <- "String"!
 ```
 
+##### String operations.
+
+1. Addition
+
+    `"a" + "string"` _returns_ **`"astring"`**
+
+    `1 + "string"` _returns_ **`"1string"`**
+
+    `"string" + 1` _returns_ **`"string1"`**
+
+2. Subtraction
+
+    `"string" - "tri"` _returns_ **`"sing"`** (removes the first occuramce of rhs from the lhs. Sometimes this dont work tho lol.)
+
+    `"string" - 2` _returns_ **`"stri"`**
+
+    `2 - "string"` _returns_ **`"ring"`**
+
+3. Multiplication
+
+    `"String" * 3` _returns_ **`"StringStringString"`**
+
+4. Division
+
+    `"remove all es please" / "e"` _returns_ **`"rmov all s plas"`** (removes ALL occurences of rhs from the lhs. Sometimes this dont work too lol.)
+
+    `"Hello ong World" / 2` _returns_ **`"Hello o"`** (returns the substring in the range _[0, (lhs' length)/rhs)_ )
+
+    `4 / "Hello ong World"` _returns_ **`"lo ong World"`** (returns the substring in the range _[(rhs' length)/lhs, rhs.length-1)_ )
+
+And of course, you can compare strings to each other using `=` and `!=`
+
 ##### Escaping characters
 
 To escape characters in a string use the `$` symbol.
@@ -168,6 +200,46 @@ This is a primitive which is used to represent nothingness.
 ```jaiva
 maak a <- idk!
 ```
+
+### Pre and Postfix stuff
+
+#### Array/String length
+
+See [Variables](#variables)
+
+To get the length of a variable (string) or an array. (Not a string literal. Too much implementation for me.)
+
+Use the `~` operator
+
+```jiv
+maak a <-| 10, 23, 984!
+khuluma(a~)! @ returns 3
+
+maak b <- "let's gooo"!
+khuluma(b~)! @ returns 10
+```
+
+#### Explicity Typed Function params
+
+See [Functions](#functions) and [Variables](#variables)
+
+In the case wehere you want to pass a function into another function, you will have to input `F~` to the name of the parameter to explicity tell the interpreter that the shi u finna input should be treated as a function.
+
+`V~` is available for variables, but its not needed as without this typing, its always assumed to be a variable
+
+```jiv
+kwenza function(F~ref) ->
+    khutla ref()!
+<~
+
+kwenza returnNum() ->
+    khutla 100!
+<~
+
+function(returnNum)!
+```
+
+be careful when you start doing this though as when you start calling and chaining these, you loose variables in scopes since it doesnt know an shi.
 
 ### Arithmatic and Boolean Comparisons
 
@@ -238,6 +310,8 @@ here's a cheat table though
 
 Variables are [scoped](#scopes) constructs.
 
+See [Array/String length](#arraystring-length) to get the length of a variable containing arrays or a string.
+
 See [Globals](#globals) for a list of global variables that are available to you.
 
 ### Definition
@@ -302,6 +376,8 @@ maak b <- a[0]! @ 20
 ## <center>Functions
 
 Functions are [scoped](#scopes) constructs.
+
+See [Explicity Typed Function Params.](#explicity-typed-function-params) for passing functions in functions.
 
 See [Globals](#globals) for a list of global functions that are available to you.
 
@@ -486,7 +562,7 @@ colonize i <- 0 | i <= 10 | + ->
 
 ## <center>Error handling
 
-Jaiva has some sort of error handling. This is done using 2 constructs.
+Jaiva has some sort of error handling. (Well you can only handle user thrown errors, lol.) This is done using 2 constructs.
 
 ### Throw an error
 
