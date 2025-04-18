@@ -42,7 +42,7 @@ public class Primitives {
                         : rhs instanceof Double ? D
                                 : rhs instanceof Boolean ? B : "idk";
         if (rhs instanceof String) {
-            lhs = EscapeSequence.escape((String) rhs);
+            rhs = EscapeSequence.escape((String) rhs);
         }
         if (lhs instanceof String) {
             lhs = EscapeSequence.escape((String) lhs);
@@ -50,7 +50,7 @@ public class Primitives {
         String switchTing = leftHandSide + rightHandSide;
 
         ArrayList<String> IS = new ArrayList<>(Arrays.asList("+", "-", "*", "/", "=", "!="));
-        ArrayList<String> SS = new ArrayList<>(Arrays.asList("+", "-", "=", "!="));
+        ArrayList<String> SS = new ArrayList<>(Arrays.asList("+", "-", "=", "!=", "/"));
 
         try {
             switch (switchTing) {
@@ -73,15 +73,17 @@ public class Primitives {
                                     : op.equals("*") ? ((String) lhs).repeat((Integer) rhs)
                                             : op.equals("/")
                                                     ? ((String) lhs)
-                                                            .substring(((String) lhs).length() / ((Integer) rhs))
+                                                            .substring(0, ((String) lhs).length() / ((Integer) rhs))
                                                     : op.equals("=") ? false : op.equals("!=") ? true : ((String) lhs);
                 case "SS":
                     if (!SS.contains(op))
                         throw new StringCalcException(ts);
                     return op.equals("+") ? (String) lhs + (String) rhs
-                            : op.equals("-") ? ((String) lhs).replaceAll((String) rhs, "")
-                                    : op.equals("=") ? ((String) lhs).equals((String) rhs)
-                                            : op.equals("!=") ? !((String) lhs).equals((String) rhs) : ((String) lhs);
+                            : op.equals("-") ? ((String) lhs).replace((String) rhs, "")
+                                    : op.equals("/") ? ((String) lhs).replaceAll((String) rhs, "")
+                                            : op.equals("=") ? ((String) lhs).equals((String) rhs)
+                                                    : op.equals("!=") ? !((String) lhs).equals((String) rhs)
+                                                            : ((String) lhs);
             }
         } catch (StringIndexOutOfBoundsException e) {
             // too big or too small of a number
