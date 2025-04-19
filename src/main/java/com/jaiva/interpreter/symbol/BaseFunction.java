@@ -126,7 +126,7 @@ public class BaseFunction extends Symbol {
                     Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), vfs, false);
                     wrappedValue = BaseVariable.create(name,
                             tContainer.new TUnknownVar(name, o, tFuncCall.lineNumber),
-                            new ArrayList<>(Arrays.asList(o)), false);
+                            o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Arrays.asList(o)), false);
                 }
                 newVfs.put(name.replace("F~", "").replace("V~", ""), new MapValue(wrappedValue));
             }

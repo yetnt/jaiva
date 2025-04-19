@@ -400,17 +400,41 @@ public class Find {
                 indexes1.add(i);
             }
         }
+        indexes1 = sanitizeStatement(statement, indexes1);
+
         if (indexes1.isEmpty())
             return new LeastImportantOperator(); // exit early if no operators are found.
         int group = -1; // 0 = Exponentiation, 1 = DivMult, 2 = AddSub, 3 = Bools
+
         ArrayList<Integer> indexes2 = new ArrayList<>();
-        for (String op : Operators.getAll().reversed()) {
+
+        // old for
+        // for (String op : Operators.getAll().reversed()) {
+        // for (int opIndex : indexes1) {
+        // String opString = statement.substring(opIndex, opIndex + op.length());
+        // if (!opString.equals(op))
+        // continue;
+        // if (group == -1) {
+        // group = Operators.getType(op);
+        // indexes2.add(opIndex);
+        // } else if (group == Operators.getType(op)) {
+        // indexes2.add(opIndex);
+        // } else {
+        // continue;
+        // }
+        // }
+        // }
+
+        // new for
+        for (int i = Operators.getAllLists().size() - 1; i > 0; i--) {
+            List<String> list = Operators.getAllLists().get(i);
             for (int opIndex : indexes1) {
-                String opString = statement.substring(opIndex, opIndex + op.length());
-                if (!opString.equals(op))
+                String op = statement.substring(opIndex, opIndex + 1); // stuff thats 2 chars long are generally in the
+                                                                       // same gorup.
+                if (!list.contains(op))
                     continue;
                 if (group == -1) {
-                    group = Operators.getType(op);
+                    group = i;
                     indexes2.add(opIndex);
                 } else if (group == Operators.getType(op)) {
                     indexes2.add(opIndex);
@@ -427,21 +451,6 @@ public class Find {
             return new LeastImportantOperator();
         int finalIndex = indexes2.getLast();
 
-        // check if op is part of a string pair
-        for (int opIndex : indexes2.reversed()) {
-            int inStringPair = Validate.isOpInQuotePair(statement, opIndex);
-            if (inStringPair == -1)
-                finalIndex = opIndex;
-        }
-
-        if (indexes2.size() > 1 && (statement.charAt(finalIndex) == '-') && ((indexes2.indexOf(finalIndex) - 1) < 0)) {
-            int opBeforePossiblyUnary = indexes2.get(indexes2.indexOf(finalIndex) - 1);
-            finalIndex = Validate.isUnaryMinus(
-                    finalIndex, opBeforePossiblyUnary, statement)
-                            ? opBeforePossiblyUnary
-                            : finalIndex;
-        }
-
         // The operator can sometimes be the length of 2
         String op = statement.substring(finalIndex,
                 multiOpChars.contains(statement.charAt(finalIndex + 1)) ? (finalIndex + 2)
@@ -450,6 +459,37 @@ public class Find {
         return new LeastImportantOperator(
                 op, finalIndex,
                 group);
+    }
+
+    /**
+     * Sanitizes a list of operator indexes in a given statement by removing indexes
+     * that correspond to unary minus operators, while preserving other operator
+     * indexes.
+     *
+     * @param statement The input string containing the statement to be analyzed.
+     * @param opIndexes A list of integer indexes representing the positions of
+     *                  operators
+     *                  in the statement.
+     * @return A sanitized list of operator indexes, excluding those that
+     *         correspond to unary minus operators.
+     */
+    public static ArrayList<Integer> sanitizeStatement(String statement, ArrayList<Integer> opIndexes) {
+        ArrayList<Integer> sanitized = new ArrayList<>();
+
+        for (int i = 0; i < opIndexes.size(); i++) {
+            int opIndex = opIndexes.get(i);
+            if (i == 0) {
+                if (opIndexes.size() == 1 || !(statement.charAt(opIndex) == '-'))
+                    sanitized.add(opIndex);
+                continue;
+            }
+            int opIndexBeforeUnary = opIndexes.get(i - 1);
+            boolean isUnary = Validate.isUnaryMinus(opIndex, opIndexBeforeUnary, statement);
+            if (!isUnary)
+                sanitized.add(opIndex);
+        }
+
+        return sanitized;
     }
 
     /**

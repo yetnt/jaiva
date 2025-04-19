@@ -55,15 +55,15 @@ public class Lang {
     public static char STRING = '"';
 
     public class Operators {
-        public static final String Exponentiation = "^";
-        public static final List<String> DivMult = Arrays.asList("/", "*", "%");
+        public static final List<String> Exponentiation = Arrays.asList("^");
+        public static final List<String> DivMult = Arrays.asList("%", "/", "*");
         public static final List<String> AddSub = Arrays.asList("+", "-");
-        public static final List<String> Bools = Arrays.asList("|", "&", ">", "<", "=");
+        public static final List<String> Bools = Arrays.asList("|", "&", ">", "<", "=", "!");
         public static final List<String> DoubleBools = Arrays.asList("||", "&&", "!=", ">=", "<=");
 
         public static List<String> getArithmetic() {
             List<String> all = new ArrayList<>();
-            all.add(Exponentiation);
+            all.addAll(Exponentiation);
             all.addAll(DivMult);
             all.addAll(AddSub);
             return all;
@@ -76,13 +76,46 @@ public class Lang {
             return all;
         }
 
+        /**
+         * Retrieves a combined list of all elements from various predefined categories.
+         *
+         * This method aggregates elements from the following lists:
+         * - Exponentiation
+         * - DivMult
+         * - AddSub
+         * - DoubleBools
+         * - Bools
+         *
+         * @return A list containing all elements from the above categories.
+         */
         public static List<String> getAll() {
             List<String> all = new ArrayList<>();
-            all.add(Exponentiation);
+            all.addAll(Exponentiation);
             all.addAll(DivMult);
             all.addAll(AddSub);
             all.addAll(DoubleBools);
             all.addAll(Bools);
+            return all;
+        }
+
+        /**
+         * Retrieves a list of all predefined lists of strings.
+         * 
+         * This method aggregates several predefined lists, such as Exponentiation,
+         * DivMult, AddSub, DoubleBools, and Bools, into a single list of lists.
+         * 
+         * @return A list containing all predefined lists of strings.
+         */
+        public static List<List<String>> getAllLists() {
+            List<List<String>> all = new ArrayList<>();
+            List<String> bools = new ArrayList<>();
+            bools.addAll(Bools);
+            bools.addAll(DoubleBools);
+
+            all.add(Exponentiation);
+            all.add(DivMult);
+            all.add(AddSub);
+            all.add(bools);
             return all;
         }
 
