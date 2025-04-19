@@ -19,6 +19,7 @@
                 "id": "jaiva",
                 "aliases": [
                     "Jaiva!",
+                    "Jaiva",
                     "jaiva"
                 ],
                 "extensions": [
@@ -36,5 +37,14 @@
                 "path": "./syntaxes/jaiva.tmLanguage.json"
             }
         ]
+    },
+    "main": "./dist/extension.js",
+    "devDependencies": {
+        "@types/node": "^22.14.1",
+        "@types/vscode": "^1.99.1",
+        "typescript": "^5.8.3"
+    },
+    "dependencies": {
+        "vscode": "^1.1.37"
     }
 }
