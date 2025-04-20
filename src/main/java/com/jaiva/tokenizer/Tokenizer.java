@@ -16,6 +16,29 @@ import com.jaiva.utils.Validate;
 import com.jaiva.utils.Validate.IsValidSymbolName;
 
 public class Tokenizer {
+
+    private static String[] decimateSingleComments(String[] lines) {
+        if (lines.length < 2)
+            return lines;
+        List<String> newLines = new ArrayList<>();
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+
+            // if the line does not contain a newline,
+            // call a helper function or process it accordingly
+            if (!line.contains("\n")) {
+                // You might need to adjust this if you're calling
+                // a helper method that expects an array...
+                line = decimateSingleComments(line.trim()).trim();
+            }
+
+            if (line != null && !line.isBlank()) {
+                newLines.add(line);
+            }
+        }
+        return newLines.toArray(new String[0]);
+    }
+
     /**
      * Remove single line comments. Call this function when appropriate.
      * 
@@ -446,23 +469,28 @@ public class Tokenizer {
 
         // To the developer who would like to understand this.
         // Don't. Just don't. It's a mess. I am NOT sorry.
-        String type = line.startsWith(Keywords.IF) ? Keywords.IF
-                : line.startsWith(Keywords.D_FUNCTION) ? Keywords.D_FUNCTION
-                        : line.startsWith(Keywords.FOR) ? Keywords.FOR
-                                : line.startsWith(Keywords.WHILE) ? Keywords.WHILE
-                                        : line.replace(Lang.BLOCK_CLOSE, "").trim()
-                                                .startsWith(Keywords.ELSE + " " + Keywords.IF)
-                                                        ? Keywords.ELSE + " " + Keywords.IF // check for "ELSE IF"
-                                                                                            // before
-                                                                                            // checking for "IF"
-                                                        : line.replace(Lang.BLOCK_CLOSE, "").trim()
-                                                                .startsWith(Keywords.ELSE) ? Keywords.ELSE
-                                                                        : line.startsWith(Keywords.TRY) ? Keywords.TRY
-                                                                                : line.replace(Lang.BLOCK_CLOSE, "")
-                                                                                        .trim()
-                                                                                        .startsWith(Keywords.CATCH)
-                                                                                                ? Keywords.CATCH
-                                                                                                : null;
+        String type = multipleLinesOutput != null ? ((Find.MultipleLinesOutput) multipleLinesOutput).type
+                : line.startsWith(Keywords.IF) ? Keywords.IF
+                        : line.startsWith(Keywords.D_FUNCTION) ? Keywords.D_FUNCTION
+                                : line.startsWith(Keywords.FOR) ? Keywords.FOR
+                                        : line.startsWith(Keywords.WHILE) ? Keywords.WHILE
+                                                : line.replace(Lang.BLOCK_CLOSE, "").trim()
+                                                        .startsWith(Keywords.ELSE + " " + Keywords.IF)
+                                                                ? Keywords.ELSE + " " + Keywords.IF // check for "ELSE
+                                                                                                    // IF"
+                                                                                                    // before
+                                                                                                    // checking for "IF"
+                                                                : line.replace(Lang.BLOCK_CLOSE, "").trim()
+                                                                        .startsWith(Keywords.ELSE) ? Keywords.ELSE
+                                                                                : line.startsWith(Keywords.TRY)
+                                                                                        ? Keywords.TRY
+                                                                                        : line.replace(Lang.BLOCK_CLOSE,
+                                                                                                "")
+                                                                                                .trim()
+                                                                                                .startsWith(
+                                                                                                        Keywords.CATCH)
+                                                                                                                ? Keywords.CATCH
+                                                                                                                : null;
         // || (line.contains(Lang.BLOCK_OPEN) && (line.indexOf('-') > 0 &&
         // line.charAt(line.indexOf('-') - 1) != '$' && line
         // .charAt(line.indexOf('-') - 1) != '<'));
@@ -477,7 +505,8 @@ public class Tokenizer {
         ArrayList<Token<?>> tokens = new ArrayList<>();
         Token<?> tContainer = new Token<>(null);
         boolean containsNewln = line.contains("\n");
-        String[] lines = containsNewln ? line.split("\n") : line.split("(?<!\\$)!(?!\\=)");
+        String[] lines = containsNewln ? decimateSingleComments(line.split("\n"))
+                : decimateSingleComments(line.split("(?<!\\$)!(?!\\=)"));
 
         if (lines.length > 1 || ((lines.length == 2 && !lines[1].isEmpty()) && !arrayIsOnlyComments(lines))) {
             // System.out.println("Multiple lines detected!");
@@ -530,8 +559,8 @@ public class Tokenizer {
          * multi line comment}
          * and block stuff
          */
-        if (cont || isComment || isCodeBlock)
-            return type == null
+        if (cont || isComment || isCodeBlock) {
+            Object k = type == null
                     ? processBlockLines(isComment, line, (Find.MultipleLinesOutput) multipleLinesOutput,
                             tokenizerLine,
                             tokens, tContainer, type,
@@ -539,8 +568,11 @@ public class Tokenizer {
                     : processBlockLines(
                             isComment, line, (Find.MultipleLinesOutput) multipleLinesOutput, tokenizerLine,
                             tokens, tContainer, type,
-                            handleArgs(type, line), (blockChain != null ? blockChain.getInitialIf() : null),
+                            multipleLinesOutput == null ? handleArgs(type, line) : null,
+                            (blockChain != null ? blockChain.getInitialIf() : null),
                             lineNumber);
+            return k;
+        }
 
         // if its anything after this the line has to end in a ! or else invalid syntax.
         // (All other methods which did the ! will be redundant as we can just check

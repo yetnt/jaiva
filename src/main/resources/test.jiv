@@ -19,8 +19,9 @@ if (variable != 100) ->
     khuluma("What is it bro.")!
 <~
 
-nikhil (yebo) ->
-    khuluma("while loop!")!
+nikhil (variable != 4) ->
+    variable <- variable - 1!
+    khuluma(variable)!
 <~
 
 kwenza addition(param1, param2) ->
@@ -42,52 +43,3 @@ zama zama ->
 <~ chaai ->
     khuluma("An error occured")!
 <~
-
-@ The following is code that WOULD be cool to add, but a pain.
-
-@ 2 for loops running in parallel
-@ colonize i, j <- 0 | i >= 10, j <= -10 | +- ->
-@     left ->
-@     @ some code that uses the variable i
-@     @ i will be incremented
-@     <~
-@     right ->
-@     @ some code that uses the variable j
-@     @ j will be decremented
-@     <~
-@ <~
-
-
-@ when i need to, add this
-@ colonize arrayVar with i ->
-@     khuluma(i)!
-@ <~
-
-
-@ Stuff i want to implement but wont rn
-
-@ Linked Lists
-@ maak list <- 10 <- 100 <- 823 <- 12!
-
-@ khuluma(list)! @ Linked List reference
-@ khuluma(list*)! @ Value at pos 1 
-@ khuluma($list)! @ Linked List reference at pos 2
-@ khuluma($list*)! @ Value at pos 2 
-
-@ Objects
-@ maak obj |->
-@     key <- "value"!
-@     anotherkey <- 10!
-@ <~
-
-@ 2 For Loops running in parallel
-@ colonize i, j <- 0 | i >= 10, j <= -10 | +- ->
-@     left ->
-@     @ some code that uses the variable i
-@     @ i will be incremented
-@     <~
-@     right ->
-@     @ some code that uses the variable j
-@     @ j will be decremented
-@     <~
-@ <~
