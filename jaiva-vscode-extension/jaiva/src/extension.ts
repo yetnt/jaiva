@@ -97,6 +97,28 @@ export function activate(context: { subscriptions: vscode.Disposable[] }) {
     console.log("Jaiva extension activated.");
 
     onActivate();
+    const runCommand = vscode.commands.registerCommand("jaiva.run", () => {
+        // Ensure there is an active editor
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            vscode.window.showInformationMessage("No active editor found.");
+            return;
+        }
+
+        const filePath = editor.document.uri.fsPath;
+        // Retrieve additional args from the configuration
+        const config = vscode.workspace.getConfiguration("jaiva");
+        const runArgs = config.get("runArgs", "");
+        const command = `jaiva "${filePath}" ${runArgs}`;
+
+        // Create or re-use an existing terminal
+        let terminal =
+            vscode.window.activeTerminal ||
+            vscode.window.createTerminal("Jaiva!");
+        terminal.show();
+        terminal.sendText(command);
+    });
+
     const provider = vscode.languages.registerCompletionItemProvider("jaiva", {
         provideCompletionItems(
             document: vscode.TextDocument,
@@ -121,7 +143,19 @@ export function activate(context: { subscriptions: vscode.Disposable[] }) {
         },
     });
 
+    const runStatusBarItem = vscode.window.createStatusBarItem(
+        vscode.StatusBarAlignment.Left,
+        100
+    );
+    runStatusBarItem.text = "$(play) Run Jaiva";
+    runStatusBarItem.command = "jaiva.run";
+    runStatusBarItem.tooltip =
+        "Run the current Jaiva file with additional arguments";
+    runStatusBarItem.show();
+
     context.subscriptions.push(
+        runStatusBarItem,
+        runCommand,
         provider,
         vscode.workspace.onDidSaveTextDocument(onSave),
         vscode.workspace.onDidOpenTextDocument(onSave),

@@ -36,7 +36,33 @@
                 "scopeName": "source.jaiva",
                 "path": "./syntaxes/jaiva.tmLanguage.json"
             }
-        ]
+        ],
+        "commands": [
+            {
+                "command": "jaiva.run",
+                "title": "Run Jaiva File"
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "Jaiva Configuration",
+            "properties": {
+                "jaiva.runArgs": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Additional arguments to pass when running Jaiva filez"
+                }
+            }
+        },
+        "menus": {
+            "editor/title": [
+                {
+                    "command": "jaiva.run",
+                    "when": "editorLangId == jaiva",
+                    "group": "navigation"
+                }
+            ]
+        }
     },
     "main": "./dist/extension.js",
     "devDependencies": {
