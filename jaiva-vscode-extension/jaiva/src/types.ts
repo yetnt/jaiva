@@ -27,6 +27,7 @@ export type TokenDefault = {
     type: TokenType;
     name: string;
     lineNumber: number;
+    toolTip: "Jaiva Construct" | string;
 };
 
 export type Token<T extends TokenDefault | null> = {

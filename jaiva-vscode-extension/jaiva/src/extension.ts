@@ -83,7 +83,8 @@ export function findTokenInRange(
             return hoverToken;
         if (
             hoverToken.range[0] <= lineNumber &&
-            hoverToken.range[1] >= lineNumber
+            hoverToken.range[1] >= lineNumber &&
+            lineNumber >= hoverToken.lineNumber // Jaiva executes top to bottom, so this check makes sure you dont get tokens that were define later
         ) {
             // console.log(
             //     `HoverToken "${hoverToken.name}" is in the range. of ${hoverToken.range} in line ${lineNumber}`
@@ -191,6 +192,7 @@ export function activate(context: { subscriptions: vscode.Disposable[] }) {
 
                     const markdown = new vscode.MarkdownString();
                     markdown.appendCodeblock(token.hoverMsg, "jaiva");
+                    markdown.appendMarkdown(token.token.toolTip);
                     markdown.isTrusted = true;
 
                     return new vscode.Hover(markdown);

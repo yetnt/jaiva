@@ -7,6 +7,12 @@ import {
     TStatement,
     TokenType,
     TFunction,
+    TWhileLoop,
+    TForLoop,
+    TVarRef,
+    TNumberVar,
+    TIfStatement,
+    TTryCatchStatement,
 } from "./types";
 
 const MAX_STRING_LENGTH = 20;
@@ -21,7 +27,7 @@ export type HoverToken = {
     paramIsFuncRef?: boolean;
 };
 function hoverMessage(
-    token: TokenDefault,
+    token: TokenDefault | null = null,
     t: number,
     name: string,
     value: any = null,
@@ -44,7 +50,7 @@ function hoverMessage(
                 name +
                 (t == 0 ? " <- " : " <-| ") +
                 simplify(value, type) +
-                (token.lineNumber == -1 ? " @ GLOBAL" : "")
+                (token?.lineNumber == -1 ? " @ GLOBAL" : "")
             );
         case 2: // function
             return (
@@ -52,7 +58,7 @@ function hoverMessage(
                 "(" +
                 params.join(", ") +
                 ")" +
-                (token.lineNumber == -1 ? " @ GLOBAL" : "")
+                (token?.lineNumber == -1 ? " @ GLOBAL" : "")
             );
         case 3: // function parameter
             return (
@@ -60,6 +66,31 @@ function hoverMessage(
                 name +
                 (value === true ? "(???)" : "") /*+ " <- " + simplify(value)*/
             );
+        case 4: // for loop : index variable
+            return (
+                "[index] " +
+                typeInference(st) +
+                name +
+                " <- " +
+                simplify(value, type)
+            );
+        case 5: // for loop : element variable
+            return (
+                "[element] " +
+                typeInference(st) +
+                name +
+                " <- " +
+                simplify(value, type)
+            );
+        case 5: // error in chaai block
+            return (
+                "[chaai error] " +
+                typeInference(st) +
+                name +
+                " <- " +
+                '("error message")'
+            );
+
         default:
             return "";
     }
@@ -216,6 +247,93 @@ export function parseAndReturnHoverTokens(
                     let block = parseAndReturnHoverTokens(t.body.lines, t.body);
                     hoverTokens.addAll(block);
                 }
+                break;
+            }
+            case "TWhileLoop": {
+                let t: TWhileLoop = token as TWhileLoop;
+
+                if (t.body !== null) {
+                    let block = parseAndReturnHoverTokens(t.body.lines, t.body);
+                    hoverTokens.addAll(block);
+                }
+                break;
+            }
+            case "TForLoop": {
+                let t: TForLoop = token as TForLoop;
+
+                let variable: TNumberVar = t.variable as TNumberVar;
+
+                if (t.body !== null) {
+                    let block = parseAndReturnHoverTokens(t.body.lines, t.body);
+                    hoverTokens.addAll(block);
+                    hoverTokens.add(variable.name, {
+                        token: t as TokenDefault,
+                        range: [t.lineNumber, t.body.lineEnd],
+                        lineNumber: variable.lineNumber,
+                        hoverMsg: hoverMessage(
+                            t as TokenDefault,
+                            t.arrayVariable == null ? 4 : 5,
+                            variable.name,
+                            variable.value,
+                            "TNumberVar"
+                        ),
+                        name: variable.name,
+                    });
+                }
+                break;
+            }
+            case "TIfStatement": {
+                let t: TIfStatement = token as TIfStatement;
+
+                if (t.body !== null) {
+                    let block = parseAndReturnHoverTokens(t.body.lines, t.body);
+                    hoverTokens.addAll(block);
+                }
+                if (t.elseBody !== null) {
+                    let block = parseAndReturnHoverTokens(
+                        t.elseBody.lines,
+                        t.elseBody
+                    );
+                    hoverTokens.addAll(block);
+                }
+                if (t.elseIfs !== null && t.elseIfs.length > 0)
+                    t.elseIfs.forEach((ifS) => {
+                        let block = parseAndReturnHoverTokens(
+                            ifS.body.lines,
+                            ifS.body
+                        );
+                        hoverTokens.addAll(block);
+                    });
+                break;
+            }
+            case "TTryCatchStatement": {
+                let t: TTryCatchStatement = token as TTryCatchStatement;
+
+                if (t.try !== null) {
+                    let block = parseAndReturnHoverTokens(t.try.lines, t.try);
+                    hoverTokens.addAll(block);
+                }
+                if (t.catch !== null) {
+                    let block = parseAndReturnHoverTokens(
+                        t.catch.lines,
+                        t.catch
+                    );
+                    hoverTokens.addAll(block);
+                    hoverTokens.add("error", {
+                        token: {
+                            type: "TStringVar",
+                            name: "error",
+                            lineNumber: t.lineNumber,
+                            toolTip:
+                                "The error message that was caught (hopefully a string)",
+                        },
+                        range: [t.lineNumber, t.catch.lineEnd],
+                        lineNumber: t.catch.lineNumber,
+                        hoverMsg: hoverMessage(t as TokenDefault, 5, "error"),
+                        name: "error",
+                    });
+                }
+                break;
             }
         }
     });

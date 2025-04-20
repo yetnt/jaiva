@@ -1,4 +1,4 @@
-# Jaiva! VSCode Extension
+# Jaiva! Language Support VSCode Extension
 
 This extension provides basic language support and features for `.jiv`, `.jaiva`, `.jva` file extensions!
 
@@ -34,6 +34,18 @@ You have to have the `jaiva` global command installed by following [Install.md](
 
 ## Screenshots
 
+### Syntax Highlighting
+
+![Syntax Highlighting](./images/syntax-highlighting.png)
+
+### Hover info
+
+![Hover info](./images/hover.png)
+
+### Autocomplete and Snippets
+
+![Autocomplete](./images/autocomplete.png)
+
 ## Extension Settings
 
 This extension contributes the following settings:
@@ -47,7 +59,9 @@ This extension contributes the following settings:
 
 ## Release Notes
 
-### 1.0.0
+(MAJOR version is dependant on the current MAJOR version of Jaiva)
+
+### 1.0.0-beta.0
 
 Initial release of this extension.
 

@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { findTokenInRange, hTokens } from "./extension";
 import { MultiMap } from "./mmap";
 import { HoverToken } from "./utils";
-import { TArrayVar } from "./types";
+import { TArrayVar, TFunction } from "./types";
 
 function keywordsCompletion(map: MultiMap<string, HoverToken>) {
     let t: TArrayVar = map.get("reservedKeywords")[0].token as TArrayVar;
@@ -156,6 +156,15 @@ function snippetCompletion() {
     return arr;
 }
 
+function createParamterJumps(token: TFunction) {
+    let arr: string[] = [];
+    for (let argIndex = 0; argIndex < token.args.length; argIndex++) {
+        const argName = token.args[argIndex];
+        arr.push("${" + (argIndex + 1) + `:${argName}}`);
+    }
+    return arr.join(", ");
+}
+
 /**
  * Creates an array of VS Code completion items based on the provided map of hover tokens
  * and the specified line number. The function filters, sorts, and processes hover tokens
@@ -202,7 +211,11 @@ export function createCompletionItemz(
             "Inserts " +
             h.name +
             (isFunc ? " function" : " variable/parameter");
-        completion.insertText = isFunc ? h.name + "()" : h.name;
+        completion.insertText = new vscode.SnippetString(
+            isFunc
+                ? h.name + `(${createParamterJumps(h.token as TFunction)})`
+                : h.name
+        );
 
         arr.push(completion);
     });
