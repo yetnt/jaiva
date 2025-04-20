@@ -108,13 +108,20 @@ public class BaseFunction extends Symbol {
                     // if found, create aq copy of that MapValue, and name it to instead this new
                     // name and add to the vfs.
                     TVarRef tVarRef = (TVarRef) ((Token<?>) value).getValue();
-                    MapValue v = vfs.get(tVarRef.varName);
-                    if (v == null)
-                        throw new UnknownVariableException(tVarRef);
-                    if (!(v.getValue() instanceof BaseVariable))
-                        throw new WtfAreYouDoingException(v.getValue(), BaseVariable.class, tVarRef.lineNumber);
+                    if (tVarRef.index == null && tVarRef.name instanceof String) {
+                        MapValue v = vfs.get(tVarRef.varName);
+                        if (v == null)
+                            throw new UnknownVariableException(tVarRef);
+                        if (!(v.getValue() instanceof BaseVariable))
+                            throw new WtfAreYouDoingException(v.getValue(), BaseVariable.class, tVarRef.lineNumber);
 
-                    wrappedValue = v.getValue();
+                        wrappedValue = v.getValue();
+                    } else {
+                        Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarRef), vfs, false);
+                        wrappedValue = BaseVariable.create(name,
+                                tContainer.new TUnknownVar(name, o, tFuncCall.lineNumber),
+                                o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Arrays.asList(o)), false);
+                    }
                 } else if (Primitives.isPrimitive(value)) {
                     // primitivers ong
                     wrappedValue = BaseVariable.create(name,
