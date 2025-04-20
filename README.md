@@ -264,11 +264,6 @@ be careful when you start doing this though as when you start calling and chaini
 > [!NOTE]
 > You cannot negate an expression. Sorry not sorry.
 
-> [!WARNING]
-> Due to my bad code, the unary minus sometimes works and sometimes doesn't. just multiply by -1, since that always works.
-
-> [!WARNING]
-> You can't compare strings. Not waisting my time on that one.
 
 ### Blocks
 
