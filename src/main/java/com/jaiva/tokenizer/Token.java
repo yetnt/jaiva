@@ -137,6 +137,11 @@ public class Token<T extends TokenDefault> {
             this.value = value;
         }
 
+        public TStringVar(String name, String value, int ln, String customToolTip) {
+            super(name, ln, customToolTip);
+            this.value = value;
+        }
+
         @Override
         public String toJson() {
             json.append("value", value instanceof String ? EscapeSequence.escape((String) value) : value, true);
@@ -215,6 +220,11 @@ public class Token<T extends TokenDefault> {
             this.contents = contents;
         }
 
+        public TArrayVar(String name, ArrayList<Object> contents, int ln, String customTooltip) {
+            super(name, ln, customTooltip);
+            this.contents = contents;
+        }
+
         @Override
         public String toJson() {
             json.append("value", contents, true);
@@ -258,6 +268,12 @@ public class Token<T extends TokenDefault> {
 
         public TFunction(String name, String[] args, TCodeblock body, int ln) {
             super("F~" + name, ln);
+            this.args = args;
+            this.body = body;
+        }
+
+        public TFunction(String name, String[] args, TCodeblock body, int ln, String customToolTip) {
+            super("F~" + name, ln, customToolTip);
             this.args = args;
             this.body = body;
         }

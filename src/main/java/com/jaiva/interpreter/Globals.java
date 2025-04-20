@@ -14,6 +14,7 @@ import com.jaiva.tokenizer.Token.TStatement;
 import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.Main;
 import com.jaiva.errors.IntErrs.FrozenSymbolException;
+import com.jaiva.errors.IntErrs.FunctionParametersException;
 import com.jaiva.errors.IntErrs.UnknownVariableException;
 import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
 import com.jaiva.interpreter.symbol.*;
@@ -27,6 +28,7 @@ public class Globals {
         vfs.put("getVarClass", new MapValue(new FGetVarClass(container)));
         vfs.put("reservedKeywords", new MapValue(new VReservedKeywords(container)));
         vfs.put("version", new MapValue(new VJaivaVersion(container)));
+        vfs.put("flat", new MapValue(new FFlat(container)));
     }
 
     public String returnGlobalsJSON(boolean removeTrailingComma) {
@@ -46,7 +48,8 @@ public class Globals {
     class FKhuluma extends BaseFunction {
 
         FKhuluma(Token<?> container) {
-            super("khuluma", container.new TFunction("khuluma", new String[] { "msg" }, null, -1));
+            super("khuluma", container.new TFunction("khuluma", new String[] { "msg" }, null, -1,
+                    "Prints any given input to the console with a newline afterwards. \\n(It just uses System.out.println() lol) This function returns no value."));
             this.freeze();
         }
 
@@ -79,7 +82,8 @@ public class Globals {
      */
     class FGetVarClass extends BaseFunction {
         FGetVarClass(Token<?> container) {
-            super("getVarClass", container.new TFunction("getVarClass", new String[] { "var" }, null, -1));
+            super("getVarClass", container.new TFunction("getVarClass", new String[] { "var" }, null, -1,
+                    "Attempts to return the symbol's corresponding Java class in string form. If you're using this then you def don't know what you're doing."));
             this.freeze();
         }
 
@@ -117,7 +121,8 @@ public class Globals {
     class VReservedKeywords extends BaseVariable {
         VReservedKeywords(Token<?> container) {
             super("reservedKeywords",
-                    container.new TArrayVar("reservedKeywords", new ArrayList<>(Arrays.asList(Keywords.all)), -1),
+                    container.new TArrayVar("reservedKeywords", new ArrayList<>(Arrays.asList(Keywords.all)), -1,
+                            "An array containing jaiva's reserved keywords that you cannot use as symbol names."),
                     new ArrayList<>(Arrays.asList(Keywords.all)));
             this.freeze();
         }
@@ -125,8 +130,57 @@ public class Globals {
 
     class VJaivaVersion extends BaseVariable {
         VJaivaVersion(Token<?> container) {
-            super("version", container.new TStringVar("version", Main.version, -1), Main.version);
+            super("version", container.new TStringVar("version", Main.version, -1,
+                    "What do you think this returns."), Main.version);
             this.freeze();
+        }
+    }
+
+    /**
+     * flat(array1, array2)
+     * Takes in 2 arrays and returns and flattens it, then retruns that.
+     */
+    class FFlat extends BaseFunction {
+        FFlat(Token<?> container) {
+            super("flat", container.new TFunction("flat", new String[] { "array1", "array2" }, null, -1,
+                    "Attempts to flatten (at the top level) the given arrays array1 and array2 into 1 single array. \\n**Note:** If there are any type mismatches in array1, it will be ignored and the same check is done to array2. Therefore this function will **always** return an array, whether or not it was successful."));
+            this.freeze();
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs)
+                throws Exception {
+            if (tFuncCall.args.size() != params.size())
+                throw new FunctionParametersException(this, params.size());
+
+            ArrayList<Object> returned = new ArrayList<>();
+            tFuncCall.args.forEach(arg -> {
+                if (arg instanceof TVarRef && ((TVarRef) arg).index == null) {
+                    String name = ((TVarRef) arg).name;
+                    MapValue v = vfs.get(name);
+                    if (v == null)
+                        return;
+                    if (!(v.getValue() instanceof BaseVariable))
+                        return;
+                    if (((BaseVariable) v.getValue()).a_size() <= 0)
+                        return; // technically in this case, it will concat the arrays because this array has
+                                // nothing to concat lol.
+                    returned.addAll(((BaseVariable) v.getValue()).a_getAll());
+                } else {
+                    // stuff that need be parsed, parse and pray arraylist is returned.
+                    Object parsed = null;
+                    try {
+                        parsed = Primitives.toPrimitive(Primitives.parseNonPrimitive(arg), vfs, false);
+                    } catch (Exception e) {
+                        // do nothing.
+                    }
+                    if (!(parsed instanceof ArrayList))
+                        return;
+
+                    returned.addAll((ArrayList) parsed);
+                }
+            });
+            return returned;
         }
     }
 

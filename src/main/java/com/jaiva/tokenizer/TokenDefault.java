@@ -11,11 +11,12 @@ import java.util.ArrayList;
 class ToJson {
     StringBuilder json = new StringBuilder();
 
-    public ToJson(String name, String type, int ln) {
+    public ToJson(String name, String type, int ln, String tooltip) {
         json.append("{");
-        json.append(" \"type\": \"").append(type).append("\",");
-        json.append("  \"name\": \"").append(name).append("\",");
-        json.append("  \"lineNumber\": ").append(ln).append(",");
+        json.append("\"type\": \"").append(type).append("\",");
+        json.append("\"name\": \"").append(name).append("\",");
+        json.append("\"toolTip\": \"").append(tooltip).append("\",");
+        json.append("\"lineNumber\": ").append(ln).append(",");
     }
 
     /**
@@ -135,18 +136,26 @@ class ToJson {
 
 public class TokenDefault {
     public String name = "";
+    public String tooltip = "Jaiva Construct";
     public int lineNumber = 0;
     public ToJson json;
 
-    public TokenDefault(String name) {
-        this.name = name;
-        this.json = new ToJson(name, getClass().getSimpleName(), -1);
-    }
+    // public TokenDefault(String name) {
+    // this.name = name;
+    // this.json = new ToJson(name, getClass().getSimpleName(), -1);
+    // }
 
     public TokenDefault(String name, int line) {
         this.name = name;
         this.lineNumber = line;
-        this.json = new ToJson(name, getClass().getSimpleName(), line);
+        this.json = new ToJson(name, getClass().getSimpleName(), line, tooltip);
+    }
+
+    public TokenDefault(String name, int line, String tt) {
+        this.name = name;
+        this.lineNumber = line;
+        this.tooltip = tt;
+        this.json = new ToJson(name, getClass().getSimpleName(), line, tt);
     }
 
     public String toJson() {
