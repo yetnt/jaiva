@@ -139,7 +139,7 @@ public class Token<T extends TokenDefault> {
 
         @Override
         public String toJson() {
-            json.append("value", value, true);
+            json.append("value", value instanceof String ? EscapeSequence.escape((String) value) : value, true);
             return super.toJson();
         }
 
@@ -265,7 +265,7 @@ public class Token<T extends TokenDefault> {
         @Override
         public String toJson() {
             json.append("args", new ArrayList(Arrays.asList(args)), false);
-            json.append("body", body.toJsonInNest(), true);
+            json.append("body", body != null ? body.toJsonInNest() : null, true);
             return super.toJson();
         }
 

@@ -4,7 +4,7 @@ Simple CLI Ngl.
 
 ```sh
 > jaiva [-p | -h | -v | -t | -u]
-> jaiva <filePath> [-t | -s]
+> jaiva <filePath> [-j | -jg | -s]
 ```
 
 1. (No flags) launches interactive REPL.
@@ -62,7 +62,14 @@ This command will attempt to find `<filePath>` and execute the jaiva code.
     > jaiva <filePath> --string
     ```
 3. Return tokens in JSON format.
+
     ```sh
     > jaiva <filePath> -j
     > jaiva <filePath> --json
+    ```
+
+4. Return tokens in JSON format including globals.
+    ```sh
+    > jaiva <filePath> -jg
+    > jaiva <filePath> --json-with-globals
     ```

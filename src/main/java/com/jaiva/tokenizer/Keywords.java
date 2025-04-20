@@ -14,7 +14,7 @@ public class Keywords {
     public static String ELSE = "mara";
     public static String FALSE = "aowa";
     public static String TRUE = "yebo";
-    public static String CONSOLE_LOG = "khuluma";
+    // public static String CONSOLE_LOG = "khuluma";
     public static String D_FUNCTION = "kwenza";
     public static String RETURN = "khutla";
     public static String FOR = "colonize";
@@ -26,7 +26,7 @@ public class Keywords {
     public static String LC_CONTINUE = "nevermind";
     public static String UNDEFINED = "idk";
 
-    public static String[] all = { D_VAR, WHILE, IF, ELSE, FALSE, TRUE, CONSOLE_LOG, D_FUNCTION, RETURN, FOR,
+    public static String[] all = { D_VAR, WHILE, IF, ELSE, FALSE, TRUE, D_FUNCTION, RETURN, FOR,
             TRY, CATCH, THROW, LC_BREAK, LC_CONTINUE, UNDEFINED };
 
     public enum LoopControl {

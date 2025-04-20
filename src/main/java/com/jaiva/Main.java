@@ -36,7 +36,8 @@ public class Main {
         ArrayList<String> replArgs = new ArrayList<>(
                 Arrays.asList("--print-tokens", "-p", "--help", "-h", "--version", "-v", "--test", "-t", "--update",
                         "-u"));
-        ArrayList<String> tokenArgs = new ArrayList<>(Arrays.asList("-s", "-j", "--string", "-json"));
+        ArrayList<String> tokenArgs = new ArrayList<>(
+                Arrays.asList("-s", "-j", "--string", "-json", "-jg", "--json-with-globals"));
         if (args.length == 0) {
             new REPL(0);
             return;
@@ -69,6 +70,7 @@ public class Main {
                     System.out.println();
                     System.out.println("\t(no flag): Run the file.");
                     System.out.println("\t--json, -j: Print tokens in JSON format.");
+                    System.out.println("\t--json-with-globals, -jg: Print tokens including globals in JSON format.");
                     System.out.println("\t--string, -s: Print tokens in string format.");
                     System.out.println();
                     break;
@@ -156,6 +158,19 @@ public class Main {
                     case "-j", "--json":
                         System.out.println();
                         System.out.print("[");
+                        for (int i = 0; i < tokens.size(); i++) {
+                            Token<?> token = tokens.get(i);
+                            System.out.print(token.getValue().toJson());
+                            if (i != tokens.size() - 1) {
+                                System.out.print(",");
+                            }
+                        }
+                        System.out.print("]");
+                        return;
+                    case "-jg", "--json-with-globals":
+                        System.out.println();
+                        System.out.print("[");
+                        System.out.print(new Globals().returnGlobalsJSON(false));
                         for (int i = 0; i < tokens.size(); i++) {
                             Token<?> token = tokens.get(i);
                             System.out.print(token.getValue().toJson());

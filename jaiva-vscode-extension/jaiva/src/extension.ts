@@ -1,128 +1,165 @@
 import * as vscode from "vscode";
 import { execSync } from "child_process";
-import { TBooleanVar, TCodeblock, Token, TokenDefault } from "./types";
+import { TokenDefault } from "./types";
+import { HoverToken, parseAndReturnHoverTokens, primitive } from "./utils";
+import { MultiMap } from "./mmap";
+import { createCompletionItemz } from "./autocomplete";
 
-function simplify(v: any): string {
-    return v instanceof Number || v instanceof Boolean
-        ? v.toString()
-        : v instanceof String
-        ? v.toString()
-        : Array.isArray(v)
-        ? "[" +
-          v
-              .map((v) => {
-                  return simplify(v);
-              })
-              .join(", ") +
-          "]"
-        : "_?_";
-}
+export const hTokens: Map<string, MultiMap<string, HoverToken>> = new Map();
+const completionItemsMap: Map<string, vscode.CompletionItem[]> = new Map();
+let lastLineNumber: Map<string, number> = new Map();
 
-function hoverMessage(
-    t: number,
-    name: string,
-    value: any = null,
-    params: string[] = []
-): string {
-    switch (t) {
-        case 0: // variable
-            return (
-                "variable! **" +
-                name +
-                "** <- " +
-                (value instanceof Number || value instanceof Boolean
-                    ? "_" + value + "_"
-                    : value instanceof String
-                    ? "_" + value.substring(0, Math.min(value.length, 5)) + "_"
-                    : simplify(value))
-            );
-        case 1: // function
-            return "function! **" + name + "(" + params.join(", ") + ")**";
-        case 2: // function parameter
-            return (
-                "parameter! **" +
-                name +
-                "** <- " +
-                (value instanceof Number || value instanceof Boolean
-                    ? "_" + value + "_"
-                    : value instanceof String
-                    ? "_" + value.substring(0, Math.min(value.length, 5)) + "_"
-                    : simplify(value))
-            );
-        default:
-            return "";
+function onSave(document: vscode.TextDocument) {
+    const filePath = document.uri.fsPath;
+    const command = `jaiva "${filePath}" -jg`;
+    const output = execSync(command).toString();
+    if (!output.endsWith("]") && !output.startsWith("[")) {
+        return null;
     }
+    const tokens = JSON.parse(output) as TokenDefault[];
+
+    let hoverTokens = parseAndReturnHoverTokens(tokens);
+
+    console.log(hoverTokens);
+    completionItemsMap.set(
+        filePath,
+        createCompletionItemz(hoverTokens, lastLineNumber.get(filePath) || 0)
+    );
+
+    hTokens.set(filePath, hoverTokens);
 }
 
-type HoverToken = {
-    token: TokenDefault;
-    range: [number, number];
-    lineNumber: number;
-    hoverMsg: string;
-};
+function onActivate() {
+    const pattern = "**/*.{jiv,jaiva,jva}";
 
-function returnRanges(
-    tokens: TokenDefault[],
-    parentTCodeblock: TCodeblock | null = null
-) {
-    let hoverTokens: Map<String, HoverToken> = new Map();
-    tokens.forEach((token) => {
-        switch (token.type) {
-            case "TStringVar":
-            case "TBooleanVar":
-            case "TNumberVar": {
-                let t: TBooleanVar = token as TBooleanVar;
-                hoverTokens.set(token.name, {
-                    token: token,
-                    range:
-                        parentTCodeblock === null
-                            ? [-1, -1]
-                            : [
-                                  parentTCodeblock.lineNumber,
-                                  parentTCodeblock.lineEnd,
-                              ],
-                    lineNumber: token.lineNumber,
-                    hoverMsg: hoverMessage(0, token.name, t.value),
-                });
-                break;
-            }
+    // Using workspace.findFiles to search for matching files.
+    vscode.workspace.findFiles(pattern).then(
+        (uris) => {
+            const filePaths = uris.map((uri) => uri.fsPath);
+            filePaths.forEach((filePath) => {
+                const command = `jaiva "${filePath}" -jg`;
+                const output = execSync(command).toString();
+                if (!output.endsWith("]") && !output.startsWith("[")) {
+                    return null;
+                }
+                const tokens = JSON.parse(output) as TokenDefault[];
+
+                let hoverTokens = parseAndReturnHoverTokens(tokens);
+
+                hTokens.set(filePath, hoverTokens);
+
+                completionItemsMap.set(
+                    filePath,
+                    createCompletionItemz(
+                        hoverTokens,
+                        lastLineNumber.get(filePath) || 0
+                    )
+                );
+            });
+        },
+        (error) => {
+            console.error("Error during file search:", error);
         }
-    });
+    );
+}
 
-    return hoverTokens;
+/**
+ * Finds a `HoverToken` within a specified range of line numbers.
+ *
+ * @param hoverTokens - An array of `HoverToken` objects to search through.
+ * @param lineNumber - The line number to check against the ranges of the `HoverToken` objects.
+ * @returns The first `HoverToken` that matches the criteria:
+ *          - If the range of a `HoverToken` is `[-1, -1]`, it is considered globally defined and returned immediately.
+ *          - If the `lineNumber` falls within the range `[range[0], range[1]]` of a `HoverToken`, that token is returned.
+ *          - If no matching `HoverToken` is found, the function returns `undefined`.
+ */
+export function findTokenInRange(
+    hoverTokens: HoverToken[],
+    lineNumber: number
+) {
+    for (let hoverToken of hoverTokens) {
+        if (hoverToken.range[0] == -1 && hoverToken.range[1] == -1)
+            // define in global scope. return as is even if there's more
+            return hoverToken;
+        if (
+            hoverToken.range[0] <= lineNumber &&
+            hoverToken.range[1] >= lineNumber
+        ) {
+            // console.log(
+            //     `HoverToken "${hoverToken.name}" is in the range. of ${hoverToken.range} in line ${lineNumber}`
+            // );
+            return hoverToken;
+        }
+    }
 }
 
 export function activate(context: { subscriptions: vscode.Disposable[] }) {
     console.log("Jaiva extension activated.");
 
+    onActivate();
+    const provider = vscode.languages.registerCompletionItemProvider("jaiva", {
+        provideCompletionItems(
+            document: vscode.TextDocument,
+            position: vscode.Position
+        ) {
+            const filePath = document.uri.fsPath;
+
+            let completionItems = completionItemsMap.get(filePath);
+            let hoverTokens = hTokens.get(filePath);
+            if (hoverTokens === undefined) return;
+            const line = position.line + 1;
+            lastLineNumber.set(filePath, line);
+            if (completionItems == undefined) {
+                completionItemsMap.set(
+                    filePath,
+                    createCompletionItemz(hoverTokens, line)
+                );
+            }
+
+            // Return the list of completion items.
+            return completionItems;
+        },
+    });
+
     context.subscriptions.push(
+        provider,
+        vscode.workspace.onDidSaveTextDocument(onSave),
+        vscode.workspace.onDidOpenTextDocument(onSave),
         vscode.languages.registerHoverProvider("jaiva", {
             provideHover(document, position) {
                 try {
                     // Run the Jaiva parser to get JSON
                     const filePath = document.uri.fsPath;
-                    const command = `jaiva "${filePath}" -j`;
-                    const output = execSync(command).toString();
-                    if (!output.endsWith("]") && !output.startsWith("[")) {
-                        return null;
-                    }
-                    const tokens = JSON.parse(output) as TokenDefault[];
 
                     const wordRange = document.getWordRangeAtPosition(position);
                     const word = document.getText(wordRange);
 
-                    const line = position.line + 1; // assuming 1-based line numbers
-                    const char = position.character;
+                    const line = position.line + 1;
+                    lastLineNumber.set(filePath, line);
 
-                    const vfs = returnRanges(tokens);
+                    const p = primitive(word);
+                    if (p !== undefined) {
+                        const markdown = new vscode.MarkdownString();
+                        markdown.appendCodeblock(p, "jaiva");
+                        markdown.isTrusted = true;
+
+                        return new vscode.Hover(markdown);
+                    }
+
+                    let tokens = hTokens.get(filePath);
+                    if (!tokens) return undefined;
+
+                    if (!tokens.has(word)) return undefined;
+                    const hoverTokens = tokens.get(word);
+
+                    let token = findTokenInRange(hoverTokens, line);
+                    if (token === undefined) return undefined;
 
                     const markdown = new vscode.MarkdownString();
-                    markdown.appendMarkdown(vfs.get(word)?.hoverMsg || "");
+                    markdown.appendCodeblock(token.hoverMsg, "jaiva");
                     markdown.isTrusted = true;
 
-                    return vfs.has(word)
-                        ? new vscode.Hover(markdown)
-                        : undefined;
+                    return new vscode.Hover(markdown);
 
                     // const token = tokens.find(
                     //     (t) =>
@@ -159,4 +196,6 @@ export function activate(context: { subscriptions: vscode.Disposable[] }) {
     );
 }
 
-export function deactivate() {}
+export function deactivate() {
+    hTokens.clear();
+}

@@ -29,6 +29,16 @@ public class Globals {
         vfs.put("version", new MapValue(new VJaivaVersion(container)));
     }
 
+    public String returnGlobalsJSON(boolean removeTrailingComma) {
+        StringBuilder string = new StringBuilder();
+        vfs.forEach((name, vf) -> {
+            Symbol symbol = (Symbol) vf.getValue();
+            string.append(symbol.token.toJson());
+            string.append(",");
+        });
+        return string.toString().substring(0, string.length() - (removeTrailingComma ? 1 : 0));
+    }
+
     /**
      * khuluma("hello world")!
      * Will just print.

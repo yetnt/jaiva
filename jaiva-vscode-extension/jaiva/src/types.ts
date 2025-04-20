@@ -19,7 +19,9 @@ export type TokenType =
     | "TLoopControl"
     | "TStatement";
 
-export type Generic = number | string | boolean | Token<null>;
+export type Generic = number | string | GenericBool;
+export type GenericStatements = TStatement | TVarRef | TFuncCall;
+export type GenericBool = boolean | GenericStatements;
 
 export type TokenDefault = {
     type: TokenType;
@@ -43,13 +45,13 @@ export type TVarReassign = TokenDefault & {
     value: Generic;
 };
 export type TStringVar = TokenDefault & {
-    value: Generic;
+    value: GenericStatements | string;
 };
 export type TNumberVar = TokenDefault & {
-    value: Generic;
+    value: GenericStatements | number;
 };
 export type TBooleanVar = TokenDefault & {
-    value: Generic;
+    value: GenericBool;
 };
 export type TArrayVar = TokenDefault & {
     value: Generic[];
@@ -66,18 +68,18 @@ export type TFunction = TokenDefault & {
 export type TForLoop = TokenDefault & {
     variable: TokenDefault;
     arrayVariable: TVarRef;
-    condition: Generic;
+    condition: GenericBool;
     increment: "+" | "-" | null;
     body: TCodeblock;
 };
 
 export type TWhileLoop = TokenDefault & {
-    condition: Generic;
+    condition: GenericBool;
     body: TCodeblock;
 };
 
 export type TIfStatement = TokenDefault & {
-    condition: Generic;
+    condition: GenericBool;
     body: TCodeblock;
     elseIfs: TIfStatement[];
     elseBody: TCodeblock;
@@ -93,15 +95,15 @@ export type TThrowError = TokenDefault & {
 };
 
 export type TFuncCall = TokenDefault & {
-    functionName: Generic;
+    functionName: GenericStatements | string;
     getLenght: boolean;
     args: Generic[];
 };
 
 export type TVarRef = TokenDefault & {
-    varName: Generic;
+    varName: GenericStatements | string;
     getLength: boolean;
-    index: Generic;
+    index: GenericStatements | number;
     // type: null;
 };
 
@@ -110,9 +112,9 @@ export type TLoopControl = TokenDefault & {
 };
 
 export type TStatement = TokenDefault & {
-    lhs: Generic;
+    lhs: GenericBool;
     op: string;
-    rhs: Generic;
+    rhs: GenericBool;
     statementType: 1 | 0;
     statement: string;
 };
