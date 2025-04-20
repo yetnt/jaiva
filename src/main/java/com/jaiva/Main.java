@@ -10,7 +10,7 @@ import com.jaiva.tokenizer.Tokenizer;
 import com.jaiva.utils.*;
 
 public class Main {
-    public static String version = "1.0.0-beta.1";
+    public static String version = "1.0.0-beta.2";
     public static String author = "@yetnt or @prod.yetnt on some socials";
     public static String ASCII = """
                                                                         ,---,
@@ -112,11 +112,11 @@ public class Main {
             ArrayList<Token<?>> tokens = new ArrayList<>();
             Find.MultipleLinesOutput m = null;
             BlockChain b = null;
-            Scanner myReader = new Scanner(myObj);
+            Scanner scanner = new Scanner(myObj);
             String previousLine = "";
             int lineNum = 1;
-            while (myReader.hasNextLine()) {
-                String line = (b != null ? b.getCurrentLine() : myReader.nextLine());
+            while (scanner.hasNextLine()) {
+                String line = (b != null ? b.getCurrentLine() : scanner.nextLine());
                 // System.out.println(line);
                 // System.out.println(line);
                 Object something = Tokenizer.readLine(line, (b != null ? "" : previousLine), m, b, lineNum);
@@ -139,11 +139,13 @@ public class Main {
                     m = null;
                 }
                 previousLine = line;
-                lineNum++;
+                if (b == null)
+                    lineNum++;
+                ;
             }
 
             // System.out.println(tokens.size());
-            myReader.close();
+            scanner.close();
 
             if ((args.length > 1) && tokenArgs.contains(args[1])) {
                 // here, args[1] is the tokens mode
