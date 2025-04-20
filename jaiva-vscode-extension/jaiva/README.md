@@ -1,4 +1,4 @@
-# Jaiva! Language Support VSCode Extension
+# Jaiva! Editor Integration VSCode Extension
 
 This extension provides basic language support and features for `.jiv`, `.jaiva`, `.jva` file extensions!
 
@@ -61,7 +61,7 @@ This extension contributes the following settings:
 
 (MAJOR version is dependant on the current MAJOR version of Jaiva)
 
-### 1.0.0-beta.0
+### 1.0.0
 
 Initial release of this extension.
 
