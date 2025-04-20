@@ -1,67 +1,54 @@
-# jaiva README!!!sfsddf
+# Jaiva! VSCode Extension
 
-This is the README for your extension "jaiva". After writing up a brief description, we recommend including the following sections.
+This extension provides basic language support and features for `.jiv`, `.jaiva`, `.jva` file extensions!
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+-   **Syntax Highlighting:**  
+    Full support for Jaiva syntax with accurate grammar rules.
 
-For example if there is an image subfolder under your extension project workspace:
+-   **Code Snippets:**  
+    Provides useful snippets for variable declarations, function definitions, loops, conditionals, and more.
 
-![featyure](images/jaiva.gif)
+-   **Autocomplete:**  
+    Intelligent suggestions for variables, functions, and keywords with context‑aware hints.
 
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+-   **Run Command:**  
+    An integrated "Run" button and CLI command that executes the current file, with customizable arguments from the settings.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+You have to have the `jaiva` global command installed by following [Install.md](../../Install.md) ([Github link](https://github.com/yetnt/jaiva/blob/main/Install.md))
+
+## Usage
+
+-   **Editing:**  
+    Open a Jaiva file (file extensions: `.jiv`, `.jaiva`, `.jva`) to see syntax highlighting and autocomplete features in action.
+
+-   **Running Code:**  
+    Use the `"Run Jaiva"` button in the editor title or execute the command:
+    ```sh
+    jaiva <current filepath> (additional args)
+    ```
+    Set additional arguments via the VS Code settings under `jaiva.runArgs`.
+
+## Screenshots
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
--   `myExtension.enable`: Enable/disable this extension.
--   `myExtension.thing`: Set to `blah` to do something.
+-   `jaiva.enable`: Enable/disable this extension.
+-   `jaiva.runArgs`: Additional arguments that will be passed to the Jaiva CLI when running a file.
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+1. Arrays show the first element in hovers. why idk.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 1.0.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+Initial release of this extension.
 
 ---
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
--   Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
--   Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
--   Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
--   [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
--   [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**

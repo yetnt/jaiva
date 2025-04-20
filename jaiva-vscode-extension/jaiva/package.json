@@ -2,7 +2,7 @@
     "name": "jaiva",
     "displayName": "Jaiva Coloring",
     "description": "Colouring for jaiva code. If you use lol",
-    "version": "1.0.0-beta.0",
+    "version": "1.0.0-beta.2",
     "engines": {
         "vscode": "^1.96.0"
     },
