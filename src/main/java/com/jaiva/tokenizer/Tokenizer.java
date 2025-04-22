@@ -254,7 +254,7 @@ public class Tokenizer {
             }
             case "if": {
                 Object obj = tContainer.new TStatement(finalMOutput.lineNumber)
-                        .parse(args[0].replace(Lang.STATEMENT_OPEN, ' '));
+                        .parse(args[0].replaceFirst("\\" + Character.toString(Lang.STATEMENT_OPEN), " "));
                 if (Validate.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
@@ -281,7 +281,8 @@ public class Tokenizer {
             case "colonize": {
                 if (!args[2].equals(Keywords.FOR_EACH)) {
                     TokenDefault var = (TokenDefault) ((ArrayList<Token<?>>) readLine(
-                            Keywords.D_VAR + " " + args[0].replace(Lang.STATEMENT_OPEN, ' ').trim()
+                            Keywords.D_VAR + " "
+                                    + args[0].replaceFirst("\\" + Character.toString(Lang.STATEMENT_OPEN), " ").trim()
                                     + Character.toString(Lang.END_LINE),
                             "", null,
                             null, finalMOutput.lineNumber))
@@ -300,7 +301,10 @@ public class Tokenizer {
                             codeblock, finalMOutput.lineNumber).toToken();
                 } else {
                     TUnknownVar variable = (Token<TUnknownVar>.TUnknownVar) ((ArrayList<Token<?>>) readLine(
-                            Keywords.D_VAR + " " + args[0].replace(Lang.STATEMENT_OPEN, ' ').trim() + Lang.END_LINE, "",
+                            Keywords.D_VAR + " "
+                                    + args[0].replaceFirst("\\" + Character.toString(Lang.STATEMENT_OPEN), " ").trim()
+                                    + Lang.END_LINE,
+                            "",
                             null, null,
                             finalMOutput.lineNumber))
                             .get(0).getValue();

@@ -45,6 +45,12 @@ public class BaseVariable extends Symbol {
         variableType = VariableType.UNKNOWN;
     }
 
+    public void a_set(ArrayList<Object> t) throws FrozenSymbolException {
+        if (isFrozen)
+            throw new FrozenSymbolException(this);
+        array = t;
+    }
+
     /**
      * Adds an array to the array (addAll())
      * 

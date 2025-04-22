@@ -160,7 +160,14 @@ public class Interpreter {
             // throw new WtfAreYouDoingException(
             // ((TVarReassign) t).newValue + " isn't like a valid var thingy yknow??");
 
-            var.s_set(Primitives.toPrimitive(((TVarReassign) t).newValue, vfs, false));
+            Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(((TVarReassign) t).newValue), vfs, false);
+
+            if (o instanceof ArrayList) {
+                var.a_set((ArrayList) o);
+            } else {
+                var.s_set(o);
+            }
+
             // so hopefully this chanegs the instance and yeah 👍
         } else {
             // here its a primitive being parsed or recursively called
