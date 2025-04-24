@@ -509,25 +509,28 @@ public class Tokenizer {
         ArrayList<Token<?>> tokens = new ArrayList<>();
         Token<?> tContainer = new Token<>(null);
         boolean containsNewln = line.contains("\n");
-        String[] lines = containsNewln ? decimateSingleComments(line.split("\n"))
-                : decimateSingleComments(line.split("(?<!\\$)!(?!\\=)"));
+        String[] ls = containsNewln ? line.split("\n")
+                : line.split("(?<!\\$)!(?!\\=)");
+        String[] lines = decimateSingleComments(ls);
 
         if (lines.length > 1 || ((lines.length == 2 && !lines[1].isEmpty()) && !arrayIsOnlyComments(lines))) {
             // System.out.println("Multiple lines detected!");
             // multiple lines.
             Find.MultipleLinesOutput m = null;
             BlockChain b = null;
-            int ln = lineNumber;
-            for (int i = 0; i != lines.length; i++) {
+            // int ln = lineNumber + 1;
+            int ln = lineNumber + 1;
+            for (int i = 0; i != ls.length; i++) {
+                ln = lineNumber + i + 1;
                 String l = "";
                 if (b instanceof BlockChain) {
                     l = b.getCurrentLine();
                     i--;
                 } else {
-                    l = lines[i] + (!containsNewln ? Character.toString(Lang.END_LINE) : "");
+                    l = ls[i] + (!containsNewln ? Character.toString(Lang.END_LINE) : "");
                 }
                 // System.out.println("Reading line " + i + "...");
-                String previousLine2 = i == 0 ? previousLine : lines[i - 1];
+                String previousLine2 = i == 0 ? previousLine : ls[i - 1];
                 // System.out.println(previousLine2);
                 // System.out.println(lines[i]);
                 Object something = readLine(l, previousLine2, m, b, ln);
@@ -549,7 +552,8 @@ public class Tokenizer {
                     m = null;
                     b = null;
                 }
-                ln++;
+                if (b == null)
+                    ln++;
             }
             return tokens;
         }

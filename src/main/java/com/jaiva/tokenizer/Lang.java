@@ -120,7 +120,7 @@ public class Lang {
         }
 
         public static int getType(String op) {
-            if (Exponentiation.equals(op))
+            if (Exponentiation.contains(op))
                 return 0;
             else if (DivMult.contains(op))
                 return 1;
