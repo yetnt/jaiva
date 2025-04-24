@@ -5,8 +5,17 @@ import java.nio.file.*;
 import java.util.*;
 
 import com.jaiva.interpreter.*;
+import com.jaiva.tokenizer.EscapeSequence;
 import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.TokenDefault;
 import com.jaiva.tokenizer.Tokenizer;
+import com.jaiva.tokenizer.Token.TArrayVar;
+import com.jaiva.tokenizer.Token.TBooleanVar;
+import com.jaiva.tokenizer.Token.TDocsComment;
+import com.jaiva.tokenizer.Token.TFunction;
+import com.jaiva.tokenizer.Token.TNumberVar;
+import com.jaiva.tokenizer.Token.TStringVar;
+import com.jaiva.tokenizer.Token.TUnknownVar;
 import com.jaiva.utils.*;
 
 public class Main {
@@ -114,6 +123,7 @@ public class Main {
             BlockChain b = null;
             Scanner scanner = new Scanner(myObj);
             String previousLine = "";
+            String comment = null;
             int lineNum = 1;
             while (scanner.hasNextLine()) {
                 String line = (b != null ? b.getCurrentLine() : scanner.nextLine());
@@ -126,17 +136,44 @@ public class Main {
                 } else if (something instanceof ArrayList<?>) {
                     m = null;
                     b = null;
+                    if (((ArrayList<Token<?>>) something).size() == 1) {
+                        for (Token<?> t : (ArrayList<Token<?>>) something) {
+                            TokenDefault l = t.getValue();
+                            if (!(l instanceof TArrayVar) && !(l instanceof TNumberVar) && !(l instanceof TStringVar)
+                                    && !(l instanceof TBooleanVar) && !(l instanceof TUnknownVar)
+                                    && !(l instanceof TFunction))
+                                continue;
+                            l.tooltip = comment != null ? comment : l.tooltip;
+                            l.json.removeKey("toolTip");
+                            l.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
+                        }
+
+                    }
+                    comment = null;
                     tokens.addAll((ArrayList<Token<?>>) something);
                 } else if (something instanceof BlockChain) {
                     m = null;
+                    comment = null;
                     b = (BlockChain) something;
-                } else if (something instanceof Token<?>) {
+                } else if (something instanceof Token<?>
+                        && ((Token<?>) something).getValue().name.equals("TDocsComment")) {
                     b = null;
                     m = null;
+                    comment = (comment == null ? "" : comment)
+                            + ((TDocsComment) ((Token<?>) something).getValue()).comment;
+                } else if (something instanceof Token<?>) {
+                    TokenDefault t = ((TokenDefault) ((Token<?>) something).getValue());
+                    t.tooltip = comment != null ? comment : t.tooltip;
+                    t.json.removeKey("toolTip");
+                    t.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
+                    b = null;
+                    m = null;
+                    comment = null;
                     tokens.add((Token<?>) something);
                 } else {
                     b = null;
                     m = null;
+                    comment = null;
                 }
                 previousLine = line;
                 if (b == null)

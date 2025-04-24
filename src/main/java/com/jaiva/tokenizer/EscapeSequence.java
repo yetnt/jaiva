@@ -29,6 +29,17 @@ public class EscapeSequence {
                 .replace("$$", "$");
     }
 
+    public static String escapeJson(String str) {
+        return str
+                .replace("\\", "\\\\")
+                .replace("\n", "\\n")
+                .replace("\t", "\\t")
+                .replace("\r", "\\r")
+                .replace("\b", "\\b")
+                .replace("\f", "\\f")
+                .replace("\"", "\\\"");
+    }
+
     /**
      * Unescape a string.
      *

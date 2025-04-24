@@ -3,9 +3,14 @@ package com.jaiva.tokenizer;
 import java.util.*;
 
 import com.jaiva.errors.TokErrs.*;
+import com.jaiva.tokenizer.Token.TArrayVar;
+import com.jaiva.tokenizer.Token.TBooleanVar;
 import com.jaiva.tokenizer.Token.TCodeblock;
+import com.jaiva.tokenizer.Token.TDocsComment;
+import com.jaiva.tokenizer.Token.TFunction;
 import com.jaiva.tokenizer.Token.TIfStatement;
 import com.jaiva.tokenizer.Token.TNumberVar;
+import com.jaiva.tokenizer.Token.TStringVar;
 import com.jaiva.tokenizer.Token.TTryCatchStatement;
 import com.jaiva.tokenizer.Token.TUnknownVar;
 import com.jaiva.tokenizer.Token.TVarRef;
@@ -16,84 +21,6 @@ import com.jaiva.utils.Validate;
 import com.jaiva.utils.Validate.IsValidSymbolName;
 
 public class Tokenizer {
-
-    private static String[] decimateSingleComments(String[] lines) {
-        if (lines.length < 2)
-            return lines;
-        List<String> newLines = new ArrayList<>();
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i];
-
-            // if the line does not contain a newline,
-            // call a helper function or process it accordingly
-            if (!line.contains("\n")) {
-                // You might need to adjust this if you're calling
-                // a helper method that expects an array...
-                line = decimateSingleComments(line.trim()).trim();
-            }
-
-            if (line != null && !line.isBlank()) {
-                newLines.add(line);
-            }
-        }
-        return newLines.toArray(new String[0]);
-    }
-
-    /**
-     * Remove single line comments. Call this function when appropriate.
-     * 
-     * @param line The line to make sure there isnt a single line comment
-     * @return
-     */
-    private static String decimateSingleComments(String line) {
-        if (line.indexOf(Lang.COMMENT) == -1)
-            return line;
-
-        line = line.substring(0, line.indexOf(Lang.COMMENT));
-
-        return line;
-    }
-
-    /**
-     * Check if the array is only comments. This is used to check if the line
-     * contains only comments or not.
-     * 
-     * This is a helper method where a ! may be splitting inside a comment which had
-     * a double @ symbol.
-     * 
-     * @param arr
-     * @return
-     */
-    private static boolean arrayIsOnlyComments(String[] arr) {
-        if (arr.length > 2) {
-            for (String s : arr) {
-                if (!s.trim().isEmpty() && !s.trim().startsWith(Character.toString(Lang.COMMENT))) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            // if one of the elements is a comment, and the other isnt, return true.
-            // check both elements.
-            // otherwise return false.
-            if (arr[0].trim().isEmpty() && arr[1].trim().isEmpty()) {
-                return true;
-            } else if (arr[0].trim().isEmpty() && arr[1].trim().startsWith(Character.toString(Lang.COMMENT))) {
-                return true;
-            } else if (arr[0].trim().startsWith(Character.toString(Lang.COMMENT)) && arr[1].trim().isEmpty()) {
-                return true;
-            } else if (arr[0].trim().startsWith(Character.toString(Lang.COMMENT))
-                    && !arr[1].trim().startsWith(Character.toString(Lang.COMMENT))
-                    || !arr[0].trim()
-                            .startsWith(Character.toString(Lang.COMMENT))
-                            && arr[1].trim().startsWith(Character.toString(Lang.COMMENT))) {
-                return true;
-            } else {
-                return false;
-            }
-
-        }
-    }
 
     private static Object handleBlocks(boolean isComment, String line,
             Find.MultipleLinesOutput multipleLinesOutput, String entireLine, String t, String[] args,
@@ -186,7 +113,7 @@ public class Tokenizer {
         type = multipleLinesOutput == null ? type : multipleLinesOutput.type;
         args = multipleLinesOutput == null ? args : multipleLinesOutput.args;
         int newLineNumber = multipleLinesOutput == null ? lineNumber : multipleLinesOutput.lineNumber;
-        line = decimateSingleComments(line);
+        line = Comments.decimate(line);
         Object output = handleBlocks(isComment, line + "\n", (Find.MultipleLinesOutput) multipleLinesOutput,
                 tokenizerLine, type, args, multipleLinesOutput != null ? multipleLinesOutput.specialArg : blockChain,
                 newLineNumber);
@@ -511,13 +438,14 @@ public class Tokenizer {
         boolean containsNewln = line.contains("\n");
         String[] ls = containsNewln ? line.split("\n")
                 : line.split("(?<!\\$)!(?!\\=)");
-        String[] lines = decimateSingleComments(ls);
+        String[] lines = Comments.decimate(ls);
 
-        if (lines.length > 1 || ((lines.length == 2 && !lines[1].isEmpty()) && !arrayIsOnlyComments(lines))) {
+        if (lines.length > 1 || ((lines.length == 2 && !lines[1].isEmpty()) && !Comments.arrayIsOnlyComments(lines))) {
             // System.out.println("Multiple lines detected!");
             // multiple lines.
             Find.MultipleLinesOutput m = null;
             BlockChain b = null;
+            String comment = null;
             // int ln = lineNumber + 1;
             int ln = lineNumber + 1;
             for (int i = 0; i != ls.length; i++) {
@@ -540,17 +468,43 @@ public class Tokenizer {
                 } else if (something instanceof ArrayList<?>) {
                     m = null;
                     b = null;
+                    if (((ArrayList<Token<?>>) something).size() == 1) {
+                        for (Token<?> t : (ArrayList<Token<?>>) something) {
+                            TokenDefault g = t.getValue();
+                            g.tooltip = comment != null ? comment : g.tooltip;
+                            g.json.removeKey("toolTip");
+                            g.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
+                        }
+
+                    }
+                    comment = null;
                     tokens.addAll((ArrayList<Token<?>>) something);
                 } else if (something instanceof BlockChain) {
                     m = null;
+                    comment = null;
                     b = (BlockChain) something;
+                } else if (something instanceof Token<?> && ((Token<?>) something).getValue() instanceof TDocsComment) {
+                    b = null;
+                    m = null;
+                    comment = (comment == null ? "" : comment)
+                            + ((TDocsComment) ((Token<?>) something).getValue()).comment;
                 } else if (something instanceof Token<?>) {
+                    TokenDefault t = ((TokenDefault) ((Token<?>) something).getValue());
+                    t.tooltip = comment != null ? comment : t.tooltip;
+                    if (!(t instanceof TArrayVar) && !(t instanceof TNumberVar) && !(t instanceof TStringVar)
+                            && !(t instanceof TBooleanVar) && !(t instanceof TUnknownVar)
+                            && !(t instanceof TFunction))
+                        continue;
+                    t.json.removeKey("toolTip");
+                    t.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
                     tokens.add((Token<?>) something);
                     m = null;
                     b = null;
+                    comment = null;
                 } else {
                     m = null;
                     b = null;
+                    comment = null;
                 }
                 if (b == null)
                     ln++;
@@ -585,7 +539,14 @@ public class Tokenizer {
         // if its anything after this the line has to end in a ! or else invalid syntax.
         // (All other methods which did the ! will be redundant as we can just check
         // here.)
-        line = decimateSingleComments(line).trim();
+        Object tryDecimate = Comments.safeDecimate(line);
+
+        if (tryDecimate instanceof Token<?>) {
+            return tryDecimate;
+        } else {
+            line = ((String) tryDecimate).trim();
+        }
+
         if (line.isEmpty())
             return null;
 

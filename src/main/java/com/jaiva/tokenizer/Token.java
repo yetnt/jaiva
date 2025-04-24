@@ -51,6 +51,31 @@ public class Token<T extends TokenDefault> {
     }
 
     /**
+     * This represents a token which it's purpose is only for documentating specific
+     * user defined symbols. This token should not be able to be interpreted or be
+     * seen in an array or anywhere in a tokens arraylist, as whatever method
+     * handling the reading of a list of tokens, Should handle this specific token
+     * case before the generic Token<?>, by setting an outside variable or another
+     * way to do such. Then when we do not receive the TDocsComment and that outside
+     * variable is set, we set the "tooltip" property of the new token to that
+     * outside variable, therefore adding the documentation.
+     * <p>
+     * (This ensures if we collect multiple TDocsComment)
+     */
+    public class TDocsComment extends TokenDefault {
+        public String comment;
+
+        TDocsComment(String c) {
+            super("TDocsComment", -1);
+            comment = c + "\n";
+        }
+
+        public Token<TDocsComment> toToken() {
+            return new Token<>(this);
+        }
+    }
+
+    /**
      * Represents a code block such as {@code -> maak x <- 10; maak y <- 20! <~}
      * This class usually isn't used directly, but rather as a part of another
      * instance

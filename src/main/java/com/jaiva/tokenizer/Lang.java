@@ -37,6 +37,7 @@ public class Lang {
     public static char ESCAPE = '$';
     public static char END_LINE = '!';
     public static char COMMENT = '@';
+    public static String COMMENT_DOC = "@*";
     public static char COMMENT_OPEN = '{';
     public static char COMMENT_CLOSE = '}';
     public static String BLOCK_OPEN = "->";
@@ -145,6 +146,7 @@ public class Lang {
         all.append(Character.toString(STATEMENT_CLOSE));
         all.append(BLOCK_OPEN);
         all.append(BLOCK_CLOSE);
+        all.append(COMMENT_DOC);
         all.append(ASSIGNMENT);
         all.append(THROW_ERROR);
         all.append(ARRAY_ASSIGNMENT);
