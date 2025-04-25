@@ -5,6 +5,7 @@ import java.nio.file.*;
 import java.util.*;
 
 import com.jaiva.interpreter.*;
+import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.tokenizer.EscapeSequence;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.TokenDefault;

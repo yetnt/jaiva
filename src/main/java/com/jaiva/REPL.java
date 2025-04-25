@@ -9,9 +9,9 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import com.jaiva.interpreter.Context;
-import com.jaiva.interpreter.Globals;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
+import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TStatement;
@@ -152,7 +152,7 @@ public class REPL {
     public Object read(String line, String previousLine, MultipleLinesOutput m, BlockChain b) {
         Object something;
         try {
-            something = Tokenizer.readLine(line, previousLine, m, b, -1);
+            something = Tokenizer.readLine(line, previousLine, m, b, 0);
             if (something instanceof MultipleLinesOutput) {
                 return something;
             } else if (something instanceof BlockChain) {

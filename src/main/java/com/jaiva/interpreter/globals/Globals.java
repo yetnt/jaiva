@@ -1,4 +1,4 @@
-package com.jaiva.interpreter;
+package com.jaiva.interpreter.globals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +17,9 @@ import com.jaiva.errors.IntErrs.FrozenSymbolException;
 import com.jaiva.errors.IntErrs.FunctionParametersException;
 import com.jaiva.errors.IntErrs.UnknownVariableException;
 import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
+import com.jaiva.interpreter.Interpreter;
+import com.jaiva.interpreter.MapValue;
+import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.symbol.*;
 
 public class Globals {
