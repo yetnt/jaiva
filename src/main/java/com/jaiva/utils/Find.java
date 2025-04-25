@@ -426,7 +426,7 @@ public class Find {
         // }
 
         // new for
-        for (int i = Operators.getAllLists().size() - 1; i > 0; i--) {
+        for (int i = Operators.getAllLists().size() - 1; i >= 0; i--) {
             List<String> list = Operators.getAllLists().get(i);
             for (int opIndex : indexes1) {
                 String op = statement.substring(opIndex, opIndex + 1); // stuff thats 2 chars long are generally in the
