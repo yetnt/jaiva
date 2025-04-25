@@ -449,11 +449,12 @@ public class Tokenizer {
             // int ln = lineNumber + 1;
             int ln = lineNumber + 1;
             for (int i = 0; i != ls.length; i++) {
-                ln = lineNumber + i + 1;
+                ln = lineNumber + i;
                 String l = "";
                 if (b instanceof BlockChain) {
                     l = b.getCurrentLine();
                     i--;
+                    ln--;
                 } else {
                     l = ls[i] + (!containsNewln ? Character.toString(Lang.END_LINE) : "");
                 }
@@ -515,8 +516,8 @@ public class Tokenizer {
                     b = null;
                     comment = null;
                 }
-                if (b == null)
-                    ln++;
+                // if (b == null)
+                // ln++;
             }
             return tokens;
         }
