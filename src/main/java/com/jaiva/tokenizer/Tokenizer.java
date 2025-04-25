@@ -471,6 +471,11 @@ public class Tokenizer {
                     if (((ArrayList<Token<?>>) something).size() == 1) {
                         for (Token<?> t : (ArrayList<Token<?>>) something) {
                             TokenDefault g = t.getValue();
+                            if (comment == null || (!(g instanceof TArrayVar) && !(g instanceof TNumberVar)
+                                    && !(g instanceof TStringVar)
+                                    && !(g instanceof TBooleanVar) && !(g instanceof TUnknownVar)
+                                    && !(g instanceof TFunction)))
+                                continue;
                             g.tooltip = comment != null ? comment : g.tooltip;
                             g.json.removeKey("toolTip");
                             g.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
@@ -491,12 +496,16 @@ public class Tokenizer {
                 } else if (something instanceof Token<?>) {
                     TokenDefault t = ((TokenDefault) ((Token<?>) something).getValue());
                     t.tooltip = comment != null ? comment : t.tooltip;
-                    if (!(t instanceof TArrayVar) && !(t instanceof TNumberVar) && !(t instanceof TStringVar)
-                            && !(t instanceof TBooleanVar) && !(t instanceof TUnknownVar)
-                            && !(t instanceof TFunction))
-                        continue;
-                    t.json.removeKey("toolTip");
-                    t.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
+
+                    if (comment != null
+                            && ((t instanceof TArrayVar) || (t instanceof TNumberVar) || (t instanceof TStringVar)
+                                    || (t instanceof TBooleanVar) || (t instanceof TUnknownVar)
+                                    || (t instanceof TFunction))) {
+
+                        t.tooltip = comment != null ? comment : t.tooltip;
+                        t.json.removeKey("toolTip");
+                        t.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
+                    }
                     tokens.add((Token<?>) something);
                     m = null;
                     b = null;

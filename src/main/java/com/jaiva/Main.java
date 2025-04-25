@@ -139,15 +139,15 @@ public class Main {
                     if (((ArrayList<Token<?>>) something).size() == 1) {
                         for (Token<?> t : (ArrayList<Token<?>>) something) {
                             TokenDefault l = t.getValue();
-                            if (!(l instanceof TArrayVar) && !(l instanceof TNumberVar) && !(l instanceof TStringVar)
+                            if (comment == null || (!(l instanceof TArrayVar) && !(l instanceof TNumberVar)
+                                    && !(l instanceof TStringVar)
                                     && !(l instanceof TBooleanVar) && !(l instanceof TUnknownVar)
-                                    && !(l instanceof TFunction))
+                                    && !(l instanceof TFunction)))
                                 continue;
-                            l.tooltip = comment != null ? comment : l.tooltip;
+                            l.tooltip = comment;
                             l.json.removeKey("toolTip");
                             l.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
                         }
-
                     }
                     comment = null;
                     tokens.addAll((ArrayList<Token<?>>) something);
@@ -163,9 +163,15 @@ public class Main {
                             + ((TDocsComment) ((Token<?>) something).getValue()).comment;
                 } else if (something instanceof Token<?>) {
                     TokenDefault t = ((TokenDefault) ((Token<?>) something).getValue());
-                    t.tooltip = comment != null ? comment : t.tooltip;
-                    t.json.removeKey("toolTip");
-                    t.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
+                    if (comment != null
+                            && ((t instanceof TArrayVar) || (t instanceof TNumberVar) || (t instanceof TStringVar)
+                                    || (t instanceof TBooleanVar) || (t instanceof TUnknownVar)
+                                    || (t instanceof TFunction))) {
+
+                        t.tooltip = comment;
+                        t.json.removeKey("toolTip");
+                        t.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
+                    }
                     b = null;
                     m = null;
                     comment = null;
