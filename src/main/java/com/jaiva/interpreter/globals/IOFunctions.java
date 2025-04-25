@@ -16,7 +16,7 @@ import com.jaiva.tokenizer.Token.TStatement;
 import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.tokenizer.TokenDefault;
 
-public class IOFunctions extends GlobalsAbstract {
+public class IOFunctions extends BaseGlobals {
 
     public IOFunctions() {
         super();

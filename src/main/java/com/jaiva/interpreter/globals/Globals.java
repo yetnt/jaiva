@@ -22,16 +22,17 @@ import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.symbol.*;
 
-public class Globals {
-    public HashMap<String, MapValue> vfs = new HashMap<>();
+public class Globals extends BaseGlobals {
+    // public HashMap<String, MapValue> vfs = new HashMap<>();
 
     public Globals() {
+        super();
         Token<?> container = new Token<>(null);
-        vfs.put("khuluma", new MapValue(new FKhuluma(container)));
         vfs.put("getVarClass", new MapValue(new FGetVarClass(container)));
         vfs.put("reservedKeywords", new MapValue(new VReservedKeywords(container)));
         vfs.put("version", new MapValue(new VJaivaVersion(container)));
         vfs.put("flat", new MapValue(new FFlat(container)));
+        vfs.putAll(new IOFunctions().vfs);
     }
 
     public String returnGlobalsJSON(boolean removeTrailingComma) {
@@ -42,41 +43,6 @@ public class Globals {
             string.append(",");
         });
         return string.toString().substring(0, string.length() - (removeTrailingComma ? 1 : 0));
-    }
-
-    /**
-     * khuluma("hello world")!
-     * Will just print.
-     */
-    class FKhuluma extends BaseFunction {
-
-        FKhuluma(Token<?> container) {
-            super("khuluma", container.new TFunction("khuluma", new String[] { "msg" }, null, -1,
-                    "Prints any given input to the console with a newline afterwards. \\n(It just uses System.out.println() lol) This function returns no value."));
-            this.freeze();
-        }
-
-        @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs)
-                throws Exception {
-            String output;
-            Object o = params.get(0);
-            if (o instanceof Token<?> || (o instanceof TokenDefault && Interpreter.isVariableToken(o))) {
-                TokenDefault token = ((Token<?>) o).getValue();
-                // Only TokenDefault classes have the .toToken() method, but TokenDefualt itself
-                // doesnt, so we kinda need to check for every possible case unfortunately.
-                Object input = token instanceof TStatement || token instanceof TVarRef || token instanceof TFuncCall
-                        ? o
-                        : token;
-                Object value = Interpreter.handleVariables(input, vfs);
-                // System.out.println(value);
-                output = value.toString();
-            } else {
-                output = o.toString();
-            }
-            System.out.println(EscapeSequence.escape(output.toString()));
-            return void.class;
-        }
     }
 
     /**
