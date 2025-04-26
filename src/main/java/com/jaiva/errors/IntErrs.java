@@ -134,6 +134,11 @@ public class IntErrs {
             super("Lowkey can't find the variable named " + s.name
                     + " that you used on line " + s.lineNumber + " anywhere. It prolly aint in this block's scope fr.");
         }
+
+        public UnknownVariableException(TFuncCall s) {
+            super("Lowkey can't find the variable named " + s.functionName
+                    + " that you used on line " + s.lineNumber + " anywhere. It prolly aint in this block's scope fr.");
+        }
     }
 
     public static class WtfAreYouDoingException extends InterpreterException {

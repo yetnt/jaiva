@@ -233,7 +233,9 @@ public class Interpreter {
                             importPath.toString() + " either had nothing to export or somethign wqent horribly wrong.");
                     continue;
                 }
-
+                if (tImport.symbols.size() > 0) {
+                    vfsFromFile.entrySet().removeIf(e -> !tImport.symbols.contains(e.getKey()));
+                }
                 vfs.putAll(vfsFromFile);
             } else if (isVariableToken(token)) {
                 Object contextValue = null;
