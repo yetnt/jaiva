@@ -1,3 +1,4 @@
+import path from "path";
 import { MultiMap } from "./mmap";
 import {
     TokenDefault,
@@ -13,6 +14,7 @@ import {
     TNumberVar,
     TIfStatement,
     TTryCatchStatement,
+    TImport,
 } from "./types";
 
 const MAX_STRING_LENGTH = 20;
@@ -164,7 +166,9 @@ export function primitive(v: any) {
  */
 export function parseAndReturnHoverTokens(
     tokens: TokenDefault[],
-    parentTCodeblock: TCodeblock | null = null
+    parentTCodeblock: TCodeblock | null = null,
+    currentFilePath?: string,
+    hTokens?: Map<string, MultiMap<string, HoverToken>>
 ) {
     let hoverTokens: MultiMap<string, HoverToken> = new MultiMap();
     tokens.forEach((token) => {
@@ -306,6 +310,49 @@ export function parseAndReturnHoverTokens(
                     });
                 break;
             }
+            case "TImport": {
+                if (currentFilePath && hTokens) {
+                    let t: TImport = token as TImport;
+                    let filePath = "";
+                    if (!path.isAbsolute(t.filePath)) {
+                        filePath = path.resolve(
+                            currentFilePath || "",
+                            "..",
+                            t.filePath
+                        );
+                    }
+
+                    let hToken: MultiMap<string, HoverToken> | null =
+                        hTokens?.get(filePath) ?? null;
+                    if (hToken) {
+                        let filtered = hToken.filter((key, value) => {
+                            return (
+                                !value[0].isParam &&
+                                (t.symbols.length > 0
+                                    ? t.symbols.includes(key) &&
+                                      (value[0].token.exportSymbol == true ||
+                                          value[0].token.exportSymbol == "true")
+                                    : value[0].token.exportSymbol == true ||
+                                      value[0].token.exportSymbol == "true")
+                            );
+                        });
+                        // make entries global
+                        let singleValues: MultiMap<string, HoverToken> =
+                            new MultiMap();
+                        for (let [name, value] of filtered.entries()) {
+                            const shiftedValue = value.shift();
+                            if (shiftedValue) {
+                                shiftedValue.range = [-1, -1];
+                                value = [shiftedValue];
+                            }
+                            singleValues.set(name, ...value);
+                        }
+
+                        hoverTokens.addAll(singleValues);
+                    }
+                }
+                break;
+            }
             case "TTryCatchStatement": {
                 let t: TTryCatchStatement = token as TTryCatchStatement;
 
@@ -324,6 +371,7 @@ export function parseAndReturnHoverTokens(
                             type: "TStringVar",
                             name: "error",
                             lineNumber: t.lineNumber,
+                            exportSymbol: false,
                             toolTip:
                                 "The error message that was caught (hopefully a string)",
                         },

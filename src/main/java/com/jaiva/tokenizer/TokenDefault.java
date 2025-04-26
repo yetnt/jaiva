@@ -21,7 +21,7 @@ public class TokenDefault {
     public TokenDefault(String name, int line) {
         this.name = name;
         this.lineNumber = line;
-        this.json = new ToJson(name, getClass().getSimpleName(), line, tooltip);
+        this.json = new ToJson(false, name, getClass().getSimpleName(), line, tooltip);
     }
 
     /**
@@ -34,7 +34,7 @@ public class TokenDefault {
         this.name = name;
         this.lineNumber = line;
         this.exportSymbol = exportSymbol;
-        this.json = new ToJson(name, getClass().getSimpleName(), line, tooltip);
+        this.json = new ToJson(exportSymbol, name, getClass().getSimpleName(), line, tooltip);
     }
 
     /**
@@ -48,7 +48,7 @@ public class TokenDefault {
         this.name = name;
         this.lineNumber = line;
         this.tooltip = tt;
-        this.json = new ToJson(name, getClass().getSimpleName(), line, tt);
+        this.json = new ToJson(false, name, getClass().getSimpleName(), line, tt);
     }
 
     public String toJson() {

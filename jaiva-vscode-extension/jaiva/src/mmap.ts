@@ -1,6 +1,51 @@
+/**
+ * A `MultiMap` is a specialized map-like data structure that allows multiple values
+ * to be associated with a single key. It provides methods for adding, retrieving,
+ * filtering, and removing key-value associations, as well as iterating over the entries.
+ *
+ * @typeParam K - The type of the keys in the map.
+ * @typeParam V - The type of the values associated with each key.
+ *
+ * ### Example
+ * ```typescript
+ * const multiMap = new MultiMap<string, number>();
+ * multiMap.add("a", 1, 2, 3);
+ * multiMap.add("b", 4);
+ * console.log(multiMap.get("a")); // Output: [1, 2, 3]
+ * console.log(multiMap.has("b")); // Output: true
+ * multiMap.remove("a", 2);
+ * console.log(multiMap.get("a")); // Output: [1, 3]
+ * ```
+ */
 export class MultiMap<K, V> {
     private data: Map<K, V[]> = new Map();
 
+    /**
+     * Filters the entries of the MultiMap based on a provided predicate function.
+     *
+     * @param predicate - A function that takes a key and its associated array of values,
+     * and returns a boolean indicating whether the entry should be included in the result.
+     *
+     * @returns A new MultiMap containing only the entries that satisfy the predicate.
+     */
+    public filter(predicate: (key: K, value: V[]) => boolean): MultiMap<K, V> {
+        let m: MultiMap<K, V> = new MultiMap();
+        for (let entry of this.entries()) {
+            if (predicate(entry[0], entry[1])) m.add(entry[0], ...entry[1]);
+        }
+
+        return m;
+    }
+    /**
+     * Sets the values for the specified key, replacing any existing values.
+     * If the key does not exist, it will be created with the provided values.
+     *
+     * @param key - The key to associate the values with.
+     * @param values - An array of values to set for the key.
+     */
+    public set(key: K, ...values: V[]): void {
+        this.data.set(key, values);
+    }
     /**
      * Adds all entries from the provided `MultiMap` to the current map.
      *

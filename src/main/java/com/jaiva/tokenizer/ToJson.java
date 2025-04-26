@@ -11,10 +11,11 @@ import java.util.ArrayList;
 public class ToJson {
     StringBuilder json = new StringBuilder();
 
-    public ToJson(String name, String type, int ln, String tooltip) {
+    public ToJson(boolean exportSymbol, String name, String type, int ln, String tooltip) {
         json.append("{");
         json.append("\"type\": \"").append(type).append("\",");
         json.append("\"name\": \"").append(name).append("\",");
+        json.append("\"exportSymbol\": \"").append(exportSymbol).append("\",");
         json.append("\"toolTip\": \"").append(tooltip).append("\",");
         json.append("\"lineNumber\": ").append(ln).append(",");
     }

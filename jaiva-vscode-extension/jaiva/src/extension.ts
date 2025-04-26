@@ -17,8 +17,14 @@ function onSave(document: vscode.TextDocument) {
         return null;
     }
     const tokens = JSON.parse(output) as TokenDefault[];
+    console.log(tokens);
 
-    let hoverTokens = parseAndReturnHoverTokens(tokens);
+    let hoverTokens = parseAndReturnHoverTokens(
+        tokens,
+        null,
+        filePath,
+        hTokens
+    );
 
     console.log(hoverTokens);
     completionItemsMap.set(
@@ -44,7 +50,7 @@ function onActivate() {
                 }
                 const tokens = JSON.parse(output) as TokenDefault[];
 
-                let hoverTokens = parseAndReturnHoverTokens(tokens);
+                let hoverTokens = parseAndReturnHoverTokens(tokens, null);
 
                 hTokens.set(filePath, hoverTokens);
 

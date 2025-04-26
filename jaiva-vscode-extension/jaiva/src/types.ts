@@ -17,7 +17,8 @@ export type TokenType =
     | "TFuncCall"
     | "TVarRef"
     | "TLoopControl"
-    | "TStatement";
+    | "TStatement"
+    | "TImport";
 
 export type Generic = number | string | GenericBool;
 export type GenericStatements = TStatement | TVarRef | TFuncCall;
@@ -28,6 +29,7 @@ export type TokenDefault = {
     name: string;
     lineNumber: number;
     toolTip: "Jaiva Construct" | string;
+    exportSymbol: boolean | string;
 };
 
 export type Token<T extends TokenDefault | null> = {
