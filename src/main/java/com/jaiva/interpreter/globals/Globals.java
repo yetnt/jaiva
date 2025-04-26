@@ -17,6 +17,7 @@ import com.jaiva.errors.IntErrs.FrozenSymbolException;
 import com.jaiva.errors.IntErrs.FunctionParametersException;
 import com.jaiva.errors.IntErrs.UnknownVariableException;
 import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
+import com.jaiva.interpreter.GlobalResources;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
@@ -27,7 +28,6 @@ public class Globals extends BaseGlobals {
 
     public Globals() {
         super();
-        Token<?> container = new Token<>(null);
         vfs.put("getVarClass", new MapValue(new FGetVarClass(container)));
         vfs.put("reservedKeywords", new MapValue(new VReservedKeywords(container)));
         vfs.put("version", new MapValue(new VJaivaVersion(container)));
@@ -57,7 +57,8 @@ public class Globals extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
+                GlobalResources resources)
                 throws Exception {
             String name;
             if (params.get(0) instanceof String) {
@@ -117,7 +118,8 @@ public class Globals extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
+                GlobalResources resources)
                 throws Exception {
             if (tFuncCall.args.size() != params.size())
                 throw new FunctionParametersException(this, params.size());
@@ -139,7 +141,7 @@ public class Globals extends BaseGlobals {
                     // stuff that need be parsed, parse and pray arraylist is returned.
                     Object parsed = null;
                     try {
-                        parsed = Primitives.toPrimitive(Primitives.parseNonPrimitive(arg), vfs, false);
+                        parsed = Primitives.toPrimitive(Primitives.parseNonPrimitive(arg), vfs, false, resources);
                     } catch (Exception e) {
                         // do nothing.
                     }

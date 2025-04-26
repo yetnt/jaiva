@@ -117,14 +117,15 @@ public class Primitives {
      * @return
      * @throws Exception
      */
-    public static Object toPrimitive(Object token, HashMap<String, MapValue> vfs, boolean returnName)
+    public static Object toPrimitive(Object token, HashMap<String, MapValue> vfs, boolean returnName,
+            GlobalResources resources)
             throws Exception {
         if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TStatement) {
             // If the input is a TStatement, resolve the lhs and rhs.
             TStatement tStatement = (TStatement) ((Token<?>) token).getValue();
-            Object lhs = toPrimitive(tStatement.lHandSide, vfs, false);
+            Object lhs = toPrimitive(tStatement.lHandSide, vfs, false, resources);
             String op = tStatement.op;
-            Object rhs = toPrimitive(tStatement.rHandSide, vfs, false);
+            Object rhs = toPrimitive(tStatement.rHandSide, vfs, false, resources);
 
             Object sTuff = resolveStringOperations(lhs, rhs, op, tStatement);
             if (sTuff != void.class)
@@ -277,7 +278,7 @@ public class Primitives {
             // just find the reference in the table and return whatever it is
             TVarRef tVarRef = (TVarRef) ((Token<?>) token).getValue();
             if (returnName) {
-                Object t = Primitives.toPrimitive(tVarRef.varName, vfs, returnName);
+                Object t = Primitives.toPrimitive(tVarRef.varName, vfs, returnName, resources);
                 if (t instanceof String) {
                     return t;
                 }
@@ -285,9 +286,9 @@ public class Primitives {
             if (tVarRef.varName instanceof String)
                 tVarRef.varName = ((String) tVarRef.varName).replace("~", "");
             MapValue v = vfs.get(tVarRef.varName instanceof Token<?>
-                    ? Primitives.toPrimitive(tVarRef.varName, vfs, true)
+                    ? Primitives.toPrimitive(tVarRef.varName, vfs, true, resources)
                     : (tVarRef).varName);
-            Object index = (tVarRef).index == null ? null : toPrimitive(tVarRef.index, vfs, false);
+            Object index = (tVarRef).index == null ? null : toPrimitive(tVarRef.index, vfs, false, resources);
             if (index != null && (Integer) index <= -1)
                 return new WtfAreYouDoingException("Now tell me, how do you access negative data in ana array?");
             if (v == null)
@@ -300,7 +301,7 @@ public class Primitives {
                     // SHOULD return an array.
                     // therefore, we want to call toPrimitive on it again
                     // If we got BaseFunction, that means tVarRef.varName is a TFuncCall.
-                    Object ret = toPrimitive(parseNonPrimitive(tVarRef.varName), vfs, false);
+                    Object ret = toPrimitive(parseNonPrimitive(tVarRef.varName), vfs, false, resources);
                     if (!(ret instanceof ArrayList))
                         throw new WtfAreYouDoingException("On line " + tVarRef.lineNumber
                                 + " right, The function you used there did not return an array, and you expect to be able to index into that?");
@@ -321,7 +322,8 @@ public class Primitives {
                 if (!(index instanceof Integer) && index != null)
                     throw new WtfAreYouDoingException(tVarRef, tVarRef.getClass());
                 if (tVarRef.varName instanceof Token) {
-                    Object t = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarRef.varName), vfs, returnName);
+                    Object t = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarRef.varName), vfs, returnName,
+                            resources);
                     if (t instanceof ArrayList) {
                         arr = (ArrayList) (t);
                     } else if (t instanceof String) {
@@ -350,21 +352,21 @@ public class Primitives {
         } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TFuncCall) {
             TFuncCall tFuncCall = (TFuncCall) ((Token<?>) token).getValue();
             if (returnName) {
-                Object t = toPrimitive(parseNonPrimitive(tFuncCall.functionName), vfs, returnName);
+                Object t = toPrimitive(parseNonPrimitive(tFuncCall.functionName), vfs, returnName, resources);
                 if (t instanceof String) {
                     return t;
                 }
             }
             Object funcName = toPrimitive(tFuncCall.functionName instanceof Token
-                    ? toPrimitive(parseNonPrimitive(tFuncCall.functionName), vfs, true)
-                    : tFuncCall.functionName, vfs, false);
+                    ? toPrimitive(parseNonPrimitive(tFuncCall.functionName), vfs, true, resources)
+                    : tFuncCall.functionName, vfs, false, resources);
 
             if (!(funcName instanceof String))
                 throw new WeirdAhhFunctionException(tFuncCall);
             String name = (String) funcName;
             BaseFunction f = null;
             if (!(tFuncCall.functionName instanceof String)) {
-                Object j = toPrimitive(tFuncCall.functionName, vfs, false);
+                Object j = toPrimitive(tFuncCall.functionName, vfs, false, resources);
                 if (j instanceof BaseFunction) {
                     f = (BaseFunction) j;
                 } else {
@@ -394,14 +396,14 @@ public class Primitives {
 
             if (tFuncCall.functionName instanceof Token) {
                 Object t = Primitives.toPrimitive(Primitives.parseNonPrimitive(tFuncCall.functionName), vfs,
-                        returnName);
+                        returnName, resources);
                 if (t instanceof BaseFunction) {
                     function = (BaseFunction) (t);
                 } else if (t instanceof String) {
                     return t;
                 }
             }
-            Object returnValue = function.call(tFuncCall, tFuncCall.args, vfs);
+            Object returnValue = function.call(tFuncCall, tFuncCall.args, vfs, resources);
             return returnValue instanceof String && tFuncCall.getLength
                     ? EscapeSequence.escape((String) returnValue).length()
                     : returnValue instanceof ArrayList && tFuncCall.getLength ? ((ArrayList) returnValue).size()
@@ -471,9 +473,10 @@ public class Primitives {
      * @throws Exception If the condition cannot be resolved to a `Boolean` or if
      *                   there is an error during variable handling or parsing.
      */
-    public static Object setCondition(TForLoop t, HashMap<String, MapValue> vfs) throws Exception {
+    public static Object setCondition(TForLoop t, HashMap<String, MapValue> vfs, GlobalResources resources)
+            throws Exception {
         Object condition = Interpreter.handleVariables(
-                parseNonPrimitive(t.condition), vfs);
+                parseNonPrimitive(t.condition), vfs, resources);
         if (!(condition instanceof Boolean))
             throw new TStatementResolutionException(
                     t, ((TStatement) t.condition),
@@ -492,9 +495,10 @@ public class Primitives {
      * @throws Exception If the condition cannot be resolved to a Boolean or if
      *                   there is an error during variable handling or parsing.
      */
-    public static Object setCondition(TWhileLoop t, HashMap<String, MapValue> vfs) throws Exception {
+    public static Object setCondition(TWhileLoop t, HashMap<String, MapValue> vfs, GlobalResources resources)
+            throws Exception {
         Object condition = Interpreter.handleVariables(
-                parseNonPrimitive(t.condition), vfs);
+                parseNonPrimitive(t.condition), vfs, resources);
         if (!(condition instanceof Boolean))
             throw new TStatementResolutionException(
                     t, ((TStatement) t.condition),
@@ -517,9 +521,10 @@ public class Primitives {
      * @throws Exception If the condition cannot be resolved to a boolean or if any
      *                   error occurs during variable handling or parsing.
      */
-    public static Object setCondition(TIfStatement t, HashMap<String, MapValue> vfs) throws Exception {
+    public static Object setCondition(TIfStatement t, HashMap<String, MapValue> vfs, GlobalResources resources)
+            throws Exception {
         Object condition = Interpreter.handleVariables(
-                parseNonPrimitive(t.condition), vfs);
+                parseNonPrimitive(t.condition), vfs, resources);
         if (!(condition instanceof Boolean))
             throw new TStatementResolutionException(
                     t, ((TStatement) t.condition),

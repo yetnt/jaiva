@@ -118,6 +118,7 @@ public class Main {
             return;
         }
         File myObj = new File(args[0]);
+        GlobalResources interpretResources = new GlobalResources();
         try {
             ArrayList<Token<?>> tokens = new ArrayList<>();
             Find.MultipleLinesOutput m = null;
@@ -231,12 +232,14 @@ public class Main {
                         return;
                 }
             }
-            Interpreter.interpret(tokens, Context.GLOBAL, new Globals().vfs);
+            Interpreter.interpret(tokens, Context.GLOBAL, new Globals().vfs, interpretResources);
 
         } catch (FileNotFoundException e) {
+            interpretResources.release();
             System.out.println("Ayo i cannot find the file " + args[0] + ". Make sure it exists homie.");
             e.printStackTrace();
         } catch (Exception e) {
+            interpretResources.release();
             System.out.println("Error.");
             e.printStackTrace();
         }
