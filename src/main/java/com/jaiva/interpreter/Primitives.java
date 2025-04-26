@@ -10,6 +10,7 @@ import com.jaiva.errors.IntErrs.TStatementResolutionException;
 import com.jaiva.errors.IntErrs.UnknownVariableException;
 import com.jaiva.errors.IntErrs.WeirdAhhFunctionException;
 import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
+import com.jaiva.interpreter.runtime.GlobalResources;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;

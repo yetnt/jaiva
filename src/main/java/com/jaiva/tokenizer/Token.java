@@ -1,6 +1,8 @@
 package com.jaiva.tokenizer;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.jaiva.errors.TokErrs.*;
 import com.jaiva.tokenizer.Keywords.LoopControl;
@@ -46,6 +48,39 @@ public class Token<T extends TokenDefault> {
         }
 
         public Token<TVoidValue> toToken() {
+            return new Token<>(this);
+        }
+    }
+
+    /**
+     * Represents an important statemnent such as:
+     * tsea "path"!
+     * or
+     * tsea "path" <- func1, func2, func3!
+     */
+    public class TImport extends TokenDefault {
+        public String filePath;
+        public ArrayList<String> symbols = new ArrayList<>();
+
+        public TImport(String file, int ln) {
+            super("TImport", ln);
+            filePath = file;
+        }
+
+        public TImport(String file, ArrayList<String> names, int ln) {
+            super("TImport", ln);
+            filePath = file;
+            symbols.addAll(names);
+        }
+
+        @Override
+        public String toJson() {
+            json.append("filePath", filePath, false);
+            json.append("symbols", symbols, true);
+            return super.toJson();
+        }
+
+        public Token<TImport> toToken() {
             return new Token<>(this);
         }
     }
@@ -112,7 +147,12 @@ public class Token<T extends TokenDefault> {
         public Object value;
 
         public TUnknownVar(String name, Object value, int ln) {
-            super(name, ln);
+            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+                                    Matcher.quoteReplacement(""))
+                            : name),
+                    ln);
             this.value = value;
         }
 
@@ -158,7 +198,12 @@ public class Token<T extends TokenDefault> {
         public String value;
 
         public TStringVar(String name, String value, int ln) {
-            super(name, ln);
+            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+                                    Matcher.quoteReplacement(""))
+                            : name),
+                    ln);
             this.value = value;
         }
 
@@ -185,17 +230,32 @@ public class Token<T extends TokenDefault> {
         public Object value;
 
         TNumberVar(String name, int value, int ln) {
-            super(name, ln);
+            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+                                    Matcher.quoteReplacement(""))
+                            : name),
+                    ln);
             this.value = value;
         }
 
         TNumberVar(String name, double value, int ln) {
-            super(name, ln);
+            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+                                    Matcher.quoteReplacement(""))
+                            : name),
+                    ln);
             this.value = value;
         }
 
         TNumberVar(String name, Object value, int ln) {
-            super(name, ln);
+            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+                                    Matcher.quoteReplacement(""))
+                            : name),
+                    ln);
             this.value = value;
         }
 
@@ -217,12 +277,22 @@ public class Token<T extends TokenDefault> {
         public Object value;
 
         TBooleanVar(String name, boolean value, int ln) {
-            super(name, ln);
+            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+                                    Matcher.quoteReplacement(""))
+                            : name),
+                    ln);
             this.value = value;
         }
 
         TBooleanVar(String name, Object value, int ln) {
-            super(name, ln);
+            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+                                    Matcher.quoteReplacement(""))
+                            : name),
+                    ln);
             this.value = value;
         }
 
@@ -241,7 +311,12 @@ public class Token<T extends TokenDefault> {
         public ArrayList<Object> contents;
 
         public TArrayVar(String name, ArrayList<Object> contents, int ln) {
-            super(name, ln);
+            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+                                    Matcher.quoteReplacement(""))
+                            : name),
+                    ln);
             this.contents = contents;
         }
 
@@ -292,7 +367,12 @@ public class Token<T extends TokenDefault> {
         public TCodeblock body;
 
         public TFunction(String name, String[] args, TCodeblock body, int ln) {
-            super("F~" + name, ln);
+            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
+                    "F~" + (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)) ? name
+                            .replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+                                    Matcher.quoteReplacement(""))
+                            : name),
+                    ln);
             this.args = args;
             this.body = body;
         }

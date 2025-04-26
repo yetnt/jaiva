@@ -119,3 +119,8 @@ export type TStatement = TokenDefault & {
     statementType: 1 | 0;
     statement: string;
 };
+
+export type TImport = TokenDefault & {
+    symbols: string[];
+    filePath: string;
+};

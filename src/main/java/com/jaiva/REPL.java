@@ -9,10 +9,10 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import com.jaiva.interpreter.Context;
-import com.jaiva.interpreter.GlobalResources;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.globals.Globals;
+import com.jaiva.interpreter.runtime.GlobalResources;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TStatement;
@@ -78,7 +78,7 @@ public class REPL {
     public State state = State.INACTIVE;
     private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     private HashMap<String, MapValue> vfs = new Globals().vfs;
-    private GlobalResources replResources = new GlobalResources();
+    private GlobalResources replResources = new GlobalResources(null);
     // private Token<?> tokenContainer = new Token<>(null);
 
     public REPL(int mode) {

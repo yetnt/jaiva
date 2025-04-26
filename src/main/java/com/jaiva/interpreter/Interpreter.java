@@ -1,11 +1,15 @@
 package com.jaiva.interpreter;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import com.jaiva.Main;
 import com.jaiva.errors.IntErrs.*;
+import com.jaiva.interpreter.runtime.GlobalResources;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
@@ -18,6 +22,7 @@ import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TFuncReturn;
 import com.jaiva.tokenizer.Token.TFunction;
 import com.jaiva.tokenizer.Token.TIfStatement;
+import com.jaiva.tokenizer.Token.TImport;
 import com.jaiva.tokenizer.Token.TLoopControl;
 import com.jaiva.tokenizer.Token.TNumberVar;
 import com.jaiva.tokenizer.Token.TStatement;
@@ -186,18 +191,56 @@ public class Interpreter {
     public static Object interpret(ArrayList<Token<?>> tokens, Context context, HashMap<String, MapValue> vfs,
             GlobalResources resources)
             throws Exception {
-        resources = resources == null ? new GlobalResources() : resources;
+        // prepare a new vfs.
+        vfs = resources.config.importVfs && context == Context.GLOBAL ? new HashMap<>() : vfs;
+
         vfs = vfs != null ? ((HashMap<String, MapValue>) vfs.clone()) : vfs;
 
         // Step 2: go throguh eahc token
         for (Token<?> t : tokens) {
             TokenDefault token = t.getValue();
-            if (isVariableToken(token)) {
+            if (token instanceof TImport) {
+                TImport tImport = (TImport) token;// Create a Path instance from tImport.filePath
+                Path importPath = Path.of(tImport.filePath);
+
+                // Check if the path is not absolute
+                if (!importPath.isAbsolute()) {
+                    // Resolve it relative to the current file's directory,
+                    // then normalize to tidy up any relative path elements.
+                    importPath = resources.fileDirectory.resolve(importPath).normalize();
+                }
+
+                importPath = importPath.toAbsolutePath();
+
+                // System.out.println(resources.fileDirectory);
+                // System.out.println(importPath);
+
+                ArrayList<Token<?>> tks = Main.parseTokens(importPath.toString(), true);
+
+                if (tks.size() == 0)
+                    continue;
+
+                GlobalResources gb = new GlobalResources(importPath.toString());
+
+                gb.config.importVfs = true;
+
+                HashMap<String, MapValue> vfsFromFile = (HashMap<String, MapValue>) Interpreter.interpret(tks, context,
+                        vfs, gb);
+
+                if (!(vfsFromFile instanceof HashMap) && (vfsFromFile == null)) {
+                    // error? maybe not yet but print for debugging
+                    System.out.println(
+                            importPath.toString() + " either had nothing to export or somethign wqent horribly wrong.");
+                    continue;
+                }
+
+                vfs.putAll(vfsFromFile);
+            } else if (isVariableToken(token)) {
                 Object contextValue = null;
                 // handles the following cases:
                 // TNumberVar, TBooleanVar, TStringVar, TUnknownVar, TVarReassign, TArrayVar
                 // including TStatement, TFuncCall and TVarRef. This also includes primitives.
-                contextValue = token instanceof TFuncCall || token instanceof TVarRef
+                contextValue = (token instanceof TFuncCall || token instanceof TVarRef)
                         ? handleVariables(t, vfs, resources)
                         : handleVariables(token, vfs, resources);
                 // If it returns a meaningful value, then oh well, because in this case they
@@ -205,11 +248,11 @@ public class Interpreter {
             } else if (token instanceof TVoidValue) {
                 // void
                 continue;
-            } else if (token instanceof TFuncReturn) {
+            } else if (token instanceof TFuncReturn && !resources.config.importVfs) {
                 Object c = handleVariables(((TFuncReturn) token).value, vfs, resources);
                 ThrowIfGlobalContext g = throwIfGlobalContext(context, c, token.lineNumber);
                 return g;
-            } else if (token instanceof TLoopControl) {
+            } else if (token instanceof TLoopControl && !resources.config.importVfs) {
                 TLoopControl loopControl = (TLoopControl) token;
                 // if (loopControl.type == Keywords.LoopControl.CONTINUE && context !=
                 // Context.FOR)
@@ -224,11 +267,11 @@ public class Interpreter {
                 ThrowIfGlobalContext g = throwIfGlobalContext(context, lc, loopControl.lineNumber);
                 return g;
 
-            } else if (token instanceof TThrowError) {
+            } else if (token instanceof TThrowError && !resources.config.importVfs) {
                 TThrowError lc = (TThrowError) token;
                 ThrowIfGlobalContext g = throwIfGlobalContext(context, lc, lc.lineNumber);
                 return g;
-            } else if (token instanceof TWhileLoop) {
+            } else if (token instanceof TWhileLoop && !resources.config.importVfs) {
                 // while loop
                 TWhileLoop whileLoop = (TWhileLoop) token;
                 Object cond = Primitives.setCondition(whileLoop, vfs, resources);
@@ -251,7 +294,7 @@ public class Interpreter {
                     cond = Primitives.setCondition(whileLoop, vfs, resources);
                 }
                 // while loop
-            } else if (token instanceof TIfStatement) {
+            } else if (token instanceof TIfStatement && !resources.config.importVfs) {
                 // if statement handling below
                 TIfStatement ifStatement = (TIfStatement) token;
                 if (!(ifStatement.condition instanceof TStatement))
@@ -299,7 +342,7 @@ public class Interpreter {
                     }
                 }
                 // if statement handling above
-            } else if (token instanceof TForLoop) {
+            } else if (token instanceof TForLoop && !resources.config.importVfs) {
                 // for loop
                 TForLoop tForLoop = (TForLoop) token;
                 handleVariables(tForLoop.variable, vfs, resources);
@@ -374,7 +417,7 @@ public class Interpreter {
 
                 vfs.remove(v.name);
                 // for loop
-            } else if (token instanceof TTryCatchStatement) {
+            } else if (token instanceof TTryCatchStatement && !resources.config.importVfs) {
                 TTryCatchStatement throwError = (TTryCatchStatement) token;
 
                 Object out = Interpreter.interpret(throwError.tryBlock.lines, Context.TRY, vfs, resources);
@@ -412,6 +455,6 @@ public class Interpreter {
         }
         // System.out.println("heyy");
 
-        return void.class;
+        return resources.config.importVfs ? vfs : void.class;
     }
 }

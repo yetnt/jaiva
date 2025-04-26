@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
-import com.jaiva.interpreter.GlobalResources;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Interpreter.ThrowIfGlobalContext;
+import com.jaiva.interpreter.runtime.GlobalResources;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.EscapeSequence;
 import com.jaiva.tokenizer.Token;

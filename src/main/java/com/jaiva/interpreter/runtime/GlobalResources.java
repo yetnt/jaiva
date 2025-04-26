@@ -1,5 +1,6 @@
-package com.jaiva.interpreter;
+package com.jaiva.interpreter.runtime;
 
+import java.nio.file.Path;
 import java.util.Scanner;
 
 /**
@@ -31,10 +32,19 @@ import java.util.Scanner;
  * @since 2023
  */
 public class GlobalResources {
+    public IConfig config = new IConfig();
     public Scanner consoleIn = new Scanner(System.in);
+    public Path filePath;
+    public Path fileDirectory;
 
-    public GlobalResources() {
-
+    public GlobalResources(String currentFilePath) {
+        filePath = Path.of(currentFilePath);
+        fileDirectory = currentFilePath != null
+                ? Path.of(currentFilePath
+                        .substring(0,
+                                currentFilePath.contains("\\") ? currentFilePath.lastIndexOf("\\") + 1
+                                        : currentFilePath.lastIndexOf("/") + 1))
+                : fileDirectory;
     }
 
     /**

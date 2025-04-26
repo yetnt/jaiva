@@ -17,10 +17,10 @@ import com.jaiva.errors.IntErrs.FrozenSymbolException;
 import com.jaiva.errors.IntErrs.FunctionParametersException;
 import com.jaiva.errors.IntErrs.UnknownVariableException;
 import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
-import com.jaiva.interpreter.GlobalResources;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.runtime.GlobalResources;
 import com.jaiva.interpreter.symbol.*;
 
 public class Globals extends BaseGlobals {

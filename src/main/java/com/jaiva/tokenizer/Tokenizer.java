@@ -365,6 +365,36 @@ public class Tokenizer {
         }
     }
 
+    private static Token<?> handleImport(String line, Token<?> tContainer, int lineNumber) throws SyntaxCriticalError {
+        // tsea "path"
+        // tsea "path" <- funcz, funca
+        line = line.replace(Keywords.IMPORT.get(0), "").replace(Keywords.IMPORT.get(1), "").trim();
+
+        // "path"
+        // "path" <- funcz, funca
+        String[] parts = line.split(Lang.ASSIGNMENT);
+
+        ArrayList<Tuple2<Integer, Integer>> quotepairs = Find.quotationPairs(line);
+        if (quotepairs.size() == 0) {
+            throw new SyntaxCriticalError(
+                    "Bro, the file to take from has to be surrounded by qutoes. (Line " + lineNumber + ")");
+
+        }
+        int stringStart = line.indexOf(Lang.STRING);
+        int stringEnd = Find.closingCharIndex(line, Lang.STRING, Lang.STRING);
+        String path = line.substring(stringStart + 1, stringEnd);
+
+        if (parts.length > 1) {
+            // ""path"", "funcz, funca"
+            ArrayList<String> args = new ArrayList<>();
+            for (String arg : parts[1].trim().split(Character.toString(Lang.ARGS_SEPARATOR)))
+                args.add(arg.trim());
+            return tContainer.new TImport(path, args, lineNumber).toToken();
+        } else {
+            return tContainer.new TImport(path, lineNumber).toToken();
+        }
+    }
+
     /**
      * The BIG BOY!
      * 
@@ -566,6 +596,10 @@ public class Tokenizer {
         }
 
         line = line.isEmpty() ? line : line.substring(0, line.length() - 1);
+
+        if (line.startsWith(Keywords.IMPORT.get(0)) || line.startsWith(Keywords.IMPORT.get(1))) {
+            return handleImport(line, tContainer, lineNumber);
+        }
 
         // #STRING# is (khutla 100!) syntax which is a function return.
 
