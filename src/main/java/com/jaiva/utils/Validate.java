@@ -112,9 +112,24 @@ public class Validate {
         }
     }
 
+    /**
+     * Validates whether a given string is a valid symbol name.
+     *
+     * This method checks each character in the input string against a set of
+     * disallowed characters for symbol names. If any character in the string
+     * is found in the disallowed set, the method returns an instance of
+     * {@code IsValidSymbolName} indicating the invalid character and a
+     * validation status of {@code false}. If no disallowed characters are
+     * found, it returns an instance of {@code IsValidSymbolName} with a
+     * validation status of {@code true}.
+     *
+     * @param line the string to validate as a symbol name
+     * @return an {@code IsValidSymbolName} object containing the validation
+     *         result and the first invalid character (if any)
+     */
     public static IsValidSymbolName isValidSymbolName(String line) {
         for (char c : line.toCharArray()) {
-            if (Lang.dissalowedChars().contains(Character.toString(c))) {
+            if (Lang.dissalowedCharsForSymbolName().contains(Character.toString(c))) {
                 return new IsValidSymbolName(Character.toString(c), false);
             }
         }

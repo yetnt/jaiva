@@ -84,7 +84,6 @@ public class IntErrs {
         private static final long serialVersionUID = 1L;
 
         public DualVariableReassignWarning(BaseVariable s, int lineNumber) {
-            // TODO: Implement the ~ as a flag that dual reassingment is allowed in the
             // tokenizer.
             super(s.name
                     + " on line " + lineNumber

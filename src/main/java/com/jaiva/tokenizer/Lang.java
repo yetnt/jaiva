@@ -37,6 +37,7 @@ public class Lang {
     public static char ESCAPE = '$';
     public static char END_LINE = '!';
     public static char COMMENT = '@';
+    public static char EXPORT_SYMBOL = '*';
     public static String COMMENT_DOC = "@*";
     public static char COMMENT_OPEN = '{';
     public static char COMMENT_CLOSE = '}';
@@ -131,6 +132,12 @@ public class Lang {
                 return 3;
             return -1;
         }
+    }
+
+    public static ArrayList<String> dissalowedCharsForSymbolName() {
+        ArrayList<String> dList = dissalowedChars();
+        dList.remove(Character.toString(EXPORT_SYMBOL));
+        return dList;
     }
 
     public static ArrayList<String> dissalowedChars() {

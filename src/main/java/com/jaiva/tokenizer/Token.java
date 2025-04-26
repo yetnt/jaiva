@@ -612,7 +612,6 @@ public class Token<T extends TokenDefault> {
             Find.LeastImportantOperator info = Find.leastImportantOperator(statement);
             if (info.index == -1) {
                 // no operator found, so its a single value
-                // TODO: Validate this, Copilot gave me this if but i'm not sure ngl.
                 return processContext(statement, lineNumber);
             }
             if (info.op.equals("=") && statement.charAt(info.index - 1) == '!') {

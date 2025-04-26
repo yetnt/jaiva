@@ -146,7 +146,6 @@ public class Interpreter {
             BaseFunction func = BaseFunction.create(name, function);
             vfs.put(name, new MapValue(func));
         } else if (t instanceof TVarReassign) {
-            // TODO: Handle array reassignment. like arr[0] <- 1 or arr[2][3][4] <- 1
             MapValue mapValue = vfs.get(((TVarReassign) t).name);
             if (MapValue.isEmpty(mapValue))
                 throw new UnknownVariableException((TVarReassign) t);
@@ -248,9 +247,6 @@ public class Interpreter {
                             break;
                         return checker;
                     }
-
-                    // they may re assign it midway, so lets check for dat fr
-                    // TODO: comeacvkl
 
                     cond = Primitives.setCondition(whileLoop, vfs, resources);
                 }
@@ -405,8 +401,6 @@ public class Interpreter {
                         if (out2 instanceof ThrowIfGlobalContext) {
                             ThrowIfGlobalContext g2 = (ThrowIfGlobalContext) out2;
                             ThrowIfGlobalContext checker2 = throwIfGlobalContext(context, out2, g2.lineNumber);
-                            // TODO: Possibly refactor to recursive thing so you can handle errors in catch
-                            // blocks.
                             return checker2;
                         }
 
