@@ -1,7 +1,10 @@
-package com.jaiva.tokenizer;
+package com.jaiva.lang;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.Token.TDocsComment;
 
 public class Comments {
 
@@ -49,10 +52,10 @@ public class Comments {
      * @return
      */
     public static String decimate(String line) {
-        if (line.indexOf(Lang.COMMENT) == -1)
+        if (line.indexOf(Chars.COMMENT) == -1)
             return line;
 
-        line = line.substring(0, line.indexOf(Lang.COMMENT));
+        line = line.substring(0, line.indexOf(Chars.COMMENT));
 
         return line;
     }
@@ -68,10 +71,10 @@ public class Comments {
      *         comment marker.
      */
     public static Object safeDecimate(String o) {
-        if (o.indexOf(Lang.COMMENT_DOC) != 0)
+        if (o.indexOf(Chars.COMMENT_DOC) != 0)
             return decimate(o);
 
-        return new Token<>(null).new TDocsComment(o.substring(o.indexOf(Lang.COMMENT_DOC) + 2, o.length()))
+        return new Token<>(null).new TDocsComment(o.substring(o.indexOf(Chars.COMMENT_DOC) + 2, o.length()))
                 .toToken();
 
     }
@@ -86,10 +89,10 @@ public class Comments {
      * @param arr
      * @return
      */
-    static boolean arrayIsOnlyComments(String[] arr) {
+    public static boolean arrayIsOnlyComments(String[] arr) {
         if (arr.length > 2) {
             for (String s : arr) {
-                if (!s.trim().isEmpty() && !s.trim().startsWith(Character.toString(Lang.COMMENT))) {
+                if (!s.trim().isEmpty() && !s.trim().startsWith(Character.toString(Chars.COMMENT))) {
                     return false;
                 }
             }
@@ -100,15 +103,15 @@ public class Comments {
             // otherwise return false.
             if (arr[0].trim().isEmpty() && arr[1].trim().isEmpty()) {
                 return true;
-            } else if (arr[0].trim().isEmpty() && arr[1].trim().startsWith(Character.toString(Lang.COMMENT))) {
+            } else if (arr[0].trim().isEmpty() && arr[1].trim().startsWith(Character.toString(Chars.COMMENT))) {
                 return true;
-            } else if (arr[0].trim().startsWith(Character.toString(Lang.COMMENT)) && arr[1].trim().isEmpty()) {
+            } else if (arr[0].trim().startsWith(Character.toString(Chars.COMMENT)) && arr[1].trim().isEmpty()) {
                 return true;
-            } else if (arr[0].trim().startsWith(Character.toString(Lang.COMMENT))
-                    && !arr[1].trim().startsWith(Character.toString(Lang.COMMENT))
+            } else if (arr[0].trim().startsWith(Character.toString(Chars.COMMENT))
+                    && !arr[1].trim().startsWith(Character.toString(Chars.COMMENT))
                     || !arr[0].trim()
-                            .startsWith(Character.toString(Lang.COMMENT))
-                            && arr[1].trim().startsWith(Character.toString(Lang.COMMENT))) {
+                            .startsWith(Character.toString(Chars.COMMENT))
+                            && arr[1].trim().startsWith(Character.toString(Chars.COMMENT))) {
                 return true;
             } else {
                 return false;

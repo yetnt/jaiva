@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import com.jaiva.tokenizer.EscapeSequence;
-import com.jaiva.tokenizer.Keywords;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.TokenDefault;
 import com.jaiva.tokenizer.Token.TFuncCall;
@@ -22,6 +20,8 @@ import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.GlobalResources;
 import com.jaiva.interpreter.symbol.*;
+import com.jaiva.lang.EscapeSequence;
+import com.jaiva.lang.Keywords;
 
 public class Globals extends BaseGlobals {
     // public HashMap<String, MapValue> vfs = new HashMap<>();

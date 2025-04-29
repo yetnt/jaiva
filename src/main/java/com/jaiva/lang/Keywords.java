@@ -1,4 +1,4 @@
-package com.jaiva.tokenizer;
+package com.jaiva.lang;
 
 import java.util.ArrayList;
 import java.util.Arrays;

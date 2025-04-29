@@ -13,6 +13,7 @@ import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.GlobalResources;
+import com.jaiva.tokenizer.TConfig;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TStatement;
@@ -79,6 +80,7 @@ public class REPL {
     private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     private HashMap<String, MapValue> vfs = new Globals().vfs;
     private GlobalResources replResources = new GlobalResources(null);
+    private TConfig config = new TConfig(Main.callJaivaSrc());
     // private Token<?> tokenContainer = new Token<>(null);
 
     public REPL(int mode) {
@@ -154,7 +156,7 @@ public class REPL {
     public Object read(String line, String previousLine, MultipleLinesOutput m, BlockChain b) {
         Object something;
         try {
-            something = Tokenizer.readLine(line, previousLine, m, b, 0);
+            something = Tokenizer.readLine(line, previousLine, m, b, 0, config);
             if (something instanceof MultipleLinesOutput) {
                 return something;
             } else if (something instanceof BlockChain) {

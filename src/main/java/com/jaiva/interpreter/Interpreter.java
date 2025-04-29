@@ -13,7 +13,7 @@ import com.jaiva.interpreter.runtime.GlobalResources;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
-import com.jaiva.tokenizer.Keywords;
+import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TArrayVar;
 import com.jaiva.tokenizer.Token.TBooleanVar;

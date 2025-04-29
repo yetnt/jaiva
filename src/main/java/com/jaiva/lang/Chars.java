@@ -1,4 +1,4 @@
-package com.jaiva.tokenizer;
+package com.jaiva.lang;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * The Lang class defines a set of constants and utility methods for tokenizing
+ * The Chars class defines a set of constants and utility methods for tokenizing
  * and parsing JAIVA. It includes definitions for comment markers,
  * block delimiters, assignment operators, and sets of arithmetic and boolean
  * operators.
@@ -33,7 +33,7 @@ import java.util.Set;
  * This class can be used to tokenize and parse JAIVA by identifying
  * various operators and delimiters defined in the constants.
  */
-public class Lang {
+public class Chars {
     public static char ESCAPE = '$';
     public static char END_LINE = '!';
     public static char COMMENT = '@';

@@ -7,7 +7,9 @@ import java.util.*;
 import com.jaiva.interpreter.*;
 import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.GlobalResources;
-import com.jaiva.tokenizer.EscapeSequence;
+import com.jaiva.interpreter.runtime.IConfig;
+import com.jaiva.lang.EscapeSequence;
+import com.jaiva.tokenizer.TConfig;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.TokenDefault;
 import com.jaiva.tokenizer.Tokenizer;
@@ -210,12 +212,13 @@ public class Main {
         Scanner scanner = new Scanner(myObj);
         String previousLine = "";
         String comment = null;
+        TConfig config = new TConfig(callJaivaSrc());
         int lineNum = 1;
         while (scanner.hasNextLine()) {
             String line = (b != null ? b.getCurrentLine() : scanner.nextLine());
             // System.out.println(line);
             // System.out.println(line);
-            Object something = Tokenizer.readLine(line, (b != null ? "" : previousLine), m, b, lineNum);
+            Object something = Tokenizer.readLine(line, (b != null ? "" : previousLine), m, b, lineNum, config);
             if (something instanceof Find.MultipleLinesOutput) {
                 m = (Find.MultipleLinesOutput) something;
                 b = null;
@@ -287,6 +290,46 @@ public class Main {
         scanner.close();
 
         return tokens;
+    }
+
+    /**
+     * Executes the "jaiva-src" command as an external process, captures its output,
+     * and returns it as a string. The method combines the standard output and error
+     * streams of the process and waits for the process to complete before returning
+     * the result.
+     *
+     * @return A trimmed string containing the output of the "jaiva-src" process.
+     *         If the process produces no output, an empty string is returned.
+     * @throws IOException          If an I/O error occurs while starting or reading
+     *                              from the process.
+     * @throws InterruptedException If the current thread is interrupted while
+     *                              waiting for the process to finish.
+     */
+    public static String callJaivaSrc() {
+        StringBuilder output = new StringBuilder();
+        try {
+            ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "jaiva-src");
+            builder.redirectErrorStream(true);
+            Process process = builder.start();
+
+            // Read the output of the process
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line).append(System.lineSeparator());
+                }
+            }
+
+            // Wait for the process to finish and check its exit code
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                System.err.println("jaiva-src exited with code: " + exitCode);
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return output.toString().trim();
     }
 
 }

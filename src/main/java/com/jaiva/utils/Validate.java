@@ -2,7 +2,7 @@ package com.jaiva.utils;
 
 import java.util.ArrayList;
 
-import com.jaiva.tokenizer.Lang;
+import com.jaiva.lang.Chars;
 import com.jaiva.tokenizer.Token;
 
 /**
@@ -47,10 +47,10 @@ public class Validate {
      */
     public static int containsOperator(char[] string) {
         for (char c : string) {
-            if (Lang.Operators.getArithmetic().contains(String.valueOf(c))) {
+            if (Chars.Operators.getArithmetic().contains(String.valueOf(c))) {
                 return 1;
             }
-            if (Lang.Operators.getBoolean().contains(String.valueOf(c))) {
+            if (Chars.Operators.getBoolean().contains(String.valueOf(c))) {
                 return 0;
             }
         }
@@ -129,7 +129,7 @@ public class Validate {
      */
     public static IsValidSymbolName isValidSymbolName(String line) {
         for (char c : line.toCharArray()) {
-            if (Lang.dissalowedCharsForSymbolName().contains(Character.toString(c))) {
+            if (Chars.dissalowedCharsForSymbolName().contains(Character.toString(c))) {
                 return new IsValidSymbolName(Character.toString(c), false);
             }
         }

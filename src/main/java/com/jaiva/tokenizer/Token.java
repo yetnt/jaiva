@@ -5,7 +5,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.jaiva.errors.TokErrs.*;
-import com.jaiva.tokenizer.Keywords.LoopControl;
+import com.jaiva.lang.Chars;
+import com.jaiva.lang.EscapeSequence;
+import com.jaiva.lang.Keywords;
+import com.jaiva.lang.Keywords.LoopControl;
 import com.jaiva.utils.ContextDispatcher;
 import com.jaiva.utils.Find;
 import com.jaiva.utils.Validate;
@@ -100,7 +103,7 @@ public class Token<T extends TokenDefault> {
     public class TDocsComment extends TokenDefault {
         public String comment;
 
-        TDocsComment(String c) {
+        public TDocsComment(String c) {
             super("TDocsComment", -1);
             comment = c + "\n";
         }
@@ -147,9 +150,9 @@ public class Token<T extends TokenDefault> {
         public Object value;
 
         public TUnknownVar(String name, Object value, int ln) {
-            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
-                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
-                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+            super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
                                     Matcher.quoteReplacement(""))
                             : name),
                     ln);
@@ -198,9 +201,9 @@ public class Token<T extends TokenDefault> {
         public String value;
 
         public TStringVar(String name, String value, int ln) {
-            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
-                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
-                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+            super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
                                     Matcher.quoteReplacement(""))
                             : name),
                     ln);
@@ -230,9 +233,9 @@ public class Token<T extends TokenDefault> {
         public Object value;
 
         TNumberVar(String name, int value, int ln) {
-            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
-                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
-                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+            super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
                                     Matcher.quoteReplacement(""))
                             : name),
                     ln);
@@ -240,9 +243,9 @@ public class Token<T extends TokenDefault> {
         }
 
         TNumberVar(String name, double value, int ln) {
-            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
-                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
-                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+            super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
                                     Matcher.quoteReplacement(""))
                             : name),
                     ln);
@@ -250,9 +253,9 @@ public class Token<T extends TokenDefault> {
         }
 
         TNumberVar(String name, Object value, int ln) {
-            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
-                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
-                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+            super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
                                     Matcher.quoteReplacement(""))
                             : name),
                     ln);
@@ -277,9 +280,9 @@ public class Token<T extends TokenDefault> {
         public Object value;
 
         TBooleanVar(String name, boolean value, int ln) {
-            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
-                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
-                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+            super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
                                     Matcher.quoteReplacement(""))
                             : name),
                     ln);
@@ -287,9 +290,9 @@ public class Token<T extends TokenDefault> {
         }
 
         TBooleanVar(String name, Object value, int ln) {
-            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
-                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
-                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+            super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
                                     Matcher.quoteReplacement(""))
                             : name),
                     ln);
@@ -311,9 +314,9 @@ public class Token<T extends TokenDefault> {
         public ArrayList<Object> contents;
 
         public TArrayVar(String name, ArrayList<Object> contents, int ln) {
-            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
-                    (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL))
-                            ? name.replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+            super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
                                     Matcher.quoteReplacement(""))
                             : name),
                     ln);
@@ -367,9 +370,9 @@ public class Token<T extends TokenDefault> {
         public TCodeblock body;
 
         public TFunction(String name, String[] args, TCodeblock body, int ln) {
-            super(name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)),
-                    "F~" + (name.startsWith(Character.toString(Lang.EXPORT_SYMBOL)) ? name
-                            .replaceFirst(Pattern.quote(Character.toString(Lang.EXPORT_SYMBOL)),
+            super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
+                    "F~" + (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)) ? name
+                            .replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
                                     Matcher.quoteReplacement(""))
                             : name),
                     ln);

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.jaiva.tokenizer.Lang.Operators;
+import com.jaiva.lang.Chars.Operators;
 import com.jaiva.tokenizer.Token;
 
 public class Find {

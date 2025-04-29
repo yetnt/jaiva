@@ -14,7 +14,7 @@ import com.jaiva.interpreter.runtime.GlobalResources;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
-import com.jaiva.tokenizer.EscapeSequence;
+import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TForLoop;
 import com.jaiva.tokenizer.Token.TFuncCall;

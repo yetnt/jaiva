@@ -1,8 +1,13 @@
 package com.jaiva.tokenizer;
 
+import java.nio.file.Path;
 import java.util.*;
 
 import com.jaiva.errors.TokErrs.*;
+import com.jaiva.lang.Chars;
+import com.jaiva.lang.Comments;
+import com.jaiva.lang.EscapeSequence;
+import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.Token.TArrayVar;
 import com.jaiva.tokenizer.Token.TBooleanVar;
 import com.jaiva.tokenizer.Token.TCodeblock;
@@ -29,18 +34,18 @@ public class Tokenizer {
         if (multipleLinesOutput != null) {
             // multiple lines output exists. So we need to keep going until we find }
             m = isComment ? Find.closingCharIndexML(
-                    line, Lang.COMMENT_OPEN, Lang.COMMENT_CLOSE, multipleLinesOutput.startCount,
+                    line, Chars.COMMENT_OPEN, Chars.COMMENT_CLOSE, multipleLinesOutput.startCount,
                     multipleLinesOutput.endCount)
                     : Find.closingCharIndexML(
-                            line, Lang.BLOCK_OPEN, Lang.BLOCK_CLOSE,
+                            line, Chars.BLOCK_OPEN, Chars.BLOCK_CLOSE,
                             multipleLinesOutput.startCount,
                             multipleLinesOutput.endCount, multipleLinesOutput.preLine,
                             t, args, blockChain, lineNumber);
         } else {
             // Not given, but we need to find the closing tag.
             m = isComment ? Find.closingCharIndexML(
-                    line, Lang.COMMENT_OPEN, Lang.COMMENT_CLOSE, 0, 0)
-                    : Find.closingCharIndexML(line, Lang.BLOCK_OPEN, Lang.BLOCK_CLOSE, 0, 0, "",
+                    line, Chars.COMMENT_OPEN, Chars.COMMENT_CLOSE, 0, 0)
+                    : Find.closingCharIndexML(line, Chars.BLOCK_OPEN, Chars.BLOCK_CLOSE, 0, 0, "",
                             t, args, blockChain, lineNumber);
         }
 
@@ -57,20 +62,21 @@ public class Tokenizer {
                 // mara condition ->
                 // mara (i < 10) ->
                 return new String[] {
-                        line.substring(line.indexOf(Lang.STATEMENT_OPEN) + 1, line.lastIndexOf(Lang.STATEMENT_CLOSE)),
+                        line.substring(line.indexOf(Chars.STATEMENT_OPEN) + 1, line.lastIndexOf(Chars.STATEMENT_CLOSE)),
                         "" };
             }
             case "if": {
                 // if (condition) ->
                 // if (variable != 100) ->
                 return new String[] {
-                        line.substring(line.indexOf(Lang.STATEMENT_OPEN), line.lastIndexOf(Lang.STATEMENT_CLOSE)), "" };
+                        line.substring(line.indexOf(Chars.STATEMENT_OPEN), line.lastIndexOf(Chars.STATEMENT_CLOSE)),
+                        "" };
             }
             case "nikhil": {
                 // nikhil (condition) ->
                 // nikhil (i < 10) ->
                 return new String[] {
-                        line.substring(line.indexOf(Lang.STATEMENT_OPEN) + 1, line.lastIndexOf(Lang.STATEMENT_CLOSE)),
+                        line.substring(line.indexOf(Chars.STATEMENT_OPEN) + 1, line.lastIndexOf(Chars.STATEMENT_CLOSE)),
                         "" };
             }
             case "colonize": {
@@ -80,11 +86,11 @@ public class Tokenizer {
                 // colonize i <- 0 | i <= 10 | + ->
                 // colonize pointer with arr ->
 
-                if (line.contains(Character.toString(Lang.FOR_SEPARATOR))) {
-                    String[] parts = line.split(Keywords.FOR)[1].trim().split(Lang.BLOCK_OPEN)[0].split("\\|");
+                if (line.contains(Character.toString(Chars.FOR_SEPARATOR))) {
+                    String[] parts = line.split(Keywords.FOR)[1].trim().split(Chars.BLOCK_OPEN)[0].split("\\|");
                     return new String[] { parts[0].trim(), parts[1].trim(), parts[2].trim() };
                 } else {
-                    String[] parts = line.split(Keywords.FOR)[1].trim().split(Lang.BLOCK_OPEN)[0]
+                    String[] parts = line.split(Keywords.FOR)[1].trim().split(Chars.BLOCK_OPEN)[0]
                             .split(Keywords.FOR_EACH);
                     return new String[] { parts[0].trim(), parts[1].trim(), Keywords.FOR_EACH };
                 }
@@ -92,10 +98,10 @@ public class Tokenizer {
             case "kwenza": {
                 // kwenza function_name(...args) ->
                 // kwenza addition(param1, param2) ->
-                String[] parts = line.split(Keywords.D_FUNCTION)[1].trim().split(Lang.BLOCK_OPEN);
-                String functionName = parts[0].substring(0, parts[0].indexOf(Lang.STATEMENT_OPEN));
-                String args = parts[0].substring(parts[0].indexOf(Lang.STATEMENT_OPEN) + 1,
-                        parts[0].indexOf(Lang.STATEMENT_CLOSE));
+                String[] parts = line.split(Keywords.D_FUNCTION)[1].trim().split(Chars.BLOCK_OPEN);
+                String functionName = parts[0].substring(0, parts[0].indexOf(Chars.STATEMENT_OPEN));
+                String args = parts[0].substring(parts[0].indexOf(Chars.STATEMENT_OPEN) + 1,
+                        parts[0].indexOf(Chars.STATEMENT_CLOSE));
                 return new String[] { functionName, args };
             }
             default: {
@@ -108,7 +114,7 @@ public class Tokenizer {
     private static Object processBlockLines(boolean isComment, String line,
             Find.MultipleLinesOutput multipleLinesOutput,
             String tokenizerLine, ArrayList<Token<?>> tokens, Token<?> tContainer, String type, String[] args,
-            Token<?> blockChain, int lineNumber)
+            Token<?> blockChain, int lineNumber, TConfig config)
             throws Exception {
         type = multipleLinesOutput == null ? type : multipleLinesOutput.type;
         args = multipleLinesOutput == null ? args : multipleLinesOutput.args;
@@ -137,10 +143,10 @@ public class Tokenizer {
         preLine = preLine.startsWith(Keywords.CATCH) ? preLine.replaceFirst(Keywords.CATCH, "") : preLine;
         preLine = preLine.startsWith(Keywords.TRY) ? preLine.replaceFirst(Keywords.TRY, "") : preLine;
         preLine = preLine.replace("$Nn", "").trim();
-        preLine = preLine.substring(preLine.indexOf(Lang.BLOCK_OPEN) + 2);
-        preLine = preLine.substring(0, preLine.lastIndexOf(Lang.BLOCK_CLOSE));
+        preLine = preLine.substring(preLine.indexOf(Chars.BLOCK_OPEN) + 2);
+        preLine = preLine.substring(0, preLine.lastIndexOf(Chars.BLOCK_CLOSE));
         ArrayList<Token<?>> nestedTokens = new ArrayList<>();
-        Object stuff = readLine(preLine, "", null, null, finalMOutput.lineNumber + 1);
+        Object stuff = readLine(preLine, "", null, null, finalMOutput.lineNumber + 1, config);
         try {
             if (stuff instanceof ArrayList) {
                 nestedTokens.addAll((ArrayList<Token<?>>) stuff);
@@ -168,7 +174,7 @@ public class Tokenizer {
                 originalIf.appendElseIf(ifStatement);
                 specific = originalIf.toToken();
                 if (line.contains(Keywords.ELSE)) {
-                    return new BlockChain(specific, line.replaceFirst(Lang.BLOCK_CLOSE, "").trim());
+                    return new BlockChain(specific, line.replaceFirst(Chars.BLOCK_CLOSE, "").trim());
                 }
                 break;
             }
@@ -181,7 +187,7 @@ public class Tokenizer {
             }
             case "if": {
                 Object obj = tContainer.new TStatement(finalMOutput.lineNumber)
-                        .parse(args[0].replaceFirst("\\" + Character.toString(Lang.STATEMENT_OPEN), " "));
+                        .parse(args[0].replaceFirst("\\" + Character.toString(Chars.STATEMENT_OPEN), " "));
                 if (Validate.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
@@ -190,13 +196,13 @@ public class Tokenizer {
                 }
                 specific = tContainer.new TIfStatement(obj, codeblock, finalMOutput.lineNumber).toToken();
                 if (line.contains(Keywords.ELSE)) {
-                    return new BlockChain(specific, line.replaceFirst(Lang.BLOCK_CLOSE, "").trim());
+                    return new BlockChain(specific, line.replaceFirst(Chars.BLOCK_CLOSE, "").trim());
                 }
                 break;
             }
             case "zama zama": {
                 specific = tContainer.new TTryCatchStatement(codeblock, finalMOutput.lineNumber).toToken();
-                return new BlockChain(specific, line.replaceFirst(Lang.BLOCK_CLOSE, "").trim());
+                return new BlockChain(specific, line.replaceFirst(Chars.BLOCK_CLOSE, "").trim());
             }
             case "chaai": {
                 TTryCatchStatement tryCatch = ((TTryCatchStatement) ((Find.MultipleLinesOutput) multipleLinesOutput).specialArg
@@ -209,10 +215,10 @@ public class Tokenizer {
                 if (!args[2].equals(Keywords.FOR_EACH)) {
                     TokenDefault var = (TokenDefault) ((ArrayList<Token<?>>) readLine(
                             Keywords.D_VAR + " "
-                                    + args[0].replaceFirst("\\" + Character.toString(Lang.STATEMENT_OPEN), " ").trim()
-                                    + Character.toString(Lang.END_LINE),
+                                    + args[0].replaceFirst("\\" + Character.toString(Chars.STATEMENT_OPEN), " ").trim()
+                                    + Character.toString(Chars.END_LINE),
                             "", null,
-                            null, finalMOutput.lineNumber))
+                            null, finalMOutput.lineNumber, config))
                             .get(0).getValue();
 
                     Object obj = tContainer.new TStatement(finalMOutput.lineNumber).parse(args[1]);
@@ -224,19 +230,19 @@ public class Tokenizer {
                     }
                     specific = tContainer.new TForLoop(
                             var instanceof TUnknownVar ? (TUnknownVar) var : (TNumberVar) var, obj,
-                            args[2].replace(Lang.STATEMENT_CLOSE, ' ').trim(),
+                            args[2].replace(Chars.STATEMENT_CLOSE, ' ').trim(),
                             codeblock, finalMOutput.lineNumber).toToken();
                 } else {
                     TUnknownVar variable = (Token<TUnknownVar>.TUnknownVar) ((ArrayList<Token<?>>) readLine(
                             Keywords.D_VAR + " "
-                                    + args[0].replaceFirst("\\" + Character.toString(Lang.STATEMENT_OPEN), " ").trim()
-                                    + Lang.END_LINE,
+                                    + args[0].replaceFirst("\\" + Character.toString(Chars.STATEMENT_OPEN), " ").trim()
+                                    + Chars.END_LINE,
                             "",
                             null, null,
-                            finalMOutput.lineNumber))
+                            finalMOutput.lineNumber, config))
                             .get(0).getValue();
                     TVarRef arrayVar = (Token<TVarRef>.TVarRef) ((Token<?>) tContainer.processContext(args[1]
-                            .replace(Lang.STATEMENT_CLOSE, ' ')
+                            .replace(Chars.STATEMENT_CLOSE, ' ')
                             .trim(),
                             finalMOutput.lineNumber))
                             .getValue();
@@ -246,7 +252,7 @@ public class Tokenizer {
                 break;
             }
             case "kwenza": {
-                String[] fArgs = args[1].split(Character.toString(Lang.ARGS_SEPARATOR));
+                String[] fArgs = args[1].split(Character.toString(Chars.ARGS_SEPARATOR));
                 for (int i = 0; i < fArgs.length; i++)
                     fArgs[i] = fArgs[i].trim();
 
@@ -278,7 +284,7 @@ public class Tokenizer {
     private static Token<?> processVariable(String line, Token<?> tContainer, int lineNumber)
             throws SyntaxError, TokenizerException {
         boolean isString = false;
-        if (line.indexOf(Lang.ARRAY_ASSIGNMENT) != -1) {
+        if (line.indexOf(Chars.ARRAY_ASSIGNMENT) != -1) {
             line = line.trim();
             line = line.substring(4, line.length());
             String[] parts = line.split("<-\\|");
@@ -299,19 +305,19 @@ public class Tokenizer {
             return tContainer.new TArrayVar(parts[0], parsedValues, lineNumber).toToken();
 
         }
-        int stringStart = line.indexOf(Lang.STRING);
-        int stringEnd = Find.closingCharIndex(line, Lang.STRING, Lang.STRING);
+        int stringStart = line.indexOf(Chars.STRING);
+        int stringEnd = Find.closingCharIndex(line, Chars.STRING, Chars.STRING);
         ArrayList<Tuple2<Integer, Integer>> quotepairs = Find.quotationPairs(line);
         if (stringStart != -1 && stringEnd != -1 && quotepairs.size() == 1
-                && (line.charAt(line.length() - 1) == Lang.STRING
-                        && line.split(Lang.ASSIGNMENT)[1].trim().charAt(0) == Lang.STRING)) {
+                && (line.charAt(line.length() - 1) == Chars.STRING
+                        && line.split(Chars.ASSIGNMENT)[1].trim().charAt(0) == Chars.STRING)) {
             isString = true;
             String encasedString = line.substring(stringStart + 1, stringEnd);
             line = line.substring(0, stringStart - 1) + encasedString;
         }
         line = line.trim();
         line = line.substring(4, line.length());
-        String[] parts = line.split(Lang.ASSIGNMENT);
+        String[] parts = line.split(Chars.ASSIGNMENT);
         parts[0] = parts[0].trim();
         IsValidSymbolName IVSN = Validate.isValidSymbolName(parts[0]);
         if (!IVSN.isValid)
@@ -322,7 +328,7 @@ public class Tokenizer {
             if (parts[0].isEmpty()) {
                 throw new SyntaxCriticalError("Bro defined a variable on line " + lineNumber + " with no name lmao.");
             }
-            if (parts.length == 1 && line.indexOf(Lang.ASSIGNMENT) != -1)
+            if (parts.length == 1 && line.indexOf(Chars.ASSIGNMENT) != -1)
                 throw new SyntaxCriticalError(
                         "if you're finna define a variable without a value, remove the assignment operator. (line "
                                 + lineNumber + ")");
@@ -365,14 +371,15 @@ public class Tokenizer {
         }
     }
 
-    private static Token<?> handleImport(String line, Token<?> tContainer, int lineNumber) throws SyntaxCriticalError {
+    private static Token<?> handleImport(String line, Token<?> tContainer, int lineNumber, TConfig config)
+            throws SyntaxCriticalError {
         // tsea "path"
         // tsea "path" <- funcz, funca
         line = line.replace(Keywords.IMPORT.get(0), "").replace(Keywords.IMPORT.get(1), "").trim();
 
         // "path"
         // "path" <- funcz, funca
-        String[] parts = line.split(Lang.ASSIGNMENT);
+        String[] parts = line.split(Chars.ASSIGNMENT);
 
         ArrayList<Tuple2<Integer, Integer>> quotepairs = Find.quotationPairs(line);
         if (quotepairs.size() == 0) {
@@ -380,14 +387,22 @@ public class Tokenizer {
                     "Bro, the file to take from has to be surrounded by qutoes. (Line " + lineNumber + ")");
 
         }
-        int stringStart = line.indexOf(Lang.STRING);
-        int stringEnd = Find.closingCharIndex(line, Lang.STRING, Lang.STRING);
+        int stringStart = line.indexOf(Chars.STRING);
+        int stringEnd = Find.closingCharIndex(line, Chars.STRING, Chars.STRING);
         String path = line.substring(stringStart + 1, stringEnd);
+
+        // convert to static import if it contains "jaiva/" or "jaiva\"
+        // set path, to path without the "jaiva/" or "jaiva\" prefix, and
+        // config.JAIVA_SRC + "lib" as a the new prefix
+        if (path.startsWith("jaiva/") || path.startsWith("jaiva\\")) {
+            path = path.replaceFirst("jaiva[/\\\\]", "");
+            path = Path.of(config.JAIVA_SRC).resolve("lib/").resolve(path).normalize().toAbsolutePath().toString();
+        }
 
         if (parts.length > 1) {
             // ""path"", "funcz, funca"
             ArrayList<String> args = new ArrayList<>();
-            for (String arg : parts[1].trim().split(Character.toString(Lang.ARGS_SEPARATOR)))
+            for (String arg : parts[1].trim().split(Character.toString(Chars.ARGS_SEPARATOR)))
                 args.add(arg.trim());
             return tContainer.new TImport(path, args, lineNumber).toToken();
         } else {
@@ -413,15 +428,15 @@ public class Tokenizer {
      */
     @SuppressWarnings("unchecked")
     public static Object readLine(String line, String previousLine, Object multipleLinesOutput, BlockChain blockChain,
-            int lineNumber)
+            int lineNumber, TConfig config)
             throws Exception {
         line = EscapeSequence.escapeAll(line).trim();
         line = line.trim();
         boolean cont = multipleLinesOutput instanceof Find.MultipleLinesOutput;
         boolean isComment = (cont && ((Find.MultipleLinesOutput) multipleLinesOutput).isComment)
-                || (multipleLinesOutput == null && (line.startsWith(Character.toString(Lang.COMMENT_OPEN))
-                        || (line.indexOf(Lang.COMMENT_OPEN) != -1
-                                && line.charAt(line.indexOf(Lang.COMMENT_OPEN)) != Lang.ESCAPE)));
+                || (multipleLinesOutput == null && (line.startsWith(Character.toString(Chars.COMMENT_OPEN))
+                        || (line.indexOf(Chars.COMMENT_OPEN) != -1
+                                && line.charAt(line.indexOf(Chars.COMMENT_OPEN)) != Chars.ESCAPE)));
         boolean isCodeBlock = (cont && !((Find.MultipleLinesOutput) multipleLinesOutput).isComment)
                 || (line.startsWith(Keywords.IF) || line.startsWith(Keywords.D_FUNCTION)
                         || line.startsWith(Keywords.FOR))
@@ -435,17 +450,18 @@ public class Tokenizer {
                         : line.startsWith(Keywords.D_FUNCTION) ? Keywords.D_FUNCTION
                                 : line.startsWith(Keywords.FOR) ? Keywords.FOR
                                         : line.startsWith(Keywords.WHILE) ? Keywords.WHILE
-                                                : line.replace(Lang.BLOCK_CLOSE, "").trim()
+                                                : line.replace(Chars.BLOCK_CLOSE, "").trim()
                                                         .startsWith(Keywords.ELSE + " " + Keywords.IF)
                                                                 ? Keywords.ELSE + " " + Keywords.IF // check for "ELSE
                                                                                                     // IF"
                                                                                                     // before
                                                                                                     // checking for "IF"
-                                                                : line.replace(Lang.BLOCK_CLOSE, "").trim()
+                                                                : line.replace(Chars.BLOCK_CLOSE, "").trim()
                                                                         .startsWith(Keywords.ELSE) ? Keywords.ELSE
                                                                                 : line.startsWith(Keywords.TRY)
                                                                                         ? Keywords.TRY
-                                                                                        : line.replace(Lang.BLOCK_CLOSE,
+                                                                                        : line.replace(
+                                                                                                Chars.BLOCK_CLOSE,
                                                                                                 "")
                                                                                                 .trim()
                                                                                                 .startsWith(
@@ -456,8 +472,8 @@ public class Tokenizer {
         // line.charAt(line.indexOf('-') - 1) != '$' && line
         // .charAt(line.indexOf('-') - 1) != '<'));
 
-        if ((line.contains(Lang.BLOCK_OPEN) && line.indexOf(Lang.BLOCK_OPEN) < line.indexOf("\n")) && type == null
-                && !line.startsWith(Character.toString(Lang.COMMENT)))
+        if ((line.contains(Chars.BLOCK_OPEN) && line.indexOf(Chars.BLOCK_OPEN) < line.indexOf("\n")) && type == null
+                && !line.startsWith(Character.toString(Chars.COMMENT)))
             // A block of code but the type waws not catched, invaliud keyword then.
             // This is a syntax error.
             throw new SyntaxCriticalError(
@@ -486,13 +502,13 @@ public class Tokenizer {
                     i--;
                     ln--;
                 } else {
-                    l = ls[i] + (!containsNewln ? Character.toString(Lang.END_LINE) : "");
+                    l = ls[i] + (!containsNewln ? Character.toString(Chars.END_LINE) : "");
                 }
                 // System.out.println("Reading line " + i + "...");
                 String previousLine2 = i == 0 ? previousLine : ls[i - 1];
                 // System.out.println(previousLine2);
                 // System.out.println(lines[i]);
-                Object something = readLine(l, previousLine2, m, b, ln);
+                Object something = readLine(l, previousLine2, m, b, ln, config);
                 if (something instanceof Find.MultipleLinesOutput) {
                     m = ((Find.MultipleLinesOutput) something);
                     b = null;
@@ -566,13 +582,13 @@ public class Tokenizer {
                     ? processBlockLines(isComment, line, (Find.MultipleLinesOutput) multipleLinesOutput,
                             tokenizerLine,
                             tokens, tContainer, type,
-                            new String[] { "" }, null, lineNumber)
+                            new String[] { "" }, null, lineNumber, config)
                     : processBlockLines(
                             isComment, line, (Find.MultipleLinesOutput) multipleLinesOutput, tokenizerLine,
                             tokens, tContainer, type,
                             multipleLinesOutput == null ? handleArgs(type, line) : null,
                             (blockChain != null ? blockChain.getInitialIf() : null),
-                            lineNumber);
+                            lineNumber, config);
             return k;
         }
 
@@ -590,15 +606,15 @@ public class Tokenizer {
         if (line.isEmpty())
             return null;
 
-        if (!line.isEmpty() && !line.equals(Lang.BLOCK_CLOSE) && !line.endsWith(Lang.BLOCK_OPEN)
-                && (!line.endsWith(Character.toString(Lang.END_LINE)))) {
+        if (!line.isEmpty() && !line.equals(Chars.BLOCK_CLOSE) && !line.endsWith(Chars.BLOCK_OPEN)
+                && (!line.endsWith(Character.toString(Chars.END_LINE)))) {
             throw new SyntaxCriticalError("Ye wena. On line " + lineNumber + " you don't shout your code. Sies.");
         }
 
         line = line.isEmpty() ? line : line.substring(0, line.length() - 1);
 
         if (line.startsWith(Keywords.IMPORT.get(0)) || line.startsWith(Keywords.IMPORT.get(1))) {
-            return handleImport(line, tContainer, lineNumber);
+            return handleImport(line, tContainer, lineNumber, config);
         }
 
         // #STRING# is (khutla 100!) syntax which is a function return.
@@ -608,7 +624,7 @@ public class Tokenizer {
             line = line.trim();
             String withoutKeyword = line.substring(Keywords.THROW.length()).trim();
             // Split on the operator "<=="
-            String[] parts = withoutKeyword.split(Lang.THROW_ERROR);
+            String[] parts = withoutKeyword.split(Chars.THROW_ERROR);
             if (parts.length != 2) {
                 throw new SyntaxCriticalError(
                         "Ehh baba you must use the right syntax if u wanna cima this process. (line " + lineNumber
@@ -654,7 +670,7 @@ public class Tokenizer {
         }
 
         // if it doesnt start with declaration nfor var, it might be a reassingment
-        String[] parts = line.split(Lang.ASSIGNMENT);
+        String[] parts = line.split(Chars.ASSIGNMENT);
         if (parts.length > 1) {
             String varName = parts[0].trim();
             Object varValue = tContainer.processContext(parts[1].trim(), lineNumber);
