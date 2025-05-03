@@ -23,7 +23,7 @@ import com.jaiva.tokenizer.Token.TUnknownVar;
 import com.jaiva.utils.*;
 
 public class Main {
-    public static String version = "1.0.0-beta.2";
+    public static String version = "1.0.0-beta.3";
     public static String author = "@yetnt or @prod.yetnt on some socials";
     public static String ASCII = """
                                                                         ,---,
