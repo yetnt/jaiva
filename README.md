@@ -11,6 +11,8 @@ Expect not : A good time, a good language, or a good experience.
 To setup, see [Install.md](./Install.md)
 To run, see [CLI.md](./CLI.md)
 
+For a list of global variables and functions, see [Globals.md](./Globals.md)
+
 Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
 
 ## <center>Index
@@ -53,7 +55,7 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
         -   _[Throw an Error](#throw-an-error)_
         -   _[zama zama (Try) chaai (Catch) Block](#zama-zama-try-chaai-catch-block)_
     -   **[Scopes](#scopes)**
-    -   **[Globals](#globals)**
+    -   **[Tsea (Import) and Exporting Files](#tsea-import-and-exporting-files)**
 
 ## <center>Prerquisuiesdsfb
 
@@ -264,7 +266,6 @@ be careful when you start doing this though as when you start calling and chaini
 > [!NOTE]
 > You cannot negate an expression. Sorry not sorry.
 
-
 ### Blocks
 
 Blocks are defined by the `->` and `<~` symbols. The `->` symbol opens a block, and the `<~` symbol closes it.
@@ -304,6 +305,7 @@ here's a cheat table though
 | voetsek   | "fuck off" (`break` keyword)                             | Afrikaans       |
 | nevermind | Self-Explanatory (`continue` keyword)                    | English         |
 | with      | keyword used to define for each loop along with colonize | English         |
+| tsea      | import from another file                                 | Sepedi          |
 
 ## <center>Variables
 
@@ -311,7 +313,7 @@ Variables are [scoped](#scopes) constructs.
 
 See [Array/String length](#arraystring-length) to get the length of a variable containing arrays or a string.
 
-See [Globals](#globals) for a list of global variables that are available to you.
+See [Globals](./Globals.md) for a list of global variables that are available to you.
 
 ### Definition
 
@@ -378,7 +380,7 @@ Functions are [scoped](#scopes) constructs.
 
 See [Explicity Typed Function Params.](#explicity-typed-function-params) for passing functions in functions.
 
-See [Globals](#globals) for a list of global functions that are available to you.
+See [Globals](./Globals.md) for a list of global functions that are available to you.
 
 ### Defintion
 
@@ -633,13 +635,41 @@ if (a = 10) ->
 addition(10, 20)! @ Will also error, because addition() is not defined in this scope.
 ```
 
-## <center>Globals
+## <center> Tsea (import) and exporting files
 
-This is a list of global variables and functions that are accessible in any scope. Some (if not all) cannot be modified however.
+Importing isn't that bad. Here's a simple import.
 
-| variable/function name | type     | description                                                  |
-| ---------------------- | -------- | ------------------------------------------------------------ |
-| `khuluma(param)`       | function | prints to console                                            |
-| `getVarClass(var)`     | function | gets the Java class representation of the specified variable |
-| `reservedKeywords`     | array    | an array of all the reserved keywords in the language.       |
-| `version`              | string   | the version of jaiva you are using.                          |
+Say you have "`file.jiv`" with the following code.
+
+```jiv
+maak *a <- 10! @ Pre-pend * to the variable name to mark it as a exported variable.
+kwenza *addition(param1, param2) -> @ Pre-pend * to the function name to mark it as a exported function.
+    khuluma(param1 + param2)!
+<~
+
+@ Note: Using the variables/functions are still normal. When using them you don't have to prepend the * to them. It's just simply a marker for the tokenizer to know that this variable/function is exported.
+```
+
+Then in your main file, you can import it like this.
+
+```jiv
+tsea "file.jiv"!
+khuluma(addition(a, 1))! @ 11
+```
+
+Or if you want to import a specific variable or function, you can do this.
+
+```jiv
+tsea "file.jiv" <- addition!
+```
+
+> [!NOTE]
+> File paths are relative to the current working directory. So if you have a file in a different directory, you will have to use the full path to the file.
+> [!NOTE]
+> You can also import files from the Jaiva library. Example to import the arrays files
+>
+> ```jiv
+> tsea "jaiva/arrays.jiv"!
+> ```
+>
+> See [Globals](./Globals.md) for a list of global variables and functions that are available to you, and others that you can import.
