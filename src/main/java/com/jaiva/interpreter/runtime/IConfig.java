@@ -1,5 +1,7 @@
 package com.jaiva.interpreter.runtime;
 
+import java.nio.file.Path;
+
 /**
  * The IConfig class provides configuration settings for the interpreter
  * runtime.
@@ -34,8 +36,24 @@ public class IConfig {
      */
     public boolean importVfs = false;
 
+    /**
+     * * The {@code GlobalResources} instance provides access to global resources
+     * used by the intepreter at run time.
+     */
+    public GlobalResources resources = new GlobalResources();
+    /**
+     * The path of the current file being interpreted.
+     */
+    public Path filePath;
+    /**
+     * The directory containing the file we're interpreting
+     */
+    public Path fileDirectory;
+
     // ...add more interpreter settings.
 
-    public IConfig() {
+    public IConfig(String currentFilePath) {
+        filePath = Path.of(currentFilePath != null ? currentFilePath : "");
+        fileDirectory = Path.of(currentFilePath != null ? currentFilePath : "").getParent();
     }
 }

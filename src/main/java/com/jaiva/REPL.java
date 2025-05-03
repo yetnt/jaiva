@@ -13,6 +13,7 @@ import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.GlobalResources;
+import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.TConfig;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
@@ -79,8 +80,8 @@ public class REPL {
     public State state = State.INACTIVE;
     private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     private HashMap<String, MapValue> vfs = new Globals().vfs;
-    private GlobalResources replResources = new GlobalResources(null);
-    private TConfig config = new TConfig(Main.callJaivaSrc());
+    private IConfig iConfig = new IConfig(null);
+    private TConfig tConfig = new TConfig(Main.callJaivaSrc());
     // private Token<?> tokenContainer = new Token<>(null);
 
     public REPL(int mode) {
@@ -142,7 +143,7 @@ public class REPL {
     public void close() {
         try {
             reader.close();
-            replResources.release();
+            iConfig.resources.release();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -156,7 +157,7 @@ public class REPL {
     public Object read(String line, String previousLine, MultipleLinesOutput m, BlockChain b) {
         Object something;
         try {
-            something = Tokenizer.readLine(line, previousLine, m, b, 0, config);
+            something = Tokenizer.readLine(line, previousLine, m, b, 0, tConfig);
             if (something instanceof MultipleLinesOutput) {
                 return something;
             } else if (something instanceof BlockChain) {
@@ -170,11 +171,11 @@ public class REPL {
                         Object input = isReturnTokenClass
                                 ? ((Token<?>) something)
                                 : token;
-                        Object value = Interpreter.handleVariables(input, this.vfs, replResources);
+                        Object value = Interpreter.handleVariables(input, this.vfs, iConfig);
                         return new ReadOuput(value.toString());
                     } else {
                         Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) something)), Context.GLOBAL,
-                                this.vfs, replResources);
+                                this.vfs, iConfig);
 
                         return new ReadOuput();
                     }
@@ -192,19 +193,19 @@ public class REPL {
                             Object input = isReturnTokenClass
                                     ? ((Token<?>) tokens.get(0))
                                     : token;
-                            Object value = Interpreter.handleVariables(input, this.vfs, replResources);
+                            Object value = Interpreter.handleVariables(input, this.vfs, iConfig);
                             return isReturnTokenClass ? new ReadOuput(value.toString())
                                     : new ReadOuput();
                         } else {
                             Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) tokens.get(
                                     0))),
                                     Context.GLOBAL,
-                                    this.vfs, replResources);
+                                    this.vfs, iConfig);
 
                             return new ReadOuput();
                         }
                     } else {
-                        Interpreter.interpret(tokens, Context.GLOBAL, this.vfs, replResources);
+                        Interpreter.interpret(tokens, Context.GLOBAL, this.vfs, iConfig);
                         return new ReadOuput();
                     }
                 } else if (mode == REPLMode.PRINT_TOKEN) {

@@ -13,7 +13,7 @@ public class EscapeSequence {
      * @return
      */
     public static String escape(String str) {
-        return str.replace("$\\", "\\")
+        return str
                 .replace("$=", "=")
                 .replace("$,", ",")
                 .replace("$!", "!")
@@ -60,8 +60,7 @@ public class EscapeSequence {
                 .replace("\b", "$b")
                 .replace("\f", "$f")
                 .replace("'", "$'")
-                .replace("\"", "$\"")
-                .replace("\\", "$\\");
+                .replace("\"", "$\"");
     }
 
     public static String escapeAll(String line) {

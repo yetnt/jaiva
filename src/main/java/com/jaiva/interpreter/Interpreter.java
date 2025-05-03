@@ -9,7 +9,7 @@ import java.util.List;
 
 import com.jaiva.Main;
 import com.jaiva.errors.IntErrs.*;
-import com.jaiva.interpreter.runtime.GlobalResources;
+import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
@@ -107,25 +107,25 @@ public class Interpreter {
      *                   variable, or
      *                   performing an invalid operation.
      */
-    public static Object handleVariables(Object t, HashMap<String, MapValue> vfs, GlobalResources resources)
+    public static Object handleVariables(Object t, HashMap<String, MapValue> vfs, IConfig config)
             throws Exception {
         if (t instanceof TNumberVar) {
-            Object number = Primitives.toPrimitive(((TNumberVar) t).value, vfs, false, resources);
+            Object number = Primitives.toPrimitive(((TNumberVar) t).value, vfs, false, config);
             BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                     new ArrayList<>(Arrays.asList(number)), false);
             vfs.put(((TNumberVar) t).name, new MapValue(var));
         } else if (t instanceof TBooleanVar) {
-            Object bool = Primitives.toPrimitive(((TBooleanVar) t).value, vfs, false, resources);
+            Object bool = Primitives.toPrimitive(((TBooleanVar) t).value, vfs, false, config);
             BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                     new ArrayList<>(Arrays.asList(bool)), false);
             vfs.put(((TBooleanVar) t).name, new MapValue(var));
         } else if (t instanceof TStringVar) {
-            Object string = Primitives.toPrimitive(((TStringVar) t).value, vfs, false, resources);
+            Object string = Primitives.toPrimitive(((TStringVar) t).value, vfs, false, config);
             BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                     new ArrayList<>(Arrays.asList(string)), false);
             vfs.put(((TStringVar) t).name, new MapValue(var));
         } else if (t instanceof TUnknownVar) {
-            Object something = Primitives.toPrimitive(((TUnknownVar) t).value, vfs, false, resources);
+            Object something = Primitives.toPrimitive(((TUnknownVar) t).value, vfs, false, config);
             BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                     something instanceof ArrayList ? (ArrayList) something : new ArrayList<>(Arrays.asList(something)),
                     false);
@@ -137,7 +137,7 @@ public class Interpreter {
                     if (obj instanceof ArrayList) {
                         arr.add(obj);
                     } else {
-                        arr.add(Primitives.toPrimitive(Primitives.parseNonPrimitive(obj), vfs, false, resources));
+                        arr.add(Primitives.toPrimitive(Primitives.parseNonPrimitive(obj), vfs, false, config));
                     }
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -165,7 +165,7 @@ public class Interpreter {
             // ((TVarReassign) t).newValue + " isn't like a valid var thingy yknow??");
 
             Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(((TVarReassign) t).newValue), vfs, false,
-                    resources);
+                    config);
 
             if (o instanceof ArrayList) {
                 var.a_set((ArrayList) o);
@@ -177,7 +177,7 @@ public class Interpreter {
         } else {
             // here its a primitive being parsed or recursively called
             // or TVarRef or TFuncCall or TStatement
-            return Primitives.toPrimitive(t, vfs, false, resources);
+            return Primitives.toPrimitive(t, vfs, false, config);
         }
 
         return null; // return null because we are not returning anything.
@@ -189,10 +189,10 @@ public class Interpreter {
     // }
 
     public static Object interpret(ArrayList<Token<?>> tokens, Context context, HashMap<String, MapValue> vfs,
-            GlobalResources resources)
+            IConfig config)
             throws Exception {
         // prepare a new vfs.
-        vfs = resources.config.importVfs && context == Context.GLOBAL ? new HashMap<>() : vfs;
+        vfs = config.importVfs && context == Context.GLOBAL ? new HashMap<>() : vfs;
 
         vfs = vfs != null ? ((HashMap<String, MapValue>) vfs.clone()) : vfs;
 
@@ -207,25 +207,22 @@ public class Interpreter {
                 if (!importPath.isAbsolute()) {
                     // Resolve it relative to the current file's directory,
                     // then normalize to tidy up any relative path elements.
-                    importPath = resources.fileDirectory.resolve(importPath).normalize();
+                    importPath = config.fileDirectory.resolve(importPath).normalize();
                 }
 
                 importPath = importPath.toAbsolutePath();
-
-                // System.out.println(resources.fileDirectory);
-                // System.out.println(importPath);
 
                 ArrayList<Token<?>> tks = Main.parseTokens(importPath.toString(), true);
 
                 if (tks.size() == 0)
                     continue;
 
-                GlobalResources gb = new GlobalResources(importPath.toString());
+                IConfig newConfig = new IConfig(importPath.toString());
 
-                gb.config.importVfs = true;
+                config.importVfs = true;
 
                 HashMap<String, MapValue> vfsFromFile = (HashMap<String, MapValue>) Interpreter.interpret(tks, context,
-                        vfs, gb);
+                        vfs, newConfig);
 
                 if (!(vfsFromFile instanceof HashMap) && (vfsFromFile == null)) {
                     // error? maybe not yet but print for debugging
@@ -243,18 +240,19 @@ public class Interpreter {
                 // TNumberVar, TBooleanVar, TStringVar, TUnknownVar, TVarReassign, TArrayVar
                 // including TStatement, TFuncCall and TVarRef. This also includes primitives.
                 contextValue = (token instanceof TFuncCall || token instanceof TVarRef)
-                        ? handleVariables(t, vfs, resources)
-                        : handleVariables(token, vfs, resources);
+                        ? handleVariables(t, vfs,
+                                config)
+                        : handleVariables(token, vfs, config);
                 // If it returns a meaningful value, then oh well, because in this case they
                 // basically called a function that returned soemthing but dont use that value.
             } else if (token instanceof TVoidValue) {
                 // void
                 continue;
-            } else if (token instanceof TFuncReturn && !resources.config.importVfs) {
-                Object c = handleVariables(((TFuncReturn) token).value, vfs, resources);
+            } else if (token instanceof TFuncReturn && !config.importVfs) {
+                Object c = handleVariables(((TFuncReturn) token).value, vfs, config);
                 ThrowIfGlobalContext g = throwIfGlobalContext(context, c, token.lineNumber);
                 return g;
-            } else if (token instanceof TLoopControl && !resources.config.importVfs) {
+            } else if (token instanceof TLoopControl && !config.importVfs) {
                 TLoopControl loopControl = (TLoopControl) token;
                 // if (loopControl.type == Keywords.LoopControl.CONTINUE && context !=
                 // Context.FOR)
@@ -269,19 +267,19 @@ public class Interpreter {
                 ThrowIfGlobalContext g = throwIfGlobalContext(context, lc, loopControl.lineNumber);
                 return g;
 
-            } else if (token instanceof TThrowError && !resources.config.importVfs) {
+            } else if (token instanceof TThrowError && !config.importVfs) {
                 TThrowError lc = (TThrowError) token;
                 ThrowIfGlobalContext g = throwIfGlobalContext(context, lc, lc.lineNumber);
                 return g;
-            } else if (token instanceof TWhileLoop && !resources.config.importVfs) {
+            } else if (token instanceof TWhileLoop && !config.importVfs) {
                 // while loop
                 TWhileLoop whileLoop = (TWhileLoop) token;
-                Object cond = Primitives.setCondition(whileLoop, vfs, resources);
+                Object cond = Primitives.setCondition(whileLoop, vfs, config);
 
                 boolean terminate = false;
 
                 while (((Boolean) cond).booleanValue() && !terminate) {
-                    Object out = Interpreter.interpret(whileLoop.body.lines, Context.WHILE, vfs, resources);
+                    Object out = Interpreter.interpret(whileLoop.body.lines, Context.WHILE, vfs, config);
                     if (out instanceof ThrowIfGlobalContext) {
                         ThrowIfGlobalContext g = (ThrowIfGlobalContext) out;
                         ThrowIfGlobalContext checker = throwIfGlobalContext(context, out, g.lineNumber);
@@ -293,20 +291,20 @@ public class Interpreter {
                         return checker;
                     }
 
-                    cond = Primitives.setCondition(whileLoop, vfs, resources);
+                    cond = Primitives.setCondition(whileLoop, vfs, config);
                 }
                 // while loop
-            } else if (token instanceof TIfStatement && !resources.config.importVfs) {
+            } else if (token instanceof TIfStatement && !config.importVfs) {
                 // if statement handling below
                 TIfStatement ifStatement = (TIfStatement) token;
                 if (!(ifStatement.condition instanceof TStatement))
                     throw new WtfAreYouDoingException("Okay well idk how i will check for true in " + ifStatement);
-                Object cond = Primitives.setCondition(ifStatement, vfs, resources);
+                Object cond = Primitives.setCondition(ifStatement, vfs, config);
 
                 // if if, lol i love coding
                 if (((Boolean) cond).booleanValue()) {
                     // run if code.
-                    Object out = Interpreter.interpret(ifStatement.body.lines, Context.IF, vfs, resources);
+                    Object out = Interpreter.interpret(ifStatement.body.lines, Context.IF, vfs, config);
                     if (out instanceof ThrowIfGlobalContext) {
                         ThrowIfGlobalContext g = (ThrowIfGlobalContext) out;
                         ThrowIfGlobalContext checker = throwIfGlobalContext(context, out, g.lineNumber);
@@ -320,10 +318,10 @@ public class Interpreter {
                         if (!(elseIf.condition instanceof TStatement))
                             throw new WtfAreYouDoingException(
                                     "Okay well idk how i will check for true in " + elseIf);
-                        Object cond2 = Primitives.setCondition(elseIf, vfs, resources);
+                        Object cond2 = Primitives.setCondition(elseIf, vfs, config);
                         if (((Boolean) cond2).booleanValue() == true) {
                             // run else if code.
-                            Object out = Interpreter.interpret(elseIf.body.lines, Context.ELSE, vfs, resources);
+                            Object out = Interpreter.interpret(elseIf.body.lines, Context.ELSE, vfs, config);
                             if (out instanceof ThrowIfGlobalContext) {
                                 ThrowIfGlobalContext g = (ThrowIfGlobalContext) out;
                                 ThrowIfGlobalContext checker = throwIfGlobalContext(context, out, g.lineNumber);
@@ -335,7 +333,7 @@ public class Interpreter {
                     }
                     if (runElseBlock && ifStatement.elseBody != null) {
                         // run else block.
-                        Object out = Interpreter.interpret(ifStatement.elseBody.lines, Context.ELSE, vfs, resources);
+                        Object out = Interpreter.interpret(ifStatement.elseBody.lines, Context.ELSE, vfs, config);
                         if (out instanceof ThrowIfGlobalContext) {
                             ThrowIfGlobalContext g = (ThrowIfGlobalContext) out;
                             ThrowIfGlobalContext checker = throwIfGlobalContext(context, out, g.lineNumber);
@@ -344,10 +342,10 @@ public class Interpreter {
                     }
                 }
                 // if statement handling above
-            } else if (token instanceof TForLoop && !resources.config.importVfs) {
+            } else if (token instanceof TForLoop && !config.importVfs) {
                 // for loop
                 TForLoop tForLoop = (TForLoop) token;
-                handleVariables(tForLoop.variable, vfs, resources);
+                handleVariables(tForLoop.variable, vfs, config);
                 Object vObject = vfs.get(tForLoop.variable.name).getValue();
                 if (!(vObject instanceof BaseVariable))
                     throw new WtfAreYouDoingException(vObject, BaseVariable.class, tForLoop.lineNumber);
@@ -373,7 +371,7 @@ public class Interpreter {
 
                     for (Object o : list) {
                         v.s_set(o);
-                        Object out = Interpreter.interpret(tForLoop.body.lines, Context.FOR, vfs, resources);
+                        Object out = Interpreter.interpret(tForLoop.body.lines, Context.FOR, vfs, config);
                         if (out instanceof ThrowIfGlobalContext) {
                             ThrowIfGlobalContext g = (ThrowIfGlobalContext) out;
                             // if (Primitives.isPrimitive(checker.c))
@@ -392,10 +390,10 @@ public class Interpreter {
                 } else {
                     // normal for loop.
                     char increment = tForLoop.increment.charAt(0);
-                    Object cond = Primitives.setCondition(tForLoop, vfs, resources);
+                    Object cond = Primitives.setCondition(tForLoop, vfs, config);
                     while (((Boolean) cond).booleanValue()) {
 
-                        Object out = Interpreter.interpret(tForLoop.body.lines, Context.FOR, vfs, resources);
+                        Object out = Interpreter.interpret(tForLoop.body.lines, Context.FOR, vfs, config);
                         if (out instanceof ThrowIfGlobalContext) {
                             ThrowIfGlobalContext g = (ThrowIfGlobalContext) out;
                             // if (Primitives.isPrimitive(checker.c))
@@ -406,23 +404,23 @@ public class Interpreter {
                             if (g.c instanceof Keywords.LoopControl
                                     && g.c == Keywords.LoopControl.CONTINUE) {
                                 v.s_set(((Integer) v.s_get()).intValue() + (increment == '+' ? 1 : -1));
-                                cond = Primitives.setCondition(tForLoop, vfs, resources);
+                                cond = Primitives.setCondition(tForLoop, vfs, config);
                                 continue;
                             }
                             ThrowIfGlobalContext checker = throwIfGlobalContext(context, out, g.lineNumber);
                             return checker;
                         }
                         v.s_set(((Integer) v.s_get()).intValue() + (increment == '+' ? 1 : -1));
-                        cond = Primitives.setCondition(tForLoop, vfs, resources);
+                        cond = Primitives.setCondition(tForLoop, vfs, config);
                     }
                 }
 
                 vfs.remove(v.name);
                 // for loop
-            } else if (token instanceof TTryCatchStatement && !resources.config.importVfs) {
+            } else if (token instanceof TTryCatchStatement && !config.importVfs) {
                 TTryCatchStatement throwError = (TTryCatchStatement) token;
 
-                Object out = Interpreter.interpret(throwError.tryBlock.lines, Context.TRY, vfs, resources);
+                Object out = Interpreter.interpret(throwError.tryBlock.lines, Context.TRY, vfs, config);
                 if (out instanceof ThrowIfGlobalContext) {
                     // if (Primitives.isPrimitive(checker.c))
                     // return checker;
@@ -441,7 +439,7 @@ public class Interpreter {
                                         new ArrayList<>(Arrays.asList(
                                                 err.errorMessage)),
                                         false)));
-                        Object out2 = Interpreter.interpret(throwError.catchBlock.lines, Context.CATCH, vfs, resources);
+                        Object out2 = Interpreter.interpret(throwError.catchBlock.lines, Context.CATCH, vfs, config);
                         vfs.remove("error");
                         if (out2 instanceof ThrowIfGlobalContext) {
                             ThrowIfGlobalContext g2 = (ThrowIfGlobalContext) out2;
@@ -457,6 +455,6 @@ public class Interpreter {
         }
         // System.out.println("heyy");
 
-        return resources.config.importVfs ? vfs : void.class;
+        return config.importVfs ? vfs : void.class;
     }
 }

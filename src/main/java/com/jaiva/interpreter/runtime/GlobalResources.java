@@ -61,31 +61,11 @@ import java.util.Scanner;
  */
 public class GlobalResources {
     /**
-     * Holds interpreter configuration settings. Set these settings after creating
-     * the GlobalResources class to change the way the interpreter does stuff.
-     */
-    public IConfig config = new IConfig();
-    /**
      * Console in scanner for the `mamela()` gtlobal function.
      */
     public Scanner consoleIn = new Scanner(System.in);
-    /**
-     * The path of the current file being interpreted.
-     */
-    public Path filePath;
-    /**
-     * The directory containing the file we're interpreting
-     */
-    public Path fileDirectory;
 
-    public GlobalResources(String currentFilePath) {
-        filePath = Path.of(currentFilePath);
-        fileDirectory = currentFilePath != null
-                ? Path.of(currentFilePath
-                        .substring(0,
-                                currentFilePath.contains("\\") ? currentFilePath.lastIndexOf("\\") + 1
-                                        : currentFilePath.lastIndexOf("/") + 1))
-                : fileDirectory;
+    public GlobalResources() {
     }
 
     /**

@@ -10,6 +10,7 @@ import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Interpreter.ThrowIfGlobalContext;
 import com.jaiva.interpreter.runtime.GlobalResources;
+import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.Token;
@@ -41,12 +42,12 @@ public class IOFunctions extends BaseGlobals {
 
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
-                GlobalResources resources)
+                IConfig config)
                 throws Exception {
             String output;
             Object o = params.get(0);
             Object v = params.size() > 1
-                    ? Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, resources)
+                    ? Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config)
                     : null;
             if (o instanceof Token<?> || (o instanceof TokenDefault && Interpreter.isVariableToken(o))) {
                 TokenDefault token = ((Token<?>) o).getValue();
@@ -55,7 +56,7 @@ public class IOFunctions extends BaseGlobals {
                 Object input = token instanceof TStatement || token instanceof TVarRef || token instanceof TFuncCall
                         ? o
                         : token;
-                Object value = Interpreter.handleVariables(input, vfs, resources);
+                Object value = Interpreter.handleVariables(input, vfs, config);
                 // System.out.println(value);
                 output = value.toString();
             } else if (o instanceof ThrowIfGlobalContext) {
@@ -85,10 +86,10 @@ public class IOFunctions extends BaseGlobals {
 
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
-                GlobalResources resources)
+                IConfig config)
                 throws Exception {
 
-            String output = resources.consoleIn.nextLine();
+            String output = config.resources.consoleIn.nextLine();
 
             return output;
         }

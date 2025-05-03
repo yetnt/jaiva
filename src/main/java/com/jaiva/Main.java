@@ -115,7 +115,7 @@ public class Main {
             System.out.println("Provide a file name or a cmd flag kau.");
             return;
         }
-        GlobalResources interpretResources = new GlobalResources(args[0]);
+        IConfig iconfig = new IConfig(args[0]);
         try {
             ArrayList<Token<?>> tokens = parseTokens(args[0], false);
             if (tokens.size() == 0)
@@ -162,10 +162,10 @@ public class Main {
                 }
             }
 
-            Interpreter.interpret(tokens, Context.GLOBAL, new Globals().vfs, interpretResources);
+            Interpreter.interpret(tokens, Context.GLOBAL, new Globals().vfs, iconfig);
 
         } catch (Exception e) {
-            interpretResources.release();
+            iconfig.resources.release();
             System.err.println("Error.");
             e.printStackTrace();
         }

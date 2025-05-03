@@ -399,6 +399,9 @@ public class Tokenizer {
             path = Path.of(config.JAIVA_SRC).resolve("lib/").resolve(path).normalize().toAbsolutePath().toString();
         }
 
+        // path = path.replaceAll(Pattern.quote("\\"),
+        // Matcher.quoteReplacement("\\\\"));
+
         if (parts.length > 1) {
             // ""path"", "funcz, funca"
             ArrayList<String> args = new ArrayList<>();

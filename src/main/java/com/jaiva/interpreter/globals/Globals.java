@@ -19,6 +19,7 @@ import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.GlobalResources;
+import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.*;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.lang.Keywords;
@@ -58,7 +59,7 @@ public class Globals extends BaseGlobals {
 
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
-                GlobalResources resources)
+                IConfig config)
                 throws Exception {
             String name;
             if (params.get(0) instanceof String) {
@@ -119,7 +120,7 @@ public class Globals extends BaseGlobals {
 
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
-                GlobalResources resources)
+                IConfig config)
                 throws Exception {
             if (tFuncCall.args.size() != params.size())
                 throw new FunctionParametersException(this, params.size());
@@ -141,7 +142,7 @@ public class Globals extends BaseGlobals {
                     // stuff that need be parsed, parse and pray arraylist is returned.
                     Object parsed = null;
                     try {
-                        parsed = Primitives.toPrimitive(Primitives.parseNonPrimitive(arg), vfs, false, resources);
+                        parsed = Primitives.toPrimitive(Primitives.parseNonPrimitive(arg), vfs, false, config);
                     } catch (Exception e) {
                         // do nothing.
                     }

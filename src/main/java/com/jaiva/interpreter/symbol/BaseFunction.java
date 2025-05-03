@@ -11,7 +11,7 @@ import com.jaiva.interpreter.Context;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
-import com.jaiva.interpreter.runtime.GlobalResources;
+import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
@@ -48,7 +48,7 @@ public class BaseFunction extends Symbol {
      * @return
      */
     public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
-            GlobalResources resources) throws Exception {
+            IConfig config) throws Exception {
         return void.class;
     }
 
@@ -70,7 +70,7 @@ public class BaseFunction extends Symbol {
 
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
-                GlobalResources resources)
+                IConfig config)
                 throws Exception {
             Token<?> tContainer = new Token<>(null);
             // tFuncCall contains the the token, we pass it for any extra checks we need to
@@ -120,7 +120,7 @@ public class BaseFunction extends Symbol {
 
                         wrappedValue = v.getValue();
                     } else {
-                        Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarRef), vfs, false, resources);
+                        Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarRef), vfs, false, config);
                         wrappedValue = BaseVariable.create(name,
                                 tContainer.new TUnknownVar(name, o, tFuncCall.lineNumber),
                                 o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Arrays.asList(o)), false);
@@ -133,7 +133,7 @@ public class BaseFunction extends Symbol {
 
                 } else {
                     // cacthes nested calls, operations and others
-                    Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), vfs, false, resources);
+                    Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), vfs, false, config);
                     wrappedValue = BaseVariable.create(name,
                             tContainer.new TUnknownVar(name, o, tFuncCall.lineNumber),
                             o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Arrays.asList(o)), false);
@@ -142,7 +142,7 @@ public class BaseFunction extends Symbol {
             }
             Object t = Interpreter.interpret((ArrayList<Token<?>>) ((TFunction) this.token).body.lines,
                     Context.FUNCTION,
-                    newVfs, resources);
+                    newVfs, config);
             if (t instanceof Interpreter.ThrowIfGlobalContext) {
                 return ((Interpreter.ThrowIfGlobalContext) t).c;
             } else {
