@@ -1,6 +1,6 @@
 # <center> <img src="images/jaiva-full-logo.png" width="50"> Jaiva!
 
-<center><h4>Version *1.0.0-beta.2*</h4></center>
+<center><h4>Version *1.0.0-beta.3*</h4></center>
 
 This esolang of mine is still in development, so expect alot of updates.
 
