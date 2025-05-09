@@ -11,15 +11,39 @@ import com.jaiva.tokenizer.TokenDefault;
  * shit.
  */
 public class Symbol {
+    /**
+     * The name of the symbol
+     */
     public String name;
+    /**
+     * The symbol type
+     */
     public SymbolType symbolType;
+    /**
+     * boolean indicating whether the symbol is "frozen" which means it cannot be
+     * modified.
+     */
     public boolean isFrozen = false;
+    /**
+     * The token associated with the symbol.
+     */
     public TokenDefault token;
 
+    /**
+     * Define a symbol without the token
+     * 
+     * @param type Symbol type.
+     */
     Symbol(SymbolType type) {
         this.symbolType = type;
     }
 
+    /**
+     * Define a symbol with the token associated with it.
+     * 
+     * @param type  Symbol type.
+     * @param token Symbol's token.
+     */
     Symbol(SymbolType type, TokenDefault token) {
         this.symbolType = type;
         this.token = token;

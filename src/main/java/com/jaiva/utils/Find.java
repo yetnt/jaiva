@@ -7,106 +7,23 @@ import java.util.List;
 import com.jaiva.lang.Chars.Operators;
 import com.jaiva.tokenizer.Token;
 
+/**
+ * This class provides utility methods for finding specific characters or
+ * operators in strings,
+ * as well as determining the context of mathematical or logical statements.
+ * <p>
+ * It includes methods for finding the index of enclosing characters,
+ * identifying
+ * the least important operator,
+ * and handling quotation marks in strings.
+ * <p>
+ * The class also contains inner classes for representing multiple lines output
+ * and operator indices.
+ * <p>
+ * Any if not all functions and or sub classes which are related to "finding"
+ * something, are in this class.
+ */
 public class Find {
-
-    /**
-     * i honestly wish i documented this earlier, there are SO MANY overrides
-     * for the constructor that i don't even know if half of them are needed
-     * I just know if i remove one, Java compiler will strike me down like Zeus.
-     * 
-     * Class that represents that the intepreter needs to call readline again for
-     * some reason.
-     * <p>
-     * For {@code Find.closingCharIndexML()}
-     * <ul>
-     * <li>{@code this.startCount == this.endCount} : if their equal then the method
-     * ahs found the closing brace and doesnt need to read another line.
-     * <li>{@code this.startCount != this.endCount} : if their not equal, no closing
-     * brace has been found yet and we should continue
-     * <li>{@code this.startCount == this.endCount == -1}: if their both equal to
-     * -1, something went wrong.
-     * <li>{@code (this.startCount == this.endCount) && this.startCount < 0} : if
-     * their lower than -1, this output isnt to be used for this method but rather
-     * another method.
-     * </ul>
-     * 
-     * Okay now to talk about the {@code type} field and the {@code args} field.
-     * <p>
-     * The {@code type} field is used to determine which block it is between an if
-     * statement "if", a loop "colonize" or a function "kwenza" or a while loop
-     * Keywords.WHILE.
-     * <p>
-     * The {@code args} field is used to store the arguments for the block.
-     * <ul>
-     * <li>For an if statement, the first argument is the condition. More blocks
-     * will be handled later on in develpment
-     * <li>For a loop, the first argument is the variable declaration, second is the
-     * condition, third is the increment.
-     * <li>For a function, the first argument is the function name, second is the
-     * arguments.
-     * <li>For a while loop, the first argument is the function name, second is the
-     * arguments.
-     * </ul>
-     */
-    public static class MultipleLinesOutput {
-        public int startCount = 0;
-        public int endCount = 0;
-        public boolean isComment = false;
-        public String preLine = "";
-
-        public String type = ""; // either "kwenza" or "if" or "colonize"
-        public String[] args = new String[3]; // the arguments for it.
-        public Token<?> specialArg = null; // these are for else if chains. This represents the original if
-
-        public int lineNumber = -1;
-
-        public MultipleLinesOutput(int start, int end) {
-            startCount = start;
-            endCount = end;
-        }
-
-        public MultipleLinesOutput(int start, int end, String pString) {
-            startCount = start;
-            endCount = end;
-            preLine = pString;
-        }
-
-        public MultipleLinesOutput(int start, int end, String pString, String t, String[] a) {
-            startCount = start;
-            endCount = end;
-            preLine = pString;
-            type = t;
-            args = a;
-        }
-
-        public MultipleLinesOutput(int start, int end, String pString, String t, String[] a, Token<?> sArg,
-                int ln) {
-            startCount = start;
-            endCount = end;
-            preLine = pString;
-            type = t;
-            args = a;
-            specialArg = sArg;
-            lineNumber = ln;
-        }
-
-        public MultipleLinesOutput(int start, int end, String pString, boolean inBlockComment) {
-            isComment = inBlockComment;
-            startCount = start;
-            endCount = end;
-            preLine = pString;
-        }
-
-        public MultipleLinesOutput(boolean inBlockComment) {
-            isComment = inBlockComment;
-        }
-
-        public MultipleLinesOutput(int start, int end, boolean inBlockComment) {
-            isComment = inBlockComment;
-            startCount = start;
-            endCount = end;
-        }
-    }
 
     /**
      * Find the index of the enclosing character in a string.

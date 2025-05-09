@@ -6,6 +6,14 @@ import java.util.List;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TDocsComment;
 
+/**
+ * Comments class is a utility class that provides methods for processing and
+ * manipulating comments in strings.
+ * <p>
+ * This class includes methods for removing single line comments, checking if an
+ * array of strings contains only comments, and safely decimating strings to
+ * remove comments.
+ */
 public class Comments {
 
     /**

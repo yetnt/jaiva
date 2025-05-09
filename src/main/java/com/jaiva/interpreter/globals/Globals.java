@@ -5,28 +5,28 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.TokenDefault;
 import com.jaiva.tokenizer.Token.TFuncCall;
-import com.jaiva.tokenizer.Token.TFunction;
-import com.jaiva.tokenizer.Token.TStatement;
 import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.Main;
-import com.jaiva.errors.IntErrs.FrozenSymbolException;
 import com.jaiva.errors.IntErrs.FunctionParametersException;
 import com.jaiva.errors.IntErrs.UnknownVariableException;
 import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
-import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
-import com.jaiva.interpreter.runtime.GlobalResources;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.*;
-import com.jaiva.lang.EscapeSequence;
 import com.jaiva.lang.Keywords;
 
+/**
+ * Globals class holds all the global symbols that are injected into the
+ * variable functions store.
+ */
 public class Globals extends BaseGlobals {
     // public HashMap<String, MapValue> vfs = new HashMap<>();
 
+    /**
+     * Constructor to create and get the globals.
+     */
     public Globals() {
         super();
         vfs.put("getVarClass", new MapValue(new FGetVarClass(container)));
@@ -36,6 +36,12 @@ public class Globals extends BaseGlobals {
         vfs.putAll(new IOFunctions().vfs);
     }
 
+    /**
+     * Returns the JSON of the globals
+     * 
+     * @param removeTrailingComma Remove the trailing comma
+     * @return string with the JSON representation of the global tokens.
+     */
     public String returnGlobalsJSON(boolean removeTrailingComma) {
         StringBuilder string = new StringBuilder();
         vfs.forEach((name, vf) -> {
@@ -86,7 +92,7 @@ public class Globals extends BaseGlobals {
     }
 
     /**
-     * reservedKeywords variable.
+     * reservedKeywords (array) variable.
      * This contains an array of the reserved keywords
      */
     class VReservedKeywords extends BaseVariable {
@@ -99,6 +105,10 @@ public class Globals extends BaseGlobals {
         }
     }
 
+    /**
+     * version variable.
+     * This holds the current version of jaiva in {@link Main#version}
+     */
     class VJaivaVersion extends BaseVariable {
         VJaivaVersion(Token<?> container) {
             super("version", container.new TStringVar("version", Main.version, -1,

@@ -1,30 +1,34 @@
 package com.jaiva.interpreter;
 
-import com.jaiva.interpreter.symbol.Symbol;
-
 /**
- * @class
- *        Represents a Map Value instance.
- *        This is so that when we're ina scope and variables get copied over,
- *        inner stuff still ave access to the exact same instance of something.
- *        <p>
- *        the {@code value} param is populated when given a symbol and then
- *        {@code oValue} param is populated when given an object.
+ * Represents a Map Value instance.
+ * This is so that when we're ina scope and variables get copied over,
+ * inner stuff still ave access to the exact same instance of something.
  */
 public class MapValue {
+    /**
+     * The value of this object.
+     * <p>
+     * If the value is null, it will be set to {@code void.class} to indicate that
+     * it is empty.
+     */
     private Object value;
 
     /**
-     * If the value, has a value, use this.
-     * 
-     * @param v
+     * Constructs a new MapValue instance with the specified value.
+     *
+     * @param v the value to be assigned to this object
      */
     public MapValue(Object v) {
         value = v;
     }
 
     /**
-     * If the value is null use this overload instead.
+     * Constructs a MapValue instance without a specified value.
+     * <p>
+     * This constructor is used to create an empty MapValue.
+     * 
+     * @param v
      */
     public MapValue() {
         value = void.class;

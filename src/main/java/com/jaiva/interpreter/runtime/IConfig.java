@@ -7,26 +7,6 @@ import java.nio.file.Path;
  * runtime.
  * It allows customization of interpreter behavior through various flags and
  * options.
- *
- * <p>
- * Fields:
- * </p>
- * <ul>
- * <li><b>importVfs:</b> A boolean flag indicating whether the interpreter
- * should
- * import the virtual file system (VFS) from another file. When set to true, the
- * interpreter skips tokenizing other content and only imports exported
- * symbols.</li>
- * </ul>
- *
- * <p>
- * Usage:
- * </p>
- * 
- * <pre>
- * IConfig config = new IConfig();
- * config.importVfs = true; // Enable VFS import
- * </pre>
  */
 public class IConfig {
     /**
@@ -52,6 +32,14 @@ public class IConfig {
 
     // ...add more interpreter settings.
 
+    /**
+     * Constructs a new IConfig instance with the specified file path.
+     * <p>
+     * This constructor is used to set the path of the current file being
+     * interpreted.
+     *
+     * @param currentFilePath The path of the current file being interpreted.
+     */
     public IConfig(String currentFilePath) {
         filePath = Path.of(currentFilePath != null ? currentFilePath : "");
         fileDirectory = Path.of(currentFilePath != null ? currentFilePath : "").getParent();

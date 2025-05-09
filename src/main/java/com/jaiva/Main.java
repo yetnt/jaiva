@@ -1,12 +1,10 @@
 package com.jaiva;
 
 import java.io.*;
-import java.nio.file.*;
 import java.util.*;
 
 import com.jaiva.interpreter.*;
 import com.jaiva.interpreter.globals.Globals;
-import com.jaiva.interpreter.runtime.GlobalResources;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.TConfig;
@@ -22,29 +20,90 @@ import com.jaiva.tokenizer.Token.TStringVar;
 import com.jaiva.tokenizer.Token.TUnknownVar;
 import com.jaiva.utils.*;
 
+/**
+ * The Main class serves as the entry point for the Jaiva programming language
+ * tokenizer and
+ * interpreter. It handles command-line arguments, initializes the REPL
+ * (Read-Eval-Print Loop),
+ * and manages the parsing and interpretation of Jaiva source files.
+ * 
+ * The class contains methods for parsing tokens from source files, displaying
+ * help information, and executing the interpreter.
+ */
 public class Main {
+    /**
+     * Version of the Jaiva programming language interpreter. This is a string
+     * variable that holds the version number in the format
+     * "major.minor.patch-(beta|rc|alpha)
+     * .<build number>"
+     * (SemVar).
+     */
     public static String version = "1.0.0-beta.3";
+    /**
+     * Author, it's just me.
+     */
     public static String author = "@yetnt or @prod.yetnt on some socials";
+    /**
+     * ASCII art representation of the Jaiva logo. This is a multi-line string
+     */
     public static String ASCII = """
-                                                                        ,---,
-                     ,---._                                           ,`--.' |
-                   .-- -.' \\                                          |   :  :
-                   |    |   :              ,--,                       '   '  ;
-                   :    ;   |            ,--.'|                       |   |  |
-                   :        |            |  |,      .---.             '   :  ;
-                   |    :   :  ,--.--.   `--'_    /.  ./|   ,--.--.   |   |  '
-                   :          /       \\  ,' ,'| .-' . ' |  /       \\  '   :  |
-                   |    ;   |.--.  .-. | '  | |/___/ \\: | .--.  .-. | ;   |  ;
-               ___ l          \\__\\/ : . . |  | :.   \\  ' .  \\__\\/ : . . `---'. |
-             /    /\\    J   : ," .--.; | '  : |_\\   \\   '  ," .--.; |  `--..`;
-            /  ../  `..-    ,/  /  ,.  | |  | '.'\\   \\    /  /  ,.  | .--,_
-            \\    \\         ;;  :   .'   \\;  :    ;\\   \\ |;  :   .'   \\|    |`.
-             \\    \\      ,' |  ,     .-./|  ,   /  '---" |  ,     .-./`-- -`, ;
-              "---....--'    `--`---'     ---`-'          `--`---'      '---`"
-
+                                       .+X$$&&&&&&&&$+.
+                                       xX..         .;X$.
+                                       xx              +&:
+                                       xx              .&+
+                                       xx               &+
+                                       xx               &+
+                                       xx               &+
+                                       xx               &+
+                                       xx               &+
+                                       xx               &+
+                                       xx               &+
+                                       xx               &+
+                                       xx               &+    .:;xX$$Xx;:.
+                                       xx               &+ .:&&+.     ..x&$.
+                                       xx               &+.$x.           .:$X.
+                                       xx               &X&;               .Xx
+                                       xx               &&X                 .&.
+                                       xx               &&x                 .$:
+                                       xx               &&&.                +$.
+                                       xx               &+x$.             .+&:    .x&$$&x.
+                                       xx               &+ :$X;.           :&;    :&:  :&:
+                                       xx               &+   .+X&&$XX$&&&.  ;&.  .$x  .X$.
+                                       xx               &+             .$x  .X$..+$.  ;&.
+                                       xx               &+              .$+  .&+.&:  :&;
+                                       xx               &+               ;&;  :&$+  .$x.
+                                       xx               &+                ;$. .+$. .Xx
+                                       xx               &+ .;xX$&&&&&&&X;..+&:    .X$.
+                                       xx               &+ &.           .X&:+&:  .XX
+                     +$&Xx+xX&$+.      xx               &+ &.             .$;.:++;:.
+                    ;$..;++;. .x$.     xx               &+ &.             .x$
+                     ;&&&$$&&; .&;     xx               &+ &.              x$.
+                   .;&x. ..... .&;     xx               &+ &.              x$.
+                   :$; .$&&$&+ .&;     Xx               &+ &.              x$.
+                   .$+..;X$$X: .&;     $;              .&+ &.              x$.
+                    .X$x;:::;+X&x.    +$.              :&; &.              x$.
+                       .;+++;:.     .+&:               ;&: &.              x$.
+              .;&x:...           ..+&X.                Xx  &.              x$.
+             :$X..:+X&&$$$XXX$$$&&x:.                 +$.  &.              x$.
+            .&;          .....                       +&:   &.              x$.  .+$$XxxxX&$;
+            +$.                                    .x$.    &.              x$.  ;$..:;;;. .X$.
+            x$.                                  .:$X.     &.              x$.  .+&&&$$&&: .&;
+            .&+                                .;&X..      &.              x$.  ;&X......  .&;
+             .X$;                           .+$$;.         &.              x$. :&; .$&$$&; .&;
+               .+$$x+:.              ..;+X$$x;.            &.              x$. :&; .+$$$X: .&;
+                   .:+xX$$$&&&&&&$$$XXx;.                  &.              x$.  :$$+:::::;x&x.
+                                                           &.              x$.     .;+++;.
                         """;
 
     @SuppressWarnings("unchecked")
+    /**
+     * The main method of the Jaiva programming language interpreter. It serves as
+     * the entry point for the program.
+     * 
+     * @param args Command-line arguments passed to the program. These arguments
+     *             can be used to specify options and configurations for the
+     *             interpreter.
+     */
     public static void main(String[] args) {
         ArrayList<String> replArgs = new ArrayList<>(
                 Arrays.asList("--print-tokens", "-p", "--help", "-h", "--version", "-v", "--test", "-t", "--update",
@@ -56,11 +115,9 @@ public class Main {
             return;
         } else if (replArgs.contains(args[0])) {
             switch (args[0]) {
-                case "--print-tokens", "-p":
-                    // System.out.println("Print token REPL mode.");
+                case "--print-tokens", "-p" -> // System.out.println("Print token REPL mode.");
                     new REPL(1);
-                    break;
-                case "--help", "-h":
+                case "--help", "-h" -> {
                     System.out.println();
                     System.out.println("Usage: jaiva-src");
                     System.out.println();
@@ -86,28 +143,26 @@ public class Main {
                     System.out.println("\t--json-with-globals, -jg: Print tokens including globals in JSON format.");
                     System.out.println("\t--string, -s: Print tokens in string format.");
                     System.out.println();
-                    break;
-                case "--version", "-v":
+                }
+                case "--version", "-v" -> {
                     System.out.println(ASCII);
                     System.out.println("Jaiva! " + version);
                     System.out.println(
                             "Jaiva is a programming language that is designed to be easy to use and understand. (I'm speaking out my ass, I made this cuz i was bored on a random january)");
                     System.out.println("Made with love by: " + author);
-                    break;
-                case "--test", "-t":
+                }
+                case "--test", "-t" -> {
                     String workingDir = System.getProperty("user.dir");
                     System.out.println(workingDir);
                     System.out.println("Test cmd");
-                    break;
-                case "--update", "-u":
+                }
+                case "--update", "-u" -> {
                     System.out.println("");
                     System.out.println(
                             "Because i'm far too lazy to implement an auto upater, you'll have to just reinstall the jaiva folder into your existing one every time you want to update.");
                     System.out.println("I'm not making it easier, you can make a PR on the github though.");
-                    break;
-                default:
-                    System.out.println("Invalid REPL mode.");
-                    break;
+                }
+                default -> System.out.println("Invalid REPL mode.");
             }
             return;
         } else if (!args[0].contains(".")) {
@@ -118,20 +173,21 @@ public class Main {
         IConfig iconfig = new IConfig(args[0]);
         try {
             ArrayList<Token<?>> tokens = parseTokens(args[0], false);
-            if (tokens.size() == 0)
+            if (tokens.isEmpty())
                 return;
 
             if ((args.length > 1) && tokenArgs.contains(args[1])) {
                 // here, args[1] is the tokens mode
                 // return tokens mode.
                 switch (args[1]) {
-                    case "-s", "--string":
+                    case "-s", "--string" -> {
                         for (Token<?> t : tokens) {
                             System.out.println(t.toString());
                             // System.out.println(t.getValue().getContents(0));
                         }
                         return;
-                    case "-j", "--json":
+                    }
+                    case "-j", "--json" -> {
                         System.out.println();
                         System.out.print("[");
                         for (int i = 0; i < tokens.size(); i++) {
@@ -143,7 +199,8 @@ public class Main {
                         }
                         System.out.print("]");
                         return;
-                    case "-jg", "--json-with-globals":
+                    }
+                    case "-jg", "--json-with-globals" -> {
                         System.out.println();
                         System.out.print("[");
                         System.out.print(new Globals().returnGlobalsJSON(false));
@@ -156,9 +213,11 @@ public class Main {
                         }
                         System.out.print("]");
                         return;
-                    default:
+                    }
+                    default -> {
                         System.out.println("Invalid token mode.");
                         return;
+                    }
                 }
             }
 
@@ -167,7 +226,7 @@ public class Main {
         } catch (Exception e) {
             iconfig.resources.release();
             System.err.println("Error.");
-            e.printStackTrace();
+            System.err.println(e);
         }
     }
 
@@ -207,7 +266,7 @@ public class Main {
         }
         File myObj = new File(filePath);
         ArrayList<Token<?>> tokens = new ArrayList<>();
-        Find.MultipleLinesOutput m = null;
+        MultipleLinesOutput m = null;
         BlockChain b = null;
         Scanner scanner = new Scanner(myObj);
         String previousLine = "";
@@ -219,8 +278,8 @@ public class Main {
             // System.out.println(line);
             // System.out.println(line);
             Object something = Tokenizer.readLine(line, (b != null ? "" : previousLine), m, b, lineNum, config);
-            if (something instanceof Find.MultipleLinesOutput) {
-                m = (Find.MultipleLinesOutput) something;
+            if (something instanceof MultipleLinesOutput multipleLinesOutput) {
+                m = multipleLinesOutput;
                 b = null;
             } else if (something instanceof ArrayList<?>) {
                 m = null;
@@ -246,18 +305,18 @@ public class Main {
                 }
                 comment = null;
                 tokens.addAll((ArrayList<Token<?>>) tks);
-            } else if (something instanceof BlockChain) {
+            } else if (something instanceof BlockChain blockChain) {
                 m = null;
                 comment = null;
-                b = (BlockChain) something;
+                b = blockChain;
             } else if (something instanceof Token<?>
                     && ((Token<?>) something).getValue().name.equals("TDocsComment")) {
                 b = null;
                 m = null;
                 comment = (comment == null ? "" : comment)
                         + ((TDocsComment) ((Token<?>) something).getValue()).comment;
-            } else if (something instanceof Token<?>) {
-                TokenDefault t = ((TokenDefault) ((Token<?>) something).getValue());
+            } else if (something instanceof Token<?> token) {
+                TokenDefault t = ((TokenDefault) token.getValue());
                 if (returnVfs && !t.exportSymbol) {
                     // dont do anythin.
                 } else if (comment != null
@@ -268,9 +327,9 @@ public class Main {
                     t.tooltip = comment;
                     t.json.removeKey("toolTip");
                     t.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
-                    tokens.add((Token<?>) something);
+                    tokens.add(token);
                 } else {
-                    tokens.add((Token<?>) something);
+                    tokens.add(token);
                 }
                 b = null;
                 m = null;
@@ -283,7 +342,6 @@ public class Main {
             previousLine = line;
             if (b == null)
                 lineNum++;
-            ;
         }
 
         // System.out.println(tokens.size());

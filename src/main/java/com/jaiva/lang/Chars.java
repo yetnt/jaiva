@@ -34,35 +34,125 @@ import java.util.Set;
  * various operators and delimiters defined in the constants.
  */
 public class Chars {
+    /**
+     * The escape character used in strings.
+     */
     public static char ESCAPE = '$';
+    /**
+     * The end line character used to denote the end of a line.
+     */
     public static char END_LINE = '!';
+    /**
+     * The character used to denote a single line comment.
+     */
     public static char COMMENT = '@';
+    /**
+     * The character used to denote that the symbol defined should be exported.
+     */
     public static char EXPORT_SYMBOL = '*';
+    /**
+     * The character used to denote a comment which is a documentation comment.
+     */
     public static String COMMENT_DOC = "@*";
+    /**
+     * The character used to denote the opening of a comment block.
+     */
     public static char COMMENT_OPEN = '{';
+    /**
+     * The character used to denote the closing of a comment block.
+     */
     public static char COMMENT_CLOSE = '}';
+    /**
+     * The character used to denote the opening of a block.
+     */
     public static String BLOCK_OPEN = "->";
+    /**
+     * The character used to denote the closing of a block.
+     */
     public static String BLOCK_CLOSE = "<~";
+    /**
+     * The character used to denote the opening of a statement.
+     */
     public static char STATEMENT_OPEN = '(';
+    /**
+     * The character used to denote the closing of a statement.
+     */
     public static char STATEMENT_CLOSE = ')';
+    /**
+     * The character used to denote any assignment.
+     */
     public static String ASSIGNMENT = "<-";
+    /**
+     * The character used to denote an assignment to an error.
+     * <p>
+     * Why is there a special separate character for this? Yes.
+     */
     public static String THROW_ERROR = "<==";
+    /**
+     * The character used to denote the creation of a new array.
+     */
     public static String ARRAY_ASSIGNMENT = "<-|";
 
+    /**
+     * The character used to denote the opening of an array access.
+     */
     public static char ARRAY_OPEN = '[';
+    /**
+     * The character used to denote the closing of an array access.
+     */
     public static char ARRAY_CLOSE = ']';
+    /**
+     * The character used to get the length of an array or string variable.
+     */
     public static char LENGTH_CHAR = '~';
+    /**
+     * The character used to separate the arguments in a colonize loop
+     */
     public static char FOR_SEPARATOR = '|';
+    /**
+     * The character used to separate the arguments in a function call.
+     */
     public static char ARGS_SEPARATOR = ',';
+    /**
+     * The character used to denote a string.
+     */
     public static char STRING = '"';
 
+    /**
+     * The Operators class defines a set of arithmetic and boolean operators.
+     */
     public class Operators {
+        /**
+         * List of exponentiation operators. (Well only one.)
+         */
         public static final List<String> Exponentiation = Arrays.asList("^");
+        /**
+         * List of division, multiplication, and modulus operators.
+         */
         public static final List<String> DivMult = Arrays.asList("%", "/", "*");
+        /**
+         * List of addition and subtraction operators.
+         */
         public static final List<String> AddSub = Arrays.asList("+", "-");
+        /**
+         * List of boolean operators.
+         */
         public static final List<String> Bools = Arrays.asList("|", "&", ">", "<", "=", "!");
+        /**
+         * List of double boolean operators.
+         */
         public static final List<String> DoubleBools = Arrays.asList("||", "&&", "!=", ">=", "<=");
 
+        /**
+         * List of all arithmetic operators.
+         *
+         * This method aggregates elements from the following lists:
+         * - Exponentiation
+         * - DivMult
+         * - AddSub
+         *
+         * @return A list containing all arithmetic operators from the above categories.
+         */
         public static List<String> getArithmetic() {
             List<String> all = new ArrayList<>();
             all.addAll(Exponentiation);
@@ -71,6 +161,15 @@ public class Chars {
             return all;
         }
 
+        /**
+         * List of all boolean operators.
+         *
+         * This method aggregates elements from the following lists:
+         * - DoubleBools
+         * - Bools
+         *
+         * @return A list containing all boolean operators from the above categories.
+         */
         public static List<String> getBoolean() {
             List<String> all = new ArrayList<>();
             all.addAll(DoubleBools);
@@ -121,6 +220,20 @@ public class Chars {
             return all;
         }
 
+        /**
+         * Determines the type of operator based on the provided string.
+         * <p>
+         * This follows your basic rules of Maths where exponentiation is the highest
+         * priority and add/sub is lowest (With boolean operators being even lower.)
+         *
+         * @param op The operator string to check.
+         * @return An integer representing the type of operator:
+         *         0 - Exponentiation
+         *         1 - Division/Multiplication
+         *         2 - Addition/Subtraction
+         *         3 - Boolean operators
+         *         -1 - Not an operator
+         */
         public static int getType(String op) {
             if (Exponentiation.contains(op))
                 return 0;
@@ -134,12 +247,25 @@ public class Chars {
         }
     }
 
+    /**
+     * Returns an arraylist of characters that are not allowed in a symbol name.
+     * <p>
+     * This is the exact same as {@link #dissalowedChars()} but without the
+     * {@link Chars#EXPORT_SYMBOL}.
+     * 
+     * @return An arraylist of characters that are not allowed in a symbol name.
+     */
     public static ArrayList<String> dissalowedCharsForSymbolName() {
         ArrayList<String> dList = dissalowedChars();
         dList.remove(Character.toString(EXPORT_SYMBOL));
         return dList;
     }
 
+    /**
+     * Returns an arraylist of characters that cannot be used randomly.
+     * 
+     * @returns An arraylist of characters that cannot be used randomly.
+     */
     public static ArrayList<String> dissalowedChars() {
         StringBuilder all = new StringBuilder();
         all.append(Operators.getAll().toString().replaceAll(",", "").replaceAll(" ", "").replace("[", "").replace("]",

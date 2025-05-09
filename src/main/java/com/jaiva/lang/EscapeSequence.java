@@ -1,8 +1,15 @@
 package com.jaiva.lang;
 
 /**
- * @class
- *        Class that handles how to escape characters.
+ * EscapeSequence class is a utility class that provides methods for escaping
+ * and
+ * unescaping strings.
+ * <p>
+ * This class is used to escape and unescape strings for use in Jaiva source
+ * code.
+ * <p>
+ * The escape and unescape methods are used to replace special characters with
+ * their escaped equivalents and vice versa.
  */
 public class EscapeSequence {
 
@@ -29,6 +36,12 @@ public class EscapeSequence {
                 .replace("$$", "$");
     }
 
+    /**
+     * Escape a string for JSON.
+     *
+     * @param str The string to escape.
+     * @return
+     */
     public static String escapeJson(String str) {
         return str
                 .replace("\\", "\\\\")
@@ -63,6 +76,12 @@ public class EscapeSequence {
                 .replace("\"", "$\"");
     }
 
+    /**
+     * Escape all strings in a line.
+     * 
+     * @param line
+     * @return
+     */
     public static String escapeAll(String line) {
         // maak a <- "heelo"!
         // func("weird thing", "with multiple strings")

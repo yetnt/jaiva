@@ -1,17 +1,16 @@
 package com.jaiva.interpreter;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import com.jaiva.errors.IntErrs.StringCalcException;
 import com.jaiva.errors.IntErrs.TStatementResolutionException;
 import com.jaiva.errors.IntErrs.UnknownVariableException;
 import com.jaiva.errors.IntErrs.WeirdAhhFunctionException;
 import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
-import com.jaiva.interpreter.runtime.GlobalResources;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
@@ -24,10 +23,33 @@ import com.jaiva.tokenizer.Token.TIfStatement;
 import com.jaiva.tokenizer.Token.TStatement;
 import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.tokenizer.Token.TWhileLoop;
-import com.jaiva.tokenizer.TokenDefault;
 
+/**
+ * The Primitives class is a utility class that provides methods for resolving
+ * string operations, converting tokens to primitives, and evaluating conditions
+ * for various statements in the Jaiva programming language.
+ * <p>
+ * It includes methods for handling arithmetic and boolean operations, as well
+ * as
+ * parsing and evaluating conditions in loops and if statements.
+ * <p>
+ */
 public class Primitives {
 
+    /**
+     * Resolves string operations between two operands (lhs and rhs) based on the
+     * specified operator (op).
+     * <p>
+     * This method handles various string operations, including concatenation,
+     * substring extraction, and comparison.
+     *
+     * @param lhs The left-hand side operand.
+     * @param rhs The right-hand side operand.
+     * @param op  The operator to be applied.
+     * @param ts  The TStatement object associated with the operation.
+     * @return The result of the string operation.
+     * @throws StringCalcException If an error occurs during string calculation.
+     */
     public static Object resolveStringOperations(Object lhs, Object rhs, String op, TStatement ts)
             throws StringCalcException {
         String I = Integer.class.getSimpleName().substring(0, 1);
@@ -82,8 +104,11 @@ public class Primitives {
                     if (!SS.contains(op))
                         throw new StringCalcException(ts);
                     return op.equals("+") ? (String) lhs + (String) rhs
-                            : op.equals("-") ? ((String) lhs).replace(Pattern.quote((String) rhs), "")
-                                    : op.equals("/") ? ((String) lhs).replaceAll(Pattern.quote((String) rhs), "")
+                            : op.equals("-")
+                                    ? ((String) lhs).replace(Pattern.quote((String) rhs), Matcher.quoteReplacement(""))
+                                    : op.equals("/")
+                                            ? ((String) lhs).replaceAll(Pattern.quote((String) rhs),
+                                                    Matcher.quoteReplacement(""))
                                             : op.equals("=") ? ((String) lhs).equals((String) rhs)
                                                     : op.equals("!=") ? !((String) lhs).equals((String) rhs)
                                                             : ((String) lhs);

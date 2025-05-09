@@ -1,24 +1,50 @@
 package com.jaiva.utils;
 
-import java.util.ArrayList;
-
 /**
- * The ContextDispatcher class is used to determine the context of a given line
+ * This class is used to determine the context of a line of code in Jaiva.
+ * It checks for various conditions such as whether the line is empty, contains
+ * balanced parentheses, and whether it is a single brace or a statement.
+ * <p>
+ * The class uses bitwise operations to represent the context of the line in a
+ * compact form.
  * <p>
  * If you dont get it. its life bro. Also there's a markdown table in this
  * folder
+ * <p>
+ * But to put it simply, here are example inputs and outputs:
+ * <p>
+ * <code> "a + b" -> TStatement </code>
+ * <p>
+ * <code> "a + b == c" -> TStatement </code>
+ * <p>
+ * <code> "c" -> processContext() </code>
+ * <p>
+ * <code> "func()" -> processContext() </code>
+ * <p>
+ * <code> "arr[]" -> processContext() </code>
+ * <p>
+ * <code> "arr[]() + 3 == 10" -> TStatement </code>
+ * <p>
+ * 
+ * And further more, this class handles also more complex cases.
+ * 
  */
 public class ContextDispatcher {
-    public boolean SE = false;
-    // public boolean SB = false;
-    public boolean EB = false;
-    public boolean EO = false;
-    public boolean BC = false;
-    public boolean EIB = false;
-    public int bits = 0; // 64 bit number. Refer to table.
+    /**
+     * The bits variable is a 64-bit number that represents the context of the line.
+     * Refer to the table in the same directory for the meaning of each bit.
+     */
+    private int bits = 0; // 64 bit number. Refer to table.
 
     /**
-     * Returns true if the string s has balanced parentheses.
+     * Checks if the parentheses in the given string are balanced.
+     * This is used to determine if the braces are closed before the operator.
+     * <p>
+     * A string is considered balanced if every opening parenthesis has a matching
+     * closing parenthesis and they are properly nested.
+     *
+     * @param s The string to check for balanced parentheses.
+     * @return true if the parentheses are balanced, false otherwise.
      */
     private boolean isBalanced(String s) {
         int balance = 0;
@@ -36,9 +62,19 @@ public class ContextDispatcher {
     }
 
     /**
-     * Determines if the parentheses in the left-hand side of the OUTERMOST operator
-     * are balanced.
-     * This sets BC (Braces Closed) correctly.
+     * Checks if the braces are closed before the outermost operator in the given
+     * line.
+     * <p>
+     * This is used to determine if the braces are closed before the operator.
+     * <p>
+     * NOTE: This method uses {@link Find#outermostOperatorIndex(String)} to find
+     * the outmost operator index. It seems to work but there is a better method
+     * {@link Find#leastImportantOperator(String)} that is more accurate.
+     *
+     * @param line The line to check for braces closed before the outermost
+     *             operator.
+     * @return true if the braces are closed before the outermost operator, false
+     *         otherwise.
      */
     private boolean checkBracesClosedBeforeOutermostOperand(String line) {
         int outerOpIndex = Find.outermostOperatorIndex(line);
@@ -50,7 +86,19 @@ public class ContextDispatcher {
         return isBalanced(line.substring(0, outerOpIndex));
     }
 
+    /**
+     * Constructor for ContextDispatcher.
+     * 
+     * @param line
+     */
     public ContextDispatcher(String line) {
+        boolean EIB = false;
+        @SuppressWarnings("unused")
+        boolean SE = false;
+        // public boolean SB = false;
+        boolean EB = false;
+        boolean EO = false;
+        boolean BC = false;
         line = line.trim();
         // Extra special case, encased in quotes, so go to processContext
         if (line.startsWith("\"") && line.endsWith("\"") && Find.quotationPairs(line).size() == 1) {
@@ -97,10 +145,23 @@ public class ContextDispatcher {
 
     }
 
+    /**
+     * Returns the bits as a string of 0s and 1s.
+     * <p>
+     * The bits are represented as a 5-bit binary string, with leading zeros added
+     * if necessary.
+     *
+     * @return the bits as a string of 0s and 1s.
+     */
     public String toBitString() {
         return String.format("%5s", Integer.toBinaryString(bits)).replace(' ', '0');
     }
 
+    /**
+     * Returns the bits as the string of the output that should be used, as stated
+     * in the table.
+     * 
+     */
     public String printCase() {
         switch (bits) {
             case 6, 7, 12, 14, 15:
@@ -116,10 +177,24 @@ public class ContextDispatcher {
         }
     }
 
+    /**
+     * enum to represent the possible delegation targets and also error cases.
+     * <p>
+     * This enum is only available via ContextDispatcher class.
+     */
     public enum To {
         TSTATEMENT, PROCESS_CONTENT, SINGLE_BRACE, EMPTY_STRING, ERROR
     }
 
+    /**
+     * Returns the delegation target based on the bits.
+     * <p>
+     * The method uses a switch statement to determine the delegation target based
+     * on
+     * the bits.
+     *
+     * @return the delegation target as a To enum value.
+     */
     public To getDeligation() {
         switch (bits) {
             case 6, 7, 12, 14, 15:

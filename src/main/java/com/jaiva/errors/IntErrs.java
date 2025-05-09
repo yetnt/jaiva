@@ -8,8 +8,14 @@ import com.jaiva.tokenizer.Token.TStatement;
 import com.jaiva.tokenizer.Token.TVarReassign;
 import com.jaiva.tokenizer.Token.TVarRef;
 
+/**
+ * Errors for the Interpreter
+ */
 public class IntErrs {
 
+    /**
+     * Base Interpreter Exception.
+     */
     public static class InterpreterException extends Exception {
         private static final long serialVersionUID = 1L;
 
@@ -18,6 +24,9 @@ public class IntErrs {
         }
     }
 
+    /**
+     * 
+     */
     public static class FrozenSymbolException extends InterpreterException {
         private static final long serialVersionUID = 1L;
 

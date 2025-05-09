@@ -21,16 +21,25 @@ import com.jaiva.tokenizer.Token.TUnknownVar;
 import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.utils.BlockChain;
 import com.jaiva.utils.Find;
+import com.jaiva.utils.MultipleLinesOutput;
 import com.jaiva.utils.Tuple2;
 import com.jaiva.utils.Validate;
 import com.jaiva.utils.Validate.IsValidSymbolName;
 
+/**
+ * The Tokenizer class is one of the 3 main classes which handle Jaiva code.
+ * <p>
+ * This class in particular handles the parsing of Jaiva code into tokens. It
+ * only provides a single method which reads a single line and returns either a
+ * single or multiple tokens, or sometimes a class which tells he outer instance
+ * to do something before sending the next line.
+ */
 public class Tokenizer {
 
     private static Object handleBlocks(boolean isComment, String line,
-            Find.MultipleLinesOutput multipleLinesOutput, String entireLine, String t, String[] args,
+            MultipleLinesOutput multipleLinesOutput, String entireLine, String t, String[] args,
             Token<?> blockChain, int lineNumber) {
-        Find.MultipleLinesOutput m;
+        MultipleLinesOutput m;
         if (multipleLinesOutput != null) {
             // multiple lines output exists. So we need to keep going until we find }
             m = isComment ? Find.closingCharIndexML(
@@ -56,6 +65,23 @@ public class Tokenizer {
         }
     }
 
+    /**
+     * Handles the arguments for the given block type.
+     * <p>
+     * This method is used to handle the arguments for the given type. It is used in
+     * the
+     * {@link Tokenizer#readLine(String, String, Object, BlockChain, int, TConfig)}
+     * method.
+     * <p>
+     * The arguments are handled based on the type of block it is. For example, if
+     * it
+     * is a function, it will handle the arguments as a function. If it is an if
+     * statement, it will handle the arguments as an if statement.
+     *
+     * @param type The type of block it is.
+     * @param line The line to handle the arguments for.
+     * @return The arguments for the given type.
+     */
     private static String[] handleArgs(String type, String line) {
         switch (type) {
             case "mara if": {
@@ -111,29 +137,50 @@ public class Tokenizer {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
+    /**
+     * Handles the block lines for the given line when we get told its a block.
+     * <p>
+     * This method is used to handle the block lines for the given line. It is used
+     * in
+     * the
+     * {@link Tokenizer#readLine(String, String, Object, BlockChain, int, TConfig)}
+     * method.
+     *
+     * @param isComment           Whether the line is a comment or not.
+     * @param line                The line to handle the block lines for.
+     * @param multipleLinesOutput The multiple lines output object.
+     * @param tokenizerLine       The tokenizer line.
+     * @param tokens              The tokens to add to.
+     * @param tContainer          The token container.
+     * @param type                The type of block it is.
+     * @param args                The arguments for the block.
+     * @param blockChain          The block chain object.
+     * @param lineNumber          The line number of the line.
+     * @return The tokens for the given line.
+     */
     private static Object processBlockLines(boolean isComment, String line,
-            Find.MultipleLinesOutput multipleLinesOutput,
+            MultipleLinesOutput multipleLinesOutput,
             String tokenizerLine, ArrayList<Token<?>> tokens, Token<?> tContainer, String type, String[] args,
             Token<?> blockChain, int lineNumber, TConfig config)
             throws Exception {
-        type = multipleLinesOutput == null ? type : multipleLinesOutput.type;
-        args = multipleLinesOutput == null ? args : multipleLinesOutput.args;
+        type = multipleLinesOutput == null ? type : multipleLinesOutput.b_type;
+        args = multipleLinesOutput == null ? args : multipleLinesOutput.b_args;
         int newLineNumber = multipleLinesOutput == null ? lineNumber : multipleLinesOutput.lineNumber;
         line = Comments.decimate(line);
-        Object output = handleBlocks(isComment, line + "\n", (Find.MultipleLinesOutput) multipleLinesOutput,
+        Object output = handleBlocks(isComment, line + "\n", (MultipleLinesOutput) multipleLinesOutput,
                 tokenizerLine, type, args, multipleLinesOutput != null ? multipleLinesOutput.specialArg : blockChain,
                 newLineNumber);
         if (output == null)
             return output;
 
-        if (output instanceof Find.MultipleLinesOutput) {
-            int endCount = ((Find.MultipleLinesOutput) output).endCount;
-            int startCount = ((Find.MultipleLinesOutput) output).startCount;
+        if (output instanceof MultipleLinesOutput) {
+            int endCount = ((MultipleLinesOutput) output).endCount;
+            int startCount = ((MultipleLinesOutput) output).startCount;
             // multipleLinesOutput = ((FindEnclosing.MultipleLinesOutput) output);
             if (endCount != startCount)
                 return output;
         }
-        Find.MultipleLinesOutput finalMOutput = ((Find.MultipleLinesOutput) output);
+        MultipleLinesOutput finalMOutput = ((MultipleLinesOutput) output);
         String preLine = finalMOutput.preLine;
         preLine = preLine.startsWith(Keywords.D_FUNCTION) ? preLine.replaceFirst(Keywords.D_FUNCTION, "") : preLine;
         preLine = preLine.startsWith(Keywords.IF) ? preLine.replaceFirst(Keywords.IF, "") : preLine;
@@ -169,7 +216,7 @@ public class Tokenizer {
                             "Ayo the condition on line" + finalMOutput.lineNumber + "gotta resolve to a boolean dawg.");
                 }
                 TIfStatement ifStatement = tContainer.new TIfStatement(obj, codeblock, finalMOutput.lineNumber);
-                TIfStatement originalIf = ((TIfStatement) ((Find.MultipleLinesOutput) multipleLinesOutput).specialArg
+                TIfStatement originalIf = ((TIfStatement) ((MultipleLinesOutput) multipleLinesOutput).specialArg
                         .getValue());
                 originalIf.appendElseIf(ifStatement);
                 specific = originalIf.toToken();
@@ -179,7 +226,7 @@ public class Tokenizer {
                 break;
             }
             case "mara": {
-                TIfStatement originalIf = ((TIfStatement) ((Find.MultipleLinesOutput) multipleLinesOutput).specialArg
+                TIfStatement originalIf = ((TIfStatement) ((MultipleLinesOutput) multipleLinesOutput).specialArg
                         .getValue());
                 originalIf.appendElse(codeblock);
                 specific = originalIf.toToken();
@@ -205,7 +252,7 @@ public class Tokenizer {
                 return new BlockChain(specific, line.replaceFirst(Chars.BLOCK_CLOSE, "").trim());
             }
             case "chaai": {
-                TTryCatchStatement tryCatch = ((TTryCatchStatement) ((Find.MultipleLinesOutput) multipleLinesOutput).specialArg
+                TTryCatchStatement tryCatch = ((TTryCatchStatement) ((MultipleLinesOutput) multipleLinesOutput).specialArg
                         .getValue());
                 tryCatch.appendCatchBlock(codeblock);
                 specific = tryCatch.toToken();
@@ -281,6 +328,20 @@ public class Tokenizer {
         return tokens;
     }
 
+    /**
+     * Handles the variable declaration and assignment.
+     * <p>
+     * This method is used to handle the variable declaration and assignment. It is
+     * used in the
+     * {@link Tokenizer#readLine(String, String, Object, BlockChain, int, TConfig)}
+     * method.
+     *
+     * @param line       The line to handle the variable declaration and assignment
+     *                   for.
+     * @param tContainer The token container.
+     * @param lineNumber The line number of the line.
+     * @return The token for the given line.
+     */
     private static Token<?> processVariable(String line, Token<?> tContainer, int lineNumber)
             throws SyntaxError, TokenizerException {
         boolean isString = false;
@@ -371,6 +432,18 @@ public class Tokenizer {
         }
     }
 
+    /**
+     * Handles the import statement.
+     * <p>
+     * This method is used to handle the import statement. It is used in the
+     * {@link Tokenizer#readLine(String, String, Object, BlockChain, int, TConfig)}
+     * method.
+     *
+     * @param line       The line to handle the import statement for.
+     * @param tContainer The token container.
+     * @param lineNumber The line number of the line.
+     * @return The token for the given line.
+     */
     private static Token<?> handleImport(String line, Token<?> tContainer, int lineNumber, TConfig config)
             throws SyntaxCriticalError {
         // tsea "path"
@@ -416,18 +489,30 @@ public class Tokenizer {
     /**
      * The BIG BOY!
      * 
-     * Read a line and tokenize it.
-     * May return an arraylist of tokens or a string to be used as the previosu
-     * string of another readLine call.
+     * This method is the method. The method which reads a line and will return
+     * either:
+     * <p>
+     * <p>
+     * - A single token.
+     * <p>
+     * - An ArrayList of tokens, if the line contains multiple tokens
+     * <p>
+     * - MultipleLinesOutput, if we read an opening -> and need to find the closing
+     * <~ before parsing anything
+     * <p>
+     * - BlockChain, if we read a block of code that needs to be chained to its
+     * original token (such as if else chains)
+     * <p>
      * 
-     * Notice how there's more parameters than documented. This tells you that
-     * I documented this a bit early. Not adding more.
-     * 
-     * @param line         The entire line. Will be concatenated with previousLine
-     *                     at the start
-     * @param previousLine The previous line
-     * @return ArrayList<Token<?>> or String
-     * @throws Exception
+     * @param line                The line to read.
+     * @param previousLine        The previous line to read.
+     * @param multipleLinesOutput The multiple lines output object.
+     * @param blockChain          The block chain object.
+     * @param lineNumber          The line number of the line.
+     * @param config              The config object.
+     *                            * @return The token for the given line.
+     *                            * @throws Exception If the line is invalid or if
+     *                            there is an error parsing the token
      */
     @SuppressWarnings("unchecked")
     public static Object readLine(String line, String previousLine, Object multipleLinesOutput, BlockChain blockChain,
@@ -435,12 +520,12 @@ public class Tokenizer {
             throws Exception {
         line = EscapeSequence.escapeAll(line).trim();
         line = line.trim();
-        boolean cont = multipleLinesOutput instanceof Find.MultipleLinesOutput;
-        boolean isComment = (cont && ((Find.MultipleLinesOutput) multipleLinesOutput).isComment)
+        boolean cont = multipleLinesOutput instanceof MultipleLinesOutput;
+        boolean isComment = (cont && ((MultipleLinesOutput) multipleLinesOutput).isComment)
                 || (multipleLinesOutput == null && (line.startsWith(Character.toString(Chars.COMMENT_OPEN))
                         || (line.indexOf(Chars.COMMENT_OPEN) != -1
                                 && line.charAt(line.indexOf(Chars.COMMENT_OPEN)) != Chars.ESCAPE)));
-        boolean isCodeBlock = (cont && !((Find.MultipleLinesOutput) multipleLinesOutput).isComment)
+        boolean isCodeBlock = (cont && !((MultipleLinesOutput) multipleLinesOutput).isComment)
                 || (line.startsWith(Keywords.IF) || line.startsWith(Keywords.D_FUNCTION)
                         || line.startsWith(Keywords.FOR))
                 || line.startsWith(Keywords.WHILE) || line.startsWith(Keywords.ELSE) || line.startsWith(Keywords.TRY)
@@ -448,7 +533,7 @@ public class Tokenizer {
 
         // To the developer who would like to understand this.
         // Don't. Just don't. It's a mess. I am NOT sorry.
-        String type = multipleLinesOutput != null ? ((Find.MultipleLinesOutput) multipleLinesOutput).type
+        String type = multipleLinesOutput != null ? ((MultipleLinesOutput) multipleLinesOutput).b_type
                 : line.startsWith(Keywords.IF) ? Keywords.IF
                         : line.startsWith(Keywords.D_FUNCTION) ? Keywords.D_FUNCTION
                                 : line.startsWith(Keywords.FOR) ? Keywords.FOR
@@ -492,7 +577,7 @@ public class Tokenizer {
         if (lines.length > 1 || ((lines.length == 2 && !lines[1].isEmpty()) && !Comments.arrayIsOnlyComments(lines))) {
             // System.out.println("Multiple lines detected!");
             // multiple lines.
-            Find.MultipleLinesOutput m = null;
+            MultipleLinesOutput m = null;
             BlockChain b = null;
             String comment = null;
             // int ln = lineNumber + 1;
@@ -512,8 +597,8 @@ public class Tokenizer {
                 // System.out.println(previousLine2);
                 // System.out.println(lines[i]);
                 Object something = readLine(l, previousLine2, m, b, ln, config);
-                if (something instanceof Find.MultipleLinesOutput) {
-                    m = ((Find.MultipleLinesOutput) something);
+                if (something instanceof MultipleLinesOutput) {
+                    m = ((MultipleLinesOutput) something);
                     b = null;
                 } else if (something instanceof ArrayList<?>) {
                     m = null;
@@ -582,12 +667,12 @@ public class Tokenizer {
          */
         if (cont || isComment || isCodeBlock) {
             Object k = type == null
-                    ? processBlockLines(isComment, line, (Find.MultipleLinesOutput) multipleLinesOutput,
+                    ? processBlockLines(isComment, line, (MultipleLinesOutput) multipleLinesOutput,
                             tokenizerLine,
                             tokens, tContainer, type,
                             new String[] { "" }, null, lineNumber, config)
                     : processBlockLines(
-                            isComment, line, (Find.MultipleLinesOutput) multipleLinesOutput, tokenizerLine,
+                            isComment, line, (MultipleLinesOutput) multipleLinesOutput, tokenizerLine,
                             tokens, tContainer, type,
                             multipleLinesOutput == null ? handleArgs(type, line) : null,
                             (blockChain != null ? blockChain.getInitialIf() : null),

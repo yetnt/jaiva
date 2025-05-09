@@ -1,10 +1,32 @@
 package com.jaiva.tokenizer;
 
+/**
+ * TokenDefault class is a default implementation of all the other
+ * subclasses/tokens defined in {@link Token}
+ */
 public class TokenDefault {
+    /**
+     * The name of the token.
+     * <p>
+     * If the token is one that doesnt have a definitive name, such as an if
+     * statement, it will be the token class name.
+     */
     public String name = "";
+    /**
+     * The tooltip or description of the token.
+     */
     public String tooltip = "Jaiva Construct";
+    /**
+     * The line number associated with the token.
+     */
     public int lineNumber = 0;
+    /**
+     * The JSON representation of the token.
+     */
     public ToJson json;
+    /**
+     * Boolean to check if the token is a symbol that can be exported.
+     */
     public boolean exportSymbol = false;
 
     // public TokenDefault(String name) {
@@ -51,10 +73,21 @@ public class TokenDefault {
         this.json = new ToJson(false, name, getClass().getSimpleName(), line, tt);
     }
 
+    /**
+     * Returns the JSON representation of the object as a string.
+     * 
+     * @return
+     */
     public String toJson() {
         return json.complete();
     }
 
+    /**
+     * Returns the JSON (ToJson object) representation of the object as a string
+     * such that it can be nested in other constructs.
+     * 
+     * @return
+     */
     public ToJson toJsonInNest() {
         return json.completeInNest();
     }

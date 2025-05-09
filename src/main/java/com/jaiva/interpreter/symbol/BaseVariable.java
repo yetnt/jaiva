@@ -8,12 +8,35 @@ import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.TokenDefault;
 
+/**
+ * BaseVariable class is a base class for all variables in Jaiva.
+ */
 public class BaseVariable extends Symbol {
+    /**
+     * The scalar value of the variable.
+     * <p>
+     * This value is used when the variable is a scalar type.
+     */
     private Object scalar;
     // we just give access to the array because why not.
+    /**
+     * The array value of the variable.
+     * <p>
+     * This value is used when the variable is an array type.
+     */
     private ArrayList<Object> array = new ArrayList<>();
+    /**
+     * The type of the variable.
+     * <p>
+     * This value is used to determine if the variable is a scalar or an array type.
+     */
     public VariableType variableType;
 
+    /**
+     * Update the variable type.
+     * 
+     * @param newType The new type of the variable.
+     */
     public void updateVariableType(VariableType newType) {
         if (variableType == VariableType.UNKNOWN) {
             variableType = newType;
@@ -23,28 +46,61 @@ public class BaseVariable extends Symbol {
         }
     }
 
+    /**
+     * Constructs a new BaseVariable instance with the specified name, token, and
+     * scalar value.
+     *
+     * @param name   the name of the variable
+     * @param t      the token associated with the variable
+     * @param scalar the scalar value of the variable
+     */
     public BaseVariable(String name, TokenDefault t, Object scalar) {
         super(SymbolType.VARIABLE, t);
         this.scalar = scalar;
         variableType = VariableType.SCALAR;
     }
 
+    /**
+     * Constructs a new BaseVariable instance with the specified name, token, and
+     * array value.
+     *
+     * @param name the name of the variable
+     * @param t    the token associated with the variable
+     * @param arr  the array value of the variable
+     */
     public BaseVariable(String name, TokenDefault t, ArrayList<Object> arr) {
         super(SymbolType.VARIABLE, t);
         this.array.addAll(arr);
         variableType = VariableType.ARRAY;
     }
 
+    /**
+     * Constructs a new BaseVariable instance with the specified name and token.
+     *
+     * @param name the name of the variable
+     * @param t    the token associated with the variable
+     */
     public BaseVariable(String name, TokenDefault t) {
         super(SymbolType.VARIABLE, t);
         variableType = VariableType.UNKNOWN;
     }
 
+    /**
+     * Constructs a new BaseVariable instance with the specified name.
+     *
+     * @param name the name of the variable
+     */
     public BaseVariable(String name) {
         super(SymbolType.VARIABLE);
         variableType = VariableType.UNKNOWN;
     }
 
+    /**
+     * Sets the array value of the variable.
+     * 
+     * @param t
+     * @throws FrozenSymbolException
+     */
     public void a_set(ArrayList<Object> t) throws FrozenSymbolException {
         if (isFrozen)
             throw new FrozenSymbolException(this);
@@ -75,6 +131,11 @@ public class BaseVariable extends Symbol {
         array.add(a);
     }
 
+    /**
+     * Gets the array value of the variable.
+     * 
+     * @return
+     */
     public ArrayList<Object> a_getAll() {
         return array;
     }
@@ -136,18 +197,54 @@ public class BaseVariable extends Symbol {
         return new DefinedVariable(name, t, arr);
     }
 
+    /**
+     * A class that represents a user-defined variable.
+     */
     public static class DefinedVariable extends BaseVariable {
-
+        /**
+         * Constructs a new DefinedVariable instance with the specified name, token,
+         * and scalar value.
+         *
+         * @param name   the name of the variable
+         * @param t      the token associated with the variable
+         * @param scalar the scalar value of the variable
+         */
         DefinedVariable(String name, TokenDefault t, Object scalar) {
             super(name, t, scalar);
         }
 
+        /**
+         * Constructs a new DefinedVariable instance with the specified name, token,
+         * and array value.
+         *
+         * @param name the name of the variable
+         * @param t    the token associated with the variable
+         * @param arr  the array value of the variable
+         */
         DefinedVariable(String name, TokenDefault t, ArrayList<Object> arr) {
             super(name, t, arr);
         }
     }
 
+    /**
+     * Enum that represents the type of variable.
+     */
     public enum VariableType {
-        SCALAR, ARRAY, A_FUCKING_AMALGAMATION, UNKNOWN
+        /**
+         * Scalar type.
+         */
+        SCALAR,
+        /**
+         * Array type.
+         */
+        ARRAY,
+        /**
+         * Amalgamation of scalar and array types.
+         */
+        A_FUCKING_AMALGAMATION,
+        /**
+         * Unknown type.
+         */
+        UNKNOWN
     }
 }

@@ -2,26 +2,30 @@ package com.jaiva.interpreter.globals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Scanner;
 
 import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Interpreter.ThrowIfGlobalContext;
-import com.jaiva.interpreter.runtime.GlobalResources;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
-import com.jaiva.tokenizer.Token.TFunction;
 import com.jaiva.tokenizer.Token.TStatement;
 import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.tokenizer.TokenDefault;
 
+/**
+ * IOFunctions class holds the functions that are used for input and output in
+ * the console.
+ */
 public class IOFunctions extends BaseGlobals {
 
+    /**
+     * Constructs the IOFunctions with the Input/Output functions.
+     */
     public IOFunctions() {
         super();
         vfs.put("khuluma", new MapValue(new FKhuluma(container)));
@@ -30,7 +34,7 @@ public class IOFunctions extends BaseGlobals {
 
     /**
      * khuluma("hello world")!
-     * Will just print.
+     * This will print the given input to the console.
      */
     class FKhuluma extends BaseFunction {
 
@@ -77,6 +81,10 @@ public class IOFunctions extends BaseGlobals {
         }
     }
 
+    /**
+     * maak n <- mamela()!
+     * Listens for input form the console and returns a string.
+     */
     class FMamela extends BaseFunction {
         FMamela(Token<?> container) {
             super("mamela", container.new TFunction("mamela", new String[] {}, null, -1,

@@ -1,6 +1,5 @@
 package com.jaiva.interpreter.runtime;
 
-import java.nio.file.Path;
 import java.util.Scanner;
 
 /**
@@ -65,6 +64,9 @@ public class GlobalResources {
      */
     public Scanner consoleIn = new Scanner(System.in);
 
+    /**
+     * The configuration object for the interpreter.
+     */
     public GlobalResources() {
     }
 

@@ -18,19 +18,37 @@ import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TFunction;
 import com.jaiva.tokenizer.Token.TVarRef;
 
+/**
+ * BaseFunction class is a base class for all functions in Jaiva.
+ */
 public class BaseFunction extends Symbol {
 
-    @SuppressWarnings("rawtypes")
+    /**
+     * Constructs a new BaseFunction instance with the specified name and token.
+     * 
+     * @param token the token associated with the function
+     */
     public BaseFunction(TFunction token) {
         super(SymbolType.FUNCTION, token);
         this.token = token;
     }
 
+    /**
+     * Constructs a new BaseFunction instance with the specified name.
+     * 
+     * @param name the name of the function
+     */
     public BaseFunction(String name) {
         super(SymbolType.FUNCTION);
         this.name = name;
     }
 
+    /**
+     * Constructs a new BaseFunction instance with the specified name and token.
+     * 
+     * @param name  the name of the function
+     * @param token the token associated with the function
+     */
     public BaseFunction(String name, TFunction token) {
         super(SymbolType.FUNCTION, token);
         this.token = token;
@@ -43,9 +61,18 @@ public class BaseFunction extends Symbol {
     }
 
     /**
-     * Calls the specified function.
+     * Calls the function with the given parameters and variable functions store.
+     * * This method is called by the interpreter when the function is called.
+     * Other functions should override this method to implement their own logic.
      * 
-     * @return
+     * @param tFuncCall The function call token.
+     * @param params    The parameters passed to the function. (taken from the
+     *                  parameters in tFuncCall)
+     * @param vfs       The variable functions store.
+     * @param config    The Interpreter configuration.
+     * @return The return value of the function, if not overriden it will return
+     *         void.class
+     * @throws Exception If an error occurs during the function call.
      */
     public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
             IConfig config) throws Exception {
@@ -53,22 +80,40 @@ public class BaseFunction extends Symbol {
     }
 
     /**
-     * Creates a defined function. Literally nothing crazy.
+     * Creates a new user-defined function with the specified name and token.
      * 
-     * @param name  Name of the function.
-     * @param token the TFunction Declaration token.
+     * @param name  Function name
+     * @param token Function token
      * @return
      */
     public static DefinedFunction create(String name, TFunction token) {
         return new DefinedFunction(name, token);
     }
 
+    /**
+     * A Function that is defined by the user at runtime.
+     */
     public static class DefinedFunction extends BaseFunction {
         DefinedFunction(String name, TFunction token) {
             super(name, token);
         }
 
         @Override
+        /**
+         * Calls the function with the given parameters and variable functions store.
+         * <p>
+         * This method is called by the interpreter when the function is called.
+         * Other functions should override this method to implement their own logic.
+         * 
+         * @param tFuncCall The function call token.
+         * @param params    The parameters passed to the function. (taken from the
+         *                  parameters in tFuncCall)
+         * @param vfs       The variable functions store.
+         * @param config    The Interpreter configuration.
+         * @return The return value of the function, if not overriden it will return
+         *         void.class
+         * @throws Exception If an error occurs during the function call.
+         */
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
                 IConfig config)
                 throws Exception {

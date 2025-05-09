@@ -22,20 +22,41 @@ import com.jaiva.tokenizer.Token;
  * else-if or catch blocks is returned.
  */
 public class BlockChain {
-    // either TIfStatement or TTryCatchStatement
+    /**
+     * either TIfStatement or TTryCatchStatement
+     */
     private final Token<?> initialIf;
-    // the current line being processed. (With <~ removed)
+    /**
+     * the current line being processed. (With <~ removed)
+     */
     private final String currentLine;
 
+    /**
+     * Constructor for BlockChain.
+     *
+     * @param initialIf   the initial block (either TIfStatement or
+     *                    TTryCatchStatement)
+     * @param currentLine the current line being processed (with <~ removed)
+     */
     public BlockChain(Token<?> initialIf, String currentLine) {
         this.initialIf = initialIf;
         this.currentLine = currentLine;
     }
 
+    /**
+     * Returns the initial block (either TIfStatement or TTryCatchStatement).
+     *
+     * @return the initial block
+     */
     public Token<?> getInitialIf() {
         return initialIf;
     }
 
+    /**
+     * Returns the current line being processed.
+     *
+     * @return the current line (with <~ removed)
+     */
     public String getCurrentLine() {
         return currentLine;
     }

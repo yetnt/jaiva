@@ -1,11 +1,7 @@
 package com.jaiva.interpreter;
 
-import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import com.jaiva.Main;
 import com.jaiva.errors.IntErrs.*;
@@ -36,18 +32,65 @@ import com.jaiva.tokenizer.Token.TVoidValue;
 import com.jaiva.tokenizer.Token.TWhileLoop;
 import com.jaiva.tokenizer.TokenDefault;
 
+/**
+ * The Interpreter class is one of the 3 main classes which handle Jaiva code.
+ * <p>
+ * It is responsible for interpreting Jaiva code and executing it.
+ */
 public class Interpreter {
 
+    /**
+     * The ThrowIfGlobalContext class is a base class which is thrown when the
+     * interpreter does not return a usual value, like it returns maybe an error or
+     * it exits out of a loop.
+     * <p>
+     * It's the same idea as a software interrupt. Execution is halted to handle
+     * whatever needs tobe handled.
+     */
     public static class ThrowIfGlobalContext {
+        /**
+         * The line number of the token which caused the interuption.
+         */
         public int lineNumber = 0;
+        /**
+         * The object which caused the interuption.
+         * <p>
+         * This can be a function return, a loop control, or an error.
+         */
         public Object c;
 
+        /**
+         * The constructor for the ThrowIfGlobalContext class.
+         * <p>
+         * This is used to create a new instance of the class with the given object and
+         * line number.
+         *
+         * @param cObject    The object which caused the interuption.
+         * @param lineNumber The line number of the token which caused the interuption.
+         */
         public ThrowIfGlobalContext(Object cObject, int ln) {
             c = cObject;
             lineNumber = ln;
         }
     }
 
+    /**
+     * The throwIfGlobalContext method is used to check if the context is global and
+     * if so, it throws an error.
+     * <p>
+     * This is used to handle the case where a function return or a loop control is
+     * used in the global context.
+     *
+     * @param context    The context of the code being interpreted.
+     * @param lc         The object which caused the interuption.
+     * @param lineNumber The line number of the token which caused the interuption.
+     * @return Returns a new instance of the ThrowIfGlobalContext class with the
+     *         given object and line number.
+     * @throws WtfAreYouDoingException If the context is global and the object is a
+     *                                 function return or a loop control.
+     * @throws CimaException           If the context is global and the object is an
+     *                                 error.
+     */
     public static ThrowIfGlobalContext throwIfGlobalContext(Context context, Object lc, int lineNumber)
             throws WtfAreYouDoingException, CimaException {
         if (lc instanceof ThrowIfGlobalContext) {
@@ -73,6 +116,14 @@ public class Interpreter {
         return new ThrowIfGlobalContext(lc, lineNumber);
     }
 
+    /**
+     * The isVariableToken method checks if the given token is a variable token.
+     * <p>
+     * This is used to determine if the token is a variable or not.
+     *
+     * @param t The token to check.
+     * @return Returns true if the token is a variable token, false otherwise.
+     */
     public static boolean isVariableToken(Object t) {
         return t instanceof TStatement || t instanceof TNumberVar || t instanceof TBooleanVar || t instanceof TArrayVar
                 || t instanceof TStringVar
@@ -88,15 +139,19 @@ public class Interpreter {
      * operations
      * on variables and updates the provided variable storage map accordingly.
      *
-     * @param t   The token representing the variable or operation to handle. This
-     *            can be
-     *            one of several types, including TNumberVar, TBooleanVar,
-     *            TStringVar,
-     *            TUnknownVar, TArrayVar, or TVarReassign.
-     * @param vfs A map storing variable names as keys and their corresponding
-     *            MapValue
-     *            objects as values. This map is updated based on the operation
-     *            performed.
+     * @param t      The token representing the variable or operation to handle.
+     *               This
+     *               can be
+     *               one of several types, including TNumberVar, TBooleanVar,
+     *               TStringVar,
+     *               TUnknownVar, TArrayVar, or TVarReassign.
+     * @param vfs    A map storing variable names as keys and their corresponding
+     *               MapValue
+     *               objects as values. This map is updated based on the operation
+     *               performed.
+     * @param config The configuration object containing settings for the
+     *               interpreter,
+     *               including the file directory and import settings.
      * @return Returns the primitive value of the token if it is not a
      *         variable-related
      *         token, or null if the operation involves variable creation or
@@ -183,11 +238,27 @@ public class Interpreter {
         return null; // return null because we are not returning anything.
     }
 
-    // private static Object interpretWithoutContext(ArrayList<Token<?>> tokens,
-    // HashMap<String, MapValue> vfs) {
-    // return void.class;
-    // }
-
+    /**
+     * The interpret method is the main method which handles the interpretation of
+     * Jaiva code.
+     * <p>
+     * It takes a list of tokens and a context and interprets the code accordingly.
+     *
+     * @param tokens  The list of tokens to interpret.
+     * @param context The context of the code being interpreted.
+     * @param vfs     A map storing variable names as keys and their corresponding
+     *                MapValue
+     *                objects as values. This map is updated based on the operation
+     *                performed.
+     * @param config  The configuration object containing settings for the
+     *                interpreter,
+     *                including the file directory and import settings.
+     * @return Returns the result of the interpretation, which can be a value or a
+     *         void class.
+     * @throws Exception If an error occurs during interpretation, such as an
+     *                   unknown
+     *                   variable or an invalid operation.
+     */
     public static Object interpret(ArrayList<Token<?>> tokens, Context context, HashMap<String, MapValue> vfs,
             IConfig config)
             throws Exception {

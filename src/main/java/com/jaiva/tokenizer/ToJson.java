@@ -9,8 +9,21 @@ import java.util.ArrayList;
  * for primitive types, nested objects, and arrays.
  */
 public class ToJson {
-    StringBuilder json = new StringBuilder();
+    /**
+     * The StringBuilder object used to construct the JSON string.
+     */
+    private final StringBuilder json = new StringBuilder();
 
+    /**
+     * Constructor for the ToJson class.
+     * Initializes the JSON string with the specified parameters.
+     *
+     * @param exportSymbol Indicates whether to export the symbol or not.
+     * @param name         The name of the object.
+     * @param type         The type of the object.
+     * @param ln           The line number associated with the object.
+     * @param tooltip      The tooltip or description of the object.
+     */
     public ToJson(boolean exportSymbol, String name, String type, int ln, String tooltip) {
         json.append("{");
         json.append("\"type\": \"").append(type).append("\",");
@@ -36,21 +49,16 @@ public class ToJson {
     }
 
     /**
-     * Appends a key-value pair to the JSON representation.
-     * 
-     * @param key   The key as a String.
-     * @param value The value associated with the key. The value can be one of the
-     *              following types:
-     *              <ul>
-     *              <li>String: Appends the value as a quoted string.</li>
-     *              <li>ToJson: Appends the JSON representation of the object
-     *              implementing the ToJson interface.</li>
-     *              <li>ArrayList: Appends the value as a JSON array. If the array
-     *              contains objects implementing the ToJson interface, their JSON
-     *              representations are appended; otherwise, the objects are
-     *              appended as quoted strings.</li>
-     *              <li>Other types: Appends the value as-is.</li>
-     *              </ul>
+     * Appends a key-value pair to the JSON string. The value can be of various
+     * types,
+     * including
+     * primitive types, complex objects, and arrays.
+     *
+     * @param key    The key to be added to the JSON string.
+     * @param value  The value associated with the key. It can be of various types,
+     *               including
+     *               primitive types, complex objects, and arrays.
+     * @param isLast Indicates whether this is the last key-value pair to be added.
      */
     public void append(String key, Object value, boolean isLast) {
         // Object can be one of these types :

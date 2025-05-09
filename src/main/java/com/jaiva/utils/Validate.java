@@ -6,9 +6,9 @@ import com.jaiva.lang.Chars;
 import com.jaiva.tokenizer.Token;
 
 /**
- * @class
- *        Validate class is a utils class where methods which "validate" the
- *        existance of foo in bar or some other boolean input.
+ * Validate class is a utils class where methods which "validate" the
+ * existance of foo in bar or some other boolean input.
+ * 
  */
 public class Validate {
     /**
@@ -98,17 +98,36 @@ public class Validate {
         return -1;
     }
 
+    /**
+     * Class to represent the result of validating a symbol name.
+     * This class exists such that if it is a valid symbol, we can use it.
+     */
     public static class IsValidSymbolName {
+        /**
+         * The invalid character found in the symbol name, if any.
+         */
         public String op;
+        /**
+         * Indicates whether the symbol name is valid or not.
+         */
         public boolean isValid = true;
 
+        /**
+         * Constructor for IsValidSymbolName.
+         *
+         * @param o the invalid character found in the symbol name
+         * @param v the validity status of the symbol name
+         */
         public IsValidSymbolName(String o, boolean v) {
             op = o;
             isValid = v;
         }
 
+        /**
+         * Default constructor for IsValidSymbolName.
+         * Initializes the object with default values.
+         */
         public IsValidSymbolName() {
-
         }
     }
 

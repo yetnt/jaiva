@@ -2,9 +2,15 @@ package com.jaiva.errors;
 
 import com.jaiva.errors.TokErrs.TokenizerException;
 
+/**
+ * Tokenizer Errors
+ */
 public class TokErrs {
 
-    public static class UnknownSyntaxError extends TokErrs.TokenizerException {
+    /**
+     * Syntax Error Exception.
+     */
+    public static class UnknownSyntaxError extends TokenizerException {
         private static final long serialVersionUID = 1L;
 
         public UnknownSyntaxError(String message) {
@@ -12,7 +18,10 @@ public class TokErrs {
         }
     }
 
-    public static class SyntaxCriticalError extends TokErrs.TokenizerException {
+    /**
+     * Syntax Error Exception.
+     */
+    public static class SyntaxCriticalError extends TokenizerException {
         private static final long serialVersionUID = 1L;
 
         public SyntaxCriticalError(String message) {
@@ -20,7 +29,10 @@ public class TokErrs {
         }
     }
 
-    public static class TokenizerSyntaxException extends TokErrs.TokenizerException {
+    /**
+     * Syntax Error Exception.
+     */
+    public static class TokenizerSyntaxException extends TokenizerException {
         private static final long serialVersionUID = 1L;
 
         public TokenizerSyntaxException(String message) {
@@ -28,7 +40,10 @@ public class TokErrs {
         }
     }
 
-    public static class SyntaxWarning extends TokErrs.TokenizerException {
+    /**
+     * Syntax Error Exception.
+     */
+    public static class SyntaxWarning extends TokenizerException {
         private static final long serialVersionUID = 1L;
 
         public SyntaxWarning(String message) {
@@ -36,7 +51,10 @@ public class TokErrs {
         }
     }
 
-    public static class SyntaxError extends TokErrs.TokenizerException {
+    /**
+     * Syntax Error Exception.
+     */
+    public static class SyntaxError extends TokenizerException {
         private static final long serialVersionUID = 1L;
 
         public SyntaxError(String message) {
@@ -44,6 +62,9 @@ public class TokErrs {
         }
     }
 
+    /**
+     * Base Syntax Error Exception.
+     */
     public static class TokenizerException extends Exception {
         private static final long serialVersionUID = 1L;
 
