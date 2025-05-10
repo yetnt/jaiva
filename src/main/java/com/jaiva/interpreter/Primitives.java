@@ -6,11 +6,7 @@ import java.util.HashMap;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-import com.jaiva.errors.IntErrs.StringCalcException;
-import com.jaiva.errors.IntErrs.TStatementResolutionException;
-import com.jaiva.errors.IntErrs.UnknownVariableException;
-import com.jaiva.errors.IntErrs.WeirdAhhFunctionException;
-import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
+import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
@@ -48,10 +44,11 @@ public class Primitives {
      * @param op  The operator to be applied.
      * @param ts  The TStatement object associated with the operation.
      * @return The result of the string operation.
-     * @throws StringCalcException If an error occurs during string calculation.
+     * @throws InterpreterException.StringCalcException If an error occurs during
+     *                                                  string calculation.
      */
     public static Object resolveStringOperations(Object lhs, Object rhs, String op, TStatement ts)
-            throws StringCalcException {
+            throws InterpreterException.StringCalcException {
         String I = Integer.class.getSimpleName().substring(0, 1);
         String S = String.class.getSimpleName().substring(0, 1);
         String D = Double.class.getSimpleName().substring(0, 1);
@@ -81,7 +78,7 @@ public class Primitives {
             switch (switchTing) {
                 case "IS":
                     if (!IS.contains(op))
-                        throw new StringCalcException(ts);
+                        throw new InterpreterException.StringCalcException(ts);
                     return op.equals("+") ? ((Integer) lhs) + ((String) rhs)
                             : op.equals("-") ? ((String) rhs).substring(
                                     ((Integer) lhs))
@@ -92,7 +89,7 @@ public class Primitives {
                                                     : op.equals("=") ? false : op.equals("!=") ? true : ((String) rhs);
                 case "SI":
                     if (!IS.contains(op))
-                        throw new StringCalcException(ts);
+                        throw new InterpreterException.StringCalcException(ts);
                     return op.equals("+") ? ((String) lhs) + ((Integer) rhs)
                             : op.equals("-") ? ((String) lhs).substring(0, ((String) lhs).length() - ((Integer) rhs))
                                     : op.equals("*") ? ((String) lhs).repeat((Integer) rhs)
@@ -102,7 +99,7 @@ public class Primitives {
                                                     : op.equals("=") ? false : op.equals("!=") ? true : ((String) lhs);
                 case "SS":
                     if (!SS.contains(op))
-                        throw new StringCalcException(ts);
+                        throw new InterpreterException.StringCalcException(ts);
                     return op.equals("+") ? (String) lhs + (String) rhs
                             : op.equals("-")
                                     ? ((String) lhs).replace(Pattern.quote((String) rhs), Matcher.quoteReplacement(""))
@@ -115,10 +112,10 @@ public class Primitives {
             }
         } catch (StringIndexOutOfBoundsException e) {
             // too big or too small of a number
-            throw new StringCalcException(ts, e);
+            throw new InterpreterException.StringCalcException(ts, e);
         } catch (IllegalArgumentException e) {
             // something received a negative number, when it shouldn't have.
-            throw new StringCalcException(ts, e);
+            throw new InterpreterException.StringCalcException(ts, e);
         }
         return void.class;
     }
@@ -128,16 +125,20 @@ public class Primitives {
      * The method that turns scrambled TStatement, TFuncCall, TVarRef and primitives
      * into... primitives.
      * <p>
-     * This throws {@link UnknownVariableException} when the TVarRef cannot be
+     * This throws {@link InterpreterException.UnknownVariableException} when the
+     * TVarRef cannot be
      * found.
      * <p>
-     * This throws {@link TStatementResolutionException} when one of the sides of a
+     * This throws {@link InterpreterException.TStatementResolutionException} when
+     * one of the sides of a
      * {@link TStatement} cannot be resolved to a primitive.
      * <p>
-     * This throws {@link WtfAreYouDoingException} when you try use a function as a
+     * This throws {@link InterpreterException.WtfAreYouDoingException} when you try
+     * use a function as a
      * variable or a variable as a function.
      * <p>
-     * This throws {@link WeirdAhhFunctionException} when the function name cannot
+     * This throws {@link InterpreterException.WeirdAhhFunctionException} when the
+     * function name cannot
      * be a string.
      * 
      * @param token the token or primitive in question
@@ -163,9 +164,9 @@ public class Primitives {
             if (tStatement.statementType == 1) {
                 // check input first of all
                 if (!(lhs instanceof Integer) && !(lhs instanceof Double))
-                    throw new TStatementResolutionException(tStatement, "lhs", lhs.toString());
+                    throw new InterpreterException.TStatementResolutionException(tStatement, "lhs", lhs.toString());
                 if (!(rhs instanceof Integer) && !(rhs instanceof Double))
-                    throw new TStatementResolutionException(tStatement, "rhs", rhs.toString());
+                    throw new InterpreterException.TStatementResolutionException(tStatement, "rhs", rhs.toString());
 
                 // For the following if, thanks to the above condition
                 // if one is an integer then the other is an integer too
@@ -210,9 +211,9 @@ public class Primitives {
                     // if the logic operator is one of these naturally, the input has to be boolean
                     // check input first of all
                     if (!(lhs instanceof Boolean))
-                        throw new TStatementResolutionException(tStatement, "lhs", lhs.toString());
+                        throw new InterpreterException.TStatementResolutionException(tStatement, "lhs", lhs.toString());
                     if (!(rhs instanceof Boolean))
-                        throw new TStatementResolutionException(tStatement, "rhs", rhs.toString());
+                        throw new InterpreterException.TStatementResolutionException(tStatement, "rhs", rhs.toString());
 
                     switch (op) {
                         case "&&", "&":
@@ -224,9 +225,9 @@ public class Primitives {
                     // however if its these the input is a number or a double
                     // check input first of all
                     if (!(lhs instanceof Integer) && !(lhs instanceof Double))
-                        throw new TStatementResolutionException(tStatement, "lhs", lhs.toString());
+                        throw new InterpreterException.TStatementResolutionException(tStatement, "lhs", lhs.toString());
                     if (!(rhs instanceof Integer) && !(rhs instanceof Double))
-                        throw new TStatementResolutionException(tStatement, "rhs", rhs.toString());
+                        throw new InterpreterException.TStatementResolutionException(tStatement, "rhs", rhs.toString());
 
                     if (lhs instanceof Integer) {
                         // handle ints
@@ -260,10 +261,10 @@ public class Primitives {
                     // check input first of all
                     if (!(lhs instanceof Integer) && !(lhs instanceof Double) && !(lhs instanceof Boolean)
                             && !(lhs instanceof String))
-                        throw new TStatementResolutionException(tStatement, "lhs", lhs.toString());
+                        throw new InterpreterException.TStatementResolutionException(tStatement, "lhs", lhs.toString());
                     if (!(rhs instanceof Integer) && !(rhs instanceof Double) && !(rhs instanceof Boolean)
                             && !(rhs instanceof String))
-                        throw new TStatementResolutionException(tStatement, "rhs", rhs.toString());
+                        throw new InterpreterException.TStatementResolutionException(tStatement, "rhs", rhs.toString());
 
                     if (lhs instanceof Integer) {
                         // handle ints
@@ -318,9 +319,11 @@ public class Primitives {
                     : (tVarRef).varName);
             Object index = (tVarRef).index == null ? null : toPrimitive(tVarRef.index, vfs, false, config);
             if (index != null && (Integer) index <= -1)
-                return new WtfAreYouDoingException("Now tell me, how do you access negative data in ana array?");
+                return new InterpreterException.WtfAreYouDoingException(
+                        "Now tell me, how do you access negative data in ana array?",
+                        tVarRef.lineNumber);
             if (v == null)
-                throw new UnknownVariableException(tVarRef);
+                throw new InterpreterException.UnknownVariableException(tVarRef);
             if (!(v.getValue() instanceof BaseVariable)) {
                 if (v.getValue() instanceof BaseFunction) {
                     if (index == null || !(index instanceof Integer))
@@ -331,14 +334,16 @@ public class Primitives {
                     // If we got BaseFunction, that means tVarRef.varName is a TFuncCall.
                     Object ret = toPrimitive(parseNonPrimitive(tVarRef.varName), vfs, false, config);
                     if (!(ret instanceof ArrayList))
-                        throw new WtfAreYouDoingException("On line " + tVarRef.lineNumber
-                                + " right, The function you used there did not return an array, and you expect to be able to index into that?");
+                        throw new InterpreterException.WtfAreYouDoingException(
+                                "The function you used there did not return an array, and you expect to be able to index into that?",
+                                tVarRef.lineNumber);
                     return ((ArrayList) ret).get((Integer) index) instanceof ArrayList && tVarRef.getLength
                             ? ((ArrayList) ((ArrayList) ret).get((Integer) index)).size()
                             : ((ArrayList) ret)
                                     .get((Integer) index);
                 } else {
-                    throw new WtfAreYouDoingException(v.getValue(), BaseVariable.class, tVarRef.lineNumber);
+                    throw new InterpreterException.WtfAreYouDoingException(v.getValue(), BaseVariable.class,
+                            tVarRef.lineNumber);
                 }
             }
             BaseVariable variable = (BaseVariable) v.getValue();
@@ -348,7 +353,8 @@ public class Primitives {
                 // it's an array ref, where we have an index
                 ArrayList<Object> arr = variable.a_getAll();
                 if (!(index instanceof Integer) && index != null)
-                    throw new WtfAreYouDoingException(tVarRef, tVarRef.getClass());
+                    throw new InterpreterException.WtfAreYouDoingException(tVarRef, Integer.valueOf(0).getClass(),
+                            tVarRef.lineNumber);
                 if (tVarRef.varName instanceof Token) {
                     Object t = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarRef.varName), vfs, returnName,
                             config);
@@ -359,8 +365,8 @@ public class Primitives {
                     }
                 }
                 if (arr.size() <= (Integer) index)
-                    return new WtfAreYouDoingException(
-                            "Bro you're tryna access more data than there is in " + variable.name);
+                    return new InterpreterException.WtfAreYouDoingException(
+                            "Bro you're tryna access more data than there is in " + variable.name, tVarRef.lineNumber);
                 return arr.get((Integer) index) instanceof ArrayList && tVarRef.getLength
                         ? ((ArrayList) arr.get((Integer) index)).size()
                         : arr
@@ -390,7 +396,7 @@ public class Primitives {
                     : tFuncCall.functionName, vfs, false, config);
 
             if (!(funcName instanceof String))
-                throw new WeirdAhhFunctionException(tFuncCall);
+                throw new InterpreterException.WeirdAhhFunctionException(tFuncCall);
             String name = (String) funcName;
             BaseFunction f = null;
             if (!(tFuncCall.functionName instanceof String)) {
@@ -403,7 +409,7 @@ public class Primitives {
             }
             MapValue v = vfs.get(name);
             if (v == null)
-                throw new UnknownVariableException(tFuncCall);
+                throw new InterpreterException.UnknownVariableException(tFuncCall);
             // if (!(v.getValue() instanceof BaseFunction)) {
             // if (v.getValue() instanceof BaseVariable) {
             // ret = toPrimitive(parseNonPrimitive(name), vfs, false);
@@ -506,7 +512,7 @@ public class Primitives {
         Object condition = Interpreter.handleVariables(
                 parseNonPrimitive(t.condition), vfs, config);
         if (!(condition instanceof Boolean))
-            throw new TStatementResolutionException(
+            throw new InterpreterException.TStatementResolutionException(
                     t, ((TStatement) t.condition),
                     "boolean", condition.getClass().getName());
 
@@ -528,7 +534,7 @@ public class Primitives {
         Object condition = Interpreter.handleVariables(
                 parseNonPrimitive(t.condition), vfs, config);
         if (!(condition instanceof Boolean))
-            throw new TStatementResolutionException(
+            throw new InterpreterException.TStatementResolutionException(
                     t, ((TStatement) t.condition),
                     "boolean", condition.getClass().getName());
 
@@ -555,7 +561,7 @@ public class Primitives {
         Object condition = Interpreter.handleVariables(
                 parseNonPrimitive(t.condition), vfs, config);
         if (!(condition instanceof Boolean))
-            throw new TStatementResolutionException(
+            throw new InterpreterException.TStatementResolutionException(
                     t, ((TStatement) t.condition),
                     "boolean", condition.getClass().getName());
 

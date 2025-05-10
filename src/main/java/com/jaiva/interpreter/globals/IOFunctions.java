@@ -3,7 +3,7 @@ package com.jaiva.interpreter.globals;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
+import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
@@ -67,8 +67,9 @@ public class IOFunctions extends BaseGlobals {
                 // we dont have context, so just alert the user.
                 // that either, they tried using the "voetsek" or "nevermind" outside of a for
                 // loop context or cima was called with a custom error.
-                throw new WtfAreYouDoingException(
-                        "Cannot use 'voetsek' or 'nevermind' outside of a loop context, or 'cima' was called with a custom error.");
+                throw new InterpreterException.WtfAreYouDoingException(
+                        "Cannot use 'voetsek' or 'nevermind' outside of a loop context, or 'cima' was called with a custom error.",
+                        tFuncCall.lineNumber);
             } else {
                 output = o.toString();
             }

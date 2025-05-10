@@ -3,8 +3,8 @@ package com.jaiva.interpreter.symbol;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jaiva.errors.IntErrs.FrozenSymbolException;
 import com.jaiva.tokenizer.Token.TVarRef;
+import com.jaiva.errors.InterpreterException;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.TokenDefault;
 
@@ -99,11 +99,11 @@ public class BaseVariable extends Symbol {
      * Sets the array value of the variable.
      * 
      * @param t
-     * @throws FrozenSymbolException
+     * @throws InterpreterException.FrozenSymbolException
      */
-    public void a_set(ArrayList<Object> t) throws FrozenSymbolException {
+    public void a_set(ArrayList<Object> t) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
-            throw new FrozenSymbolException(this);
+            throw new InterpreterException.FrozenSymbolException(this);
         array = t;
     }
 
@@ -111,11 +111,11 @@ public class BaseVariable extends Symbol {
      * Adds an array to the array (addAll())
      * 
      * @param a
-     * @throws FrozenSymbolException
+     * @throws InterpreterException.FrozenSymbolException
      */
-    public void a_addAll(List<String> a) throws FrozenSymbolException {
+    public void a_addAll(List<String> a) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
-            throw new FrozenSymbolException(this);
+            throw new InterpreterException.FrozenSymbolException(this);
         array.addAll(a);
     }
 
@@ -123,11 +123,11 @@ public class BaseVariable extends Symbol {
      * Appends an element to the array.
      * 
      * @param a
-     * @throws FrozenSymbolException
+     * @throws InterpreterException.FrozenSymbolException
      */
-    public void a_add(Object a) throws FrozenSymbolException {
+    public void a_add(Object a) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
-            throw new FrozenSymbolException(this);
+            throw new InterpreterException.FrozenSymbolException(this);
         array.add(a);
     }
 
@@ -163,11 +163,11 @@ public class BaseVariable extends Symbol {
      * Set scalar value
      * 
      * @param value
-     * @throws FrozenSymbolException
+     * @throws InterpreterException.FrozenSymbolException
      */
-    public void s_set(Object value) throws FrozenSymbolException {
+    public void s_set(Object value) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
-            throw new FrozenSymbolException(this);
+            throw new InterpreterException.FrozenSymbolException(this);
         this.scalar = value;
     }
 

@@ -187,7 +187,13 @@ public class REPL {
      * Constructor for REPL.
      * It initializes the REPL with the specified mode and starts the REPL loop.
      * 
-     * @param mode
+     * @param mode The mode in which the REPL operates.
+     *             It determines the behavior of the REPL and can be one of the
+     *             values defined
+     *             in the REPLMode enumeration.
+     *             For example, STANDARD mode processes and evaluates input, while
+     *             PRINT_TOKEN
+     *             mode outputs tokens.
      */
     public REPL(int mode) {
         this.state = State.ACTIVE;

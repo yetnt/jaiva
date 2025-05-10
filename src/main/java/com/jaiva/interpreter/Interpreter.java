@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 import com.jaiva.Main;
-import com.jaiva.errors.IntErrs.*;
+import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
@@ -86,32 +86,33 @@ public class Interpreter {
      * @param lineNumber The line number of the token which caused the interuption.
      * @return Returns a new instance of the ThrowIfGlobalContext class with the
      *         given object and line number.
-     * @throws WtfAreYouDoingException If the context is global and the object is a
-     *                                 function return or a loop control.
-     * @throws CimaException           If the context is global and the object is an
-     *                                 error.
+     * @throws InterpreterException.WtfAreYouDoingException If the context is global
+     *                                                      and the object is a
+     *                                                      function return or a
+     *                                                      loop control.
+     * @throws InterpreterException.CimaException           If the context is global
+     *                                                      and the object is an
+     *                                                      error.
      */
     public static ThrowIfGlobalContext throwIfGlobalContext(Context context, Object lc, int lineNumber)
-            throws WtfAreYouDoingException, CimaException {
+            throws InterpreterException.WtfAreYouDoingException, InterpreterException.CimaException {
         if (lc instanceof ThrowIfGlobalContext) {
             lc = ((ThrowIfGlobalContext) lc).c;
         }
         if (lc instanceof Keywords.LoopControl) {
             if (context == Context.GLOBAL)
-                throw new WtfAreYouDoingException("So. You tried using "
-                        + (lc.toString().equals("BREAK") ? Keywords.LC_BREAK : Keywords.LC_CONTINUE) + " on line "
-                        + lineNumber
-                        + ". But like, we're not in a loop yknow? ");
+                throw new InterpreterException.WtfAreYouDoingException("So. You tried using "
+                        + (lc.toString().equals("BREAK") ? Keywords.LC_BREAK : Keywords.LC_CONTINUE)
+                        + ". But like, we're not in a loop yknow? ", lineNumber);
         } else if (Primitives.isPrimitive(lc)) {
             // a function return thing then
             if (context == Context.GLOBAL)
-                throw new WtfAreYouDoingException(
-                        "What are you trying to return out of on line " + lineNumber
-                                + " if we're not in a function??");
+                throw new InterpreterException.WtfAreYouDoingException(
+                        "What are you trying to return out of if we're not in a function??", lineNumber);
 
         } else if (lc instanceof TThrowError) {
             if (context == Context.GLOBAL)
-                throw new CimaException(((TThrowError) lc).errorMessage, lineNumber);
+                throw new InterpreterException.CimaException(((TThrowError) lc).errorMessage, lineNumber);
         }
         return new ThrowIfGlobalContext(lc, lineNumber);
     }
@@ -207,14 +208,13 @@ public class Interpreter {
             vfs.put(name, new MapValue(func));
         } else if (t instanceof TVarReassign) {
             MapValue mapValue = vfs.get(((TVarReassign) t).name);
-            if (MapValue.isEmpty(mapValue))
-                throw new UnknownVariableException((TVarReassign) t);
-            if (mapValue.getValue() == null || !(mapValue.getValue() instanceof BaseVariable))
-                throw new WtfAreYouDoingException(((TVarReassign) t).name + " is not a variable.");
+            if (MapValue.isEmpty(mapValue)
+                    || (mapValue.getValue() == null || !(mapValue.getValue() instanceof BaseVariable)))
+                throw new InterpreterException.UnknownVariableException((TVarReassign) t);
 
             BaseVariable var = (BaseVariable) mapValue.getValue();
             if (var.isFrozen)
-                throw new FrozenSymbolException(var, ((TVarReassign) t).lineNumber);
+                throw new InterpreterException.FrozenSymbolException(var, ((TVarReassign) t).lineNumber);
             // if (!isVariableToken(((TVarReassign) t).newValue))
             // throw new WtfAreYouDoingException(
             // ((TVarReassign) t).newValue + " isn't like a valid var thingy yknow??");
@@ -290,7 +290,7 @@ public class Interpreter {
 
                 IConfig newConfig = new IConfig(importPath.toString());
 
-                config.importVfs = true;
+                newConfig.importVfs = true;
 
                 HashMap<String, MapValue> vfsFromFile = (HashMap<String, MapValue>) Interpreter.interpret(tks, context,
                         vfs, newConfig);
@@ -369,7 +369,9 @@ public class Interpreter {
                 // if statement handling below
                 TIfStatement ifStatement = (TIfStatement) token;
                 if (!(ifStatement.condition instanceof TStatement))
-                    throw new WtfAreYouDoingException("Okay well idk how i will check for true in " + ifStatement);
+                    throw new InterpreterException.WtfAreYouDoingException(
+                            "Okay well idk how i will check for true in " + ifStatement,
+                            token.lineNumber);
                 Object cond = Primitives.setCondition(ifStatement, vfs, config);
 
                 // if if, lol i love coding
@@ -387,8 +389,8 @@ public class Interpreter {
                     for (Object e : ifStatement.elseIfs) {
                         TIfStatement elseIf = (TIfStatement) e;
                         if (!(elseIf.condition instanceof TStatement))
-                            throw new WtfAreYouDoingException(
-                                    "Okay well idk how i will check for true in " + elseIf);
+                            throw new InterpreterException.WtfAreYouDoingException(
+                                    "Okay well idk how i will check for true in " + elseIf, token.lineNumber);
                         Object cond2 = Primitives.setCondition(elseIf, vfs, config);
                         if (((Boolean) cond2).booleanValue() == true) {
                             // run else if code.
@@ -419,7 +421,8 @@ public class Interpreter {
                 handleVariables(tForLoop.variable, vfs, config);
                 Object vObject = vfs.get(tForLoop.variable.name).getValue();
                 if (!(vObject instanceof BaseVariable))
-                    throw new WtfAreYouDoingException(vObject, BaseVariable.class, tForLoop.lineNumber);
+                    throw new InterpreterException.WtfAreYouDoingException(vObject, BaseVariable.class,
+                            tForLoop.lineNumber);
                 BaseVariable v = (BaseVariable) vObject;
                 // if (!(v.s_get() instanceof Integer))
                 // throw new WtfAreYouDoingException("");
@@ -427,14 +430,15 @@ public class Interpreter {
                     // for each
                     MapValue mapValue = vfs.get(tForLoop.array.varName);
                     if (mapValue == null || !((mapValue.getValue()) instanceof BaseVariable))
-                        throw new UnknownVariableException(tForLoop.array);
+                        throw new InterpreterException.UnknownVariableException(tForLoop.array);
                     BaseVariable arr = (BaseVariable) mapValue.getValue();
 
                     if (arr.variableType != VariableType.ARRAY
                             && arr.variableType != VariableType.A_FUCKING_AMALGAMATION
                             && !(arr.s_get() instanceof String))
-                        throw new WtfAreYouDoingException(
-                                "Ayo that variable argument on " + tForLoop.lineNumber + " gotta be an array.");
+                        throw new InterpreterException.WtfAreYouDoingException(
+                                "Ayo that variable argument on " + tForLoop.lineNumber + " gotta be an array.",
+                                token.lineNumber);
 
                     List<Object> list = (arr.s_get() instanceof String)
                             ? Arrays.asList(((String) arr.s_get()).split(""))

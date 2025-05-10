@@ -2,8 +2,11 @@ package com.jaiva.tokenizer;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import com.jaiva.errors.TokErrs.*;
+import com.jaiva.errors.TokenizerException.*;
+import com.jaiva.errors.TokenizerException;
 import com.jaiva.lang.Chars;
 import com.jaiva.lang.Comments;
 import com.jaiva.lang.EscapeSequence;
@@ -35,6 +38,38 @@ import com.jaiva.utils.Validate.IsValidSymbolName;
  * to do something before sending the next line.
  */
 public class Tokenizer {
+
+    /**
+     * Method to check whether a given block construct contains an opening and a
+     * closing brace (before {@link Chars#BLOCK_OPEN}) or else throw an invalid
+     * syntax exception.
+     * Also checks whether it has a {@link Chars#BLOCK_OPEN}
+     * 
+     * @param construct  The construct in string form (in case of
+     *                   {@link Tokenizer#handleArgs}
+     *                   that is the type parameter)
+     * @param line       The line
+     * @param lineNumber The line's number.
+     * @throws TokenizerException
+     */
+    private static void checkForMalformedConstruct(String construct, String line, int lineNumber)
+            throws TokenizerException {
+        if (!construct.equals(Keywords.FOR) && (line.indexOf(Character.toString(Chars.STATEMENT_OPEN)) == -1
+                || line.indexOf(Character.toString(Chars.STATEMENT_CLOSE)) == -1))
+            throw new MalformedSyntaxException(construct + " is missing opening or closing brace, go check it",
+                    lineNumber);
+
+        if (line.indexOf(Chars.BLOCK_OPEN) == -1)
+            throw new MalformedSyntaxException(construct + " is missing the open block thingy, yknow?", lineNumber);
+
+        // make sure the closing ) is actually the outmost pair.
+        int closingCharIndex = Find.closingCharIndex(line, Chars.STATEMENT_OPEN, Chars.STATEMENT_CLOSE);
+
+        String inbetween = construct.equals(Keywords.FOR) ? ""
+                : line.substring(closingCharIndex + 1, line.indexOf(Chars.BLOCK_OPEN)).trim();
+        if (!inbetween.isEmpty())
+            throw new MalformedSyntaxException("Closeth thy brace.", lineNumber);
+    }
 
     private static Object handleBlocks(boolean isComment, String line,
             MultipleLinesOutput multipleLinesOutput, String entireLine, String t, String[] args,
@@ -82,7 +117,8 @@ public class Tokenizer {
      * @param line The line to handle the arguments for.
      * @return The arguments for the given type.
      */
-    private static String[] handleArgs(String type, String line) {
+    private static String[] handleArgs(String type, String line, int lineNumber) throws TokenizerException {
+        checkForMalformedConstruct(type, line, lineNumber);
         switch (type) {
             case "mara if": {
                 // mara condition ->
@@ -212,8 +248,9 @@ public class Tokenizer {
                 if (Validate.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
-                    throw new TokenizerSyntaxException(
-                            "Ayo the condition on line" + finalMOutput.lineNumber + "gotta resolve to a boolean dawg.");
+                    throw new TypeMismatchException(
+                            "Ayo the condition in the mara if (" + args[0] + ") gotta resolve to a boolean dawg.",
+                            finalMOutput.lineNumber);
                 }
                 TIfStatement ifStatement = tContainer.new TIfStatement(obj, codeblock, finalMOutput.lineNumber);
                 TIfStatement originalIf = ((TIfStatement) ((MultipleLinesOutput) multipleLinesOutput).specialArg
@@ -233,13 +270,16 @@ public class Tokenizer {
                 break;
             }
             case "if": {
+                String cond = args[0].replaceFirst(Pattern.quote(Character.toString(Chars.STATEMENT_OPEN)),
+                        Matcher.quoteReplacement(" ")).trim();
                 Object obj = tContainer.new TStatement(finalMOutput.lineNumber)
-                        .parse(args[0].replaceFirst("\\" + Character.toString(Chars.STATEMENT_OPEN), " "));
+                        .parse(cond);
                 if (Validate.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
-                    throw new TokenizerSyntaxException(
-                            "Ayo the condition on line" + finalMOutput.lineNumber + "gotta resolve to a boolean dawg.");
+                    throw new TypeMismatchException(
+                            "Ayo the condition in the if (" + cond + ") gotta resolve to a boolean dawg.",
+                            finalMOutput.lineNumber);
                 }
                 specific = tContainer.new TIfStatement(obj, codeblock, finalMOutput.lineNumber).toToken();
                 if (line.contains(Keywords.ELSE)) {
@@ -259,10 +299,12 @@ public class Tokenizer {
                 break;
             }
             case "colonize": {
+                String cond = args[0].replaceFirst(Pattern.quote(Character.toString(Chars.STATEMENT_OPEN)),
+                        Matcher.quoteReplacement(" ")).trim();
                 if (!args[2].equals(Keywords.FOR_EACH)) {
                     TokenDefault var = (TokenDefault) ((ArrayList<Token<?>>) readLine(
                             Keywords.D_VAR + " "
-                                    + args[0].replaceFirst("\\" + Character.toString(Chars.STATEMENT_OPEN), " ").trim()
+                                    + cond
                                     + Character.toString(Chars.END_LINE),
                             "", null,
                             null, finalMOutput.lineNumber, config))
@@ -272,8 +314,9 @@ public class Tokenizer {
                     if (Validate.isValidBoolInput(obj)) {
                         obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                     } else {
-                        throw new TokenizerSyntaxException("Ayo the condition on line" + finalMOutput.lineNumber
-                                + "gotta resolve to a boolean dawg.");
+                        throw new TypeMismatchException(
+                                "Ayo the condition in the colonize (" + cond + ") gotta resolve to a boolean dawg.",
+                                finalMOutput.lineNumber);
                     }
                     specific = tContainer.new TForLoop(
                             var instanceof TUnknownVar ? (TUnknownVar) var : (TNumberVar) var, obj,
@@ -305,7 +348,8 @@ public class Tokenizer {
 
                 IsValidSymbolName IVSN = Validate.isValidSymbolName(args[0]);
                 if (!IVSN.isValid)
-                    throw new SyntaxCriticalError(IVSN.op + " cannot be used in a variable name zawg.");
+                    throw new MalformedSyntaxException(
+                            IVSN.op + " cannot be used in a variable name zawg.", finalMOutput.lineNumber);
                 specific = tContainer.new TFunction(args[0], fArgs, codeblock, finalMOutput.lineNumber).toToken();
                 break;
             }
@@ -314,14 +358,16 @@ public class Tokenizer {
                 if (Validate.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).getValue() : obj;
                 } else {
-                    throw new TokenizerSyntaxException(
-                            "Ayo the condition on line" + finalMOutput.lineNumber + "gotta resolve to a boolean dawg.");
+                    throw new TypeMismatchException(
+                            "Ayo the condition in the colonize " + args[0] + " gotta resolve to a boolean dawg.",
+                            finalMOutput.lineNumber);
                 }
                 specific = tContainer.new TWhileLoop(obj, codeblock, finalMOutput.lineNumber).toToken();
                 break;
             }
             default: {
-                throw new TokenizerException("Uhm, something went wrong. This shouldnt happen.");
+                throw new CatchAllException("Uhm, something went wrong. This shouldnt happen.",
+                        finalMOutput.lineNumber);
             }
         }
         tokens.add(specific);
@@ -343,7 +389,7 @@ public class Tokenizer {
      * @return The token for the given line.
      */
     private static Token<?> processVariable(String line, Token<?> tContainer, int lineNumber)
-            throws SyntaxError, TokenizerException {
+            throws TokenizerException {
         boolean isString = false;
         if (line.indexOf(Chars.ARRAY_ASSIGNMENT) != -1) {
             line = line.trim();
@@ -351,7 +397,8 @@ public class Tokenizer {
             String[] parts = line.split("<-\\|");
             parts[0] = parts[0].trim();
             if (parts[0].isEmpty()) {
-                throw new SyntaxCriticalError("Bro defined a variable on line " + lineNumber + " with no name lmao.");
+                throw new MalformedSyntaxException(
+                        "Bro defined a variable on line with no name lmao.", lineNumber);
             }
             ArrayList<Object> parsedValues = new ArrayList<>();
 
@@ -382,17 +429,18 @@ public class Tokenizer {
         parts[0] = parts[0].trim();
         IsValidSymbolName IVSN = Validate.isValidSymbolName(parts[0]);
         if (!IVSN.isValid)
-            throw new SyntaxCriticalError(IVSN.op + " cannot be used in a variable name zawg.");
+            throw new MalformedSyntaxException(IVSN.op + " cannot be used in a variable name zawg.", lineNumber);
         if (parts.length == 1) {
             // they declared the variable with no value. Still valid syntax.
             // unless the name is nothing, then we have a problem.
             if (parts[0].isEmpty()) {
-                throw new SyntaxCriticalError("Bro defined a variable on line " + lineNumber + " with no name lmao.");
+                throw new MalformedSyntaxException(
+                        "Bro defined a variable on line " + lineNumber + " with no name lmao.", lineNumber);
             }
             if (parts.length == 1 && line.indexOf(Chars.ASSIGNMENT) != -1)
-                throw new SyntaxCriticalError(
-                        "if you're finna define a variable without a value, remove the assignment operator. (line "
-                                + lineNumber + ")");
+                throw new MalformedSyntaxException(
+                        "if you're finna define a variable without a value, remove the assignment operator.",
+                        lineNumber);
             return tContainer.new TUnknownVar(parts[0], null, lineNumber).toToken();
         }
         parts[1] = parts[1].trim();
@@ -445,7 +493,7 @@ public class Tokenizer {
      * @return The token for the given line.
      */
     private static Token<?> handleImport(String line, Token<?> tContainer, int lineNumber, TConfig config)
-            throws SyntaxCriticalError {
+            throws TokenizerException.MalformedSyntaxException {
         // tsea "path"
         // tsea "path" <- funcz, funca
         line = line.replace(Keywords.IMPORT.get(0), "").replace(Keywords.IMPORT.get(1), "").trim();
@@ -456,8 +504,8 @@ public class Tokenizer {
 
         ArrayList<Tuple2<Integer, Integer>> quotepairs = Find.quotationPairs(line);
         if (quotepairs.size() == 0) {
-            throw new SyntaxCriticalError(
-                    "Bro, the file to take from has to be surrounded by qutoes. (Line " + lineNumber + ")");
+            throw new MalformedSyntaxException(
+                    "Bro, the file to take from has to be surrounded by qutoes.", lineNumber);
 
         }
         int stringStart = line.indexOf(Chars.STRING);
@@ -564,8 +612,8 @@ public class Tokenizer {
                 && !line.startsWith(Character.toString(Chars.COMMENT)))
             // A block of code but the type waws not catched, invaliud keyword then.
             // This is a syntax error.
-            throw new SyntaxCriticalError(
-                    line.split(" ")[0] + " on line " + lineNumber + " aint a real keyword homie.");
+            throw new MalformedSyntaxException(
+                    line.split(" ")[0] + " aint a real keyword homie.", lineNumber);
 
         ArrayList<Token<?>> tokens = new ArrayList<>();
         Token<?> tContainer = new Token<>(null);
@@ -674,7 +722,7 @@ public class Tokenizer {
                     : processBlockLines(
                             isComment, line, (MultipleLinesOutput) multipleLinesOutput, tokenizerLine,
                             tokens, tContainer, type,
-                            multipleLinesOutput == null ? handleArgs(type, line) : null,
+                            multipleLinesOutput == null ? handleArgs(type, line, lineNumber) : null,
                             (blockChain != null ? blockChain.getInitialIf() : null),
                             lineNumber, config);
             return k;
@@ -696,7 +744,8 @@ public class Tokenizer {
 
         if (!line.isEmpty() && !line.equals(Chars.BLOCK_CLOSE) && !line.endsWith(Chars.BLOCK_OPEN)
                 && (!line.endsWith(Character.toString(Chars.END_LINE)))) {
-            throw new SyntaxCriticalError("Ye wena. On line " + lineNumber + " you don't shout your code. Sies.");
+            throw new MalformedSyntaxException(
+                    "Ye wena. You don't shout your code. Sies.", lineNumber);
         }
 
         line = line.isEmpty() ? line : line.substring(0, line.length() - 1);
@@ -714,9 +763,8 @@ public class Tokenizer {
             // Split on the operator "<=="
             String[] parts = withoutKeyword.split(Chars.THROW_ERROR);
             if (parts.length != 2) {
-                throw new SyntaxCriticalError(
-                        "Ehh baba you must use the right syntax if u wanna cima this process. (line " + lineNumber
-                                + ")");
+                throw new TokenizerException.MalformedSyntaxException(
+                        "Ehh baba you must use the right syntax if u wanna cima this process.", lineNumber);
             }
             String errorMessage = parts[1].trim();
             if (errorMessage.startsWith("\"") && errorMessage.endsWith("\"") && errorMessage.length() >= 2) {
@@ -735,9 +783,9 @@ public class Tokenizer {
                 case "voetsek", "nevermind":
                     return tContainer.new TLoopControl(line, lineNumber).toToken();
                 default:
-                    throw new SyntaxCriticalError(
-                            "Loop control keywords should be by themselves big bro. Remove whatever is on line "
-                                    + lineNumber);
+                    throw new MalformedSyntaxException(
+                            "Loop control keywords should be by themselves big bro. Remove whatever is on line ",
+                            lineNumber);
             }
         }
 

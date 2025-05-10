@@ -3,6 +3,9 @@ package com.jaiva;
 import java.io.*;
 import java.util.*;
 
+import com.jaiva.errors.InterpreterException;
+import com.jaiva.errors.JaivaException;
+import com.jaiva.errors.TokenizerException;
 import com.jaiva.interpreter.*;
 import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -104,12 +107,12 @@ public class Main {
      *             can be used to specify options and configurations for the
      *             interpreter.
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         ArrayList<String> replArgs = new ArrayList<>(
                 Arrays.asList("--print-tokens", "-p", "--help", "-h", "--version", "-v", "--test", "-t", "--update",
                         "-u"));
         ArrayList<String> tokenArgs = new ArrayList<>(
-                Arrays.asList("-s", "-j", "--string", "-json", "-jg", "--json-with-globals"));
+                Arrays.asList("-s", "-j", "--string", "-json", "-jg", "--json-with-globals", "-d", "--debug"));
         if (args.length == 0) {
             new REPL(0);
             return;
@@ -142,6 +145,8 @@ public class Main {
                     System.out.println("\t--json, -j: Print tokens in JSON format.");
                     System.out.println("\t--json-with-globals, -jg: Print tokens including globals in JSON format.");
                     System.out.println("\t--string, -s: Print tokens in string format.");
+                    System.out.println(
+                            "\t--debug, -d: Enable debug mode. (All errors will print as an uncaught Java Exception.)");
                     System.out.println();
                 }
                 case "--version", "-v" -> {
@@ -171,7 +176,11 @@ public class Main {
             return;
         }
         IConfig iconfig = new IConfig(args[0]);
+        boolean debug = false;
         try {
+            if (args.length > 1)
+                if (args[1].equals("-d") || args[1].equals("--debug"))
+                    debug = true;
             ArrayList<Token<?>> tokens = parseTokens(args[0], false);
             if (tokens.isEmpty())
                 return;
@@ -179,6 +188,7 @@ public class Main {
             if ((args.length > 1) && tokenArgs.contains(args[1])) {
                 // here, args[1] is the tokens mode
                 // return tokens mode.
+                System.out.println(args[1]);
                 switch (args[1]) {
                     case "-s", "--string" -> {
                         for (Token<?> t : tokens) {
@@ -223,10 +233,36 @@ public class Main {
 
             Interpreter.interpret(tokens, Context.GLOBAL, new Globals().vfs, iconfig);
 
+            // if we reached here, everythign went well!
+
+            System.exit(0);
+
         } catch (Exception e) {
             iconfig.resources.release();
-            System.err.println("Error.");
-            System.err.println(e);
+            if (debug)
+                throw e; // throw the error as uncaught when debug mode is enabled so that we get the
+                         // entire error along with the stack trace.
+            if (e instanceof InterpreterException) {
+                System.out.println("Error while interpreting code: ");
+                System.out.println(e.getMessage());
+                System.exit(1);
+            } else if (e instanceof TokenizerException) {
+                System.out.println("Error while parsing code: ");
+                System.out.println(e.getMessage());
+                System.exit(-1);
+            } else if (e instanceof JaivaException) {
+                // TokenizerException and InterpreterException extend off of JaivaException, so
+                // if we dont catch those, cagtch this one with generic message.
+                System.out.println("Error: ");
+                System.out.println(e.getMessage());
+                System.exit(-1);
+            } else {
+                // Some other thing, this genrally shouldnt happen as all eror cases we need to
+                // account for where ever it is and not here in the Main class.
+                System.out.println("\"Something\" went wrong, and it's proabaly not your fault.");
+                System.out.println(e.getMessage());
+                System.exit(-1);
+            }
         }
     }
 
@@ -261,8 +297,7 @@ public class Main {
 
         // here, args[0] is the file name that must end in either .jaiva, .jiv or .jva
         if (!filePath.endsWith(".jaiva") && !filePath.endsWith(".jiv") && !filePath.endsWith(".jva")) {
-            System.out.println("I can't read whatever that lang is bro (i accept only .jaiva, .jiv or .jva)");
-            return new ArrayList<>();
+            throw new JaivaException("I can't read whatever that lang is bro (i accept only .jaiva, .jiv or .jva)");
         }
         File myObj = new File(filePath);
         ArrayList<Token<?>> tokens = new ArrayList<>();

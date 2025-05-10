@@ -4,7 +4,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.jaiva.errors.TokErrs.*;
+import com.jaiva.errors.TokenizerException.*;
+import com.jaiva.errors.TokenizerException;
 import com.jaiva.lang.Chars;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.lang.Keywords;
@@ -20,9 +21,9 @@ import com.jaiva.utils.ContextDispatcher.To;
  * T must extend the {@link TokenDefault} class which is the base class for all
  * tokens.
  * <p>
- * <p>
  * 
- * All tokens can be represented as a Token<T> object, where T is the type of
+ * All tokens can be represented as a {@link Token} object, where T is the type
+ * of
  * the token, and changed back to it's original type when needed.
  *
  * @param <T> the type of the value held by this token
@@ -93,7 +94,7 @@ public class Token<T extends TokenDefault> {
      * Represents an important statemnent such as:
      * tsea "path"!
      * or
-     * tsea "path" <- func1, func2, func3!
+     * {@code tsea "path" <- func1, func2, func3!}
      */
     public class TImport extends TokenDefault {
         /**
@@ -152,7 +153,8 @@ public class Token<T extends TokenDefault> {
      * user defined symbols. This token should not be able to be interpreted or be
      * seen in an array or anywhere in a tokens arraylist, as whatever method
      * handling the reading of a list of tokens, Should handle this specific token
-     * case before the generic Token<?>, by setting an outside variable or another
+     * case before the generic {@link Token}, by setting an outside variable or
+     * another
      * way to do such. Then when we do not receive the TDocsComment and that outside
      * variable is set, we set the "tooltip" property of the new token to that
      * outside variable, therefore adding the documentation.
@@ -1118,14 +1120,14 @@ public class Token<T extends TokenDefault> {
          * @param type The type of the loop control statement.
          * @param ln   The line number.
          */
-        TLoopControl(String type, int ln) throws UnknownSyntaxError {
+        TLoopControl(String type, int ln) throws TokenizerException {
             super("TLoopControl", ln);
             if (type.equals(Keywords.LC_CONTINUE)) {
                 this.type = LoopControl.CONTINUE;
             } else if (type.equals(Keywords.LC_BREAK)) {
                 this.type = LoopControl.BREAK;
             } else {
-                throw new UnknownSyntaxError("So we're in LoopControl but not correctly?");
+                throw new CatchAllException("So we're in LoopControl but not correctly?", ln);
             }
         }
 
@@ -1414,10 +1416,14 @@ public class Token<T extends TokenDefault> {
      * @param line       The line to dispatch.
      * @param lineNumber The line number of the line.
      * @return The dispatched object.
-     * @throws SyntaxCriticalError If there is a syntax critical error.
-     * @throws SyntaxError         If there is a syntax error.
+     * @throws TokenizerException.MalformedSyntaxException If there is a syntax
+     *                                                     critical
+     *                                                     error.
+     * @throws TokenizerException                          If there is a syntax
+     *                                                     error.
      */
-    public Object dispatchContext(String line, int lineNumber) throws SyntaxCriticalError, SyntaxError {
+    public Object dispatchContext(String line, int lineNumber)
+            throws TokenizerException {
         line = line.trim();
         ContextDispatcher d = new ContextDispatcher(line);
         switch (d.getDeligation()) {
@@ -1426,9 +1432,10 @@ public class Token<T extends TokenDefault> {
             case PROCESS_CONTENT:
                 return processContext(line, lineNumber);
             case SINGLE_BRACE, EMPTY_STRING:
-                throw new SyntaxError("malformed string.");
+                throw new MalformedSyntaxException("Okay so uhm, there's a malformed string somewhere there",
+                        lineNumber);
             default:
-                throw new SyntaxCriticalError("yeah sum went wrong with ur dispatch code");
+                throw new CatchAllException("yeah sum went wrong with ur dispatch code", lineNumber);
         }
 
     }

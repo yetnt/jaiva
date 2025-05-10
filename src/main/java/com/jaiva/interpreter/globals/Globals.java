@@ -8,9 +8,7 @@ import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.Main;
-import com.jaiva.errors.IntErrs.FunctionParametersException;
-import com.jaiva.errors.IntErrs.UnknownVariableException;
-import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
+import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -73,16 +71,18 @@ public class Globals extends BaseGlobals {
             } else if (params.get(0) instanceof Token && ((Token) params.get(0)).getValue() instanceof TVarRef) {
                 name = ((TVarRef) ((Token) params.get(0)).getValue()).varName.toString();
             } else {
-                throw new WtfAreYouDoingException(
-                        "getVarClass() only accepts a variable reference or a string, whatever you sent is disgusting.");
+                throw new InterpreterException.WtfAreYouDoingException(
+                        "getVarClass() only accepts a variable reference or a string, whatever you sent is disgusting.",
+                        tFuncCall.lineNumber);
             }
             MapValue var = vfs.get(name);
             if (var == null) {
-                throw new UnknownVariableException(name, tFuncCall.lineNumber);
+                throw new InterpreterException.UnknownVariableException(name, tFuncCall.lineNumber);
             }
             if (!(var.getValue() instanceof Symbol)) {
-                throw new WtfAreYouDoingException(
-                        name + " is not a variable nor a function, wtf. this error shouldnt happen.");
+                throw new InterpreterException.WtfAreYouDoingException(
+                        name + " is not a variable nor a function, wtf. this error shouldnt happen.",
+                        tFuncCall.lineNumber);
             }
             Symbol symbol = (Symbol) var.getValue();
             // We need to convert the named token to a raw token so we can call .toString()
@@ -133,7 +133,7 @@ public class Globals extends BaseGlobals {
                 IConfig config)
                 throws Exception {
             if (tFuncCall.args.size() != params.size())
-                throw new FunctionParametersException(this, params.size());
+                throw new InterpreterException.FunctionParametersException(this, params.size());
 
             ArrayList<Object> returned = new ArrayList<>();
             tFuncCall.args.forEach(arg -> {

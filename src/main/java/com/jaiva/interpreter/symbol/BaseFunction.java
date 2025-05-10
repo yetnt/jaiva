@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import com.jaiva.errors.IntErrs.FunctionParametersException;
-import com.jaiva.errors.IntErrs.UnknownVariableException;
-import com.jaiva.errors.IntErrs.WtfAreYouDoingException;
+import com.jaiva.errors.InterpreterException;
+import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.interpreter.Context;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
@@ -126,7 +125,8 @@ public class BaseFunction extends Symbol {
             String[] paramNames = ((TFunction) this.token).args;
             HashMap<String, MapValue> newVfs = (HashMap) vfs.clone();
             if (paramNames.length != params.size())
-                throw new FunctionParametersException(this, params.size());
+                throw new InterpreterException.FunctionParametersException(this, params.size(),
+                        tFuncCall.lineNumber);
             for (int i = 0; i < paramNames.length; i++) {
                 String name = paramNames[i];
                 Object value = params.get(i);
@@ -143,9 +143,10 @@ public class BaseFunction extends Symbol {
                     TVarRef tVarRef = (TVarRef) ((Token<?>) value).getValue();
                     MapValue v = vfs.get(tVarRef.varName);
                     if (v == null)
-                        throw new UnknownVariableException(tVarRef);
+                        throw new InterpreterException.UnknownVariableException(tVarRef);
                     if (!(v.getValue() instanceof BaseFunction))
-                        throw new WtfAreYouDoingException(v.getValue(), BaseFunction.class, tVarRef.lineNumber);
+                        throw new InterpreterException.WtfAreYouDoingException(v.getValue(), BaseFunction.class,
+                                tVarRef.lineNumber);
 
                     wrappedValue = v.getValue();
 
@@ -159,9 +160,10 @@ public class BaseFunction extends Symbol {
                     if (tVarRef.index == null && tVarRef.name instanceof String) {
                         MapValue v = vfs.get(tVarRef.varName);
                         if (v == null)
-                            throw new UnknownVariableException(tVarRef);
+                            throw new InterpreterException.UnknownVariableException(tVarRef);
                         if (!(v.getValue() instanceof BaseVariable))
-                            throw new WtfAreYouDoingException(v.getValue(), BaseVariable.class, tVarRef.lineNumber);
+                            throw new InterpreterException.WtfAreYouDoingException(v.getValue(), BaseVariable.class,
+                                    tVarRef.lineNumber);
 
                         wrappedValue = v.getValue();
                     } else {

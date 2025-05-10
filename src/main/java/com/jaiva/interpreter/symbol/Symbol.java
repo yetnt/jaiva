@@ -1,6 +1,5 @@
 package com.jaiva.interpreter.symbol;
 
-import com.jaiva.errors.IntErrs.*;
 import com.jaiva.tokenizer.TokenDefault;
 
 /**

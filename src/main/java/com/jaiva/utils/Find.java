@@ -126,7 +126,7 @@ public class Find {
                 } else if (line.charAt(i) == end) {
                     endCount++;
                 }
-                if (startCount == endCount && startCount != 0) {
+                if (startCount == endCount && (startCount != 0)) {
                     return i;
                 }
             } else {

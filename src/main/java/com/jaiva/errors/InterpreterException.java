@@ -1,0 +1,326 @@
+package com.jaiva.errors;
+
+import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.symbol.BaseFunction;
+import com.jaiva.interpreter.symbol.BaseVariable;
+import com.jaiva.interpreter.symbol.Symbol;
+import com.jaiva.tokenizer.TokenDefault;
+import com.jaiva.tokenizer.Token.TFuncCall;
+import com.jaiva.tokenizer.Token.TFunction;
+import com.jaiva.tokenizer.Token.TIfStatement;
+import com.jaiva.tokenizer.Token.TStatement;
+import com.jaiva.tokenizer.Token.TThrowError;
+import com.jaiva.tokenizer.Token.TVarReassign;
+import com.jaiva.tokenizer.Token.TVarRef;
+import com.jaiva.tokenizer.Token.TWhileLoop;
+
+/**
+ * Base Interpreter Exception.
+ */
+public class InterpreterException extends JaivaException {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Interpreter Exception Constructor
+     * 
+     * @param message Message to send.
+     */
+    public InterpreterException(int lineNumber, String message) {
+        super(message, lineNumber);
+    }
+
+    /**
+     * Exception to throw whenever a user tries to modify a frozen symbol.
+     */
+    public static class FrozenSymbolException extends InterpreterException {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Base error to throw. Use this when you REALLY don't know the symbol instance.
+         * This is an esolang but try be as descriptive as possible.
+         */
+        public FrozenSymbolException(int lineNumber) {
+            super(lineNumber, "You tried to modify a frozen symbol. Don't do that.");
+        }
+
+        /**
+         * Error to throw when we know the symbol.
+         * 
+         * @param s The symbol in question
+         */
+        public FrozenSymbolException(Symbol s, int lineNumber) {
+            super(lineNumber,
+                    "The symbol \"" + s.name + "\" is lowkey frozen. You can't modify it.");
+        }
+
+        /**
+         * Error to throw when we know the symbol but not the line number.
+         * 
+         * @param s The symbol in question
+         */
+        public FrozenSymbolException(Symbol s) {
+            super(-1, "The symbol \"" + s.name + "\" is lowkey frozen. You can't modify it.");
+        }
+
+        /**
+         * Throw this overload when a user tries to modify a global symbol.
+         * 
+         * @param s        The symbol in question
+         * @param isGlobal true
+         */
+        public FrozenSymbolException(Symbol s, boolean isGlobal, int lineNumber) {
+            super(lineNumber, "Now tell me. How do you try and modify a global symbol? Specifically, \"" + s.name
+                    + "\". Shame be upon you!");
+        }
+    }
+
+    /**
+     * Exception to throw when a function's expected amount of parameters doesn't
+     * match the amount we receive.
+     */
+    public static class FunctionParametersException extends InterpreterException {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Overload for too many or too little parameters (When it does accept
+         * parameters)
+         * 
+         * @param s        base function instance
+         * @param amtGiven the amount of parameters they gave.
+         */
+        public FunctionParametersException(BaseFunction s, int amtGiven, int lineNumber) {
+            super(lineNumber, s.name + "() only needs " + ((TFunction) s.token).args.length
+                    + " parameter" + (amtGiven == 1 ? "" : "s") + ", and your goofy ahh gave " + amtGiven
+                    + ". ☠️");
+        }
+
+        public FunctionParametersException(BaseFunction s, int lineNumber) {
+            super(lineNumber, s.name + "() takes no input, why did you give it input??");
+        }
+    }
+
+    /**
+     * Exception to throw to warn the user, about the consequences of setting both
+     * the array and scalar value of a variable.
+     */
+    public static class DualVariableReassignWarning extends InterpreterException {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * DualVariableReassignWarning Constructor
+         * 
+         * @param s          The base variable the user is trying to set.
+         * @param lineNumber The line number this occured on.
+         */
+        public DualVariableReassignWarning(BaseVariable s, int lineNumber) {
+            // tokenizer.
+            super(lineNumber, s.name
+                    + " has already been defined as either an array or some value. Do not reassign it as vice versa. If you know what you are doing however, place a ~ after the variable name in the declaration.");
+        }
+
+    }
+
+    /**
+     * Exception to throw when a {@link TStatement} could not be resolved to a
+     * meaningful value.
+     */
+    public static class TStatementResolutionException extends InterpreterException {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Constructor for when the lhs or rhs of a TStatement doesnt match the type of
+         * the entire
+         * statement.
+         * 
+         * @param s         The tstatement
+         * @param side      "lhs" or "rhs"
+         * @param incorrect The .toString() of the Object we received.
+         */
+        public TStatementResolutionException(TStatement s, String side, String incorrect) {
+            super(s.lineNumber,
+                    "The " + side + " of the statement " + s.statement + " couldn't be resolved to the correct type." +
+                            " The statement is a " + (s.statementType == 0 ? "boolean" : "arithmetic")
+                            + " however I received a " + incorrect);
+        }
+
+        /**
+         * Constrcutor for when when some construct (like an {@link TIfStatement} or
+         * {@link TWhileLoop}) expected the input {@link TStatement} to resolve to
+         * something like a boolean but it resolved to something else.
+         * 
+         * @param outer    The construct's token which triggered the error.
+         * @param s        The {@link TStatement} in question.
+         * @param expected What it expected (in string form)
+         * @param received What it received (in string form)
+         */
+        public TStatementResolutionException(TokenDefault outer, TStatement s, String expected, String received) {
+            super(s.lineNumber,
+                    "i expected (" + s.statement + ") to resolve to a " + expected
+                            + ". (I'm pretty sure a " + outer.name
+                            + " does not take in a" + received + ")");
+        }
+    }
+
+    /**
+     * Exception to throw when the user tries using a symbol that wasn't defined in
+     * the current context.
+     */
+    public static class UnknownVariableException extends InterpreterException {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Constructor to use when we're tryig to use a variable, so we've got a
+         * {@link TVarRef} instance
+         * 
+         * @param s The variable reference.
+         */
+        public UnknownVariableException(TVarRef s) {
+            super(s.lineNumber, "Lowkey can't find variable named " + s.varName
+                    + " that you used anywhere. It prolly aint in this block's scope fr.");
+        }
+
+        /**
+         * Constructor used by one of the global functions which can use a string name
+         * in place of a variable reference.
+         * 
+         * @param name       The variable name
+         * @param lineNumber The line this occured on.
+         */
+        public UnknownVariableException(String name, int lineNumber) {
+            super(lineNumber, "Lowkey can't find the variable named " + name
+                    + " that you used anywhere. It prolly aint in this block's scope fr.");
+        }
+
+        /**
+         * Constructor to use when the variable the user is trying to reassign to (so a
+         * {@link TVarReassign}) doesn't exist.
+         * 
+         * @param s The variable reassignment token
+         */
+        public UnknownVariableException(TVarReassign s) {
+            super(s.lineNumber, "Lowkey can't find the variable named " + s.name
+                    + " that you're trying to reassign anywhere. It prolly aint in this block's scope fr.");
+        }
+
+        /**
+         * Constructor to use when the function the user is trying to call (so a
+         * {@link TFuncCall}), doesn't exist.
+         * 
+         * @param s The function call token.
+         */
+        public UnknownVariableException(TFuncCall s) {
+            super(s.lineNumber, "Lowkey can't find the function named " + s.functionName
+                    + " that you used anywhere. It prolly aint in this block's scope fr.");
+        }
+    }
+
+    /**
+     * Exception to use for any generic errors which realisitclaly do not need
+     * their own class.
+     */
+    public static class WtfAreYouDoingException extends InterpreterException {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Constructor for when the user inputs "foo" into "bar", however "bar" expects
+         * "foo" to be a specific type.
+         * 
+         * @param s            The symbol we got
+         * @param correctClass The correct class.
+         * @param lineNumber   The line number this occured on.
+         */
+        public WtfAreYouDoingException(Object s, Class<?> correctClass, int lineNumber) {
+            super(lineNumber,
+                    "Alright bub. if you're going to start mixing and matching, you might as well write lua code."
+                            + "(You tried using a " + s.getClass().getName() + " as if it were a "
+                            + correctClass.getName());
+        }
+
+        /**
+         * Constructor for custom "wtf" errors.
+         * 
+         * @param s          The message to send.
+         * @param lineNumber The line it occured at.
+         */
+        public WtfAreYouDoingException(String s, int lineNumber) {
+            super(lineNumber, s);
+        }
+
+    }
+
+    /**
+     * Exception to throw when an error happens trying to parse a function call or
+     * something related to that.
+     */
+    public static class WeirdAhhFunctionException extends InterpreterException {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * When a function name does not resolve to a string that can actualy be used
+         * in the vfs HashMap.
+         * <p>
+         * (When we parse a {@link TFuncCall}, due to the nature of functional
+         * programming, it may have layers in it's name which are a bunch of layered
+         * calls or whatever, {@link Primitives} tries to recursively parse this name
+         * into something we can use. If we can't get it to a string, we trhow this
+         * exception as the vfs {@link HashMap} only uses strings.)
+         *
+         * @param tFuncCall The weird function in question.
+         */
+        public WeirdAhhFunctionException(TFuncCall tFuncCall) {
+            super(tFuncCall.lineNumber,
+                    tFuncCall.name + " could NOT be resolved to a poper function name. Idk what else to tell you zawg");
+        }
+    }
+
+    /*
+     * Exception to throw when something goes wrong during a string calculation
+     */
+    public static class StringCalcException extends InterpreterException {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Constructor to use when the statement contains an operator which isn't a
+         * string operator.
+         * 
+         * @param st The TStatement.
+         */
+        public StringCalcException(TStatement st) {
+            super(st.lineNumber,
+                    st.statement + "A statement contains invalid string operations. Not telling u what tho lolol.");
+        }
+
+        /**
+         * Constructor to use when a string calculation returned an error, such as
+         * saying {@code "string" - 10} when the string is only 6 characters long
+         * 
+         * @param s The TStatement.
+         * @param e The Exception that got caught.
+         */
+        public StringCalcException(TStatement s, Exception e) {
+            super(s.lineNumber,
+                    e instanceof StringIndexOutOfBoundsException
+                            ? "Bro, whatever you did, it's out of the string's bounbds. fix it pls 🙏"
+                            : "So something parsed to a negative number, when sum else shouldnt have it yknow. I'm too lazy to finish writing this error tho.");
+        }
+    }
+
+    /**
+     * Exception to use when the user wants to throw an error.
+     */
+    public static class CimaException extends InterpreterException {
+
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Default Constructor
+         * 
+         * @param message    The message the user wants to print.
+         * @param lineNumber The line number where we can find the {@link TThrowError}
+         */
+        public CimaException(String message, int lineNumber) {
+            super(lineNumber, "Ight. Stopped program. Reason: " + message);
+        }
+    }
+}
