@@ -69,7 +69,14 @@ This command will attempt to find `<filePath>` and execute the jaiva code.
     ```
 
 4. Return tokens in JSON format including globals.
+
     ```sh
     > jaiva <filePath> -jg
     > jaiva <filePath> --json-with-globals
+    ```
+
+5. Read the file in debug mode (Will throw Java errors with stack traces.)
+    ```sh
+    > jaiva <filePath> -d
+    > jaiva <filePath> --debug
     ```

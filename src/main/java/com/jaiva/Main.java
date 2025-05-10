@@ -41,7 +41,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "1.0.0-beta.3";
+    public static String version = "1.0.0-beta.4";
     /**
      * Author, it's just me.
      */
@@ -175,6 +175,7 @@ public class Main {
             System.out.println("Provide a file name or a cmd flag kau.");
             return;
         }
+        
         IConfig iconfig = new IConfig(args[0]);
         boolean debug = false;
         try {
@@ -190,6 +191,9 @@ public class Main {
                 // return tokens mode.
                 System.out.println(args[1]);
                 switch (args[1]) {
+                    case "-d", "--debug" -> {
+                        break;
+                    }
                     case "-s", "--string" -> {
                         for (Token<?> t : tokens) {
                             System.out.println(t.toString());

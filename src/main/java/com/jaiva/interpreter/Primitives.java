@@ -266,38 +266,12 @@ public class Primitives {
                             && !(rhs instanceof String))
                         throw new InterpreterException.TStatementResolutionException(tStatement, "rhs", rhs.toString());
 
-                    if (lhs instanceof Integer) {
-                        // handle ints
-                        switch (op) {
-                            case "=":
-                                return ((Integer) lhs).equals((Integer) rhs);
-                            case "!=":
-                                return !((Integer) lhs).equals((Integer) rhs);
-                        }
-                    } else if (lhs instanceof Double) {
-                        // handle doubles
-                        switch (op) {
-                            case "=":
-                                return ((Double) lhs).equals((Double) rhs);
-                            case "!=":
-                                return !((Double) lhs).equals((Double) rhs);
-                        }
-                    } else if (lhs instanceof Boolean) {
-                        // handle booleans
-                        switch (op) {
-                            case "=":
-                                return ((Boolean) lhs).equals((Boolean) rhs);
-                            case "!=":
-                                return !((Boolean) lhs).equals((Boolean) rhs);
-                        }
-                    } else if (lhs instanceof String) {
-                        // handle strings
-                        switch (op) {
-                            case "=":
-                                return ((String) lhs).equals((String) rhs);
-                            case "!=":
-                                return !((String) lhs).equals((String) rhs);
-                        }
+                    // handle ints
+                    switch (op) {
+                        case "=":
+                            return lhs.equals(rhs);
+                        case "!=":
+                            return !lhs.equals(rhs);
                     }
                 }
 

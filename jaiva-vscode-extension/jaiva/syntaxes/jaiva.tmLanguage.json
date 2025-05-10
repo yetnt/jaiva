@@ -25,17 +25,26 @@
         },
         {
             "include": "#numbers"
-        },
-        {
-            "include": "#booleans"
         }
     ],
     "repository": {
         "keywords": {
             "patterns": [
                 {
+                    "name": "keyword.other",
+                    "match": "\\b(tsea|maak|if|mara|zama zama|kwenza|cima|colonize|chaai|khutla|with|nikhil|kota|idk)\\b"
+                },
+                {
                     "name": "keyword.control.jaiva",
-                    "match": "\\b(tsea|tšea|maak|if|mara|zama zama|kwenza|cima|colonize|chaai|khutla|with|nikhil|kota|voetsek|nevermind|idk)\\b"
+                    "match": "\\b(voetsek|nevermind)\\b"
+                },
+                {
+                    "name": "constant.language.jaiva",
+                    "match": "\\btrue|yebo\\b"
+                },
+                {
+                    "name": "constant.language.jaiva",
+                    "match": "\\bfalse|aowa\\b"
                 }
             ]
         },
@@ -97,11 +106,11 @@
                 },
                 {
                     "name": "keyword.operator.jaiva",
-                    "match": "\\b(<-|<-\\||\\||\\$|\\*|\\.|<==)\\b"
+                    "match": "\\||\\*|\\."
                 },
                 {
                     "name": "keyword.operator.jaiva",
-                    "match": ","
+                    "match": ",|<-|<==|<-\\|"
                 },
                 {
                     "name": "keyword.operator.end.jaiva",
@@ -117,19 +126,7 @@
             "patterns": [
                 {
                     "name": "constant.numeric.jaiva",
-                    "match": "\\b\\d+(\\.\\d+)?\\b"
-                }
-            ]
-        },
-        "booleans": {
-            "patterns": [
-                {
-                    "name": "keyword.other.true.jaiva",
-                    "match": "\\btrue|yebo\\b"
-                },
-                {
-                    "name": "keyword.other.false.jaiva",
-                    "match": "\\bfalse|aowa\\b"
+                    "match": "\\b\\d+(\\.|e\\d+)?\\b"
                 }
             ]
         }

@@ -1391,19 +1391,25 @@ public class Token<T extends TokenDefault> {
             try {
                 return Integer.parseInt(line);
             } catch (NumberFormatException e) {
-                if (line.equals("true") || line.equals("false") || line.equals(Keywords.TRUE)
-                        || line.equals(Keywords.FALSE)) {
-                    line = line.replace(Keywords.TRUE, "true").replace(Keywords.FALSE, "false");
-                    return Boolean.parseBoolean(line);
-                } else if (line.contains("\"")) {
-                    return line.substring(1, line.length() - 1).replace("\"", "");
-                } else if (line.isBlank()) {
-                    return null;
-                } else {
-                    if (line.startsWith("V~") || line.startsWith("F~")) {
-                        return line.substring(2);
+                try {
+                    return Double.parseDouble(line);
+                } catch (NumberFormatException e2) {
+                    if (line.equals("true") || line.equals("false") || line.equals(Keywords.TRUE)
+                            || line.equals(Keywords.FALSE)) {
+                        line = line.replace(Keywords.TRUE, "true").replace(Keywords.FALSE, "false");
+                        return Boolean.parseBoolean(line);
+                    } else if (line.contains("\"")) {
+                        return line.substring(1, line.length() - 1).replace("\"", "");
+                    } else if (line.isBlank()) {
+                        return null;
+                    } else if (line.equals(Keywords.UNDEFINED)) {
+                        return new TVoidValue(lineNumber);
                     } else {
-                        return new TVarRef(line, lineNumber, line.charAt(line.length() - 1) == '~').toToken();
+                        if (line.startsWith("V~") || line.startsWith("F~")) {
+                            return line.substring(2);
+                        } else {
+                            return new TVarRef(line, lineNumber, line.charAt(line.length() - 1) == '~').toToken();
+                        }
                     }
                 }
             }

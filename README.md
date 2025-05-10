@@ -1,6 +1,6 @@
 # <center> <img src="images/jaiva-full-logo.png" width="50"> Jaiva!
 
-<center><h4>Version *1.0.0-beta.3*</h4></center>
+<center><h4>Version *1.0.0-beta.4*</h4></center>
 
 This esolang of mine is still in development, so expect alot of updates.
 
@@ -71,7 +71,13 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
 
 ## <center>Syntax
 
-It's simple really
+It's simple really, to start off with:
+
+All lines (unless block open and close) must end in an exclamation mark. because why aren't you screaming your code.
+
+```jaiva
+maak a <- 10!
+```
 
 ### Comments.
 
@@ -90,7 +96,9 @@ And multi line comments open and close with the `{` `}`
 }
 ```
 
-All lines (unless block open and close) must end in an exclamation mark. because why aren't you screaming your code.
+#### Documentation
+
+If you're using something like vscode and would like to document your [variables](#variables) or [functions](#functions), you can use the following syntax
 
 ```jaiva
 maak a <- 10!
