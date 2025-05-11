@@ -15,6 +15,7 @@ import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TFunction;
 import com.jaiva.tokenizer.Token.TVarRef;
+import com.jaiva.tokenizer.Token.TVoidValue;
 
 /**
  * BaseFunction class is a base class for all functions in Jaiva.
@@ -96,6 +97,39 @@ public class BaseFunction extends Symbol {
             super(name, token);
         }
 
+        private void checkParams(TFuncCall tFuncCall) throws InterpreterException {
+            TFunction tFunc = (TFunction) this.token;
+            // this if sanitizes tFuncCall, as if it has 1 singular entry and that entry is
+            // null, we remove it so we have clear args.
+            if (tFuncCall.args.size() == 1 && tFuncCall.args.get(0) == null) {
+                tFuncCall.args.clear();
+            }
+            for (int i = 0; i < tFunc.isArgOptional.size(); i++) {
+                boolean isOptional = (boolean) tFunc.isArgOptional.get(i);
+                // check if the current param was given an input of TVoidValue
+                // if so, error as we dont want them to pass in idk to a paramter thats not
+                // optional
+                if (!tFuncCall.args.isEmpty() && tFuncCall.args.size() != i) {
+                    if (tFuncCall.args.get(i) instanceof TVoidValue && !isOptional)
+                        throw new InterpreterException.FunctionParametersException(this, Integer.toString(i + 1),
+                                tFuncCall.lineNumber);
+                } else {
+                    // the function call has less arguments than required by the function.
+                    // check if all the remaining arguments are defined as optional.
+                    for (int j = i; j < tFunc.isArgOptional.size(); j++) {
+                        if (!(boolean) tFunc.isArgOptional.get(j)) {
+                            throw new InterpreterException.FunctionParametersException(this, Integer.toString(j + 1),
+                                    tFuncCall.lineNumber);
+                        }
+                    }
+
+                    // if we made it here, we've checked everything, so we can break out the outer
+                    // loop
+                    break;
+                }
+            }
+        }
+
         @Override
         /**
          * Calls the function with the given parameters and variable functions store.
@@ -123,12 +157,20 @@ public class BaseFunction extends Symbol {
             // so we can make name value pairs.
             String[] paramNames = ((TFunction) this.token).args;
             HashMap<String, MapValue> newVfs = (HashMap) vfs.clone();
-            if (paramNames.length != params.size())
-                throw new InterpreterException.FunctionParametersException(this, params.size(),
-                        tFuncCall.lineNumber);
+            // if (paramNames.length != params.size())
+            // throw new InterpreterException.FunctionParametersException(this,
+            // params.size(),
+            // tFuncCall.lineNumber);
+            checkParams(tFuncCall);
             for (int i = 0; i < paramNames.length; i++) {
                 String name = paramNames[i];
-                Object value = params.get(i);
+                Object value;
+                try {
+                    value = params.get(i);
+                } catch (IndexOutOfBoundsException e) {
+                    // optional as we checked params above, so set it to TVoidValue
+                    value = tContainer.new TVoidValue(tFuncCall.lineNumber);
+                }
                 if (value instanceof String)
                     value = EscapeSequence.escape((String) value);
                 Object wrappedValue = null;

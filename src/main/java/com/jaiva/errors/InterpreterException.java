@@ -86,8 +86,9 @@ public class InterpreterException extends JaivaException {
          * Overload for too many or too little parameters (When it does accept
          * parameters)
          * 
-         * @param s        base function instance
-         * @param amtGiven the amount of parameters they gave.
+         * @param s          base function instance
+         * @param amtGiven   the amount of parameters they gave.
+         * @param lineNumber the line number this happened on
          */
         public FunctionParametersException(BaseFunction s, int amtGiven, int lineNumber) {
             super(lineNumber, s.name + "() only needs " + ((TFunction) s.token).args.length
@@ -95,8 +96,29 @@ public class InterpreterException extends JaivaException {
                     + ". ☠️");
         }
 
+        /**
+         * Constructor for when a function takes no input
+         * 
+         * @param s          Base function instance
+         * @param lineNumber the line number this happened on
+         */
         public FunctionParametersException(BaseFunction s, int lineNumber) {
             super(lineNumber, s.name + "() takes no input, why did you give it input??");
+        }
+
+        /**
+         * Exception thrown when a required parameter for a function is not defined or
+         * is set to an invalid value.
+         *
+         * @param s          The function where the parameter is missing or invalid.
+         * @param nthParam   The position converted to a string.
+         * @param lineNumber The line number in the source code where the exception
+         *                   occurred.
+         */
+        public FunctionParametersException(BaseFunction s, String nthParam, int lineNumber) {
+            super(lineNumber, "The " + nthParam + (nthParam.endsWith("1") ? "st"
+                    : nthParam.endsWith("2") ? "nd" : nthParam.endsWith("3") ? "rd" : "") + " parameter in " + s.name
+                    + "() is required. (Either you didn't set it or set it to idk)");
         }
     }
 
