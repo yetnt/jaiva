@@ -118,8 +118,10 @@ public class Main {
             return;
         } else if (replArgs.contains(args[0])) {
             switch (args[0]) {
-                case "--print-tokens", "-p" -> // System.out.println("Print token REPL mode.");
+                case "--print-tokens", "-p" -> {// System.out.println("Print token REPL mode.");
                     new REPL(1);
+                    System.exit(0);
+                }
                 case "--help", "-h" -> {
                     System.out.println();
                     System.out.println("Usage: jaiva-src");
@@ -148,6 +150,7 @@ public class Main {
                     System.out.println(
                             "\t--debug, -d: Enable debug mode. (All errors will print as an uncaught Java Exception.)");
                     System.out.println();
+                    System.exit(0);
                 }
                 case "--version", "-v" -> {
                     System.out.println(ASCII);
@@ -155,27 +158,34 @@ public class Main {
                     System.out.println(
                             "Jaiva is a programming language that is designed to be easy to use and understand. (I'm speaking out my ass, I made this cuz i was bored on a random january)");
                     System.out.println("Made with love by: " + author);
+                    System.exit(0);
                 }
                 case "--test", "-t" -> {
                     String workingDir = System.getProperty("user.dir");
                     System.out.println(workingDir);
                     System.out.println("Test cmd");
+                    System.exit(0);
                 }
                 case "--update", "-u" -> {
                     System.out.println("");
                     System.out.println(
                             "Because i'm far too lazy to implement an auto upater, you'll have to just reinstall the jaiva folder into your existing one every time you want to update.");
                     System.out.println("I'm not making it easier, you can make a PR on the github though.");
+                    System.exit(0);
                 }
-                default -> System.out.println("Invalid REPL mode.");
+                default -> {
+                    System.out.println("Invalid REPL mode.");
+                    System.exit(-1);
+                }
             }
             return;
         } else if (!args[0].contains(".")) {
             // this is to catch the case where the user does not provide a file name
             System.out.println("Provide a file name or a cmd flag kau.");
+            System.exit(-1);
             return;
         }
-        
+
         IConfig iconfig = new IConfig(args[0]);
         boolean debug = false;
         try {

@@ -24,14 +24,14 @@ public class EscapeSequence {
                 .replace("$=", "=")
                 .replace("$,", ",")
                 .replace("$!", "!")
-                .replace("$s", " ")
+                // .replace("$s", " ")
                 .replace("$@", "@")
                 .replace("$n", "\n")
                 .replace("$t", "\t")
                 .replace("$r", "\r")
                 .replace("$b", "\b")
                 .replace("$f", "\f")
-                .replace("$'", "'")
+                // .replace("$'", "'")
                 .replace("$\"", "\"")
                 .replace("$$", "$");
     }
@@ -65,14 +65,14 @@ public class EscapeSequence {
                 .replace("=", "$=")
                 .replace(",", "$,")
                 .replace("!", "$!")
-                .replace(" ", "$s")
+                // .replace(" ", "$s")
                 .replace("@", "$@")
                 .replace("\n", "$n")
                 .replace("\t", "$t")
                 .replace("\r", "$r")
                 .replace("\b", "$b")
                 .replace("\f", "$f")
-                .replace("'", "$'")
+                // .replace("'", "$'")
                 .replace("\"", "$\"");
     }
 
@@ -94,7 +94,7 @@ public class EscapeSequence {
         for (int i = 0; i < parts.length; i++) {
             if (i % 2 != 0) {
                 String unescapedString = parts[i]
-                        .split("((?<!\\$)(\\\"|\\!|\\\\|\\\"|\\'|@|=))|(\\t|\\n|\\s)").length != 1
+                        .split("((?<!\\$)(\\\"|\\!|\\\\|\\\"|@|=))|(\\t|\\n|\\s)").length != 1
                                 ? unescape(parts[i])
                                 : parts[i];
                 b.append("\"" + unescapedString + "\"");

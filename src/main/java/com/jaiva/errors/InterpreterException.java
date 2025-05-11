@@ -139,9 +139,9 @@ public class InterpreterException extends JaivaException {
          */
         public TStatementResolutionException(TStatement s, String side, String incorrect) {
             super(s.lineNumber,
-                    "The " + side + " of the statement " + s.statement + " couldn't be resolved to the correct type." +
-                            " The statement is a " + (s.statementType == 0 ? "boolean" : "arithmetic")
-                            + " however I received a " + incorrect);
+                    incorrect + " (the " + side + ") in (" + s.statement + ") is not allowed in" +
+                            (s.statementType == 0 ? " a (number) comparison" : " an arithmetic")
+                            + " statement.");
         }
 
         /**

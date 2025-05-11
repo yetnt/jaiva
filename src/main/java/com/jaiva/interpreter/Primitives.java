@@ -18,6 +18,7 @@ import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TIfStatement;
 import com.jaiva.tokenizer.Token.TStatement;
 import com.jaiva.tokenizer.Token.TVarRef;
+import com.jaiva.tokenizer.Token.TVoidValue;
 import com.jaiva.tokenizer.Token.TWhileLoop;
 
 /**
@@ -164,9 +165,11 @@ public class Primitives {
             if (tStatement.statementType == 1) {
                 // check input first of all
                 if (!(lhs instanceof Integer) && !(lhs instanceof Double))
-                    throw new InterpreterException.TStatementResolutionException(tStatement, "lhs", lhs.toString());
+                    throw new InterpreterException.TStatementResolutionException(tStatement, "left hand side",
+                            lhs.toString());
                 if (!(rhs instanceof Integer) && !(rhs instanceof Double))
-                    throw new InterpreterException.TStatementResolutionException(tStatement, "rhs", rhs.toString());
+                    throw new InterpreterException.TStatementResolutionException(tStatement, "right hand side",
+                            rhs.toString());
 
                 // For the following if, thanks to the above condition
                 // if one is an integer then the other is an integer too
@@ -211,9 +214,11 @@ public class Primitives {
                     // if the logic operator is one of these naturally, the input has to be boolean
                     // check input first of all
                     if (!(lhs instanceof Boolean))
-                        throw new InterpreterException.TStatementResolutionException(tStatement, "lhs", lhs.toString());
+                        throw new InterpreterException.TStatementResolutionException(tStatement, "left hand side",
+                                lhs.toString());
                     if (!(rhs instanceof Boolean))
-                        throw new InterpreterException.TStatementResolutionException(tStatement, "rhs", rhs.toString());
+                        throw new InterpreterException.TStatementResolutionException(tStatement, "right hand side",
+                                rhs.toString());
 
                     switch (op) {
                         case "&&", "&":
@@ -225,9 +230,11 @@ public class Primitives {
                     // however if its these the input is a number or a double
                     // check input first of all
                     if (!(lhs instanceof Integer) && !(lhs instanceof Double))
-                        throw new InterpreterException.TStatementResolutionException(tStatement, "lhs", lhs.toString());
+                        throw new InterpreterException.TStatementResolutionException(tStatement, "left hand side",
+                                lhs.toString());
                     if (!(rhs instanceof Integer) && !(rhs instanceof Double))
-                        throw new InterpreterException.TStatementResolutionException(tStatement, "rhs", rhs.toString());
+                        throw new InterpreterException.TStatementResolutionException(tStatement, "right hand side",
+                                rhs.toString());
 
                     if (lhs instanceof Integer) {
                         // handle ints
@@ -260,11 +267,19 @@ public class Primitives {
                     // int, double, boolean or string.
                     // check input first of all
                     if (!(lhs instanceof Integer) && !(lhs instanceof Double) && !(lhs instanceof Boolean)
-                            && !(lhs instanceof String))
-                        throw new InterpreterException.TStatementResolutionException(tStatement, "lhs", lhs.toString());
+                            && !(lhs instanceof String) && !(lhs instanceof TVoidValue))
+                        throw new InterpreterException.TStatementResolutionException(tStatement, "left hand side",
+                                lhs.toString());
                     if (!(rhs instanceof Integer) && !(rhs instanceof Double) && !(rhs instanceof Boolean)
-                            && !(rhs instanceof String))
-                        throw new InterpreterException.TStatementResolutionException(tStatement, "rhs", rhs.toString());
+                            && !(rhs instanceof String) && !(rhs instanceof TVoidValue))
+                        throw new InterpreterException.TStatementResolutionException(tStatement, "right hand side",
+                                rhs.toString());
+
+                    // for TVoidValue, set to void.class
+                    if (rhs instanceof TVoidValue)
+                        rhs = void.class;
+                    if (lhs instanceof TVoidValue)
+                        lhs = void.class;
 
                     // handle ints
                     switch (op) {
@@ -426,6 +441,8 @@ public class Primitives {
                 return EscapeSequence.escape((String) token);
             }
             return token;
+        } else if (token instanceof TVoidValue) {
+            return (TVoidValue) token; // just return as is.
         }
         return void.class;
     }
@@ -465,8 +482,7 @@ public class Primitives {
         return t instanceof TStatement
                 ? ((TStatement) t).toToken()
                 : t instanceof TVarRef ? ((TVarRef) t).toToken()
-                        : t instanceof TFuncCall ? ((TFuncCall) t).toToken()
-                                : t;
+                        : t instanceof TFuncCall ? ((TFuncCall) t).toToken() : t;
     }
 
     /**

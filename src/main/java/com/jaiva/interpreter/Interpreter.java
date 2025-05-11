@@ -495,35 +495,57 @@ public class Interpreter {
             } else if (token instanceof TTryCatchStatement && !config.importVfs) {
                 TTryCatchStatement throwError = (TTryCatchStatement) token;
 
-                Object out = Interpreter.interpret(throwError.tryBlock.lines, Context.TRY, vfs, config);
-                if (out instanceof ThrowIfGlobalContext) {
-                    // if (Primitives.isPrimitive(checker.c))
-                    // return checker;
+                try {
+                    Object out = Interpreter.interpret(throwError.tryBlock.lines, Context.TRY, vfs, config);
+                    if (out instanceof ThrowIfGlobalContext) {
+                        // if (Primitives.isPrimitive(checker.c))
+                        // return checker;
 
-                    if (((ThrowIfGlobalContext) out).c instanceof Keywords) {
-                        ThrowIfGlobalContext g = (ThrowIfGlobalContext) out;
-                        ThrowIfGlobalContext checker = throwIfGlobalContext(context, out, g.lineNumber);
-                        return checker;
-                    } else if (((ThrowIfGlobalContext) out).c instanceof TThrowError) {
-                        Token<?> tContainer = new Token<>(null);
-                        TThrowError err = (TThrowError) ((ThrowIfGlobalContext) out).c;
-                        vfs.put("error",
-                                new MapValue(BaseVariable.create("error",
-                                        tContainer.new TStringVar("error", err.errorMessage,
-                                                err.lineNumber),
-                                        new ArrayList<>(Arrays.asList(
-                                                err.errorMessage)),
-                                        false)));
-                        Object out2 = Interpreter.interpret(throwError.catchBlock.lines, Context.CATCH, vfs, config);
-                        vfs.remove("error");
-                        if (out2 instanceof ThrowIfGlobalContext) {
-                            ThrowIfGlobalContext g2 = (ThrowIfGlobalContext) out2;
-                            ThrowIfGlobalContext checker2 = throwIfGlobalContext(context, out2, g2.lineNumber);
-                            return checker2;
+                        if (((ThrowIfGlobalContext) out).c instanceof Keywords) {
+                            ThrowIfGlobalContext g = (ThrowIfGlobalContext) out;
+                            ThrowIfGlobalContext checker = throwIfGlobalContext(context, out, g.lineNumber);
+                            return checker;
+                        } else if (((ThrowIfGlobalContext) out).c instanceof TThrowError) {
+                            Token<?> tContainer = new Token<>(null);
+                            TThrowError err = (TThrowError) ((ThrowIfGlobalContext) out).c;
+                            vfs.put("error",
+                                    new MapValue(BaseVariable.create("error",
+                                            tContainer.new TStringVar("error", err.errorMessage,
+                                                    err.lineNumber),
+                                            new ArrayList<>(Arrays.asList(
+                                                    err.errorMessage)),
+                                            false)));
+                            Object out2 = Interpreter.interpret(throwError.catchBlock.lines, Context.CATCH, vfs,
+                                    config);
+                            vfs.remove("error");
+                            if (out2 instanceof ThrowIfGlobalContext) {
+                                ThrowIfGlobalContext g2 = (ThrowIfGlobalContext) out2;
+                                ThrowIfGlobalContext checker2 = throwIfGlobalContext(context, out2, g2.lineNumber);
+                                return checker2;
+                            }
+
+                            // return void.class;
                         }
-
-                        return void.class;
                     }
+                } catch (Exception e) {
+                    // catch any exception, and call the catch block with the error.
+                    Token<?> tContainer = new Token<>(null);
+                    vfs.put("error",
+                            new MapValue(BaseVariable.create("error",
+                                    tContainer.new TStringVar("error", e.getMessage(),
+                                            throwError.catchBlock.lineNumber),
+                                    new ArrayList<>(Arrays.asList(
+                                            e.getMessage())),
+                                    false)));
+                    Object out2 = Interpreter.interpret(throwError.catchBlock.lines, Context.CATCH, vfs, config);
+                    vfs.remove("error");
+                    if (out2 instanceof ThrowIfGlobalContext) {
+                        ThrowIfGlobalContext g2 = (ThrowIfGlobalContext) out2;
+                        ThrowIfGlobalContext checker2 = throwIfGlobalContext(context, out2, g2.lineNumber);
+                        return checker2;
+                    }
+
+                    // return void.class;
                 }
             }
             // return contextValue;

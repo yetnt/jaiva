@@ -3,9 +3,7 @@ package com.jaiva.interpreter.symbol;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.errors.InterpreterException;
-import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.TokenDefault;
 
 /**

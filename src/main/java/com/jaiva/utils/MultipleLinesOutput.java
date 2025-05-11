@@ -3,9 +3,8 @@ package com.jaiva.utils;
 import com.jaiva.tokenizer.Token;
 
 /**
- * i honestly wish i documented this earlier, there are SO MANY overrides
- * for the constructor that i don't even know if half of them are needed
- * I just know if i remove one, Java compiler will strike me down like Zeus.
+ * 
+ * 
  * 
  * Class that represents that the intepreter needs to call readline again for
  * some reason.

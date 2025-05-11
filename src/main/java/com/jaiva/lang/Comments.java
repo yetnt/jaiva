@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.TDocsComment;
 
 /**
  * Comments class is a utility class that provides methods for processing and

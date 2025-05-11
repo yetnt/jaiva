@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import com.jaiva.errors.InterpreterException;
-import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.interpreter.Context;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;

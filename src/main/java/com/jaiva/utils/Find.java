@@ -144,6 +144,12 @@ public class Find {
     /**
      * Returns the index of the outermost operator (at top level, i.e. depth==0).
      * Returns -1 if there is no operator at the outer level.
+     * 
+     * <p>
+     * 
+     * @deprecated Use {@link Find#leastImportantOperator(String)} instead.
+     * 
+     * @param s the string in question
      */
     public static int outermostOperatorIndex(String s) {
         int depth = 0;
@@ -325,24 +331,6 @@ public class Find {
 
         ArrayList<Integer> indexes2 = new ArrayList<>();
 
-        // old for
-        // for (String op : Operators.getAll().reversed()) {
-        // for (int opIndex : indexes1) {
-        // String opString = statement.substring(opIndex, opIndex + op.length());
-        // if (!opString.equals(op))
-        // continue;
-        // if (group == -1) {
-        // group = Operators.getType(op);
-        // indexes2.add(opIndex);
-        // } else if (group == Operators.getType(op)) {
-        // indexes2.add(opIndex);
-        // } else {
-        // continue;
-        // }
-        // }
-        // }
-
-        // new for
         for (int i = Operators.getAllLists().size() - 1; i >= 0; i--) {
             List<String> list = Operators.getAllLists().get(i);
             for (int opIndex : indexes1) {

@@ -118,9 +118,9 @@ public class Tokenizer {
      * @return The arguments for the given type.
      */
     private static String[] handleArgs(String type, String line, int lineNumber) throws TokenizerException {
-        checkForMalformedConstruct(type, line, lineNumber);
         switch (type) {
             case "mara if": {
+                checkForMalformedConstruct(type, line, lineNumber);
                 // mara condition ->
                 // mara (i < 10) ->
                 return new String[] {
@@ -128,6 +128,7 @@ public class Tokenizer {
                         "" };
             }
             case "if": {
+                checkForMalformedConstruct(type, line, lineNumber);
                 // if (condition) ->
                 // if (variable != 100) ->
                 return new String[] {
@@ -135,6 +136,7 @@ public class Tokenizer {
                         "" };
             }
             case "nikhil": {
+                checkForMalformedConstruct(type, line, lineNumber);
                 // nikhil (condition) ->
                 // nikhil (i < 10) ->
                 return new String[] {
@@ -142,6 +144,7 @@ public class Tokenizer {
                         "" };
             }
             case "colonize": {
+                checkForMalformedConstruct(type, line, lineNumber);
                 // colonize declaration | condition | increment ->
                 // colonize variableName with array name ->
 
@@ -158,6 +161,7 @@ public class Tokenizer {
                 }
             }
             case "kwenza": {
+                checkForMalformedConstruct(type, line, lineNumber);
                 // kwenza function_name(...args) ->
                 // kwenza addition(param1, param2) ->
                 String[] parts = line.split(Keywords.D_FUNCTION)[1].trim().split(Chars.BLOCK_OPEN);
@@ -172,7 +176,6 @@ public class Tokenizer {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     /**
      * Handles the block lines for the given line when we get told its a block.
      * <p>
@@ -202,8 +205,9 @@ public class Tokenizer {
         type = multipleLinesOutput == null ? type : multipleLinesOutput.b_type;
         args = multipleLinesOutput == null ? args : multipleLinesOutput.b_args;
         int newLineNumber = multipleLinesOutput == null ? lineNumber : multipleLinesOutput.lineNumber;
-        line = Comments.decimate(line);
-        Object output = handleBlocks(isComment, line + "\n", (MultipleLinesOutput) multipleLinesOutput,
+        // line = Comments.decimate(line);
+        Object output = handleBlocks(isComment, Comments.decimate(line) + "\n",
+                (MultipleLinesOutput) multipleLinesOutput,
                 tokenizerLine, type, args, multipleLinesOutput != null ? multipleLinesOutput.specialArg : blockChain,
                 newLineNumber);
         if (output == null)
@@ -230,6 +234,7 @@ public class Tokenizer {
         preLine = preLine.substring(0, preLine.lastIndexOf(Chars.BLOCK_CLOSE));
         ArrayList<Token<?>> nestedTokens = new ArrayList<>();
         Object stuff = readLine(preLine, "", null, null, finalMOutput.lineNumber + 1, config);
+        line = Comments.decimate(line);
         try {
             if (stuff instanceof ArrayList) {
                 nestedTokens.addAll((ArrayList<Token<?>>) stuff);
@@ -441,7 +446,7 @@ public class Tokenizer {
                 throw new MalformedSyntaxException(
                         "if you're finna define a variable without a value, remove the assignment operator.",
                         lineNumber);
-            return tContainer.new TUnknownVar(parts[0], null, lineNumber).toToken();
+            return tContainer.new TUnknownVar(parts[0], tContainer.new TVoidValue(lineNumber), lineNumber).toToken();
         }
         parts[1] = parts[1].trim();
 

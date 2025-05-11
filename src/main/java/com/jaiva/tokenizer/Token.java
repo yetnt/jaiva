@@ -88,6 +88,11 @@ public class Token<T extends TokenDefault> {
         public Token<TVoidValue> toToken() {
             return new Token<>(this);
         }
+
+        @Override
+        public String toString() {
+            return "idk";
+        }
     }
 
     /**
@@ -618,6 +623,12 @@ public class Token<T extends TokenDefault> {
         public TCodeblock body;
 
         /**
+         * An arraylist of booleans that specify which arguments are optional.
+         * 
+         */
+        public ArrayList<Boolean> isArgOptional = new ArrayList<>();
+
+        /**
          * Constructor for TFunction
          * 
          * @param name The name of the function.
@@ -633,6 +644,12 @@ public class Token<T extends TokenDefault> {
                             : name),
                     ln);
             this.args = args;
+            for (int i = 0; i < args.length; i++) {
+                String arg = args[i];
+                isArgOptional.add(arg.endsWith("?"));
+                if (arg.endsWith("?"))
+                    args[i] = arg.substring(0, arg.length() - 1);
+            }
             this.body = body;
         }
 
@@ -654,6 +671,7 @@ public class Token<T extends TokenDefault> {
         @Override
         public String toJson() {
             json.append("args", new ArrayList(Arrays.asList(args)), false);
+            json.append("isArgOptional", isArgOptional, false);
             json.append("body", body != null ? body.toJsonInNest() : null, true);
             return super.toJson();
         }

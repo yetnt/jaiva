@@ -77,7 +77,8 @@ public class ContextDispatcher {
      *         otherwise.
      */
     private boolean checkBracesClosedBeforeOutermostOperand(String line) {
-        int outerOpIndex = Find.outermostOperatorIndex(line);
+        int outerOpIndex = Find.leastImportantOperator(line).index;
+        // int outerOpIndex = Find.outermostOperatorIndex(line);
         // If there's no outer operator, then we cannot say the braces are “closed
         // before the operator.”
         if (outerOpIndex == -1)

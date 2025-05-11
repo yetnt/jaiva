@@ -8,6 +8,8 @@ import com.jaiva.tokenizer.Token;
 /**
  * Validate class is a utils class where methods which "validate" the
  * existance of foo in bar or some other boolean input.
+ * <p>
+ * Or Validate somethign such that if it fails, it throws an error.
  * 
  */
 public class Validate {

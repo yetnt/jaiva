@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The Chars class defines a set of constants and utility methods for tokenizing
@@ -117,6 +116,10 @@ public class Chars {
      * The character used to denote a string.
      */
     public static char STRING = '"';
+    /**
+     * The character used to denote a function's argument is optional.
+     */
+    public static char OPTIONAL_ARG = '?';
 
     /**
      * The Operators class defines a set of arithmetic and boolean operators.
@@ -271,6 +274,7 @@ public class Chars {
         all.append(Operators.getAll().toString().replaceAll(",", "").replaceAll(" ", "").replace("[", "").replace("]",
                 ""));
         all.append(Character.toString(ESCAPE));
+        all.append(Character.toString(OPTIONAL_ARG));
         all.append(Character.toString(END_LINE));
         all.append(Character.toString(COMMENT));
         all.append(Character.toString(COMMENT_OPEN));
