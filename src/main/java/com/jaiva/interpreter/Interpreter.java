@@ -5,6 +5,7 @@ import java.util.*;
 
 import com.jaiva.Main;
 import com.jaiva.errors.InterpreterException;
+import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
@@ -86,33 +87,33 @@ public class Interpreter {
      * @param lineNumber The line number of the token which caused the interuption.
      * @return Returns a new instance of the ThrowIfGlobalContext class with the
      *         given object and line number.
-     * @throws InterpreterException.WtfAreYouDoingException If the context is global
-     *                                                      and the object is a
-     *                                                      function return or a
-     *                                                      loop control.
-     * @throws InterpreterException.CimaException           If the context is global
-     *                                                      and the object is an
-     *                                                      error.
+     * @throws WtfAreYouDoingException If the context is global
+     *                                 and the object is a
+     *                                 function return or a
+     *                                 loop control.
+     * @throws CimaException           If the context is global
+     *                                 and the object is an
+     *                                 error.
      */
     public static ThrowIfGlobalContext throwIfGlobalContext(Context context, Object lc, int lineNumber)
-            throws InterpreterException.WtfAreYouDoingException, InterpreterException.CimaException {
+            throws InterpreterException {
         if (lc instanceof ThrowIfGlobalContext) {
             lc = ((ThrowIfGlobalContext) lc).c;
         }
         if (lc instanceof Keywords.LoopControl) {
             if (context == Context.GLOBAL)
-                throw new InterpreterException.WtfAreYouDoingException("So. You tried using "
+                throw new WtfAreYouDoingException("So. You tried using "
                         + (lc.toString().equals("BREAK") ? Keywords.LC_BREAK : Keywords.LC_CONTINUE)
                         + ". But like, we're not in a loop yknow? ", lineNumber);
         } else if (Primitives.isPrimitive(lc)) {
             // a function return thing then
             if (context == Context.GLOBAL)
-                throw new InterpreterException.WtfAreYouDoingException(
+                throw new WtfAreYouDoingException(
                         "What are you trying to return out of if we're not in a function??", lineNumber);
 
         } else if (lc instanceof TThrowError) {
             if (context == Context.GLOBAL)
-                throw new InterpreterException.CimaException(((TThrowError) lc).errorMessage, lineNumber);
+                throw new CimaException(((TThrowError) lc).errorMessage, lineNumber);
         }
         return new ThrowIfGlobalContext(lc, lineNumber);
     }
@@ -210,11 +211,11 @@ public class Interpreter {
             MapValue mapValue = vfs.get(((TVarReassign) t).name);
             if (MapValue.isEmpty(mapValue)
                     || (mapValue.getValue() == null || !(mapValue.getValue() instanceof BaseVariable)))
-                throw new InterpreterException.UnknownVariableException((TVarReassign) t);
+                throw new UnknownVariableException((TVarReassign) t);
 
             BaseVariable var = (BaseVariable) mapValue.getValue();
             if (var.isFrozen)
-                throw new InterpreterException.FrozenSymbolException(var, ((TVarReassign) t).lineNumber);
+                throw new FrozenSymbolException(var, ((TVarReassign) t).lineNumber);
             // if (!isVariableToken(((TVarReassign) t).newValue))
             // throw new WtfAreYouDoingException(
             // ((TVarReassign) t).newValue + " isn't like a valid var thingy yknow??");
@@ -255,7 +256,8 @@ public class Interpreter {
      *                including the file directory and import settings.
      * @return Returns the result of the interpretation, which can be a value or a
      *         void class.
-     * @throws Exception If an error occurs during interpretation, such as an
+     * @throws Exception If an error occurs during interpretation, such
+     *                   as an
      *                   unknown
      *                   variable or an invalid operation.
      */
@@ -306,14 +308,15 @@ public class Interpreter {
                 }
                 vfs.putAll(vfsFromFile);
             } else if (isVariableToken(token)) {
-                Object contextValue = null;
+                // Object contextValue = null;
                 // handles the following cases:
                 // TNumberVar, TBooleanVar, TStringVar, TUnknownVar, TVarReassign, TArrayVar
                 // including TStatement, TFuncCall and TVarRef. This also includes primitives.
-                contextValue = (token instanceof TFuncCall || token instanceof TVarRef)
-                        ? handleVariables(t, vfs,
-                                config)
-                        : handleVariables(token, vfs, config);
+                /* contextValue = */
+                if (token instanceof TFuncCall || token instanceof TVarRef)
+                    handleVariables(t, vfs, config);
+                else
+                    handleVariables(token, vfs, config);
                 // If it returns a meaningful value, then oh well, because in this case they
                 // basically called a function that returned soemthing but dont use that value.
             } else if (token instanceof TVoidValue) {
@@ -369,7 +372,7 @@ public class Interpreter {
                 // if statement handling below
                 TIfStatement ifStatement = (TIfStatement) token;
                 if (!(ifStatement.condition instanceof TStatement))
-                    throw new InterpreterException.WtfAreYouDoingException(
+                    throw new WtfAreYouDoingException(
                             "Okay well idk how i will check for true in " + ifStatement,
                             token.lineNumber);
                 Object cond = Primitives.setCondition(ifStatement, vfs, config);
@@ -389,7 +392,7 @@ public class Interpreter {
                     for (Object e : ifStatement.elseIfs) {
                         TIfStatement elseIf = (TIfStatement) e;
                         if (!(elseIf.condition instanceof TStatement))
-                            throw new InterpreterException.WtfAreYouDoingException(
+                            throw new WtfAreYouDoingException(
                                     "Okay well idk how i will check for true in " + elseIf, token.lineNumber);
                         Object cond2 = Primitives.setCondition(elseIf, vfs, config);
                         if (((Boolean) cond2).booleanValue() == true) {
@@ -421,7 +424,7 @@ public class Interpreter {
                 handleVariables(tForLoop.variable, vfs, config);
                 Object vObject = vfs.get(tForLoop.variable.name).getValue();
                 if (!(vObject instanceof BaseVariable))
-                    throw new InterpreterException.WtfAreYouDoingException(vObject, BaseVariable.class,
+                    throw new WtfAreYouDoingException(vObject, BaseVariable.class,
                             tForLoop.lineNumber);
                 BaseVariable v = (BaseVariable) vObject;
                 // if (!(v.s_get() instanceof Integer))
@@ -430,17 +433,21 @@ public class Interpreter {
                     // for each
                     MapValue mapValue = vfs.get(tForLoop.array.varName);
                     if (mapValue == null || !((mapValue.getValue()) instanceof BaseVariable))
-                        throw new InterpreterException.UnknownVariableException(tForLoop.array);
+                        throw new UnknownVariableException(tForLoop.array);
                     BaseVariable arr = (BaseVariable) mapValue.getValue();
 
                     if (arr.variableType != VariableType.ARRAY
                             && arr.variableType != VariableType.A_FUCKING_AMALGAMATION
                             && !(arr.s_get() instanceof String))
-                        throw new InterpreterException.WtfAreYouDoingException(
+                        throw new WtfAreYouDoingException(
                                 "Ayo that variable argument on " + tForLoop.lineNumber + " gotta be an array.",
                                 token.lineNumber);
 
                     List<Object> list = (arr.s_get() instanceof String)
+                            // Type String[] of the last argument to method asList(Object...) doesn't
+                            // exactly match the vararg parameter type. Cast to Object[] to confirm the
+                            // non-varargs invocation, or pass individual arguments of type Object for a
+                            // varargs invocation.
                             ? Arrays.asList(((String) arr.s_get()).split(""))
                             : arr.a_getAll();
 

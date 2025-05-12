@@ -41,7 +41,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "1.0.0-beta.4";
+    public static String version = "1.0.0";
     /**
      * Author, it's just me.
      */
@@ -115,6 +115,7 @@ public class Main {
                 Arrays.asList("-s", "-j", "--string", "-json", "-jg", "--json-with-globals", "-d", "--debug"));
         if (args.length == 0) {
             new REPL(0);
+            System.exit(0);
             return;
         } else if (replArgs.contains(args[0])) {
             switch (args[0]) {
@@ -193,8 +194,10 @@ public class Main {
                 if (args[1].equals("-d") || args[1].equals("--debug"))
                     debug = true;
             ArrayList<Token<?>> tokens = parseTokens(args[0], false);
-            if (tokens.isEmpty())
+            if (tokens.isEmpty()) {
+                System.exit(0);
                 return;
+            }
 
             if ((args.length > 1) && tokenArgs.contains(args[1])) {
                 // here, args[1] is the tokens mode
@@ -209,6 +212,7 @@ public class Main {
                             System.out.println(t.toString());
                             // System.out.println(t.getValue().getContents(0));
                         }
+                        System.exit(0);
                         return;
                     }
                     case "-j", "--json" -> {
@@ -222,6 +226,7 @@ public class Main {
                             }
                         }
                         System.out.print("]");
+                        System.exit(0);
                         return;
                     }
                     case "-jg", "--json-with-globals" -> {
@@ -236,10 +241,12 @@ public class Main {
                             }
                         }
                         System.out.print("]");
+                        System.exit(0);
                         return;
                     }
                     default -> {
                         System.out.println("Invalid token mode.");
+                        System.exit(-1);
                         return;
                     }
                 }

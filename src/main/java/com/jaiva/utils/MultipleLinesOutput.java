@@ -141,4 +141,18 @@ public class MultipleLinesOutput {
         startCount = start;
         endCount = end;
     }
+
+    @Override
+    public String toString() {
+        return "MultipleLinesOutput{" +
+                "startCount=" + startCount +
+                ", endCount=" + endCount +
+                ", isComment=" + isComment +
+                ", preLine='" + preLine + '\'' +
+                ", b_type='" + b_type + '\'' +
+                ", b_args=" + (b_args != null ? String.join(", ", b_args) : "null") +
+                ", specialArg=" + specialArg +
+                ", lineNumber=" + lineNumber +
+                '}';
+    }
 }

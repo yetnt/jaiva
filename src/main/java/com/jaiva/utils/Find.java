@@ -272,6 +272,15 @@ public class Find {
             this.index = -1;
             this.tStatementType = -1;
         }
+
+        @Override
+        public String toString() {
+            return "LeastImportantOperator{" +
+                    "op='" + op + '\'' +
+                    ", index=" + index +
+                    ", tStatementType=" + tStatementType +
+                    '}';
+        }
     }
 
     /**
@@ -319,9 +328,9 @@ public class Find {
                 level++;
             else if ((c == ')' || c == ']') && Validate.isOpInQuotePair(statement, i) == -1)
                 level--;
-            else if (level == 0 && Validate.isOperator(c) && (Validate.isOpInQuotePair(statement, i) == -1)) {
+            else if (level == 0 && Validate.isOperator(c) && (Validate.isOpInQuotePair(statement, i) == -1))
                 indexes1.add(i);
-            }
+
         }
         indexes1 = sanitizeStatement(statement, indexes1);
 
@@ -405,12 +414,10 @@ public class Find {
      */
     public static int operatorIndex(char[] string) {
         for (int i = 0; i < string.length; i++) {
-            if (Operators.getArithmetic().contains(String.valueOf(string[i]))) {
+            if (Operators.getArithmetic().contains(String.valueOf(string[i])))
                 return i;
-            }
-            if (Operators.getBoolean().contains(String.valueOf(string[i]))) {
+            if (Operators.getBoolean().contains(String.valueOf(string[i])))
                 return i;
-            }
         }
         return -1;
     }

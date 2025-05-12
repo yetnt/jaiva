@@ -117,7 +117,7 @@ public class BaseFunction extends Symbol {
                     // the function call has less arguments than required by the function.
                     // check if all the remaining arguments are defined as optional.
                     for (int j = i; j < tFunc.isArgOptional.size(); j++) {
-                        if (!(boolean) tFunc.isArgOptional.get(j)) {
+                        if (!(boolean) tFunc.isArgOptional.get(j) && j != 0) {
                             throw new InterpreterException.FunctionParametersException(this, Integer.toString(j + 1),
                                     tFuncCall.lineNumber);
                         }
@@ -173,7 +173,7 @@ public class BaseFunction extends Symbol {
                 }
                 if (value instanceof String)
                     value = EscapeSequence.escape((String) value);
-                Object wrappedValue = null;
+                Object wrappedValue = tContainer.new TVoidValue(tFuncCall.lineNumber);
 
                 if (name.startsWith("F~")
                         && (value instanceof Token<?> && ((Token<?>) value).getValue() instanceof TVarRef)) {

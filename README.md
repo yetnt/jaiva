@@ -1,6 +1,6 @@
 # <center> <img src="images/jaiva-full-logo.png" width="50"> Jaiva!
 
-<center><h4>Version *1.0.0-beta.4*</h4></center>
+<center><h4>Version *1.0.0*</h4></center>
 
 This esolang of mine is still in development, so expect alot of updates.
 
@@ -30,7 +30,6 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
                 -   [String Operations](#string-operations)
                 -   [Escaping Characters](#escaping-characters)
             -   [idk](#idk)
-        -   _[Pre and Postfix Operations](#pre-and-postfix-operations)_
         -   _[Arithmetic and Boolean Comparisons](#arithmetic-and-boolean-comparisons)_
         -   _[Blocks](#blocks)_
     -   **[Keywords](#keywords)**
@@ -38,10 +37,13 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
         -   _[Definition](#definition)_
         -   _[Usage](#usage)_
         -   _[Reassignment](#reassignment)_
-        -   _[Arrays](#arrays)_
+    -   **[Arrays](#arrays)**
     -   **[Functions](#functions)**
         -   _[Definition](#definition-1)_
         -   _[Calling](#calling)_
+        -   _[Parameters](#parameters)_
+            -   [Higher-Order Functions](#higher-order-functions)
+            -   [Optional Arguments](#optional-arguments)
     -   **[If Statements](#if-statements)**
         -   _[Basic If](#basic-if)_
         -   _[mara (else)](#mara-else)_
@@ -101,6 +103,7 @@ And multi line comments open and close with the `{` `}`
 If you're using something like vscode and would like to document your [variables](#variables) or [functions](#functions), you can use the following syntax
 
 ```jaiva
+@* My lovely variable.
 maak a <- 10!
 ```
 
@@ -115,12 +118,19 @@ maak a <- 10!
 
 #### Number
 
-This is just any number (well at the moment integers, doubles seem to not work lmao)
+This is just any integer or real number
 
 They don't need any special format, you can just type the number out to use it
 
 ```
 maak b <- 10!
+maak c <- 9.321!
+```
+
+(also scientific notation is supported)
+
+```
+maak b <- 1e4!
 ```
 
 #### Bools
@@ -141,6 +151,13 @@ These are the only characters for strings. No string literals or multi line stri
 
 ```
 maak b <- "String"!
+```
+
+To get the length of a string use the `~` operator
+
+```
+maak b <- "let's gooo"!
+khuluma(b~)! @ returns 10
 ```
 
 ##### String operations.
@@ -185,75 +202,36 @@ maak b <- "String$n"!
 
 Table of escape characters
 
-| character                       | escape sequence |
-| ------------------------------- | --------------- |
-| `=`                             | `$=`            |
-| `,`                             | `$,`            |
-| `!`                             | `$!`            |
-| ` ` (yes you can escape space.) | `$s`            |
-| `@`                             | `$@`            |
-| `\n` (new line)                 | `$n`            |
-| `\t` (tab)                      | `$t`            |
-| `\r` (carriage return)          | `$r`            |
-| `\b` (backspace)                | `$b`            |
-| `\f` (form feed)                | `$f`            |
-| `` ` `` (backtick)              | `` $` ``        |
-| `"` (double qoutes)             | `$"`            |
-| `$`                             | `$$`            |
+| character              | escape sequence |
+| ---------------------- | --------------- |
+| `=`                    | `$=`            |
+| `,`                    | `$,`            |
+| `!`                    | `$!`            |
+| `@`                    | `$@`            |
+| `\n` (new line)        | `$n`            |
+| `\t` (tab)             | `$t`            |
+| `\r` (carriage return) | `$r`            |
+| `\b` (backspace)       | `$b`            |
+| `\f` (form feed)       | `$f`            |
+| `"` (double qoutes)    | `$"`            |
+| `$`                    | `$$`            |
 
 #### idk
 
 This is a primitive which is used to represent nothingness.
 
-> [!WARNING]
-> This hasn't been implemented AT ALL lmao.
-
-> [!NOTE]
-> This is like null in Java, but not exactly. It is a primitive type in this language. Think of it like undefined in JavaScript.
-
 ```jaiva
 maak a <- idk!
+maak b!
+maak c <- 10!
+
+khuluma(a = idk)! @ true
+khuluma(b = idk)! @ true
+khuluma(c != idk)! @ true
 ```
 
-### Pre and Postfix stuff
-
-#### Array/String length
-
-See [Variables](#variables)
-
-To get the length of a variable (string) or an array. (Not a string literal. Too much implementation for me.)
-
-Use the `~` operator
-
-```jiv
-maak a <-| 10, 23, 984!
-khuluma(a~)! @ returns 3
-
-maak b <- "let's gooo"!
-khuluma(b~)! @ returns 10
-```
-
-#### Explicity Typed Function params
-
-See [Functions](#functions) and [Variables](#variables)
-
-In the case wehere you want to pass a function into another function, you will have to input `F~` to the name of the parameter to explicity tell the interpreter that the shi u finna input should be treated as a function.
-
-`V~` is available for variables, but its not needed as without this typing, its always assumed to be a variable
-
-```jiv
-kwenza function(F~ref) ->
-    khutla ref()!
-<~
-
-kwenza returnNum() ->
-    khutla 100!
-<~
-
-function(returnNum)!
-```
-
-be careful when you start doing this though as when you start calling and chaining these, you loose variables in scopes since it doesnt know an shi.
+> [!NOTE]
+> In the case of passing `idk` into a function call, unless the paramter is marked as optional, you cannot pass `idk` into a required parameter.
 
 ### Arithmatic and Boolean Comparisons
 
@@ -288,7 +266,7 @@ I think this is where jaiva deviates from normal programming languages, Especial
 
 ```jiv
 if (a = 10) ->
-   @ iunner code
+   @ inner code
 <~
 ```
 
@@ -318,8 +296,6 @@ here's a cheat table though
 ## <center>Variables
 
 Variables are [scoped](#scopes) constructs.
-
-See [Array/String length](#arraystring-length) to get the length of a variable containing arrays or a string.
 
 See [Globals](./Globals.md) for a list of global variables that are available to you.
 
@@ -367,7 +343,7 @@ a <- "string"!
 
 You can reassign any type really. This shit aint type safe.
 
-### Arrays
+## <center> Arrays
 
 **Arrays are 0-indexed. This isn't Lua afterall**
 
@@ -382,11 +358,16 @@ maak a <-| 20, 23, 56, 324, 354!
 maak b <- a[0]! @ 20
 ```
 
+To get the length of an array use the `~` operator.
+
+```jiv
+maak a <-| 10, 23, 984!
+khuluma(a~)! @ returns 3
+```
+
 ## <center>Functions
 
 Functions are [scoped](#scopes) constructs.
-
-See [Explicity Typed Function Params.](#explicity-typed-function-params) for passing functions in functions.
 
 See [Globals](./Globals.md) for a list of global functions that are available to you.
 
@@ -413,6 +394,45 @@ maak c <- addition(10, 20)! @ 30
 ```
 
 Function parameters can take any type of variable, including arrays and other functions.
+
+### Parameters
+
+#### Higher-Order Functions
+
+In the case wehere you want to pass a function into another function, you will have to input `F~` to the name of the parameter to explicity tell the interpreter that the shi u finna input should be treated as a function.
+
+`V~` is available for variables, but its not needed as without this typing, its always assumed to be a variable
+
+```jiv
+kwenza function(F~ref) ->
+    khutla ref()!
+<~
+
+kwenza returnNum() ->
+    khutla 100!
+<~
+
+khuluma(function(returnNum))! @ prints 10
+```
+
+be careful when you start doing this though as when you start calling and chaining these, you loose variables in scopes since it doesnt know an shi.
+
+#### Optional Arguments
+
+In the case where you need certain arguments to be optional, stolen straight from typescript, all you gotta do is suffix the parameter name with `?` then it will not be required when calling the function.
+
+```jiv
+kwenza function(param?) ->
+    khuluma(param = idk)! @ When a parameter is optional and it is not given,
+                           @ It will be set to the type idk
+<~
+
+function()! @ prints true
+function(10)! @ prints false
+```
+
+> [!WARNING]
+> When a parameter is required, it CANNOT be set to [idk](#idk) or be empty in the parameters list of the function call. That's the whole point of a required parameter, that it is a value.
 
 ## <center>If Statements
 
