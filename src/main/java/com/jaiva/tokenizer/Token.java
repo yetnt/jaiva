@@ -409,40 +409,6 @@ public class Token<T extends TokenDefault> {
          */
         public Object value;
 
-        // /**
-        // * Constructor for TNumberVar (for ints)
-        // *
-        // * @param name The name of the variable.
-        // * @param value The value of the variable.
-        // * @param ln The line number.
-        // */
-        // TNumberVar(String name, int value, int ln) {
-        // super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
-        // (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
-        // ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
-        // Matcher.quoteReplacement(""))
-        // : name),
-        // ln);
-        // this.value = value;
-        // }
-
-        // /**
-        // * Constructor for TNumberVar (for doubles)
-        // *
-        // * @param name The name of the variable.
-        // * @param value The value of the variable.
-        // * @param ln The line number.
-        // */
-        // TNumberVar(String name, double value, int ln) {
-        // super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
-        // (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
-        // ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
-        // Matcher.quoteReplacement(""))
-        // : name),
-        // ln);
-        // this.value = value;
-        // }
-
         /**
          * Constructor for TNumberVar
          * 

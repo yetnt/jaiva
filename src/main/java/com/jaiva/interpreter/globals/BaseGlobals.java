@@ -3,6 +3,7 @@ package com.jaiva.interpreter.globals;
 import java.util.HashMap;
 
 import com.jaiva.interpreter.MapValue;
+import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.tokenizer.Token;
 
 /**
@@ -45,5 +46,26 @@ public class BaseGlobals<T extends GlobalType> {
     BaseGlobals(T value, String p) {
         type = value;
         path = p;
+    }
+
+    /**
+     * Converts the contents of the vfs to a JSON array string.
+     * Each entry in the vfs is expected to have a value containing a Symbol object,
+     * whose token is serialized to JSON using its toJson() method.
+     * The resulting JSON array contains the serialized tokens of all symbols in the
+     * vfs.
+     *
+     * @return a JSON array string representing the tokens of all symbols in the vfs
+     */
+    public String toJson() {
+        StringBuilder str = new StringBuilder();
+        vfs.forEach((key, value) -> {
+            // Example: append key and value to the string builder
+            Symbol sym = (Symbol) value.getValue();
+            str.append(sym.token.toJson());
+            str.append(",");
+        });
+        // Remove trailing comma and space if needed
+        return "[" + str.toString().substring(0, str.toString().length() - 1) + "]";
     }
 }

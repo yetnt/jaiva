@@ -39,7 +39,7 @@ import com.jaiva.tokenizer.Token.TFuncCall;
 @SuppressWarnings("rawtypes")
 public class Conversions extends BaseGlobals {
     @SuppressWarnings("unchecked")
-    Conversions() {
+    public Conversions() {
         // the import will be "jaiva/convert.jiv"
         super(GlobalType.LIB, "convert");
         vfs.put("stringToNum", new MapValue(new FStringToNum(container)));

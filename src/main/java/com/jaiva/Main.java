@@ -8,6 +8,7 @@ import com.jaiva.errors.TokenizerException;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.errors.JaivaException.*;
 import com.jaiva.interpreter.*;
+import com.jaiva.interpreter.globals.Conversions;
 import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.lang.EscapeSequence;
@@ -163,9 +164,7 @@ public class Main {
                     System.exit(0);
                 }
                 case "--test", "-t" -> {
-                    String workingDir = System.getProperty("user.dir");
-                    System.out.println(workingDir);
-                    System.out.println("Test cmd");
+                    System.out.println(new Conversions().toJson());
                     System.exit(0);
                 }
                 case "--update", "-u" -> {
@@ -203,7 +202,6 @@ public class Main {
             if ((args.length > 1) && tokenArgs.contains(args[1])) {
                 // here, args[1] is the tokens mode
                 // return tokens mode.
-                System.out.println(args[1]);
                 switch (args[1]) {
                     case "-d", "--debug" -> {
                         break;

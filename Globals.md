@@ -102,7 +102,7 @@ khuluma(array3)! @ Prints [1, 2, 3, 4, 5, 6]
 
 ## Libraries
 
-These are symbols available in the `/lib/` folder of the Jaiva bin directory. These aren't built-in. You need to import them in your program to use them.
+These are symbols that are either available in the `/lib/` folder of the Jaiva bin directory, or have a Java file associated with them.
 These are typically frozen symbols, but some might not be.
 
 See [Importing and Exporting](./README.md#tsea-import-and-exporting-files) for more information on how to import libraries.
@@ -110,21 +110,46 @@ See [Importing and Exporting](./README.md#tsea-import-and-exporting-files) for m
 But it's generally:
 
 ```jiv
-tsea "jaiva/(module name).jiv"!
+tsea "jaiva/(module name)"!
 @ or if you want an absolute path for some reason
-tsea "C:/path/to/jaiva/lib/(module name).jiv"!
+tsea "C:/path/to/jaiva/lib/(module name)"!
 ```
 
 > [!NOTE]
 > Even though all jaiva files have the extensions `.jiv`, `.jaiva` and `.jva`, All of them (The library files) have the `.jiv` extension. This is just the convention i decided to use.
-> All files can use any of the 3 extensions and are treated exactly the same. (But `.jiv` is the extension for Jaiva libraries. )
 
 > [!NOTE]
 > Unlike built-in symbols where I can link you to implementation, I cannot do that for libraries because they are not part of the Jaiva source code, but rather part of the downloadable zip package. (The bin)
 
 The following are the libraries that are available
 
-### `arrays.jiv`
+### `convert`
+
+This library contains functions for converting stuff to different types.
+
+#### `numToString(num) -> `_*`khutla "string"!`*_
+
+\*_**Independent**_
+
+Returns a string which represents the given number
+
+```jiv
+tsea "jaiva/convert"!
+khuluma(numToString(2.0) + 10)! @ Will print "2.010" as that's string concat
+```
+
+#### `stringToNum(string) -> `_*`khutla number!`*_
+
+\*_**Independent**_
+
+Returns a number which represents the given string
+
+```jiv
+tsea "jaiva/convert"!
+khuluma(stringToNum("2.4") + 10)! @ Will print 12.4
+```
+
+### `arrays`
 
 This library contains functions for manipulating arrays.
 
@@ -140,7 +165,7 @@ If you ask why not just make arrays mutable, Jaiva is a functional programming l
 Returns an array which contains the original array (`arr`) with `n` amount of elements removed from the end.
 
 ```jiv
-tsea "jaiva/arrays.jiv"! @ Import the arrays library
+tsea "jaiva/arrays"! @ Import the arrays library
 maak array <-| 1, 2, 3, 4, 5, 6, 7, 8, 9, 10!
 maak newArray <- remove(array, 5)! @ Removes 5 elements from the end of the array.
 khuluma(newArray)! @ Prints [1, 2, 3, 4, 5]
@@ -153,7 +178,7 @@ khuluma(newArray)! @ Prints [1, 2, 3, 4, 5]
 Returns an array which contains the original array (`arr`) with `n` amount of elements removed from the start.
 
 ```jiv
-tsea "jaiva/arrays.jiv"! @ Import the arrays library
+tsea "jaiva/arrays"! @ Import the arrays library
 maak array <-| 1, 2, 3, 4, 5, 6, 7, 8, 9, 10!
 maak newArray <- unshift(array, 5)! @ Removes 5 elements from the start of the array.
 khuluma(newArray)! @ Prints [6, 7, 8, 9, 10]
@@ -168,7 +193,7 @@ Returns a new array without the last element of the original array (`arr`).
 This is the same as `remove(arr, 1)` (It's actually exactly what the function's defintion is) So you can use either one.
 
 ```jiv
-tsea "jaiva/arrays.jiv"! @ Import the arrays library
+tsea "jaiva/arrays"! @ Import the arrays library
 maak array <-| 1, 2, 3, 4, 5, 6, 7, 8, 9, 10!
 maak newArray <- pop(array)!
 khuluma(newArray)! @ Prints [2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -181,7 +206,7 @@ khuluma(newArray)! @ Prints [2, 3, 4, 5, 6, 7, 8, 9, 10]
 Returns a new array with the `element` appended at the end of the original array (`arr`).
 
 ```jiv
-tsea "jaiva/arrays.jiv"! @ Import the arrays library
+tsea "jaiva/arrays"! @ Import the arrays library
 maak array <-| 1, 2, 3, 4, 5, 6, 7, 8, 9, 10!
 maak newArray <- push(array, 11)! @ Appends 11 to the end of the array.
 khuluma(newArray)! @ Prints [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
@@ -194,7 +219,7 @@ khuluma(newArray)! @ Prints [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 Returns a new array with the `element` appended at the start of the original array (`arr`) and shifts all other elements 1 up.
 
 ```jiv
-tsea "jaiva/arrays.jiv"! @ Import the arrays library
+tsea "jaiva/arrays"! @ Import the arrays library
 maak array <-| 1, 2, 3, 4, 5, 6, 7, 8, 9, 10!
 maak newArray <- shift(array, 0)! @ Appends 0 to the start of the array.
 khuluma(newArray)! @ Prints [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -209,7 +234,7 @@ Filters through elements in the given array and return an array whose elements s
 The `predicate` function takes a single argument and returns a boolean value. If the value is true, the element is included in the new array. If false, it is not included.
 
 ```jiv
-tsea "jaiva/arrays.jiv"! @ Import the arrays library
+tsea "jaiva/arrays"! @ Import the arrays library
 maak array <-| 1, 2, 3, 4, 5, 6, 7, 8, 9, 10!
 
 kwenza isEven(n) ->
