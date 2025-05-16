@@ -65,4 +65,10 @@ This extension contributes the following settings:
 
 Initial release of this extension.
 
+## 2.0.0
+
+-   Add support for `tsea` keyword
+-   Match new token types for Jaiva release 1.0.0
+-   Fix some operators finally.
+
 ---

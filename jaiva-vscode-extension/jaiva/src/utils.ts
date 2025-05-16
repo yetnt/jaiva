@@ -19,6 +19,17 @@ import {
 
 const MAX_STRING_LENGTH = 20;
 
+export function mergeMaps<K, V>(
+    target: Map<K, V>,
+    source: Map<K, V>
+): Map<K, V> {
+    for (const [key, value] of source.entries()) {
+        target.set(key, value);
+    }
+
+    return target;
+}
+
 export type HoverToken = {
     token: TokenDefault;
     range: [number, number];
@@ -313,7 +324,7 @@ export function parseAndReturnHoverTokens(
             case "TImport": {
                 if (currentFilePath && hTokens) {
                     let t: TImport = token as TImport;
-                    let filePath = "";
+                    let filePath = t.filePath.replace("\t", "\\t").trim();
                     if (!path.isAbsolute(t.filePath)) {
                         filePath = path.resolve(
                             currentFilePath || "",
@@ -324,10 +335,11 @@ export function parseAndReturnHoverTokens(
 
                     let hToken: MultiMap<string, HoverToken> | null =
                         hTokens?.get(filePath) ?? null;
+
                     if (hToken) {
                         let filtered = hToken.filter((key, value) => {
                             return (
-                                !value[0].isParam &&
+                                !("isParam" in value[0]) &&
                                 (t.symbols.length > 0
                                     ? t.symbols.includes(key) &&
                                       (value[0].token.exportSymbol == true ||

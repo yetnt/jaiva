@@ -20,9 +20,9 @@ export type TokenType =
     | "TStatement"
     | "TImport";
 
-export type Generic = number | string | GenericBool;
-export type GenericStatements = TStatement | TVarRef | TFuncCall;
-export type GenericBool = boolean | GenericStatements;
+export type Generic = number | string | GenericBool | TVoidValue;
+export type GenericStatements = TStatement | TVarRef | TFuncCall | TVoidValue;
+export type GenericBool = boolean | GenericStatements | TVoidValue;
 
 export type TokenDefault = {
     type: TokenType;
@@ -66,6 +66,7 @@ export type TFuncReturn = TokenDefault & {
 export type TFunction = TokenDefault & {
     args: string[];
     body: TCodeblock;
+    isArgOptional: boolean[];
 };
 
 export type TForLoop = TokenDefault & {
@@ -125,4 +126,5 @@ export type TStatement = TokenDefault & {
 export type TImport = TokenDefault & {
     symbols: string[];
     filePath: string;
+    fileName: string;
 };

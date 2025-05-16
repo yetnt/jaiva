@@ -3,6 +3,7 @@ import { findTokenInRange, hTokens } from "./extension";
 import { MultiMap } from "./mmap";
 import { HoverToken } from "./utils";
 import { TArrayVar, TFunction } from "./types";
+import { libFileNames } from "./compileGlobals";
 
 function keywordsCompletion(map: MultiMap<string, HoverToken>) {
     let t: TArrayVar = map.get("reservedKeywords")[0].token as TArrayVar;
@@ -176,6 +177,8 @@ function createParamterJumps(token: TFunction) {
  * @returns An array of `vscode.CompletionItem` objects representing the completion suggestions.
  */
 export function createCompletionItemz(
+    document: vscode.TextDocument | null,
+    position: vscode.Position | null,
     map: MultiMap<string, HoverToken>,
     lineNumber: number
 ) {

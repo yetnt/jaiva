@@ -124,4 +124,61 @@ export class MultiMap<K, V> {
     public entries(): IterableIterator<[K, V[]]> {
         return this.data.entries();
     }
+
+    /**
+     * Converts the map data into a JSON string representation.
+     *
+     * @param parseV - A callback function that takes an array of values (`V[]`)
+     * and returns a string representation of those values.
+     *
+     * @returns A JSON string representing the map, where each key is mapped to
+     * its corresponding array of values processed by the `parseV` function.
+     */
+    public toJson(parseV: (el: V[]) => string[]): string {
+        let string = [];
+        for (const [name, data] of this.entries()) {
+            string.push(`"${name}":[${parseV(data).join(",")}]`);
+        }
+
+        return "{" + string.join(",") + "}";
+    }
+
+    /**
+     * Creates a new `MultiMap` instance from a JSON-like object.
+     *
+     * @template K - The type of the keys in the `MultiMap`.
+     * @template V - The type of the values in the `MultiMap`.
+     *
+     * @param data - An object where each key is a string and the value is an array of strings.
+     * @param parseV - A function that takes a string representation of the value tokens
+     *                 and returns an array of values of type `V`.
+     *
+     * @returns A `MultiMap` instance populated with the parsed keys and values.
+     */
+    static fromJson<K, V>(
+        data: { [key: string]: string[] },
+        parseV: (hTokens: string[]) => V[]
+    ): MultiMap<K, V> {
+        const m = new MultiMap<K, V>();
+        for (const key in data) {
+            m.set(key as unknown as K, ...parseV(data[key]));
+        }
+        return m;
+    }
+
+    /**
+     * Removes entries with empty values from a given MultiMap and returns a new MultiMap instance.
+     *
+     * @template K - The type of the keys in the MultiMap.
+     * @template V - The type of the values in the MultiMap.
+     * @param mmap - The MultiMap instance to process.
+     * @returns A new MultiMap instance containing only the entries with non-empty values.
+     */
+    static clearEmptyKeys<K, V>(mmap: MultiMap<K, V>): MultiMap<K, V> {
+        const newMMap = new MultiMap<K, V>();
+        for (const [name, value] of mmap.entries()) {
+            if (value.length != 0) newMMap.add(name, ...value);
+        }
+        return newMMap;
+    }
 }

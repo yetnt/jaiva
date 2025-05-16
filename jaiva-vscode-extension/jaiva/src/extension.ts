@@ -1,23 +1,41 @@
 import * as vscode from "vscode";
-import { execSync } from "child_process";
+import { execSync, exec } from "child_process";
 import { TokenDefault } from "./types";
-import { HoverToken, parseAndReturnHoverTokens, primitive } from "./utils";
+import {
+    HoverToken,
+    mergeMaps,
+    parseAndReturnHoverTokens,
+    primitive,
+} from "./utils";
 import { MultiMap } from "./mmap";
 import { createCompletionItemz } from "./autocomplete";
+import * as globals from "./compileGlobals";
+import path from "path";
 
-export const hTokens: Map<string, MultiMap<string, HoverToken>> = new Map();
+export let hTokens: Map<string, MultiMap<string, HoverToken>> = new Map();
 const completionItemsMap: Map<string, vscode.CompletionItem[]> = new Map();
 let lastLineNumber: Map<string, number> = new Map();
+
+export const jaiva_src_lib = path.join(
+    execSync("jaiva-src", { encoding: "utf8" }).trim(),
+    "lib"
+);
 
 function onSave(document: vscode.TextDocument) {
     const filePath = document.uri.fsPath;
     const command = `jaiva "${filePath}" -jg`;
-    const output = execSync(command).toString();
+    const output = execSync(command, { encoding: "utf8" }).trim().toString();
     if (!output.endsWith("]") && !output.startsWith("[")) {
         return null;
     }
-    const tokens = JSON.parse(output) as TokenDefault[];
-    console.log(tokens);
+    let tokens;
+    try {
+        tokens = JSON.parse(
+            output.replace(/\\(?!\\|n|t|r)/g, "\\\\")
+        ) as TokenDefault[];
+    } catch (error) {
+        throw error;
+    }
 
     let hoverTokens = parseAndReturnHoverTokens(
         tokens,
@@ -25,11 +43,14 @@ function onSave(document: vscode.TextDocument) {
         filePath,
         hTokens
     );
-
-    console.log(hoverTokens);
     completionItemsMap.set(
         filePath,
-        createCompletionItemz(hoverTokens, lastLineNumber.get(filePath) || 0)
+        createCompletionItemz(
+            document,
+            null,
+            hoverTokens,
+            lastLineNumber.get(filePath) || 0
+        )
     );
 
     hTokens.set(filePath, hoverTokens);
@@ -38,25 +59,49 @@ function onSave(document: vscode.TextDocument) {
 function onActivate() {
     const pattern = "**/*.{jiv,jaiva,jva}";
 
+    hTokens = mergeMaps(
+        new Map<string, MultiMap<string, HoverToken>>(),
+        globals.getOrCreateLibJsonMap(true)
+    );
+
     // Using workspace.findFiles to search for matching files.
     vscode.workspace.findFiles(pattern).then(
         (uris) => {
             const filePaths = uris.map((uri) => uri.fsPath);
             filePaths.forEach((filePath) => {
                 const command = `jaiva "${filePath}" -jg`;
-                const output = execSync(command).toString();
+                const output = execSync(command, {
+                    encoding: "utf8",
+                })
+                    .trim()
+                    .toString();
                 if (!output.endsWith("]") && !output.startsWith("[")) {
                     return null;
                 }
-                const tokens = JSON.parse(output) as TokenDefault[];
+                let tokens;
+                try {
+                    tokens = JSON.parse(
+                        output.replace(/\\(?!\\|n|t|r)/g, "\\\\")
+                    ) as TokenDefault[];
+                } catch (error) {
+                    // console.log(output);
+                    throw error;
+                }
 
-                let hoverTokens = parseAndReturnHoverTokens(tokens, null);
+                let hoverTokens = parseAndReturnHoverTokens(
+                    tokens,
+                    null,
+                    filePath,
+                    hTokens
+                );
 
                 hTokens.set(filePath, hoverTokens);
 
                 completionItemsMap.set(
                     filePath,
                     createCompletionItemz(
+                        null,
+                        null,
                         hoverTokens,
                         lastLineNumber.get(filePath) || 0
                     )
@@ -104,6 +149,7 @@ export function activate(context: { subscriptions: vscode.Disposable[] }) {
     console.log("Jaiva extension activated.");
 
     onActivate();
+
     const runCommand = vscode.commands.registerCommand("jaiva.run", () => {
         // Ensure there is an active editor
         const editor = vscode.window.activeTextEditor;
@@ -141,7 +187,7 @@ export function activate(context: { subscriptions: vscode.Disposable[] }) {
             if (completionItems == undefined) {
                 completionItemsMap.set(
                     filePath,
-                    createCompletionItemz(hoverTokens, line)
+                    createCompletionItemz(document, position, hoverTokens, line)
                 );
             }
 
