@@ -1,5 +1,6 @@
 package com.jaiva.tokenizer;
 
+import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -495,10 +496,11 @@ public class Tokenizer {
      * @param line       The line to handle the import statement for.
      * @param tContainer The token container.
      * @param lineNumber The line number of the line.
+     * @param config     Tokenizer configuration
      * @return The token for the given line.
      */
     private static Token<?> handleImport(String line, Token<?> tContainer, int lineNumber, TConfig config)
-            throws TokenizerException.MalformedSyntaxException {
+            throws TokenizerException {
         // tsea "path"
         // tsea "path" <- funcz, funca
         line = line.replace(Keywords.IMPORT.get(0), "").replace(Keywords.IMPORT.get(1), "").trim();
@@ -517,12 +519,33 @@ public class Tokenizer {
         int stringEnd = Find.closingCharIndex(line, Chars.STRING, Chars.STRING);
         String path = line.substring(stringStart + 1, stringEnd);
 
+        // turn other extensions into .jiv, for safety (Only when importing globals)
+        if ((path.startsWith("jaiva/") || path.startsWith("jaiva\\"))
+                && (path.endsWith(".jaiva") || path.endsWith(".jva")))
+            path = path.substring(0, path.lastIndexOf(".") + 1) + "jiv";
+        // add .jiv extension if not available already. (All globals end with .jiv, if
+        // improting relatie file assume it ends in .jiv)
+        if (!path.endsWith(".jiv"))
+            path += ".jiv";
+
+        Path pObj = Path.of(path);
+
         // convert to static import if it contains "jaiva/" or "jaiva\"
         // set path, to path without the "jaiva/" or "jaiva\" prefix, and
         // config.JAIVA_SRC + "lib" as a the new prefix
+        // TODO: Use Path to handle the / and \
         if (path.startsWith("jaiva/") || path.startsWith("jaiva\\")) {
             path = path.replaceFirst("jaiva[/\\\\]", "");
-            path = Path.of(config.JAIVA_SRC).resolve("lib/").resolve(path).normalize().toAbsolutePath().toString();
+            pObj = Path.of(config.JAIVA_SRC).resolve("lib/").resolve(path).normalize().toAbsolutePath();
+            path = pObj.toString();
+        }
+        String fileName;
+
+        try {
+            // try set the filename
+            fileName = pObj.getFileName().toString().replaceAll(Pattern.quote(".jiv"), "");
+        } catch (NullPointerException e) {
+            throw new FileOrDirectoryNotFoundException("I don't think " + path + " exits...", lineNumber);
         }
 
         // path = path.replaceAll(Pattern.quote("\\"),
@@ -533,9 +556,9 @@ public class Tokenizer {
             ArrayList<String> args = new ArrayList<>();
             for (String arg : parts[1].trim().split(Character.toString(Chars.ARGS_SEPARATOR)))
                 args.add(arg.trim());
-            return tContainer.new TImport(path, args, lineNumber).toToken();
+            return tContainer.new TImport(path, fileName, args, lineNumber).toToken();
         } else {
-            return tContainer.new TImport(path, lineNumber).toToken();
+            return tContainer.new TImport(path, fileName, lineNumber).toToken();
         }
     }
 

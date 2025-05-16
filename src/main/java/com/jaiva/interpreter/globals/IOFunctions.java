@@ -3,6 +3,8 @@ package com.jaiva.interpreter.globals;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.JOptionPane;
+
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
@@ -27,9 +29,10 @@ public class IOFunctions extends BaseGlobals {
      * Constructs the IOFunctions with the Input/Output functions.
      */
     public IOFunctions() {
-        super();
+        super(GlobalType.GLOBAL);
         vfs.put("khuluma", new MapValue(new FKhuluma(container)));
         vfs.put("mamela", new MapValue(new FMamela(container)));
+        vfs.put("ask", new MapValue(new FAsk(container)));
     }
 
     /**
@@ -39,7 +42,7 @@ public class IOFunctions extends BaseGlobals {
     class FKhuluma extends BaseFunction {
 
         FKhuluma(Token<?> container) {
-            super("khuluma", container.new TFunction("khuluma", new String[] { "msg", "removeNewLn" }, null, -1,
+            super("khuluma", container.new TFunction("khuluma", new String[] { "msg", "removeNewLn?" }, null, -1,
                     "Prints any given input to the console with a newline afterwards. \\n(It just uses System.out.println() lol) This function returns no value."));
             this.freeze();
         }
@@ -101,6 +104,36 @@ public class IOFunctions extends BaseGlobals {
             String output = config.resources.consoleIn.nextLine();
 
             return output;
+        }
+    }
+
+    /**
+     * Represents the "ask" function, which prompts the user for input via a UI
+     * dialog.
+     * <p>
+     * This function displays a dialog box with a message provided as a parameter
+     * and
+     * returns the user's input as a string.
+     * </p>
+     *
+     * <p>
+     * Usage: <code>ask("Enter your name:")</code>
+     * </p>
+     *
+     * @see javax.swing.JOptionPane#showInputDialog(Object)
+     */
+    class FAsk extends BaseFunction {
+        FAsk(Token<?> container) {
+            super("ask", container.new TFunction("ask", new String[] { "message" }, null, -1,
+                    "Prompts the user for input via a UI."));
+            this.freeze();
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+                throws Exception {
+            checkParams(tFuncCall);
+            return JOptionPane.showInputDialog(params.get(0));
         }
     }
 }

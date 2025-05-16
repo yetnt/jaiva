@@ -80,4 +80,22 @@ public class TokenizerException extends JaivaException {
             super(lineNumber, message);
         }
     }
+
+    /**
+     * Exception to throw when a file or directory cannot be found.
+     */
+    public static class FileOrDirectoryNotFoundException extends TokenizerException {
+
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Constructs a new exception indicating a missing file or directory.
+         *
+         * @param message    A detailed message describing the error.
+         * @param lineNumber The line number where the error was detected.
+         */
+        public FileOrDirectoryNotFoundException(String message, int lineNumber) {
+            super(lineNumber, message);
+        }
+    }
 }

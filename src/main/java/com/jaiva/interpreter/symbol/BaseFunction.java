@@ -75,7 +75,55 @@ public class BaseFunction extends Symbol {
      */
     public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
             IConfig config) throws Exception {
-        return void.class;
+        return Token.voidValue(tFuncCall.lineNumber);
+    }
+
+    /**
+     * Check the parameters
+     * 
+     * @param tFuncCall the function call
+     * @throws InterpreterException when args are wrong.
+     */
+    protected void checkParams(TFuncCall tFuncCall) throws InterpreterException {
+        TFunction tFunc = (TFunction) this.token;
+
+        // this if sanitizes tFuncCall, as if it has 1 singular entry and that entry is
+        // null, we remove it so we have clear args.
+        if (tFuncCall.args.size() == 1 && tFuncCall.args.get(0) == null) {
+            tFuncCall.args.clear();
+        }
+
+        // first check if we jsut dont have args.
+        if (tFuncCall.args.isEmpty() && (tFunc.isArgOptional.size() > 0 ||
+                tFunc.isArgOptional.isEmpty())) {
+            throw new InterpreterException.FunctionParametersException(this,
+                    Integer.toString(1),
+                    tFuncCall.lineNumber);
+        }
+        for (int i = 0; i < tFunc.isArgOptional.size(); i++) {
+            boolean isOptional = (boolean) tFunc.isArgOptional.get(i);
+            // check if the current param was given an input of TVoidValue
+            // if so, error as we dont want them to pass in idk to a paramter thats not
+            // optional
+            if ((!tFuncCall.args.isEmpty() && tFuncCall.args.size() != i)) {
+                if (tFuncCall.args.get(i) instanceof TVoidValue && !isOptional)
+                    throw new InterpreterException.FunctionParametersException(this, Integer.toString(i + 1),
+                            tFuncCall.lineNumber);
+            } else {
+                // the function call has less arguments than required by the function.
+                // check if all the remaining arguments are defined as optional.
+                for (int j = i; j < tFunc.isArgOptional.size(); j++) {
+                    if (!(boolean) tFunc.isArgOptional.get(j) && j != 0) {
+                        throw new InterpreterException.FunctionParametersException(this, Integer.toString(j + 1),
+                                tFuncCall.lineNumber);
+                    }
+                }
+
+                // if we made it here, we've checked everything, so we can break out the outer
+                // loop
+                break;
+            }
+        }
     }
 
     /**
@@ -95,39 +143,6 @@ public class BaseFunction extends Symbol {
     public static class DefinedFunction extends BaseFunction {
         DefinedFunction(String name, TFunction token) {
             super(name, token);
-        }
-
-        private void checkParams(TFuncCall tFuncCall) throws InterpreterException {
-            TFunction tFunc = (TFunction) this.token;
-            // this if sanitizes tFuncCall, as if it has 1 singular entry and that entry is
-            // null, we remove it so we have clear args.
-            if (tFuncCall.args.size() == 1 && tFuncCall.args.get(0) == null) {
-                tFuncCall.args.clear();
-            }
-            for (int i = 0; i < tFunc.isArgOptional.size(); i++) {
-                boolean isOptional = (boolean) tFunc.isArgOptional.get(i);
-                // check if the current param was given an input of TVoidValue
-                // if so, error as we dont want them to pass in idk to a paramter thats not
-                // optional
-                if (!tFuncCall.args.isEmpty() && tFuncCall.args.size() != i) {
-                    if (tFuncCall.args.get(i) instanceof TVoidValue && !isOptional)
-                        throw new InterpreterException.FunctionParametersException(this, Integer.toString(i + 1),
-                                tFuncCall.lineNumber);
-                } else {
-                    // the function call has less arguments than required by the function.
-                    // check if all the remaining arguments are defined as optional.
-                    for (int j = i; j < tFunc.isArgOptional.size(); j++) {
-                        if (!(boolean) tFunc.isArgOptional.get(j) && j != 0) {
-                            throw new InterpreterException.FunctionParametersException(this, Integer.toString(j + 1),
-                                    tFuncCall.lineNumber);
-                        }
-                    }
-
-                    // if we made it here, we've checked everything, so we can break out the outer
-                    // loop
-                    break;
-                }
-            }
         }
 
         @Override
@@ -169,11 +184,11 @@ public class BaseFunction extends Symbol {
                     value = params.get(i);
                 } catch (IndexOutOfBoundsException e) {
                     // optional as we checked params above, so set it to TVoidValue
-                    value = tContainer.new TVoidValue(tFuncCall.lineNumber);
+                    value = Token.voidValue(tFuncCall.lineNumber);
                 }
                 if (value instanceof String)
                     value = EscapeSequence.escape((String) value);
-                Object wrappedValue = tContainer.new TVoidValue(tFuncCall.lineNumber);
+                Object wrappedValue = Token.voidValue(tFuncCall.lineNumber);
 
                 if (name.startsWith("F~")
                         && (value instanceof Token<?> && ((Token<?>) value).getValue() instanceof TVarRef)) {

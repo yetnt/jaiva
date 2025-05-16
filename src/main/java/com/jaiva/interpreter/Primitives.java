@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 import com.jaiva.errors.InterpreterException;
+import com.jaiva.errors.InterpreterException.CatchAllException;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
@@ -32,6 +33,109 @@ import com.jaiva.tokenizer.Token.TWhileLoop;
  * <p>
  */
 public class Primitives {
+
+    /**
+     * Handles arithmetic operations between two numeric operands (Integer or
+     * Double).
+     * Supports the following operators: "+", "-", "*", "/", "%", and "^".
+     * The method performs type checking and applies the operation according to the
+     * types of the operands.
+     * If both operands are integers, integer arithmetic is used except for "^"
+     * (power), which returns a double.
+     * If either operand is a double, the operation is performed in double
+     * precision.
+     * Throws a CatchAllException for invalid operators.
+     * Returns a void value if operands are not numeric.
+     *
+     * @param op         The arithmetic operator as a string ("+", "-", "*", "/",
+     *                   "%", "^").
+     * @param lhs        The left-hand side operand (Integer or Double).
+     * @param rhs        The right-hand side operand (Integer or Double).
+     * @param lineNumber The line number for error reporting.
+     * @return The result of the arithmetic operation, or a void value if operands
+     *         are not numeric.
+     * @throws InterpreterException If an invalid operator is provided or another
+     *                              interpreter error occurs.
+     */
+    private static Object handleNumOperations(String op, Object lhs, Object rhs, int lineNumber)
+            throws InterpreterException {
+        if (lhs instanceof Integer iLhs && rhs instanceof Integer iRhs) {
+            // Because the ^ returns a double, we use 2 variables, so that if yopu dont use
+            // the ^ operator you dont receive a double output.
+            switch (op) {
+                case "+":
+                    return iLhs + iRhs;
+                case "-":
+                    return iLhs - iRhs;
+                case "*":
+                    return iLhs * iRhs;
+                case "/":
+                    return iLhs / iRhs;
+                case "%":
+                    return iLhs % iRhs;
+                case "^":
+                    return Math.pow(iLhs, iRhs);
+                default:
+                    throw new CatchAllException("Invalid operator given", lineNumber);
+            }
+        } else if (lhs instanceof Double iLhs && rhs instanceof Double iRhs) {
+            switch (op) {
+                case "+":
+                    return iLhs + iRhs;
+                case "-":
+                    return iLhs - iRhs;
+                case "*":
+                    return iLhs * iRhs;
+                case "/":
+                    return iLhs / iRhs;
+                case "%":
+                    return iLhs % iRhs;
+                case "^":
+                    return Math.pow(iLhs, iRhs);
+                default:
+                    throw new CatchAllException("Invalid operator given", lineNumber);
+
+            }
+        } else if (lhs instanceof Double iLhs && rhs instanceof Integer iRhs) {
+            switch (op) {
+                case "+":
+                    return iLhs + iRhs;
+                case "-":
+                    return iLhs - iRhs;
+                case "*":
+                    return iLhs * iRhs;
+                case "/":
+                    return iLhs / iRhs;
+                case "%":
+                    return iLhs % iRhs;
+                case "^":
+                    return Math.pow(iLhs, iRhs);
+                default:
+                    throw new CatchAllException("Invalid operator given", lineNumber);
+
+            }
+        } else if (lhs instanceof Integer iLhs && rhs instanceof Double iRhs) {
+            switch (op) {
+                case "+":
+                    return iLhs + iRhs;
+                case "-":
+                    return iLhs - iRhs;
+                case "*":
+                    return iLhs * iRhs;
+                case "/":
+                    return iLhs / iRhs;
+                case "%":
+                    return iLhs % iRhs;
+                case "^":
+                    return Math.pow(iLhs, iRhs);
+                default:
+                    throw new CatchAllException("Invalid operator given", lineNumber);
+
+            }
+        } else {
+            return Token.voidValue(lineNumber);
+        }
+    }
 
     /**
      * Resolves string operations between two operands (lhs and rhs) based on the
@@ -173,40 +277,9 @@ public class Primitives {
 
                 // For the following if, thanks to the above condition
                 // if one is an integer then the other is an integer too
-                if (lhs instanceof Integer) {
-                    // Because the ^ returns a double, we use 2 variables, so that if yopu dont use
-                    // the ^ operator you dont receive a double output.
-                    switch (op) {
-                        case "+":
-                            return ((Integer) lhs) + ((Integer) rhs);
-                        case "-":
-                            return ((Integer) lhs) - ((Integer) rhs);
-                        case "*":
-                            return ((Integer) lhs) * ((Integer) rhs);
-                        case "/":
-                            return ((Integer) lhs) / ((Integer) rhs);
-                        case "%":
-                            return ((Integer) lhs) % ((Integer) rhs);
-                        case "^":
-                            return Math.pow(((Integer) lhs), ((Integer) rhs));
-
-                    }
-                } else {
-                    switch (op) {
-                        case "+":
-                            return ((Double) lhs) + ((Double) rhs);
-                        case "-":
-                            return ((Double) lhs) - ((Double) rhs);
-                        case "*":
-                            return ((Double) lhs) * ((Double) rhs);
-                        case "/":
-                            return ((Double) lhs) / ((Double) rhs);
-                        case "%":
-                            return ((Double) lhs) % ((Double) rhs);
-                        case "^":
-                            return Math.pow(((Double) lhs), ((Double) rhs));
-
-                    }
+                Object v = handleNumOperations(op, lhs, rhs, tStatement.lineNumber);
+                if (!(v instanceof TVoidValue)) {
+                    return v;
                 }
             } else {
                 // In this else branch, the type is boolean logic

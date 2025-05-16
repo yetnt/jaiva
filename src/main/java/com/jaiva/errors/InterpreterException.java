@@ -1,5 +1,7 @@
 package com.jaiva.errors;
 
+import java.util.HashMap;
+
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
@@ -90,6 +92,7 @@ public class InterpreterException extends JaivaException {
          * @param amtGiven   the amount of parameters they gave.
          * @param lineNumber the line number this happened on
          */
+        @SuppressWarnings("rawtypes")
         public FunctionParametersException(BaseFunction s, int amtGiven, int lineNumber) {
             super(lineNumber, s.name + "() only needs " + ((TFunction) s.token).args.length
                     + " parameter" + (amtGiven == 1 ? "" : "s") + ", and your goofy ahh gave " + amtGiven
@@ -159,7 +162,8 @@ public class InterpreterException extends JaivaException {
          * @param side      "lhs" or "rhs"
          * @param incorrect The .toString() of the Object we received.
          */
-        public TStatementResolutionException(TStatement s, String side, String incorrect) {
+        public TStatementResolutionException(@SuppressWarnings("rawtypes") TStatement s, String side,
+                String incorrect) {
             super(s.lineNumber,
                     incorrect + " (the " + side + ") in (" + s.statement + ") is not allowed in" +
                             (s.statementType == 0 ? " a (number) comparison" : " an arithmetic")
@@ -176,7 +180,8 @@ public class InterpreterException extends JaivaException {
          * @param expected What it expected (in string form)
          * @param received What it received (in string form)
          */
-        public TStatementResolutionException(TokenDefault outer, TStatement s, String expected, String received) {
+        public TStatementResolutionException(TokenDefault outer, @SuppressWarnings("rawtypes") TStatement s,
+                String expected, String received) {
             super(s.lineNumber,
                     "i expected (" + s.statement + ") to resolve to a " + expected
                             + ". (I'm pretty sure a " + outer.name
@@ -197,7 +202,7 @@ public class InterpreterException extends JaivaException {
          * 
          * @param s The variable reference.
          */
-        public UnknownVariableException(TVarRef s) {
+        public UnknownVariableException(@SuppressWarnings("rawtypes") TVarRef s) {
             super(s.lineNumber, "Lowkey can't find variable named " + s.varName
                     + " that you used anywhere. It prolly aint in this block's scope fr.");
         }
@@ -220,7 +225,7 @@ public class InterpreterException extends JaivaException {
          * 
          * @param s The variable reassignment token
          */
-        public UnknownVariableException(TVarReassign s) {
+        public UnknownVariableException(@SuppressWarnings("rawtypes") TVarReassign s) {
             super(s.lineNumber, "Lowkey can't find the variable named " + s.name
                     + " that you're trying to reassign anywhere. It prolly aint in this block's scope fr.");
         }
@@ -231,7 +236,7 @@ public class InterpreterException extends JaivaException {
          * 
          * @param s The function call token.
          */
-        public UnknownVariableException(TFuncCall s) {
+        public UnknownVariableException(@SuppressWarnings("rawtypes") TFuncCall s) {
             super(s.lineNumber, "Lowkey can't find the function named " + s.functionName
                     + " that you used anywhere. It prolly aint in this block's scope fr.");
         }
@@ -290,7 +295,7 @@ public class InterpreterException extends JaivaException {
          *
          * @param tFuncCall The weird function in question.
          */
-        public WeirdAhhFunctionException(TFuncCall tFuncCall) {
+        public WeirdAhhFunctionException(@SuppressWarnings("rawtypes") TFuncCall tFuncCall) {
             super(tFuncCall.lineNumber,
                     tFuncCall.name + " could NOT be resolved to a poper function name. Idk what else to tell you zawg");
         }
@@ -308,7 +313,7 @@ public class InterpreterException extends JaivaException {
          * 
          * @param st The TStatement.
          */
-        public StringCalcException(TStatement st) {
+        public StringCalcException(@SuppressWarnings("rawtypes") TStatement st) {
             super(st.lineNumber,
                     st.statement + "A statement contains invalid string operations. Not telling u what tho lolol.");
         }
@@ -320,7 +325,7 @@ public class InterpreterException extends JaivaException {
          * @param s The TStatement.
          * @param e The Exception that got caught.
          */
-        public StringCalcException(TStatement s, Exception e) {
+        public StringCalcException(@SuppressWarnings("rawtypes") TStatement s, Exception e) {
             super(s.lineNumber,
                     e instanceof StringIndexOutOfBoundsException
                             ? "Bro, whatever you did, it's out of the string's bounbds. fix it pls 🙏"
@@ -343,6 +348,30 @@ public class InterpreterException extends JaivaException {
          */
         public CimaException(String message, int lineNumber) {
             super(lineNumber, "Ight. Stopped program. Reason: " + message);
+        }
+    }
+
+    /**
+     * Exception to throw for any "catch all" cases that cannot actually happen but
+     * need to have an error thrown as the user can input really anything they want
+     * and a switch-case/ if-else chain might not catch it, but the default:/last
+     * else block might catch it, then throw this error.
+     * <p>
+     * Essentialy a fallback exception.
+     */
+    public static class CatchAllException extends InterpreterException {
+
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Represents a generic exception that is not expected to occur.
+         * This exception is used as a fallback for unexpected errors.
+         *
+         * @param message    A detailed message describing the error.
+         * @param lineNumber The line number where the error occurred.
+         */
+        public CatchAllException(String message, int lineNumber) {
+            super(lineNumber, "This error shouldnt happen... (" + message + ")");
         }
     }
 }

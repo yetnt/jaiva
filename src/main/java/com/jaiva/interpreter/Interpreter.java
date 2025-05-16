@@ -6,9 +6,9 @@ import java.util.*;
 import com.jaiva.Main;
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.InterpreterException.*;
+import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
-import com.jaiva.interpreter.symbol.BaseFunction;
-import com.jaiva.interpreter.symbol.BaseVariable;
+import com.jaiva.interpreter.symbol.*;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.Token;
@@ -273,8 +273,14 @@ public class Interpreter {
         for (Token<?> t : tokens) {
             TokenDefault token = t.getValue();
             if (token instanceof TImport) {
+                Globals g = new Globals<>();
                 TImport tImport = (TImport) token;// Create a Path instance from tImport.filePath
                 Path importPath = Path.of(tImport.filePath);
+
+                if (g.builtInGlobals.containsKey(tImport.fileName)) {
+                    vfs.putAll((HashMap<String, MapValue>) g.builtInGlobals.get(tImport.fileName));
+                    continue;
+                }
 
                 // Check if the path is not absolute
                 if (!importPath.isAbsolute()) {
@@ -354,7 +360,9 @@ public class Interpreter {
 
                 while (((Boolean) cond).booleanValue() && !terminate) {
                     Object out = Interpreter.interpret(whileLoop.body.lines, Context.WHILE, vfs, config);
-                    if (out instanceof ThrowIfGlobalContext) {
+                    if (out instanceof ThrowIfGlobalContext old) {
+                        if (old.c instanceof Keywords.LoopControl && old.c == Keywords.LoopControl.BREAK)
+                            break;
                         ThrowIfGlobalContext g = (ThrowIfGlobalContext) out;
                         ThrowIfGlobalContext checker = throwIfGlobalContext(context, out, g.lineNumber);
                         // if (Primitives.isPrimitive(checker.c))

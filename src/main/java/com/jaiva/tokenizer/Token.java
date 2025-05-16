@@ -65,9 +65,21 @@ public class Token<T extends TokenDefault> {
     }
 
     /**
+     * Creates a new instance of the {@link TVoidValue} inner class, representing a
+     * void value token.
+     *
+     * @param lineNumber the line number associated with the token (currently
+     *                   ignored and set to 0)
+     * @return a new {@link TVoidValue} instance
+     */
+    public static Token<?>.TVoidValue voidValue(int lineNumber) {
+        Token<?> container = new Token<>(null);
+        return container.new TVoidValue(lineNumber);
+    }
+
+    /**
      * Represents a "null" value such as {@code maak name <- idk!} which is the same
      * as not defining a value at all.
-     * TODO: Actually implement this shit.
      */
     public class TVoidValue extends TokenDefault {
 
@@ -107,6 +119,10 @@ public class Token<T extends TokenDefault> {
          */
         public String filePath;
         /**
+         * Specified files name without any folders
+         */
+        public String fileName;
+        /**
          * The imported symbols. This arraylist may be empty if no symbols are imported
          * specifically.
          */
@@ -118,9 +134,10 @@ public class Token<T extends TokenDefault> {
          * @param file The file path.
          * @param ln   The line number.
          */
-        public TImport(String file, int ln) {
+        public TImport(String file, String fileName, int ln) {
             super("TImport", ln);
             filePath = file;
+            this.fileName = fileName;
         }
 
         /**
@@ -130,15 +147,17 @@ public class Token<T extends TokenDefault> {
          * @param names The imported symbols.
          * @param ln    The line number.
          */
-        public TImport(String file, ArrayList<String> names, int ln) {
+        public TImport(String file, String fileName, ArrayList<String> names, int ln) {
             super("TImport", ln);
             filePath = file;
+            this.fileName = fileName;
             symbols.addAll(names);
         }
 
         @Override
         public String toJson() {
             json.append("filePath", filePath, false);
+            json.append("fileName", fileName, false);
             json.append("symbols", symbols, true);
             return super.toJson();
         }
@@ -665,6 +684,12 @@ public class Token<T extends TokenDefault> {
         public TFunction(String name, String[] args, TCodeblock body, int ln, String customToolTip) {
             super("F~" + name, ln, customToolTip);
             this.args = args;
+            for (int i = 0; i < args.length; i++) {
+                String arg = args[i];
+                isArgOptional.add(arg.endsWith("?"));
+                if (arg.endsWith("?"))
+                    args[i] = arg.substring(0, arg.length() - 1);
+            }
             this.body = body;
         }
 

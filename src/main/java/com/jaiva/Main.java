@@ -3,9 +3,10 @@ package com.jaiva;
 import java.io.*;
 import java.util.*;
 
-import com.jaiva.errors.InterpreterException;
-import com.jaiva.errors.JaivaException;
+import com.jaiva.errors.*;
 import com.jaiva.errors.TokenizerException;
+import com.jaiva.errors.JaivaException;
+import com.jaiva.errors.JaivaException.*;
 import com.jaiva.interpreter.*;
 import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -324,7 +325,12 @@ public class Main {
         ArrayList<Token<?>> tokens = new ArrayList<>();
         MultipleLinesOutput m = null;
         BlockChain b = null;
-        Scanner scanner = new Scanner(myObj);
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(myObj);
+        } catch (FileNotFoundException e) {
+            throw new UnknownFileException(filePath);
+        }
         String previousLine = "";
         String comment = null;
         TConfig config = new TConfig(callJaivaSrc());

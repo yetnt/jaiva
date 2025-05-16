@@ -19,19 +19,24 @@ import com.jaiva.lang.Keywords;
  * Globals class holds all the global symbols that are injected into the
  * variable functions store.
  */
-public class Globals extends BaseGlobals {
+public class Globals<T extends GlobalType> extends BaseGlobals {
     // public HashMap<String, MapValue> vfs = new HashMap<>();
+
+    public HashMap<String, HashMap<String, MapValue>> builtInGlobals = new HashMap<>();
 
     /**
      * Constructor to create and get the globals.
      */
     public Globals() {
-        super();
+        super(GlobalType.MAIN);
         vfs.put("getVarClass", new MapValue(new FGetVarClass(container)));
         vfs.put("reservedKeywords", new MapValue(new VReservedKeywords(container)));
         vfs.put("version", new MapValue(new VJaivaVersion(container)));
         vfs.put("flat", new MapValue(new FFlat(container)));
         vfs.putAll(new IOFunctions().vfs);
+
+        Conversions c = new Conversions();
+        builtInGlobals.put(c.path, c.vfs);
     }
 
     /**
@@ -40,10 +45,11 @@ public class Globals extends BaseGlobals {
      * @param removeTrailingComma Remove the trailing comma
      * @return string with the JSON representation of the global tokens.
      */
+    @SuppressWarnings("unchecked")
     public String returnGlobalsJSON(boolean removeTrailingComma) {
         StringBuilder string = new StringBuilder();
         vfs.forEach((name, vf) -> {
-            Symbol symbol = (Symbol) vf.getValue();
+            Symbol symbol = (Symbol) ((MapValue) vf).getValue();
             string.append(symbol.token.toJson());
             string.append(",");
         });
@@ -128,6 +134,7 @@ public class Globals extends BaseGlobals {
             this.freeze();
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
                 IConfig config)
