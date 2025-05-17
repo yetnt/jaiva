@@ -21,8 +21,8 @@ import com.jaiva.tokenizer.Token.TFuncCall;
 public class Math extends BaseGlobals {
     public Math() {
         super(GlobalType.LIB, "math");
-        vfs.put("random", new MapValue(new FRandom(container)));
-        vfs.put("round", new MapValue(new FRound(container)));
+        vfs.put("m_random", new MapValue(new FRandom(container)));
+        vfs.put("m_round", new MapValue(new FRound(container)));
     }
 
     /**

@@ -32,6 +32,7 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
 -   **[Jaiva!](#jaiva)**
     -   **[Prerequisites](#prerequisites)**
     -   **[Index](#index)** <- you are here.
+    -   **[Screenshots](#screenshots)**
     -   **[Syntax](#syntax)**
         -   _[Comments](#comments)_
         -   _[Assignment Operators](#assignment-operators)_
@@ -72,6 +73,8 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
     -   **[Tsea (Import) and Exporting Files](#tsea-import-and-exporting-files)**
 
 ## <center>Screenshots
+
+![sc](./images/game.png)
 
 ## <center>Syntax
 
@@ -310,9 +313,10 @@ maak (variable name) <- (value)!
 Simple asf
 
 ```jiv
-maak a <- 20!
-maak var1 <- "string"!
-maak var5 <- aowa!
+maak a <- 20!           @ number
+maak var1 <- "string"!  @ string
+maak var5 <- aowa!      @ boolean
+maak f!                 @ define without a value.
 ```
 
 Also a neat feature, since only a specifc set of chars are reserved, this allows for some weird variable names that is allowed.
@@ -351,6 +355,7 @@ You can reassign any type really. This shit aint type safe.
 
 ```jiv
 maak a <-| 20, 23, 56, 324, 354!
+maak b <-|! @ Empty array.
 ```
 
 Yknow. Then you can access elements of the array using the `[]` operator.
@@ -571,29 +576,29 @@ colonize word with reservedKeywords ->
 
 ### Control flow
 
-For all loops, to forcefully exit a loop, use the `voetsek` keyword. This is the break keyword.
+For all loops, to forcefully exit a loop, use the `voetsek` keyword.
 
 ```jiv
 nikhil (a = 10) ->
     khuluma(a)! @ 10
-    voetsek! @ this will break the loop.
+    voetsek! @ this will break out of the loop, stopping it.
 <~
 ```
 
-To skip to the next iteration of a loop, use the `nevermind` keyword. This is the continue keyword.
+To skip to the next iteration of a loop, use the `nevermind` keyword.
 
 ```jiv
 colonize i <- 0 | i <= 10 | + ->
-    khuluma(i)! @ 0, 1, 2, 3, 4, 5
     if (i = 5) ->
         nevermind! @ this will skip the rest of the loop and go to the next iteration.
     <~
+    khuluma(i)! @ 0, 1, 2, 3, 4, 6, 7, 8, 9, 10
 <~
 ```
 
 ## <center>Error handling
 
-Jaiva has some sort of error handling. (Well you can only handle user thrown errors, lol.) This is done using 2 constructs.
+Jaiva has error handling and throwing! This is done using 2 constructs.
 
 ### Throw an error
 
@@ -611,7 +616,7 @@ if (a = 10) ->
     khuluma("a is 10")!
 <~ mara ->
     cima <== "a is not 10"! @ this will throw an error.
-<~>
+<~
 ```
 
 ### zama zama (try) chaai (catch) block
@@ -619,6 +624,9 @@ if (a = 10) ->
 The `zama zama` keyword (both, one `zama` won't work.) is used to define a try block, and the `chaai` keyword is used to define a catch block.
 
 The `chaai` block is executed if an error is thrown in the `zama zama` block.
+
+> [!NOTE]
+> When in a chaai block, you have access to a special variable called
 
 > [!WARNING]
 > You cannot have a `zama zama` block without a `chaai` block. This is a design choice, and it makes sense.
@@ -636,9 +644,9 @@ zama zama ->
 
 ```jiv
 zama zama ->
-    @ block of code to try
+    khuluma(true + 1)!
 <~ chaai ->
-    khuluma("error msg" + chaai)!
+    khuluma(error)! @ error is a special variable which holds the error message.
 <~
 ```
 
@@ -683,7 +691,7 @@ kwenza *addition(param1, param2) -> @ Pre-pend * to the function name to mark it
 Then in your main file, you can import it like this.
 
 ```jiv
-tsea "file.jiv"!
+tsea "file.jiv"! @ or you can have an absolute import.
 khuluma(addition(a, 1))! @ 11
 ```
 
@@ -695,11 +703,15 @@ tsea "file.jiv" <- addition!
 
 > [!NOTE]
 > File paths are relative to the current working directory. So if you have a file in a different directory, you will have to use the full path to the file.
+
 > [!NOTE]
 > You can also import files from the Jaiva library. Example to import the arrays files
 >
 > ```jiv
-> tsea "jaiva/arrays.jiv"!
+> tsea "jaiva/arrays"!
 > ```
 >
 > See [Globals](./Globals.md) for a list of global variables and functions that are available to you, and others that you can import.
+
+> [!NOTE]
+> Omitting the file extension is okay, however it will default to `.jiv`

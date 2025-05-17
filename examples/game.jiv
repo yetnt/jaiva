@@ -1,0 +1,179 @@
+tsea "jaiva/math"!
+{
+                CAR TERMINAL GAME
+
+    Goals to game:
+        1. Options function.                    DONE
+        2. Read from user.                      DONE
+        3. Print driving.                       DONE
+        4. Stop when needed.                    DONE
+        5. Run out of fuel.                     DONE
+        6. Repay on fuel
+        7. Upgrades.
+        8. Fuel costs R10
+}
+
+maak money <- 500!
+maak fuelAmt <- 100!
+maak maxFuel <- 100!
+
+maak monPerFuel <- 1000! @ Amount to refuel.
+
+maak fuelPerKm <- 10! @ 10 fuel is spent while driving for every kilometre.
+maak loanAmt <- 3000! @ Total amount of money they can take out. when this reaches 0 they cannot take any more.
+maak SLEEP_TIME <- 500! @ While driving, it will decrease in fuel every 2 seconds.
+maak WIN <- 100000000!
+maak totalKm <- 0!
+
+maak carLvl <- 1!
+maak earnings <- 100!
+maak upgradePrice <- 10!
+
+@* List all the options
+kwenza listOptions() ->
+    khuluma("R" + money)!
+    khuluma("DRIVE:$tDrive your car")!
+    khuluma("EXIT:$tExit")!
+    khuluma("SHOP:$tSpend your fortunes.")!
+    khuluma("LOAN:$tTake out loan from bank")!
+<~
+
+kwenza shop() ->
+    clear()!
+    khuluma("R" + money)!
+    khuluma("")!
+    khuluma("Jaiva Shop!")!
+    khuluma("")!
+    khuluma("Type the number to say which option you'd like!")!
+    khuluma("")!
+    khuluma("1:$tUPGRADE UR CAR (IT WILL BE MORE EXPENSIVE TO MAINTAIN.) FOR R" + upgradePrice)!
+    khuluma("2:$tFUEL UR CAR FOR R" + monPerFuel)!
+    khuluma("3:$tWIN THE GAME R" + 100000000)!
+    khuluma("4:$tLEAVE THE ESTABISHMENT.")!
+    maak option <- mamela()!
+    if (option = "1" && (money > upgradePrice)) ->
+
+        money <- money - upgradePrice!
+        carLvl <- carLvl + 1!
+        upgradePrice <- upgradePrice * carLvl!
+        fuelPerKm <- fuelPerKm * carLvl!
+        fuelAmt <- fuelAmt * carLvl!
+        monPerFuel <- monPerFuel * carLvl!
+        maxFuel <- carLvl * maxFuel * 2!
+
+        earnings <- earnings + (carLvl * 2)!
+
+        if (SLEEP_TIME > 20) ->
+            SLEEP_TIME <- SLEEP_TIME / 2!
+        <~ mara ->
+            SLEEP_TIME <- 20!
+        <~
+
+    <~ mara if (option = "2" && (money >= monPerFuel)) ->
+        maak needed <- maxFuel - fuelAmt!
+        if (needed > 0) ->
+            money <- money - monPerFuel!
+            fuelAmt <- maxFuel!
+        <~
+    <~  mara if (option = "3") ->
+        if (money = WIN) ->
+            khutla yebo!
+        <~
+    <~ mara if (option = "4") ->
+        khutla idk!
+    <~
+    shop()!
+<~
+
+kwenza loan() ->
+    clear()!
+    khuluma("R" + money)!
+    kwenza isEligable(monetryValue) ->
+        if ((money - monetryValue < 0) || (monetryValue > loanAmt)) ->
+            clear()!
+            khuluma("You are not eligable to make a loan. Enter to go bacl.")!
+            mamela()!
+            khutla false!
+        <~
+        khutla true!
+    <~
+    khuluma("CHAAS BANKING")!
+    khuluma("Type the number to say which option you'd like!")!
+    khuluma("")!
+    khuluma("1:$tR100 LOAN")!
+    khuluma("2:$tR200 LOAN")!
+    khuluma("3:$tMY WHOLE LOAN")!
+    khuluma("4:$tLEAVE THE ESTABISHMENT.")!
+    maak option <- mamela()!
+    maak is!
+    if (option = "1") ->
+        is <- isEligable(100)!
+        if (is = true) ->
+            loanAmt <- loanAmt - 110!
+            money <- money + 100!
+        <~
+    <~ mara if (option = "2") ->
+        khuluma("HELP")!
+        is <- isEligable(200)!
+        if (is = true) ->
+            loanAmt <- loanAmt - 210!
+            money <- money + 200!
+        <~
+    <~  mara if (option = "3") ->
+        money <- money + loanAmt!
+        loanAmt <- 0!
+    <~ mara if (option = "4") ->
+        khutla idk!
+    <~
+
+    loan()!
+<~
+
+kwenza drive() ->
+    maak km <- 0!
+    clear()!
+    nikhil (fuelAmt > 0) ->
+        khuluma("R" + money)!
+        khuluma("Kilometres:$t" + km)!
+        khuluma("Fuel:$t" + fuelAmt + "/" + maxFuel)!
+        fuelAmt <- fuelAmt - 10!
+        km <- km + 1!
+        money <- money + (earnings * m_random(1, 10))!
+        sleep(SLEEP_TIME)!
+        clear()!
+    <~
+
+    if (fuelAmt <= 0) ->
+        khuluma("you are out of fuel. enter to go back to start menu.")!
+        mamela()!
+    <~
+
+    khutla km!
+<~
+
+kwenza main() ->
+    nikhil (true = yebo) ->
+        clear()!
+        listOptions()!
+        maak input <- mamela()!
+        if (input = "DRIVE") ->
+            totalKm <- totalKm + drive()!
+            clear()!
+        <~ mara if (input = "EXIT") ->
+            khuluma("Awe")!
+            khuluma("Total Kilomtres driven:" + totalKm)!
+            khutla idk!
+        <~ mara if (input = "LOAN") ->
+            loan()!
+        <~ mara if (input = "SHOP") ->
+            maak s <- shop()!
+            if (s = yebo) ->
+                khuluma("wow. you won. crazy work.")!
+                khuluma("Total Kilomtres driven:" + totalKm)!
+                khutla idk!
+            <~
+        <~
+    <~
+<~
+
+main()!
