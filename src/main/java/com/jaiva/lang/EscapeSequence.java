@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.jaiva.errors.TokenizerException;
-import com.jaiva.errors.TokenizerException.MalformedSyntaxException;
 
 /**
  * EscapeSequence class is a utility class that provides methods for escaping

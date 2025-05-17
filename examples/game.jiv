@@ -20,7 +20,7 @@ maak maxFuel <- 100!
 maak monPerFuel <- 1000! @ Amount to refuel.
 
 maak fuelPerKm <- 10! @ 10 fuel is spent while driving for every kilometre.
-maak loanAmt <- 3000! @ Total amount of money they can take out. when this reaches 0 they cannot take any more.
+maak loanAmt <- 3e6! @ Total amount of money they can take out. when this reaches 0 they cannot take any more.
 maak SLEEP_TIME <- 500! @ While driving, it will decrease in fuel every 2 seconds.
 maak WIN <- 100000000!
 maak totalKm <- 0!
@@ -89,7 +89,7 @@ kwenza shop() ->
 
 kwenza loan() ->
     clear()!
-    khuluma("R" + money)!
+    khuluma("R" + money + " +" + loanAmt)!
     kwenza isEligable(monetryValue) ->
         if ((money - monetryValue < 0) || (monetryValue > loanAmt)) ->
             clear()!

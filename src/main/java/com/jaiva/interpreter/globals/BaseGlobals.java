@@ -2,8 +2,6 @@ package com.jaiva.interpreter.globals;
 
 import java.util.HashMap;
 
-import javax.management.RuntimeErrorException;
-
 import com.jaiva.errors.JaivaException;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.symbol.Symbol;

@@ -2,11 +2,8 @@ package com.jaiva.interpreter.globals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.random.*;
 
-import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;

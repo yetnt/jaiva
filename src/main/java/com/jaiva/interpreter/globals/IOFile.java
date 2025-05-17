@@ -1,8 +1,5 @@
 package com.jaiva.interpreter.globals;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseVariable;

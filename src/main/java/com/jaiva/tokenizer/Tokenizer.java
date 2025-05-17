@@ -1,17 +1,12 @@
 package com.jaiva.tokenizer;
 
-import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 import com.jaiva.errors.TokenizerException.*;
 import com.jaiva.errors.TokenizerException;
-import com.jaiva.lang.Chars;
-import com.jaiva.lang.Comments;
-import com.jaiva.lang.EscapeSequence;
-import com.jaiva.lang.Keywords;
+import com.jaiva.lang.*;
 import com.jaiva.tokenizer.Token.TArrayVar;
 import com.jaiva.tokenizer.Token.TBooleanVar;
 import com.jaiva.tokenizer.Token.TCodeblock;
@@ -23,11 +18,7 @@ import com.jaiva.tokenizer.Token.TStringVar;
 import com.jaiva.tokenizer.Token.TTryCatchStatement;
 import com.jaiva.tokenizer.Token.TUnknownVar;
 import com.jaiva.tokenizer.Token.TVarRef;
-import com.jaiva.utils.BlockChain;
-import com.jaiva.utils.Find;
-import com.jaiva.utils.MultipleLinesOutput;
-import com.jaiva.utils.Tuple2;
-import com.jaiva.utils.Validate;
+import com.jaiva.utils.*;
 import com.jaiva.utils.Validate.IsValidSymbolName;
 
 /**
