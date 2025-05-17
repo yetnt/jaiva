@@ -32,6 +32,8 @@ maak upgradePrice <- 10!
 @* List all the options
 kwenza listOptions() ->
     khuluma("R" + money)!
+    khuluma("TOTAL:$t" + totalKm + "km")!
+    khuluma()!
     khuluma("DRIVE:$tDrive your car")!
     khuluma("EXIT:$tExit")!
     khuluma("SHOP:$tSpend your fortunes.")!
@@ -41,11 +43,11 @@ kwenza listOptions() ->
 kwenza shop() ->
     clear()!
     khuluma("R" + money)!
-    khuluma("")!
+    khuluma()!
     khuluma("Jaiva Shop!")!
-    khuluma("")!
+    khuluma()!
     khuluma("Type the number to say which option you'd like!")!
-    khuluma("")!
+    khuluma()!
     khuluma("1:$tUPGRADE UR CAR (IT WILL BE MORE EXPENSIVE TO MAINTAIN.) FOR R" + upgradePrice)!
     khuluma("2:$tFUEL UR CAR FOR R" + monPerFuel)!
     khuluma("3:$tWIN THE GAME R" + 100000000)!
@@ -99,7 +101,7 @@ kwenza loan() ->
     <~
     khuluma("CHAAS BANKING")!
     khuluma("Type the number to say which option you'd like!")!
-    khuluma("")!
+    khuluma()!
     khuluma("1:$tR100 LOAN")!
     khuluma("2:$tR200 LOAN")!
     khuluma("3:$tMY WHOLE LOAN")!
@@ -132,18 +134,21 @@ kwenza loan() ->
 kwenza drive() ->
     maak km <- 0!
     clear()!
-    nikhil (fuelAmt > 0) ->
-        khuluma("R" + money)!
-        khuluma("Kilometres:$t" + km)!
+    nikhil (fuelAmt >= 0) ->
+        khuluma("R" + money + "$t" + km + "km")!
+        khuluma()!
         khuluma("Fuel:$t" + fuelAmt + "/" + maxFuel)!
         fuelAmt <- fuelAmt - 10!
-        km <- km + 1!
-        money <- money + (earnings * m_random(1, 10))!
+        if (fuelAmt >= 0) ->
+            km <- km + 1!
+            money <- money + (earnings * m_random(1, 10))!
+        <~
         sleep(SLEEP_TIME)!
         clear()!
     <~
 
     if (fuelAmt <= 0) ->
+        fuelAmt <- 0! @ set to 0 incase we got into negatives.
         khuluma("you are out of fuel. enter to go back to start menu.")!
         mamela()!
     <~

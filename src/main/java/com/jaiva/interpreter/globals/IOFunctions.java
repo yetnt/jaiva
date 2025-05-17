@@ -17,6 +17,7 @@ import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TStatement;
 import com.jaiva.tokenizer.Token.TVarRef;
+import com.jaiva.tokenizer.Token.TVoidValue;
 import com.jaiva.tokenizer.TokenDefault;
 
 /**
@@ -43,7 +44,7 @@ public class IOFunctions extends BaseGlobals {
     class FKhuluma extends BaseFunction {
 
         FKhuluma(Token<?> container) {
-            super("khuluma", container.new TFunction("khuluma", new String[] { "msg", "removeNewLn?" }, null, -1,
+            super("khuluma", container.new TFunction("khuluma", new String[] { "msg?", "removeNewLn?" }, null, -1,
                     "Prints any given input to the console with a newline afterwards. \\n(It just uses System.out.println() lol) This function returns no value."));
             this.freeze();
         }
@@ -54,6 +55,10 @@ public class IOFunctions extends BaseGlobals {
                 throws Exception {
             String output;
             Object o = params.get(0);
+            if (o == null || o instanceof TVoidValue) {
+                System.out.println();
+                return Token.voidValue(tFuncCall.lineNumber);
+            }
             Object v = params.size() > 1
                     ? Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config)
                     : null;
@@ -82,7 +87,7 @@ public class IOFunctions extends BaseGlobals {
             } else {
                 System.out.println(EscapeSequence.fromEscape(output.toString(), tFuncCall.lineNumber));
             }
-            return void.class;
+            return Token.voidValue(tFuncCall.lineNumber);
         }
     }
 
