@@ -9,6 +9,8 @@ import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.Main;
 import com.jaiva.errors.InterpreterException;
+import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
+import com.jaiva.errors.JaivaException;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -33,10 +35,13 @@ public class Globals<T extends GlobalType> extends BaseGlobals {
         vfs.put("reservedKeywords", new MapValue(new VReservedKeywords(container)));
         vfs.put("version", new MapValue(new VJaivaVersion(container)));
         vfs.put("flat", new MapValue(new FFlat(container)));
+        vfs.put("sleep", new MapValue(new FSleep(container)));
         vfs.putAll(new IOFunctions().vfs);
 
         Conversions c = new Conversions();
         builtInGlobals.put(c.path, c.vfs);
+        Math m = new Math();
+        builtInGlobals.put(m.path, m.vfs);
     }
 
     /**
@@ -44,13 +49,18 @@ public class Globals<T extends GlobalType> extends BaseGlobals {
      * 
      * @param removeTrailingComma Remove the trailing comma
      * @return string with the JSON representation of the global tokens.
+     * @throws JaivaException TODO
      */
     @SuppressWarnings("unchecked")
-    public String returnGlobalsJSON(boolean removeTrailingComma) {
+    public String returnGlobalsJSON(boolean removeTrailingComma) throws JaivaException {
         StringBuilder string = new StringBuilder();
         vfs.forEach((name, vf) -> {
             Symbol symbol = (Symbol) ((MapValue) vf).getValue();
-            string.append(symbol.token.toJson());
+            try {
+                string.append(symbol.token.toJson());
+            } catch (JaivaException e) {
+                throw new RuntimeException(e);
+            }
             string.append(",");
         });
         return string.toString().substring(0, string.length() - (removeTrailingComma ? 1 : 0));
@@ -170,6 +180,42 @@ public class Globals<T extends GlobalType> extends BaseGlobals {
                 }
             });
             return returned;
+        }
+    }
+
+    /**
+     * Represents a built-in function that pauses the execution of the current
+     * thread for a specified number of milliseconds.
+     * <p>
+     * The function expects a single integer parameter representing the duration to
+     * sleep in milliseconds.
+     * If the parameter is not an integer, a {@link WtfAreYouDoingException} is
+     * thrown.
+     * </p>
+     * 
+     * <p>
+     * Usage: <code>sleep(milliseconds)</code>
+     * </p>
+     * 
+     */
+    class FSleep extends BaseFunction {
+        FSleep(Token<?> cont) {
+            super("sleep", cont.new TFunction("sleep", new String[] { "milliseconds" }, null, -1,
+                    "Sleep for `ms` amount of milliseconds."));
+            this.freeze();
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+                throws Exception {
+            checkParams(tFuncCall);
+            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            if (!(val instanceof Integer integer))
+                throw new WtfAreYouDoingException("Bruv, you can't just like, pls put number", tFuncCall.lineNumber);
+
+            Thread.sleep(integer);
+
+            return Token.voidValue(tFuncCall.lineNumber);
         }
     }
 

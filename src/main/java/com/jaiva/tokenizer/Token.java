@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.jaiva.errors.TokenizerException.*;
+import com.jaiva.errors.JaivaException;
 import com.jaiva.errors.TokenizerException;
 import com.jaiva.lang.Chars;
 import com.jaiva.lang.EscapeSequence;
@@ -155,7 +156,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("filePath", filePath, false);
             json.append("fileName", fileName, false);
             json.append("symbols", symbols, true);
@@ -240,7 +241,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public ToJson toJsonInNest() {
+        public ToJson toJsonInNest() throws JaivaException {
             json.append("lineEnd", lineNumberEnd, false);
             json.append("lines", lines, true);
             return super.toJsonInNest();
@@ -285,7 +286,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("value", value, true);
             return super.toJson();
         }
@@ -331,7 +332,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("value", newValue, true);
             return super.toJson();
         }
@@ -385,8 +386,10 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
-            json.append("value", value instanceof String ? EscapeSequence.escape((String) value) : value, true);
+        public String toJson() throws JaivaException {
+            json.append("value",
+                    value instanceof String ? EscapeSequence.fromEscape((String) value, lineNumber) : value,
+                    true);
             return super.toJson();
         }
 
@@ -427,7 +430,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("value", value, true);
             return super.toJson();
         }
@@ -486,7 +489,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("value", value, true);
             return super.toJson();
         }
@@ -540,7 +543,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("value", contents, true);
             return super.toJson();
         }
@@ -577,7 +580,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("value", value, true);
             return super.toJson();
         }
@@ -660,7 +663,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("args", new ArrayList(Arrays.asList(args)), false);
             json.append("isArgOptional", isArgOptional, false);
             json.append("body", body != null ? body.toJsonInNest() : null, true);
@@ -737,7 +740,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("variable", variable.toJson(), false);
             json.append("arrayVariable", array != null ? array.toJson() : null, false);
             json.append("condition", condition, false);
@@ -783,7 +786,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("condition", condition, false);
             json.append("body", body.toJsonInNest(), true);
             return super.toJson();
@@ -861,7 +864,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("condition", condition, false);
             json.append("body", body.toJsonInNest(), false);
             json.append("elseIfs", elseIfs != null && elseIfs.size() > 0 ? elseIfs : null, false);
@@ -914,7 +917,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("try", tryBlock.toJsonInNest(), false);
             json.append("catch", catchBlock.toJsonInNest(), true);
             return super.toJson();
@@ -951,7 +954,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("errorMessage", errorMessage, false);
             return super.toJson();
         }
@@ -1021,7 +1024,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("functionName", functionName, false);
             json.append("getLength", getLength, false);
             json.append("args", args, true);
@@ -1096,7 +1099,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("varName", varName, false);
             json.append("getLength", getLength, false);
             json.append("index", index != null ? index : null, true);
@@ -1141,7 +1144,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("loopType", type.toString(), true);
             return super.toJson();
         }
@@ -1202,7 +1205,7 @@ public class Token<T extends TokenDefault> {
         }
 
         @Override
-        public String toJson() {
+        public String toJson() throws JaivaException {
             json.append("lhs", lHandSide, false);
             json.append("op", op, false);
             json.append("rhs", rHandSide, false);
@@ -1233,7 +1236,8 @@ public class Token<T extends TokenDefault> {
             // if (statement.startsWith("\"") && statement.endsWith("\""))
             // return processContext(statement, lineNumber);
 
-            if (statement.startsWith("(") && statement.endsWith(")")) {
+            int lastBraceIndex = Find.lastOutermostBracePair(statement);
+            if ((statement.startsWith("(") && statement.endsWith(")")) && lastBraceIndex == 0) {
                 return parse(statement.substring(1, statement.length() - 1).trim());
             }
 

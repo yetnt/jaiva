@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 import com.jaiva.errors.InterpreterException;
+import com.jaiva.errors.JaivaException;
 import com.jaiva.errors.InterpreterException.CatchAllException;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
@@ -59,39 +60,52 @@ public class Primitives {
      */
     private static Object handleNumOperations(String op, Object lhs, Object rhs, int lineNumber)
             throws InterpreterException {
+        Object result;
         if (lhs instanceof Integer iLhs && rhs instanceof Integer iRhs) {
             // Because the ^ returns a double, we use 2 variables, so that if yopu dont use
             // the ^ operator you dont receive a double output.
             switch (op) {
                 case "+":
-                    return iLhs + iRhs;
+                    result = iLhs + iRhs;
+                    break;
                 case "-":
-                    return iLhs - iRhs;
+                    result = iLhs - iRhs;
+                    break;
                 case "*":
-                    return iLhs * iRhs;
+                    result = iLhs * iRhs;
+                    break;
                 case "/":
-                    return iLhs / iRhs;
+                    result = iLhs / iRhs;
+                    break;
                 case "%":
-                    return iLhs % iRhs;
+                    result = iLhs % iRhs;
+                    break;
                 case "^":
-                    return Math.pow(iLhs, iRhs);
+                    result = Math.pow(iLhs, iRhs);
+                    break;
                 default:
                     throw new CatchAllException("Invalid operator given", lineNumber);
             }
         } else if (lhs instanceof Double iLhs && rhs instanceof Double iRhs) {
             switch (op) {
                 case "+":
-                    return iLhs + iRhs;
+                    result = iLhs + iRhs;
+                    break;
                 case "-":
-                    return iLhs - iRhs;
+                    result = iLhs - iRhs;
+                    break;
                 case "*":
-                    return iLhs * iRhs;
+                    result = iLhs * iRhs;
+                    break;
                 case "/":
-                    return iLhs / iRhs;
+                    result = iLhs / iRhs;
+                    break;
                 case "%":
-                    return iLhs % iRhs;
+                    result = iLhs % iRhs;
+                    break;
                 case "^":
-                    return Math.pow(iLhs, iRhs);
+                    result = Math.pow(iLhs, iRhs);
+                    break;
                 default:
                     throw new CatchAllException("Invalid operator given", lineNumber);
 
@@ -99,17 +113,23 @@ public class Primitives {
         } else if (lhs instanceof Double iLhs && rhs instanceof Integer iRhs) {
             switch (op) {
                 case "+":
-                    return iLhs + iRhs;
+                    result = iLhs + iRhs;
+                    break;
                 case "-":
-                    return iLhs - iRhs;
+                    result = iLhs - iRhs;
+                    break;
                 case "*":
-                    return iLhs * iRhs;
+                    result = iLhs * iRhs;
+                    break;
                 case "/":
-                    return iLhs / iRhs;
+                    result = iLhs / iRhs;
+                    break;
                 case "%":
-                    return iLhs % iRhs;
+                    result = iLhs % iRhs;
+                    break;
                 case "^":
-                    return Math.pow(iLhs, iRhs);
+                    result = Math.pow(iLhs, iRhs);
+                    break;
                 default:
                     throw new CatchAllException("Invalid operator given", lineNumber);
 
@@ -117,24 +137,40 @@ public class Primitives {
         } else if (lhs instanceof Integer iLhs && rhs instanceof Double iRhs) {
             switch (op) {
                 case "+":
-                    return iLhs + iRhs;
+                    result = iLhs + iRhs;
+                    break;
                 case "-":
-                    return iLhs - iRhs;
+                    result = iLhs - iRhs;
+                    break;
                 case "*":
-                    return iLhs * iRhs;
+                    result = iLhs * iRhs;
+                    break;
                 case "/":
-                    return iLhs / iRhs;
+                    result = iLhs / iRhs;
+                    break;
                 case "%":
-                    return iLhs % iRhs;
+                    result = iLhs % iRhs;
+                    break;
                 case "^":
-                    return Math.pow(iLhs, iRhs);
+                    result = Math.pow(iLhs, iRhs);
+                    break;
                 default:
                     throw new CatchAllException("Invalid operator given", lineNumber);
 
             }
         } else {
-            return Token.voidValue(lineNumber);
+            result = Token.voidValue(lineNumber);
         }
+
+        // Return int if the double is whole.
+        if (result instanceof Double res) {
+            double d = res;
+            if (d == Math.rint(d)) {
+                return (int) d;
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -149,11 +185,11 @@ public class Primitives {
      * @param op  The operator to be applied.
      * @param ts  The TStatement object associated with the operation.
      * @return The result of the string operation.
-     * @throws InterpreterException.StringCalcException If an error occurs during
-     *                                                  string calculation.
+     * @throws JaivaException If an error occurs during
+     *                        string calculation.
      */
     public static Object resolveStringOperations(Object lhs, Object rhs, String op, TStatement ts)
-            throws InterpreterException.StringCalcException {
+            throws JaivaException {
         String I = Integer.class.getSimpleName().substring(0, 1);
         String S = String.class.getSimpleName().substring(0, 1);
         String D = Double.class.getSimpleName().substring(0, 1);
@@ -169,10 +205,10 @@ public class Primitives {
                         : rhs instanceof Double ? D
                                 : rhs instanceof Boolean ? B : "idk";
         if (rhs instanceof String) {
-            rhs = EscapeSequence.escape((String) rhs);
+            rhs = EscapeSequence.fromEscape((String) rhs, ts.lineNumber);
         }
         if (lhs instanceof String) {
-            lhs = EscapeSequence.escape((String) lhs);
+            lhs = EscapeSequence.fromEscape((String) lhs, ts.lineNumber);
         }
         String switchTing = leftHandSide + rightHandSide;
 
@@ -501,7 +537,7 @@ public class Primitives {
             }
             Object returnValue = function.call(tFuncCall, tFuncCall.args, vfs, config);
             return returnValue instanceof String && tFuncCall.getLength
-                    ? EscapeSequence.escape((String) returnValue).length()
+                    ? EscapeSequence.fromEscape((String) returnValue, tFuncCall.lineNumber).length()
                     : returnValue instanceof ArrayList && tFuncCall.getLength ? ((ArrayList) returnValue).size()
                             : returnValue;
             // MapValue mapValue = vfs.get();
@@ -511,7 +547,14 @@ public class Primitives {
             // primitive.
             // also for the above recursive call where it may already be a primitive.
             if (token instanceof String) {
-                return EscapeSequence.escape((String) token);
+                return EscapeSequence.fromEscape((String) token, -1);
+            }
+            // Return int if the double is whole.
+            if (token instanceof Double) {
+                double d = (Double) token;
+                if (d == Math.rint(d)) {
+                    return (int) d;
+                }
             }
             return token;
         } else if (token instanceof TVoidValue) {

@@ -39,7 +39,7 @@ khuluma(reservedKeywords)! @ Prints all the reserved keywords.
 
 ### <center> Functions
 
-#### `khuluma(msg, removeNewLn?) -> `_*`khutla (void)!`*_
+#### `khuluma(msg, removeNewLn?) -> `_*`khutla (idk)!`*_
 
 Prints any given input to the console with a newline afterwards. (Unless `removeNewLn` is set to true, in which case it doesn't add a newline afterwards. This is useful for printing on the same line.)
 
@@ -62,7 +62,7 @@ Hello, againOkay
 
 #### `mamela() -> `_*`khutla (string)!`*_
 
-This function is used to read input from the user. (In the console.) It returns a string of the input. This function will block until the user presses enter.
+This function is used to read input from the user. (In the console.) It returns a string of the input. This function will block runtime until the user presses enter.
 
 See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/globals/IOFunctions.java) where this is defined.
 
@@ -71,6 +71,35 @@ khuluma("What is your name?")!
 maak name <- mamela()! @ Reads input from the user and stores it in the variable name.
 khuluma("Hello, " + name + "!")!
 ```
+
+#### `ask(message) -> `_*`khutla (string)!`*_
+
+This function is used to read input from the user. (Via UI.) It returns a string of the input. This function will block runtime until the user presses enter.
+
+See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/globals/IOFunctions.java) where this is defined.
+
+```jiv
+maak name <- ask("what's ur name cuh?")! @ Reads input from the user and stores it in the variable name.
+khuluma("Hello, " + name + "!")!
+```
+
+#### `sleep(ms) -> `_*`khutla idk`*_
+
+Function that pauses execution for `ms` amount of milliseconds. Self-explanatory.
+
+```jiv
+khuluma("yo")!
+sleep(1000)! @ pause for 1 second.
+khuluma("yo.. again")!
+```
+
+See [Globals.java](./src/main/java/com/jaiva/interpreter/globals/Globals.java) where this is defined.
+
+#### `clear() -> `_*`khutla idk`*_
+
+Clears the console. I can't really showcase code for this one hey.
+
+See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/globals/IOFunctions.java) where this is defined.
 
 #### `getVarClass(ref) -> `_*`khutla (string)!`*_
 
@@ -123,9 +152,38 @@ tsea "C:/path/to/jaiva/lib/(module name)"!
 
 The following are the libraries that are available
 
+### `math`
+
+This library contains (some) math functions. Unless really needed I don't see myself adding more than these.
+
+See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/globals/Math.java) where this is defined.
+
+#### `round(value) -> `_*`khutla number!`*_
+
+Rounds the given real nmber to an integer. This is for the real ones who hate working with precision.
+
+```jiv
+tsea "jaiva/math"!
+
+khuluma(round(4.51))! @ Prints 5
+```
+
+#### `random(lower, upper) `_*`khutla number!`*_
+
+Returns a random (integer) between the `lower` and `upper` bounds. (Both inclusive)
+
+```jiv
+tsea "jaiva/math"!
+
+khuluma(random(0, 10) > 5)! @ Might print true or false
+khuluma(random(0, 10) > 5)! @ Might print true or false
+```
+
 ### `convert`
 
 This library contains functions for converting stuff to different types.
+
+See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/globals/Conversions.java) where this is defined.
 
 #### `numToString(num) -> `_*`khutla "string"!`*_
 
@@ -154,6 +212,8 @@ khuluma(stringToNum("2.4") + 10)! @ Will print 12.4
 This library contains functions for manipulating arrays.
 
 If you ask why not just make arrays mutable, Jaiva is a functional programming language. I'm doing you a favour by already having these implemented. I could've not had arrays at all. (TLDR; I'm too lazy to implement an array index reassignment token or adjust my old tokens for that.)
+
+I can't link you anywhere, if you want to see the file go to your jaiva folder, because this is where it is mann.
 
 > [!WARNING]
 > Some functions use other functions. It's best to just import the whole library instead of trying to import only the functions you need. (e.g. If you import only `pop` you will get an error because `pop` uses `remove` internally.). I will however, list the functions that depend on other functions.

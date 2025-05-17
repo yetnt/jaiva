@@ -2,6 +2,8 @@ package com.jaiva.tokenizer;
 
 import java.util.ArrayList;
 
+import com.jaiva.errors.JaivaException;
+
 /**
  * The ToJson class is a utility for constructing JSON-like string
  * representations
@@ -59,8 +61,9 @@ public class ToJson {
      *               including
      *               primitive types, complex objects, and arrays.
      * @param isLast Indicates whether this is the last key-value pair to be added.
+     * @throws JaivaException
      */
-    public void append(String key, Object value, boolean isLast) {
+    public void append(String key, Object value, boolean isLast) throws JaivaException {
         // Object can be one of these types :
         // String, int, double, boolean. - primitives
         // another object, array - complex types.

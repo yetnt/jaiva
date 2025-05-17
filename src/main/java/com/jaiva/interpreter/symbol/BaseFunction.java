@@ -93,6 +93,11 @@ public class BaseFunction extends Symbol {
             tFuncCall.args.clear();
         }
 
+        // Check if this case
+        if (tFunc.args.length == 1 && tFunc.args[0].equals("")) {
+            return;
+        }
+
         // first check if we jsut dont have args.
         if (tFuncCall.args.isEmpty() && (tFunc.isArgOptional.size() > 0 ||
                 tFunc.isArgOptional.isEmpty())) {
@@ -187,7 +192,7 @@ public class BaseFunction extends Symbol {
                     value = Token.voidValue(tFuncCall.lineNumber);
                 }
                 if (value instanceof String)
-                    value = EscapeSequence.escape((String) value);
+                    value = EscapeSequence.fromEscape((String) value, tFuncCall.lineNumber);
                 Object wrappedValue = Token.voidValue(tFuncCall.lineNumber);
 
                 if (name.startsWith("F~")
@@ -249,7 +254,7 @@ public class BaseFunction extends Symbol {
             if (t instanceof Interpreter.ThrowIfGlobalContext) {
                 return ((Interpreter.ThrowIfGlobalContext) t).c;
             } else {
-                return void.class;
+                return Token.voidValue(tFuncCall.lineNumber);
             }
         }
     }

@@ -1,5 +1,11 @@
 package com.jaiva.lang;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import com.jaiva.errors.TokenizerException;
+import com.jaiva.errors.TokenizerException.MalformedSyntaxException;
+
 /**
  * EscapeSequence class is a utility class that provides methods for escaping
  * and
@@ -12,28 +18,239 @@ package com.jaiva.lang;
  * their escaped equivalents and vice versa.
  */
 public class EscapeSequence {
+    private static ArrayList<Character> unescapeChars = new ArrayList<>(
+            Arrays.asList('=', ',', '!', '@', '\n', '\t', '\r', '\b', '\f', '\"', '$'));
+
+    private static ArrayList<Character> escapeChars = new ArrayList<>(
+            Arrays.asList('=', ',', '!', '@', 'n', 't', 'r', 'b', 'f', '"', '$'));
 
     /**
-     * Escape a string.
+     * Escapes special sequences in the given string according to custom escape
+     * rules.
+     * <p>
+     * This method replaces custom escape sequences (prefixed with '$') with their
+     * corresponding
+     * characters. If the string does not contain the escape character, it performs
+     * a fast replacement
+     * for known sequences. Otherwise, it processes the string character by
+     * character to handle
+     * more complex or malformed escape sequences, throwing an exception if an
+     * invalid escape is found.
+     * </p>
      *
-     * @param str The string to escape.
-     * @return
+     * <ul>
+     * <li><code>$=</code> &rarr; <code>=</code></li>
+     * <li><code>$,</code> &rarr; <code>,</code></li>
+     * <li><code>$!</code> &rarr; <code>!</code></li>
+     * <li><code>$@</code> &rarr; <code>@</code></li>
+     * <li><code>$n</code> &rarr; newline (<code>\n</code>)</li>
+     * <li><code>$t</code> &rarr; tab (<code>\t</code>)</li>
+     * <li><code>$r</code> &rarr; carriage return (<code>\r</code>)</li>
+     * <li><code>$b</code> &rarr; backspace (<code>\b</code>)</li>
+     * <li><code>$f</code> &rarr; form feed (<code>\f</code>)</li>
+     * <li><code>$"</code> &rarr; double quote (<code>"</code>)</li>
+     * <li><code>$$</code> &rarr; dollar sign (<code>$</code>)</li>
+     * </ul>
+     *
+     * @param str        the input string to escape
+     * @param lineNumber the line number for error reporting
+     * @return the escaped string with all valid escape sequences replaced
+     * @throws TokenizerException if an invalid escape sequence is encountered
      */
-    public static String escape(String str) {
-        return str
-                .replace("$=", "=")
-                .replace("$,", ",")
-                .replace("$!", "!")
-                // .replace("$s", " ")
-                .replace("$@", "@")
-                .replace("$n", "\n")
-                .replace("$t", "\t")
-                .replace("$r", "\r")
-                .replace("$b", "\b")
-                .replace("$f", "\f")
-                // .replace("$'", "'")
-                .replace("$\"", "\"")
-                .replace("$$", "$");
+    public static String fromEscape(String str, int lineNumber) throws TokenizerException {
+        if (!str.contains(Character.toString(Chars.ESCAPE)))
+            return str
+                    .replace("$=", "=")
+                    .replace("$,", ",")
+                    .replace("$!", "!")
+                    // .replace("$s", " ")
+                    .replace("$@", "@")
+                    .replace("$n", "\n")
+                    .replace("$t", "\t")
+                    .replace("$r", "\r")
+                    .replace("$b", "\b")
+                    .replace("$f", "\f")
+                    .replace("$\"", "\"")
+                    .replace("$$", "$");
+        // If it contaisn the $ character, go through the entire string.
+        StringBuilder build = new StringBuilder();
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            char prevChar = i != 0 ? str.charAt(i - 1) : Character.MIN_VALUE;
+            char nextChar = i != str.length() - 1 ? str.charAt(i + 1) : Character.MAX_VALUE;
+
+            // check the current char.
+            if (escapeChars.contains(c)) {
+                // we found something that can possible be escaped, check before said char to
+                // make sure it's not already.
+                if (c == Chars.ESCAPE) {
+                    // check before and after.
+                    if (prevChar != Chars.ESCAPE && nextChar == Chars.ESCAPE) {
+                        // turns 2 $ into 1 $
+                        build.append(c);
+                    } else if (prevChar != Chars.ESCAPE && !escapeChars.contains(nextChar)) {
+                        // these are invalid $ escape sequences.
+                        throw new TokenizerException.MalformedSyntaxException(
+                                "Somewhere along the lines, an escape character was used wrongfully.", lineNumber);
+                    }
+                    // Essentially, if the previous character is $ and the current is a $, we skip
+                    // this, as the ealier call we got this already.
+                    // this also ensures, if we get something like $t, it skips parsing $ but will
+                    // parse t
+                } else {
+                    // only add if the previous char is a $
+                    if (prevChar == Chars.ESCAPE) {
+                        switch (c) {
+                            case '=':
+                                build.append('=');
+                                break;
+                            case ',':
+                                build.append(',');
+                                break;
+                            case '!':
+                                build.append('!');
+                                break;
+                            case '@':
+                                build.append('@');
+                                break;
+                            case 'n':
+                                build.append('\n');
+                                break;
+                            case 't':
+                                build.append('\t');
+                                break;
+                            case 'r':
+                                build.append('\r');
+                                break;
+                            case 'b':
+                                build.append('\b');
+                                break;
+                            case 'f':
+                                build.append('\f');
+                                break;
+                            case '"':
+                                build.append('"');
+                                break;
+                        }
+                    } else {
+                        build.append(c);
+                    }
+                }
+            } else {
+                // append the usual char.
+                build.append(c);
+            }
+        }
+
+        return build.toString();
+    }
+
+    /**
+     * Escapes special characters in the given string according to custom rules.
+     * <p>
+     * If the string does not contain the escape character (as defined by
+     * {@code Chars.ESCAPE}),
+     * it performs a series of replacements for specific characters (such as
+     * {@code $, =, ,, !, @, \n, \t, \r, \b, \f, "}).
+     * Each special character is replaced with a corresponding escape sequence
+     * (e.g., {@code $} becomes {@code $$},
+     * {@code =} becomes {@code $=}, {@code \n} becomes {@code $n}, etc.).
+     * </p>
+     * <p>
+     * If the string contains the escape character, the method processes the string
+     * character by character,
+     * ensuring that escape sequences are correctly applied and that existing escape
+     * characters are handled properly.
+     * </p>
+     *
+     * @param str the input string to escape
+     * @return the escaped string with special characters replaced by their escape
+     *         sequences
+     */
+    public static String toEscape(String str) {
+        if (!str.contains(Character.toString(Chars.ESCAPE)))
+            return str
+                    .replace("$", "$$")
+                    .replace("=", "$=")
+                    .replace(",", "$,")
+                    .replace("!", "$!")
+                    // .replace(" ", "$s")
+                    .replace("@", "$@")
+                    .replace("\n", "$n")
+                    .replace("\t", "$t")
+                    .replace("\r", "$r")
+                    .replace("\b", "$b")
+                    .replace("\f", "$f")
+                    // .replace("'", "$'")
+                    .replace("\"", "$\"");
+        // If it contaisn the $ character, go through the entire string.
+        StringBuilder build = new StringBuilder();
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            char prevChar = i != 0 ? str.charAt(i - 1) : Character.MIN_VALUE;
+            char nextChar = i != str.length() - 1 ? str.charAt(i + 1) : Character.MAX_VALUE;
+
+            // check the current char.
+            if (unescapeChars.contains(c)) {
+                if (c == Chars.ESCAPE) {
+                    if (!escapeChars.contains(nextChar) && prevChar != Chars.ESCAPE) {
+                        // single $, push double $$
+                        build.append(c);
+                        build.append(c);
+                    } else if (escapeChars.contains(nextChar)) {
+                        build.append(c);
+                    }
+                } else {
+                    if (prevChar != Chars.ESCAPE) {
+                        build.append(Chars.ESCAPE);
+
+                        switch (c) {
+                            // case '=':
+                            // build.append('=');
+                            // break;
+                            // case ',':
+                            // build.append(',');
+                            // break;
+                            // case '!':
+                            // build.append('!');
+                            // break;
+                            // case '@':
+                            // build.append('@');
+                            // break;
+                            case '\n':
+                                build.append('n');
+                                break;
+                            case '\t':
+                                build.append('t');
+                                break;
+                            case '\r':
+                                build.append('r');
+                                break;
+                            case '\b':
+                                build.append('b');
+                                break;
+                            case '\f':
+                                build.append('f');
+                                break;
+                            // case '"':
+                            // build.append('"');
+                            // break;
+                            default:
+                                build.append(c);
+                                break;
+                        }
+                    } else {
+                        build.append(c);
+                    }
+
+                }
+            } else {
+                // append the usual char.
+                build.append(c);
+            }
+        }
+
+        return build.toString();
     }
 
     /**
@@ -51,29 +268,6 @@ public class EscapeSequence {
                 .replace("\b", "\\b")
                 .replace("\f", "\\f")
                 .replace("\"", "\\\"");
-    }
-
-    /**
-     * Unescape a string.
-     *
-     * @param str The string to unescape.
-     * @return
-     */
-    public static String unescape(String str) {
-        return str
-                .replace("$", "$$")
-                .replace("=", "$=")
-                .replace(",", "$,")
-                .replace("!", "$!")
-                // .replace(" ", "$s")
-                .replace("@", "$@")
-                .replace("\n", "$n")
-                .replace("\t", "$t")
-                .replace("\r", "$r")
-                .replace("\b", "$b")
-                .replace("\f", "$f")
-                // .replace("'", "$'")
-                .replace("\"", "$\"");
     }
 
     /**
@@ -95,7 +289,7 @@ public class EscapeSequence {
             if (i % 2 != 0) {
                 String unescapedString = parts[i]
                         .split("((?<!\\$)(\\\"|\\!|\\\\|\\\"|@|=))|(\\t|\\n|\\s)").length != 1
-                                ? unescape(parts[i])
+                                ? toEscape(parts[i])
                                 : parts[i];
                 b.append("\"" + unescapedString + "\"");
             } else {

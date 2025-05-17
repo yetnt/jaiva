@@ -33,6 +33,7 @@ public class IOFunctions extends BaseGlobals {
         vfs.put("khuluma", new MapValue(new FKhuluma(container)));
         vfs.put("mamela", new MapValue(new FMamela(container)));
         vfs.put("ask", new MapValue(new FAsk(container)));
+        vfs.put("clear", new MapValue(new FClear(container)));
     }
 
     /**
@@ -77,9 +78,9 @@ public class IOFunctions extends BaseGlobals {
                 output = o.toString();
             }
             if (v instanceof Boolean && (Boolean) v == true) {
-                System.out.print(EscapeSequence.escape(output.toString()));
+                System.out.print(EscapeSequence.fromEscape(output.toString(), tFuncCall.lineNumber));
             } else {
-                System.out.println(EscapeSequence.escape(output.toString()));
+                System.out.println(EscapeSequence.fromEscape(output.toString(), tFuncCall.lineNumber));
             }
             return void.class;
         }
@@ -136,4 +137,41 @@ public class IOFunctions extends BaseGlobals {
             return JOptionPane.showInputDialog(params.get(0));
         }
     }
+
+    /**
+     * FClear is a built-in function that clears the console output.
+     * <p>
+     * This function uses ANSI escape codes to clear the terminal screen and move
+     * the cursor to the home position.
+     * It does not take any parameters and returns void.
+     * </p>
+     *
+     * Usage:
+     * 
+     * <pre>
+     * clear();
+     * </pre>
+     *
+     * Note: The effectiveness of this function depends on the terminal's support
+     * for ANSI escape codes.
+     */
+    class FClear extends BaseFunction {
+
+        FClear(Token<?> container) {
+            // Define the function without any parameters.
+            super("clear",
+                    container.new TFunction("clear", new String[] {}, null, -1, "Clears the console."));
+            freeze();
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+                throws InterpreterException {
+            // Clear the console using ANSI escape codes.
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+            return Token.voidValue(tFuncCall.lineNumber);
+        }
+    }
+
 }

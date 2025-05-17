@@ -15,11 +15,23 @@ For a list of global variables and functions, see [Globals.md](./Globals.md)
 
 Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
 
+## <center>Prerquisuiesdsfb
+
+1. **Get and Install (at least) Java 21**
+   yeah this isn't a good start 💀 but this shit is amde in java so ye man.
+   [Download and install the latest JDK 21](https://jdk.java.net/21)
+
+2. **Set Up Jaiva as a Global Command**  
+   Follow the instructions in [Install.md](./Install.md) to configure Jaiva so you can run the `jaiva` command from anywhere on your system.
+
+3. **CLI**
+   The basic command to run your file is `jaiva <filePath>` but [CLI.md](./CLI.md) exists.
+
 ## <center>Index
 
 -   **[Jaiva!](#jaiva)**
-    -   **[Index](#index)** <- you are here.
     -   **[Prerequisites](#prerequisites)**
+    -   **[Index](#index)** <- you are here.
     -   **[Syntax](#syntax)**
         -   _[Comments](#comments)_
         -   _[Assignment Operators](#assignment-operators)_
@@ -59,17 +71,7 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
     -   **[Scopes](#scopes)**
     -   **[Tsea (Import) and Exporting Files](#tsea-import-and-exporting-files)**
 
-## <center>Prerquisuiesdsfb
-
-1. **Get and Install Java 21**
-   yeah this isn't a good start 💀 but this shit is amde in java so ye man.
-   [Download and install the latest JDK 21](https://jdk.java.net/21)
-
-2. **Set Up Jaiva as a Global Command**  
-   Follow the instructions in [Install.md](./Install.md) to configure Jaiva so you can run the `jaiva` command from anywhere on your system.
-
-3. **CLI**
-   The basic command to run your file is `jaiva <filePath>` but [CLI.md](./CLI.md) exists.
+## <center>Screenshots
 
 ## <center>Syntax
 

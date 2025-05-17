@@ -1,5 +1,7 @@
 package com.jaiva.tokenizer;
 
+import com.jaiva.errors.JaivaException;
+
 /**
  * TokenDefault class is a default implementation of all the other
  * subclasses/tokens defined in {@link Token}
@@ -77,8 +79,9 @@ public class TokenDefault {
      * Returns the JSON representation of the object as a string.
      * 
      * @return
+     * @throws JaivaException For any errors
      */
-    public String toJson() {
+    public String toJson() throws JaivaException {
         return json.complete();
     }
 
@@ -87,8 +90,9 @@ public class TokenDefault {
      * such that it can be nested in other constructs.
      * 
      * @return
+     * @throws JaivaException For any errors
      */
-    public ToJson toJsonInNest() {
+    public ToJson toJsonInNest() throws JaivaException {
         return json.completeInNest();
     }
 }

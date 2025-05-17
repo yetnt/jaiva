@@ -2,6 +2,9 @@ package com.jaiva.interpreter.globals;
 
 import java.util.HashMap;
 
+import javax.management.RuntimeErrorException;
+
+import com.jaiva.errors.JaivaException;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.tokenizer.Token;
@@ -62,7 +65,12 @@ public class BaseGlobals<T extends GlobalType> {
         vfs.forEach((key, value) -> {
             // Example: append key and value to the string builder
             Symbol sym = (Symbol) value.getValue();
-            str.append(sym.token.toJson());
+            try {
+                str.append(sym.token.toJson());
+            } catch (JaivaException e) {
+                // Handle the exception, e.g., log or append an error message
+                throw new RuntimeException(e);
+            }
             str.append(",");
         });
         // Remove trailing comma and space if needed
