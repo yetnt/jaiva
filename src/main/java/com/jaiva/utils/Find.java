@@ -441,7 +441,8 @@ public class Find {
         int oldCharIndex = -1;
         for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
-            if (c == '"') {
+            char before = i != 0 ? line.charAt(i - 1) : Character.MIN_VALUE;
+            if (c == '"' && before != '$') {
                 if (oldCharIndex == -1) {
                     oldCharIndex = i;
                 } else {

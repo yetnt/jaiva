@@ -1,5 +1,10 @@
 package com.jaiva.utils;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -82,11 +87,21 @@ public class FindTest {
 
     @Test
     void testQuotationPairs() {
-
+        String inputStr = "\"dd\" - \"$\"32\"";
+        ArrayList<Tuple2<Integer, Integer>> actual = Find.quotationPairs(inputStr);
+        ArrayList<Tuple2<Integer, Integer>> expected = new ArrayList<>(Arrays.asList(
+                new Tuple2(0, 3),
+                new Tuple2(7, 12)));
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void testSanitizeStatement() {
+        String statement = "-5*-3/4--4";
+        ArrayList<Integer> opIndexes = new ArrayList<>(Arrays.asList(0, 2, 3, 5, 7, 8));
+        ArrayList<Integer> expected = new ArrayList<>(Arrays.asList(2, 5, 7));
+        ArrayList<Integer> actual = Find.sanitizeStatement(statement, opIndexes);
 
+        Assertions.assertEquals(expected, actual);
     }
 }
