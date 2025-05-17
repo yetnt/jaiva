@@ -1,7 +1,5 @@
 package com.jaiva.utils;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -43,7 +41,15 @@ public class FindTest {
 
     @Test
     void testLastOutermostBracePair() {
+        String statement = "([])[]";
+        int actual = Find.lastOutermostBracePair(statement);
+        int expected = 4;
+        Assertions.assertEquals(expected, actual);
 
+        statement = "[(([])())()]";
+        actual = Find.lastOutermostBracePair(statement);
+        expected = 0;
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -58,40 +64,52 @@ public class FindTest {
         String statement = "(10 + 4) / 5 * 10";
         LeastImportantOperator l = Find.leastImportantOperator(statement);
         LeastImportantOperator expected = new LeastImportantOperator("*", 13, 1);
-        Assertions.assertEquals(expected.toString(), l.toString());
+        Assertions.assertEquals(expected, l);
         statement = "5 + 3 * (2 - 8)";
         l = Find.leastImportantOperator(statement);
         expected = new LeastImportantOperator("+", 2, 2);
-        Assertions.assertEquals(expected.toString(), l.toString());
+        Assertions.assertEquals(expected, l);
 
         statement = "10 / (2 + 3) - 4";
         l = Find.leastImportantOperator(statement);
         expected = new LeastImportantOperator("-", 13, 2);
-        Assertions.assertEquals(expected.toString(), l.toString());
+        Assertions.assertEquals(expected, l);
 
         statement = "7 * (6 - (3 + 2))";
         l = Find.leastImportantOperator(statement);
         expected = new LeastImportantOperator("*", 2, 1);
-        Assertions.assertEquals(expected.toString(), l.toString());
+        Assertions.assertEquals(expected, l);
 
         statement = "4 ^ 2 + 6 / 3";
         l = Find.leastImportantOperator(statement);
         expected = new LeastImportantOperator("+", 6, 2);
-        Assertions.assertEquals(expected.toString(), l.toString());
+        Assertions.assertEquals(expected, l);
     }
 
     @Test
     void testOutermostOperatorIndex() {
-
+        String input = "ayo(34+32=4) - 5 (4)";
+        int actual = Find.outermostOperatorIndex(input);
+        int expected = 13;
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void testQuotationPairs() {
+        // test to mkae sure $" is escaped.
         String inputStr = "\"dd\" - \"$\"32\"";
         ArrayList<Tuple2<Integer, Integer>> actual = Find.quotationPairs(inputStr);
         ArrayList<Tuple2<Integer, Integer>> expected = new ArrayList<>(Arrays.asList(
                 new Tuple2(0, 3),
                 new Tuple2(7, 12)));
+        Assertions.assertEquals(expected, actual);
+
+        // test to make sure double $$ doesnt trigger escaping the " character.
+        inputStr = "\"dd - $$\"\" $\" \"";
+        actual = Find.quotationPairs(inputStr);
+        expected = new ArrayList<>(Arrays.asList(
+                new Tuple2(inputStr.indexOf('"'), 8),
+                new Tuple2(9, inputStr.lastIndexOf('"'))));
         Assertions.assertEquals(expected, actual);
     }
 

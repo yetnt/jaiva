@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.jaiva.lang.Chars;
 import com.jaiva.lang.Chars.Operators;
 import com.jaiva.tokenizer.Token;
 
@@ -281,6 +282,50 @@ public class Find {
                     ", tStatementType=" + tStatementType +
                     '}';
         }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((op == null) ? 0 : op.hashCode());
+            result = prime * result + index;
+            result = prime * result + tStatementType;
+            return result;
+        }
+
+        /**
+         * Indicates whether some other object is "equal to" this one.
+         * <p>
+         * The method checks for reference equality, nullity, class type, and then
+         * compares
+         * the fields {@code op}, {@code index}, and {@code tStatementType} for
+         * equality.
+         * </p>
+         *
+         * @param obj the reference object with which to compare
+         * @return {@code true} if this object is the same as the obj argument;
+         *         {@code false} otherwise
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            LeastImportantOperator other = (LeastImportantOperator) obj;
+            if (op == null) {
+                if (other.op != null)
+                    return false;
+            } else if (!op.equals(other.op))
+                return false;
+            if (index != other.index)
+                return false;
+            if (tStatementType != other.tStatementType)
+                return false;
+            return true;
+        }
     }
 
     /**
@@ -441,8 +486,9 @@ public class Find {
         int oldCharIndex = -1;
         for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
-            char before = i != 0 ? line.charAt(i - 1) : Character.MIN_VALUE;
-            if (c == '"' && before != '$') {
+            char before = i > 0 ? line.charAt(i - 1) : Character.MIN_VALUE;
+            char before2 = i > 1 ? line.charAt(i - 2) : Character.MIN_VALUE;
+            if (c == '"' && (before != Chars.ESCAPE || before2 == Chars.ESCAPE)) {
                 if (oldCharIndex == -1) {
                     oldCharIndex = i;
                 } else {

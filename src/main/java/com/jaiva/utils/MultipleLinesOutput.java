@@ -1,5 +1,7 @@
 package com.jaiva.utils;
 
+import java.util.Arrays;
+
 import com.jaiva.tokenizer.Token;
 
 /**
@@ -154,5 +156,57 @@ public class MultipleLinesOutput {
                 ", specialArg=" + specialArg +
                 ", lineNumber=" + lineNumber +
                 '}';
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + startCount;
+        result = prime * result + endCount;
+        result = prime * result + (isComment ? 1231 : 1237);
+        result = prime * result + ((preLine == null) ? 0 : preLine.hashCode());
+        result = prime * result + ((b_type == null) ? 0 : b_type.hashCode());
+        result = prime * result + Arrays.hashCode(b_args);
+        result = prime * result + ((specialArg == null) ? 0 : specialArg.hashCode());
+        result = prime * result + lineNumber;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        MultipleLinesOutput other = (MultipleLinesOutput) obj;
+        if (startCount != other.startCount)
+            return false;
+        if (endCount != other.endCount)
+            return false;
+        if (isComment != other.isComment)
+            return false;
+        if (preLine == null) {
+            if (other.preLine != null)
+                return false;
+        } else if (!preLine.equals(other.preLine))
+            return false;
+        if (b_type == null) {
+            if (other.b_type != null)
+                return false;
+        } else if (!b_type.equals(other.b_type))
+            return false;
+        if (!Arrays.equals(b_args, other.b_args))
+            return false;
+        if (specialArg == null) {
+            if (other.specialArg != null)
+                return false;
+        } else if (!specialArg.equals(other.specialArg))
+            return false;
+        if (lineNumber != other.lineNumber)
+            return false;
+        return true;
     }
 }
