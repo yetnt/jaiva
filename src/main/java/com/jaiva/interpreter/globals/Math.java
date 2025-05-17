@@ -24,7 +24,7 @@ public class Math extends BaseGlobals {
 
     class FRandom extends BaseFunction {
         FRandom(Token<?> container) {
-            super("random", container.new TFunction("random", new String[] { "start", "end" }, null, -1,
+            super("m_random", container.new TFunction("m_random", new String[] { "start", "end" }, null, -1,
                     "Returns a random number in the range of `start` and `end` both inclusive"));
             this.freeze();
         }
@@ -52,7 +52,7 @@ public class Math extends BaseGlobals {
 
     class FRound extends BaseFunction {
         FRound(Token<?> container) {
-            super("round", container.new TFunction("round", new String[] { "value" }, null, -1,
+            super("m_round", container.new TFunction("m_round", new String[] { "value" }, null, -1,
                     "Rounds a double to the nearest integer, or returns the integer if already an integer"));
             this.freeze();
         }

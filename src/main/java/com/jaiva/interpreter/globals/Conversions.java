@@ -42,7 +42,8 @@ public class Conversions extends BaseGlobals {
     public Conversions() {
         // the import will be "jaiva/convert.jiv"
         super(GlobalType.LIB, "convert");
-        vfs.put("stringToNum", new MapValue(new FStringToNum(container)));
+        vfs.put("c_stringToNum", new MapValue(new FStringToNum(container)));
+        vfs.put("c_numToString", new MapValue(new FNumToString(container)));
     }
 
     /**
@@ -65,7 +66,7 @@ public class Conversions extends BaseGlobals {
      */
     class FStringToNum extends BaseFunction {
         FStringToNum(Token<?> tContainer) {
-            super("stringToNum", tContainer.new TFunction("stringToNum", new String[] { "number" }, null, -1,
+            super("c_stringToNum", tContainer.new TFunction("c_stringToNum", new String[] { "number" }, null, -1,
                     "converts a string to a number"));
             this.freeze();
         }
@@ -104,7 +105,7 @@ public class Conversions extends BaseGlobals {
      */
     class FNumToString extends BaseFunction {
         FNumToString(Token<?> tContainer) {
-            super("numToString", tContainer.new TFunction("numToString", new String[] { "string" }, null, -1,
+            super("c_numToString", tContainer.new TFunction("c_numToString", new String[] { "string" }, null, -1,
                     "converts a number to a string"));
             this.freeze();
         }
@@ -123,7 +124,4 @@ public class Conversions extends BaseGlobals {
         }
     }
 
-    {
-        vfs.put("numToString", new MapValue(new FNumToString(container)));
-    }
 }

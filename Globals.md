@@ -158,25 +158,25 @@ This library contains (some) math functions. Unless really needed I don't see my
 
 See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/globals/Math.java) where this is defined.
 
-#### `round(value) -> `_*`khutla number!`*_
+#### `m_round(value) -> `_*`khutla number!`*_
 
 Rounds the given real nmber to an integer. This is for the real ones who hate working with precision.
 
 ```jiv
 tsea "jaiva/math"!
 
-khuluma(round(4.51))! @ Prints 5
+khuluma(m_round(4.51))! @ Prints 5
 ```
 
-#### `random(lower, upper) `_*`khutla number!`*_
+#### `m_random(lower, upper) `_*`khutla number!`*_
 
 Returns a random (integer) between the `lower` and `upper` bounds. (Both inclusive)
 
 ```jiv
 tsea "jaiva/math"!
 
-khuluma(random(0, 10) > 5)! @ Might print true or false
-khuluma(random(0, 10) > 5)! @ Might print true or false
+khuluma(m_random(0, 10) > 5)! @ Might print true or false
+khuluma(m_random(0, 10) > 5)! @ Might print true or false
 ```
 
 ### `convert`
@@ -185,7 +185,7 @@ This library contains functions for converting stuff to different types.
 
 See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/globals/Conversions.java) where this is defined.
 
-#### `numToString(num) -> `_*`khutla "string"!`*_
+#### `c_numToString(num) -> `_*`khutla "string"!`*_
 
 \*_**Independent**_
 
@@ -193,10 +193,10 @@ Returns a string which represents the given number
 
 ```jiv
 tsea "jaiva/convert"!
-khuluma(numToString(2.0) + 10)! @ Will print "2.010" as that's string concat
+khuluma(c_numToString(2.0) + 10)! @ Will print "2.010" as that's string concat
 ```
 
-#### `stringToNum(string) -> `_*`khutla number!`*_
+#### `c_stringToNum(string) -> `_*`khutla number!`*_
 
 \*_**Independent**_
 
@@ -216,9 +216,9 @@ If you ask why not just make arrays mutable, Jaiva is a functional programming l
 I can't link you anywhere, if you want to see the file go to your jaiva folder, because this is where it is mann.
 
 > [!WARNING]
-> Some functions use other functions. It's best to just import the whole library instead of trying to import only the functions you need. (e.g. If you import only `pop` you will get an error because `pop` uses `remove` internally.). I will however, list the functions that depend on other functions.
+> Some functions use other functions. It's best to just import the whole library instead of trying to import only the functions you need. (e.g. If you import only `a_pop` you will get an error because `a_pop` uses `a_remove` internally.). I will however, list the functions that depend on other functions.
 
-#### `remove(arr, n) -> `_*`khutla (array)!`*_
+#### `a_remove(arr, n) -> `_*`khutla (array)!`*_
 
 \*_**Independent**_
 
@@ -227,11 +227,11 @@ Returns an array which contains the original array (`arr`) with `n` amount of el
 ```jiv
 tsea "jaiva/arrays"! @ Import the arrays library
 maak array <-| 1, 2, 3, 4, 5, 6, 7, 8, 9, 10!
-maak newArray <- remove(array, 5)! @ Removes 5 elements from the end of the array.
+maak newArray <- a_remove(array, 5)! @ Removes 5 elements from the end of the array.
 khuluma(newArray)! @ Prints [1, 2, 3, 4, 5]
 ```
 
-#### `unshift(arr, n) -> `_*`khutla (array)!`*_
+#### `a_unshift(arr, n) -> `_*`khutla (array)!`*_
 
 \*_**Independent**_
 
@@ -240,26 +240,26 @@ Returns an array which contains the original array (`arr`) with `n` amount of el
 ```jiv
 tsea "jaiva/arrays"! @ Import the arrays library
 maak array <-| 1, 2, 3, 4, 5, 6, 7, 8, 9, 10!
-maak newArray <- unshift(array, 5)! @ Removes 5 elements from the start of the array.
+maak newArray <- a_unshift(array, 5)! @ Removes 5 elements from the start of the array.
 khuluma(newArray)! @ Prints [6, 7, 8, 9, 10]
 ```
 
-#### `pop(arr) -> `_*`khutla (array)!`*_
+#### `a_pop(arr) -> `_*`khutla (array)!`*_
 
-\*_**Depends on** [`remove()`](#removearr-n---khutla-array)_
+\*_**Depends on** [`a_remove()`](#a_removearr-n---khutla-array)_
 
 Returns a new array without the last element of the original array (`arr`).
 
-This is the same as `remove(arr, 1)` (It's actually exactly what the function's defintion is) So you can use either one.
+This is the same as `a_remove(arr, 1)` (It's actually exactly what the function's defintion is) So you can use either one.
 
 ```jiv
 tsea "jaiva/arrays"! @ Import the arrays library
 maak array <-| 1, 2, 3, 4, 5, 6, 7, 8, 9, 10!
-maak newArray <- pop(array)!
+maak newArray <- a_pop(array)!
 khuluma(newArray)! @ Prints [2, 3, 4, 5, 6, 7, 8, 9, 10]
 ```
 
-#### `push(arr, element) -> `_*`khutla (array)!`*_
+#### `a_push(arr, element) -> `_*`khutla (array)!`*_
 
 \*_**Independent**_
 
@@ -268,11 +268,11 @@ Returns a new array with the `element` appended at the end of the original array
 ```jiv
 tsea "jaiva/arrays"! @ Import the arrays library
 maak array <-| 1, 2, 3, 4, 5, 6, 7, 8, 9, 10!
-maak newArray <- push(array, 11)! @ Appends 11 to the end of the array.
+maak newArray <- a_push(array, 11)! @ Appends 11 to the end of the array.
 khuluma(newArray)! @ Prints [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 ```
 
-#### `shift(arr, element) -> `_*`khutla (array)!`*_
+#### `a_shift(arr, element) -> `_*`khutla (array)!`*_
 
 \*_**Independent**_
 
@@ -281,11 +281,11 @@ Returns a new array with the `element` appended at the start of the original arr
 ```jiv
 tsea "jaiva/arrays"! @ Import the arrays library
 maak array <-| 1, 2, 3, 4, 5, 6, 7, 8, 9, 10!
-maak newArray <- shift(array, 0)! @ Appends 0 to the start of the array.
+maak newArray <- a_shift(array, 0)! @ Appends 0 to the start of the array.
 khuluma(newArray)! @ Prints [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 ```
 
-#### `filter(arr, predicate) -> `_*`khutla (array)!`*_
+#### `a_filter(arr, predicate) -> `_*`khutla (array)!`*_
 
 \*_**Independent**_
 
@@ -301,6 +301,6 @@ kwenza isEven(n) ->
     khutla n % 2 = 0! @ Returns true if n is even
 <~
 
-maak newArray <- filter(array, isEven)! @ Filters the array with the isEven function.
+maak newArray <- a_filter(array, isEven)! @ Filters the array with the isEven function.
 khuluma(newArray)! @ Prints [2, 4, 6, 8, 10]!
 ```
