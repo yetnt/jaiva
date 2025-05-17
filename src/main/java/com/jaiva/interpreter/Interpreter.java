@@ -273,7 +273,7 @@ public class Interpreter {
         for (Token<?> t : tokens) {
             TokenDefault token = t.getValue();
             if (token instanceof TImport) {
-                Globals g = new Globals<>();
+                Globals g = new Globals<>(config);
                 TImport tImport = (TImport) token;// Create a Path instance from tImport.filePath
                 Path importPath = Path.of(tImport.filePath);
 
@@ -296,7 +296,7 @@ public class Interpreter {
                 if (tks.size() == 0)
                     continue;
 
-                IConfig newConfig = new IConfig(importPath.toString());
+                IConfig newConfig = new IConfig(importPath.toString(), config.JAIVA_SRC.toString());
 
                 newConfig.importVfs = true;
 

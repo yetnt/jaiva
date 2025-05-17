@@ -29,7 +29,7 @@ public class Globals<T extends GlobalType> extends BaseGlobals {
     /**
      * Constructor to create and get the globals.
      */
-    public Globals() {
+    public Globals(IConfig config) {
         super(GlobalType.MAIN);
         vfs.put("getVarClass", new MapValue(new FGetVarClass(container)));
         vfs.put("reservedKeywords", new MapValue(new VReservedKeywords(container)));
@@ -42,6 +42,8 @@ public class Globals<T extends GlobalType> extends BaseGlobals {
         builtInGlobals.put(c.path, c.vfs);
         Math m = new Math();
         builtInGlobals.put(m.path, m.vfs);
+        IOFile f = new IOFile(config);
+        builtInGlobals.put(f.path, f.vfs);
     }
 
     /**

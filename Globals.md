@@ -15,7 +15,7 @@ These are any symbols that are available in any Jaiva program.
 
 ### <center> Variables
 
-#### `version <- `_*`(string)`*_
+#### `version <- `_*`"string"`*_
 
 The current version of Jaiva that you're using. This string is in the format of `major.minor.patch`
 
@@ -27,7 +27,7 @@ See **[Main.java](./src/main/java/com/jaiva/Main.java)** where this is defined.
 khuluma(version)! @ Prints 1.0.0-beta.2 (at the time of writing)
 ```
 
-#### `reservedKeywords <-| `_*`(string)`*_
+#### `reservedKeywords <-| `_*`"string"`*_
 
 An array of all the reserved keywords in Jaiva. This includes keywords like `if`, `mara`, `nikhil`, `tsea`, etc.
 
@@ -60,7 +60,7 @@ Hello, world!
 Hello, againOkay
 ```
 
-#### `mamela() -> `_*`khutla (string)!`*_
+#### `mamela() -> `_*`khutla "string"!`*_
 
 This function is used to read input from the user. (In the console.) It returns a string of the input. This function will block runtime until the user presses enter.
 
@@ -72,7 +72,7 @@ maak name <- mamela()! @ Reads input from the user and stores it in the variable
 khuluma("Hello, " + name + "!")!
 ```
 
-#### `ask(message) -> `_*`khutla (string)!`*_
+#### `ask(message) -> `_*`khutla "string"!`*_
 
 This function is used to read input from the user. (Via UI.) It returns a string of the input. This function will block runtime until the user presses enter.
 
@@ -101,7 +101,7 @@ Clears the console. I can't really showcase code for this one hey.
 
 See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/globals/IOFunctions.java) where this is defined.
 
-#### `getVarClass(ref) -> `_*`khutla (string)!`*_
+#### `getVarClass(ref) -> `_*`khutla "string"!`*_
 
 This function returns the Java class `.toString()` of the variable passed to it. This is useful for debugging and checking the type of a variable. (Specifically, the class at parse time. This is not the same as the type of the variable at runtime.)
 What you will use this for? I don't know, but it's there if you need it.
@@ -152,13 +152,56 @@ tsea "C:/path/to/jaiva/lib/(module name)"!
 
 The following are the libraries that are available
 
+### `file`
+
+This library contains variables (and soon maybe functions) for handling file related things.
+
+See [IOFile.java](./src/main/java/com/jaiva/interpreter/globals/IOFile.java) where this is defined.
+
+For all exmaples, the "current" file is located in C:\Users\me\file.jiv
+
+#### `f_name <- `_*`"string"`*_
+
+\*_**Independent**_
+
+Returns the current file name
+
+```jiv
+tsea "jaiva/file"!
+khuluma(f_name)! @ file.jiv
+```
+
+#### `f_dir <- `_*`"string"`*_
+
+\*_**Independent**_
+
+Returns the current working directory
+
+```jiv
+tsea "jaiva/file"!
+khuluma(f_dir)! @ C:\Users\me\file.jiv
+```
+
+#### `f_bin <- `_*`"string"`*_
+
+\*_**Independent**_
+
+Returns the directory where you can find the `jaiva.jar` file
+
+```jiv
+tsea "jaiva/file"!
+khuluma(f_bin)! @ C:\Users\jaiva\
+```
+
 ### `math`
 
 This library contains (some) math functions. Unless really needed I don't see myself adding more than these.
 
-See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/globals/Math.java) where this is defined.
+See [Math.java](./src/main/java/com/jaiva/interpreter/globals/Math.java) where this is defined.
 
 #### `m_round(value) -> `_*`khutla number!`*_
+
+\*_**Independent**_
 
 Rounds the given real nmber to an integer. This is for the real ones who hate working with precision.
 
@@ -169,6 +212,8 @@ khuluma(m_round(4.51))! @ Prints 5
 ```
 
 #### `m_random(lower, upper) `_*`khutla number!`*_
+
+\*_**Independent**_
 
 Returns a random (integer) between the `lower` and `upper` bounds. (Both inclusive)
 
@@ -183,7 +228,7 @@ khuluma(m_random(0, 10) > 5)! @ Might print true or false
 
 This library contains functions for converting stuff to different types.
 
-See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/globals/Conversions.java) where this is defined.
+See [Conversions.java](./src/main/java/com/jaiva/interpreter/globals/Conversions.java) where this is defined.
 
 #### `c_numToString(num) -> `_*`khutla "string"!`*_
 

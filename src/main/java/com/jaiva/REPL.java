@@ -170,12 +170,12 @@ public class REPL {
     /**
      * The variable functions store (vfs).
      */
-    private HashMap<String, MapValue> vfs = new Globals().vfs;
+    private HashMap<String, MapValue> vfs = new Globals(this.iConfig).vfs;
     /**
      * Interpreter configuration object.
      * It contains the resources and configuration for the interpreter.
      */
-    private IConfig iConfig = new IConfig(null);
+    private IConfig iConfig = new IConfig(null, Main.callJaivaSrc());
     /**
      * Tokenizer configuration object.
      * It contains the configuration for the tokenizer.

@@ -30,6 +30,13 @@ public class IConfig {
      */
     public Path fileDirectory;
 
+    /**
+     * The path to the source directory for Jaiva scripts.
+     * This variable should point to the root directory containing Jaiva source
+     * files.
+     */
+    public Path JAIVA_SRC;
+
     // ...add more interpreter settings.
 
     /**
@@ -40,8 +47,9 @@ public class IConfig {
      *
      * @param currentFilePath The path of the current file being interpreted.
      */
-    public IConfig(String currentFilePath) {
+    public IConfig(String currentFilePath, String jSrc) {
         filePath = Path.of(currentFilePath != null ? currentFilePath : "");
         fileDirectory = Path.of(currentFilePath != null ? currentFilePath : "").getParent();
+        JAIVA_SRC = Path.of(jSrc);
     }
 }

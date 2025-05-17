@@ -15,6 +15,9 @@ import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
 
+/**
+ * Math functions ofc
+ */
 public class Math extends BaseGlobals {
     public Math() {
         super(GlobalType.LIB, "math");
@@ -22,6 +25,34 @@ public class Math extends BaseGlobals {
         vfs.put("round", new MapValue(new FRound(container)));
     }
 
+    /**
+     * Represents a function that generates a random integer within a specified
+     * range.
+     * <p>
+     * The {@code FRandom} class extends {@link BaseFunction} and implements a
+     * function
+     * named {@code m_random} that takes two parameters: {@code start} and
+     * {@code end}.
+     * It returns a random integer between {@code start} and {@code end}, both
+     * inclusive.
+     * </p>
+     *
+     * <p>
+     * Usage:
+     * <ul>
+     * <li>{@code m_random(start, end)} - Returns a random integer in the range
+     * [start, end].</li>
+     * </ul>
+     * </p>
+     *
+     * <p>
+     * Throws {@link WtfAreYouDoingException} if:
+     * <ul>
+     * <li>Either {@code start} or {@code end} is not an integer.</li>
+     * <li>{@code start} is greater than {@code end}.</li>
+     * </ul>
+     * </p>
+     */
     class FRandom extends BaseFunction {
         FRandom(Token<?> container) {
             super("m_random", container.new TFunction("m_random", new String[] { "start", "end" }, null, -1,
@@ -50,6 +81,21 @@ public class Math extends BaseGlobals {
         }
     }
 
+    /**
+     * Represents a function that rounds a double value to the nearest integer.
+     * <p>
+     * If the input value is already an integer, it is returned as-is.
+     * If the input value is a double, it is rounded to the nearest integer using
+     * {@link java.lang.Math#round(double)}.
+     * If the input is neither an integer nor a double, a
+     * {@link WtfAreYouDoingException} is thrown.
+     * </p>
+     *
+     * <p>
+     * Function signature: <code>m_round(value)</code>
+     * </p>
+     *
+     */
     class FRound extends BaseFunction {
         FRound(Token<?> container) {
             super("m_round", container.new TFunction("m_round", new String[] { "value" }, null, -1,

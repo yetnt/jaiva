@@ -187,7 +187,7 @@ public class Main {
             return;
         }
 
-        IConfig iconfig = new IConfig(args[0]);
+        IConfig iconfig = new IConfig(args[0], callJaivaSrc());
         boolean debug = false;
         try {
             if (args.length > 1)
@@ -231,7 +231,7 @@ public class Main {
                     case "-jg", "--json-with-globals" -> {
                         System.out.println();
                         System.out.print("[");
-                        System.out.print(new Globals().returnGlobalsJSON(false));
+                        System.out.print(new Globals(iconfig).returnGlobalsJSON(false));
                         for (int i = 0; i < tokens.size(); i++) {
                             Token<?> token = tokens.get(i);
                             System.out.print(token.getValue().toJson());
@@ -251,7 +251,7 @@ public class Main {
                 }
             }
 
-            Interpreter.interpret(tokens, Context.GLOBAL, new Globals().vfs, iconfig);
+            Interpreter.interpret(tokens, Context.GLOBAL, new Globals(iconfig).vfs, iconfig);
 
             // if we reached here, everythign went well!
 
