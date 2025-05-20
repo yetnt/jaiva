@@ -17,6 +17,11 @@ public class IConfig {
     public boolean importVfs = false;
 
     /**
+     * Boolean flag indicating we're in the REPL.
+     */
+    public boolean REPL = false;
+
+    /**
      * * The {@code GlobalResources} instance provides access to global resources
      * used by the intepreter at run time.
      */
@@ -24,11 +29,11 @@ public class IConfig {
     /**
      * The path of the current file being interpreted.
      */
-    public Path filePath;
+    public Path filePath = null;
     /**
      * The directory containing the file we're interpreting
      */
-    public Path fileDirectory;
+    public Path fileDirectory = null;
 
     /**
      * The path to the source directory for Jaiva scripts.
@@ -50,6 +55,10 @@ public class IConfig {
     public IConfig(String currentFilePath, String jSrc) {
         filePath = Path.of(currentFilePath != null ? currentFilePath : "");
         fileDirectory = Path.of(currentFilePath != null ? currentFilePath : "").getParent();
+        JAIVA_SRC = Path.of(jSrc);
+    }
+
+    public IConfig(String jSrc) {
         JAIVA_SRC = Path.of(jSrc);
     }
 }

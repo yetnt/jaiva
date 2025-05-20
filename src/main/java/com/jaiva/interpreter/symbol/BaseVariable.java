@@ -53,7 +53,7 @@ public class BaseVariable extends Symbol {
      * @param scalar the scalar value of the variable
      */
     public BaseVariable(String name, TokenDefault t, Object scalar) {
-        super(SymbolType.VARIABLE, t);
+        super(name, SymbolType.VARIABLE, t);
         this.scalar = scalar;
         variableType = VariableType.SCALAR;
     }
@@ -67,7 +67,7 @@ public class BaseVariable extends Symbol {
      * @param arr  the array value of the variable
      */
     public BaseVariable(String name, TokenDefault t, ArrayList<Object> arr) {
-        super(SymbolType.VARIABLE, t);
+        super(name, SymbolType.VARIABLE, t);
         this.array.addAll(arr);
         variableType = VariableType.ARRAY;
     }
@@ -79,7 +79,7 @@ public class BaseVariable extends Symbol {
      * @param t    the token associated with the variable
      */
     public BaseVariable(String name, TokenDefault t) {
-        super(SymbolType.VARIABLE, t);
+        super(name, SymbolType.VARIABLE, t);
         variableType = VariableType.UNKNOWN;
     }
 
@@ -89,7 +89,7 @@ public class BaseVariable extends Symbol {
      * @param name the name of the variable
      */
     public BaseVariable(String name) {
-        super(SymbolType.VARIABLE);
+        super(name, SymbolType.VARIABLE);
         variableType = VariableType.UNKNOWN;
     }
 

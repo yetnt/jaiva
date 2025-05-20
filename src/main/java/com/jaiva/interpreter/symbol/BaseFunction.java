@@ -28,7 +28,7 @@ public class BaseFunction extends Symbol {
      * @param token the token associated with the function
      */
     public BaseFunction(TFunction token) {
-        super(SymbolType.FUNCTION, token);
+        super(token.name, SymbolType.FUNCTION, token);
         this.token = token;
     }
 
@@ -38,7 +38,7 @@ public class BaseFunction extends Symbol {
      * @param name the name of the function
      */
     public BaseFunction(String name) {
-        super(SymbolType.FUNCTION);
+        super(name, SymbolType.FUNCTION);
         this.name = name;
     }
 
@@ -49,7 +49,7 @@ public class BaseFunction extends Symbol {
      * @param token the token associated with the function
      */
     public BaseFunction(String name, TFunction token) {
-        super(SymbolType.FUNCTION, token);
+        super(name, SymbolType.FUNCTION, token);
         this.token = token;
         this.name = name;
     }

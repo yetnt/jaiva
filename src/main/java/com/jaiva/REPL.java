@@ -10,6 +10,7 @@ import java.util.HashMap;
 import com.jaiva.interpreter.Context;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
+import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.TConfig;
@@ -170,12 +171,12 @@ public class REPL {
     /**
      * The variable functions store (vfs).
      */
-    private HashMap<String, MapValue> vfs = new Globals(this.iConfig).vfs;
+    private HashMap<String, MapValue> vfs;
     /**
      * Interpreter configuration object.
      * It contains the resources and configuration for the interpreter.
      */
-    private IConfig iConfig = new IConfig(null, Main.callJaivaSrc());
+    private IConfig iConfig = new IConfig(Main.callJaivaSrc());
     /**
      * Tokenizer configuration object.
      * It contains the configuration for the tokenizer.
@@ -196,6 +197,8 @@ public class REPL {
      *             mode outputs tokens.
      */
     public REPL(int mode) {
+        this.iConfig.REPL = true;
+        this.vfs = new Globals(this.iConfig).vfs;
         this.state = State.ACTIVE;
         this.mode = REPLMode.STANDARD.toEnum(mode);
 
@@ -283,16 +286,15 @@ public class REPL {
                 if (mode == REPLMode.STANDARD) {
                     TokenDefault token = ((Token<?>) something).getValue();
                     if (Interpreter.isVariableToken(token)) {
-                        boolean isReturnTokenClass = token instanceof TStatement || token instanceof TVarRef
-                                || token instanceof TFuncCall;
-                        Object input = isReturnTokenClass
-                                ? ((Token<?>) something)
-                                : token;
-                        Object value = Interpreter.handleVariables(input, this.vfs, iConfig);
+                        Object value = Interpreter.handleVariables(Primitives.parseNonPrimitive(token), this.vfs,
+                                iConfig);
                         return new ReadOuput(value.toString());
                     } else {
-                        Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) something)), Context.GLOBAL,
+                        Object h = Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) something)),
+                                Context.GLOBAL,
                                 this.vfs, iConfig);
+                        if (h instanceof HashMap)
+                            vfs = (HashMap<String, MapValue>) h;
 
                         return new ReadOuput();
                     }
@@ -314,15 +316,19 @@ public class REPL {
                             return isReturnTokenClass ? new ReadOuput(value.toString())
                                     : new ReadOuput();
                         } else {
-                            Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) tokens.get(
+                            Object h = Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) tokens.get(
                                     0))),
                                     Context.GLOBAL,
                                     this.vfs, iConfig);
+                            if (h instanceof HashMap)
+                                vfs = (HashMap<String, MapValue>) h;
 
                             return new ReadOuput();
                         }
                     } else {
-                        Interpreter.interpret(tokens, Context.GLOBAL, this.vfs, iConfig);
+                        Object h = Interpreter.interpret(tokens, Context.GLOBAL, this.vfs, iConfig);
+                        if (h instanceof HashMap)
+                            vfs = (HashMap<String, MapValue>) h;
                         return new ReadOuput();
                     }
                 } else if (mode == REPLMode.PRINT_TOKEN) {

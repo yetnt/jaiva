@@ -31,21 +31,25 @@ public class Symbol {
     /**
      * Define a symbol without the token
      * 
+     * @param name Symbol name
      * @param type Symbol type.
      */
-    Symbol(SymbolType type) {
+    Symbol(String name, SymbolType type) {
         this.symbolType = type;
+        this.name = name;
     }
 
     /**
      * Define a symbol with the token associated with it.
      * 
+     * @param name  Symbol name
      * @param type  Symbol type.
      * @param token Symbol's token.
      */
-    Symbol(SymbolType type, TokenDefault token) {
+    Symbol(String name, SymbolType type, TokenDefault token) {
         this.symbolType = type;
         this.token = token;
+        this.name = name;
     }
 
     /**

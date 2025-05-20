@@ -567,6 +567,6 @@ public class Interpreter {
         }
         // System.out.println("heyy");
 
-        return config.importVfs ? vfs : void.class;
+        return config.importVfs || config.REPL ? vfs : void.class;
     }
 }

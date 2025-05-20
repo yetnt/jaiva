@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.errors.InterpreterException.CatchAllException;
+import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
@@ -477,8 +478,18 @@ public class Primitives {
                 return tVarRef.getLength ? variable.a_size() : variable.a_getAll();
             } else {
                 // normal variable ref, return it
-                return variable.s_get() instanceof String && tVarRef.getLength ? ((String) variable
-                        .s_get()).length() : variable.s_get();
+                try {
+                    if (variable.s_get() instanceof String vs) {
+                        return tVarRef.getLength ? vs.length()
+                                : (index instanceof Integer newI) ? vs.charAt(newI) : variable.s_get();
+                    } else {
+                        return variable.s_get();
+                    }
+                } catch (IndexOutOfBoundsException e) {
+                    // user gave an invalid index.
+                    throw new WtfAreYouDoingException("I don't think " + variable.name + " has a position " + index,
+                            tVarRef.lineNumber);
+                }
             }
 
         } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TFuncCall) {

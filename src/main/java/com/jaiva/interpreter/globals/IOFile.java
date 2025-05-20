@@ -30,9 +30,10 @@ public class IOFile extends BaseGlobals {
     public class VFileName extends BaseVariable {
         public VFileName(Token<?> container, IConfig config) {
             super("f_name",
-                    container.new TStringVar("f_name", config.filePath.getFileName().toString(), -1,
+                    container.new TStringVar("f_name",
+                            config.filePath == null ? "REPL" : config.filePath.getFileName().toString(), -1,
                             "Variable that holds the current file's name"),
-                    config.filePath.getFileName().toString());
+                    config.filePath == null ? "REPL" : config.filePath.getFileName().toString());
             freeze();
 
         }
@@ -54,9 +55,10 @@ public class IOFile extends BaseGlobals {
     public class VDirectory extends BaseVariable {
         public VDirectory(Token<?> container, IConfig config) {
             super("f_dir",
-                    container.new TStringVar("f_dir", config.fileDirectory.toAbsolutePath().toString(), -1,
+                    container.new TStringVar("f_dir", config.fileDirectory == null ? "REPL"
+                            : config.fileDirectory.toAbsolutePath().toString(), -1,
                             "Variable that holds the current file's directory."),
-                    config.fileDirectory.toAbsolutePath().toString());
+                    config.fileDirectory == null ? "REPL" : config.fileDirectory.toAbsolutePath().toString());
             freeze();
         }
     }

@@ -1,0 +1,24 @@
+kwenza func(F~special, log?, sleepTime?) ->
+    @ Functions.
+    if (sleepTime = idk) ->
+        sleepTime <- 1000!
+    <~
+    if (log = idk) ->
+        log <- "logg"!
+    <~
+
+    khuluma(log)!
+    sleep(sleepTime)!
+
+    khutla special(log)!
+<~
+
+kwenza stringLength(string) ->
+    khutla string~!
+<~
+
+khuluma(func(stringLength))!
+khuluma()!
+khuluma(func(stringLength, "Logging the length of this string!"))!
+khuluma()!
+khuluma(func(stringLength, "Logging the legnth, and sleeping for 3000", 3000))!
