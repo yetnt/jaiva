@@ -30,11 +30,17 @@ package com.jaiva.utils;
  * 
  */
 public class ContextDispatcher {
+    private final String line;
+    private boolean EIB = false;
+    private boolean SE = false;
+    private boolean EB = false;
+    private boolean EO = false;
+    private boolean BC = false;
     /**
      * The bits variable is a 64-bit number that represents the context of the line.
      * Refer to the table in the same directory for the meaning of each bit.
      */
-    private int bits = 0; // 64 bit number. Refer to table.
+    public int bits = 0; // 64 bit number. Refer to table.
 
     /**
      * Checks if the parentheses in the given string are balanced.
@@ -93,13 +99,8 @@ public class ContextDispatcher {
      * @param line
      */
     public ContextDispatcher(String line) {
-        boolean EIB = false;
-        @SuppressWarnings("unused")
-        boolean SE = false;
+        this.line = line;
         // public boolean SB = false;
-        boolean EB = false;
-        boolean EO = false;
-        boolean BC = false;
         line = line.trim();
         // Extra special case, encased in quotes, so go to processContext
         if (line.startsWith("\"") && line.endsWith("\"") && Find.quotationPairs(line).size() == 1) {
