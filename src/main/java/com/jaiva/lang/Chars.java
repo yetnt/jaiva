@@ -140,7 +140,7 @@ public class Chars {
         /**
          * List of boolean operators.
          */
-        public static final List<String> Bools = Arrays.asList("|", "&", ">", "<", "=", "!");
+        public static final List<String> Bools = Arrays.asList("|", "&", ">", "<", "=", "!", "?");
         /**
          * List of double boolean operators.
          */

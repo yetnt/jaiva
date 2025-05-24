@@ -191,10 +191,10 @@ public class Primitives {
      */
     public static Object resolveStringOperations(Object lhs, Object rhs, String op, TStatement ts)
             throws JaivaException {
-        String I = Integer.class.getSimpleName().substring(0, 1);
-        String S = String.class.getSimpleName().substring(0, 1);
-        String D = Double.class.getSimpleName().substring(0, 1);
-        String B = Boolean.class.getSimpleName().substring(0, 1);
+        String I = Integer.class.getSimpleName().charAt(0) + "";
+        String S = String.class.getSimpleName().charAt(0) + "";
+        String D = Double.class.getSimpleName().charAt(0) + "";
+        String B = Boolean.class.getSimpleName().charAt(0) + "";
 
         String leftHandSide = lhs instanceof String ? S
                 : lhs instanceof Integer ? I
@@ -214,7 +214,7 @@ public class Primitives {
         String switchTing = leftHandSide + rightHandSide;
 
         ArrayList<String> IS = new ArrayList<>(Arrays.asList("+", "-", "*", "/", "=", "!="));
-        ArrayList<String> SS = new ArrayList<>(Arrays.asList("+", "-", "=", "!=", "/"));
+        ArrayList<String> SS = new ArrayList<>(Arrays.asList("+", "-", "=", "!=", "/", "?"));
 
         try {
             switch (switchTing) {
@@ -250,7 +250,8 @@ public class Primitives {
                                                     Matcher.quoteReplacement(""))
                                             : op.equals("=") ? ((String) lhs).equals((String) rhs)
                                                     : op.equals("!=") ? !((String) lhs).equals((String) rhs)
-                                                            : ((String) lhs);
+                                                            : op.equals("?") ? ((String) lhs).contains((String) rhs)
+                                                                    : ((String) lhs);
             }
         } catch (StringIndexOutOfBoundsException e) {
             // too big or too small of a number
@@ -267,30 +268,40 @@ public class Primitives {
      * The method that turns scrambled TStatement, TFuncCall, TVarRef and primitives
      * into... primitives.
      * <p>
-     * This throws {@link InterpreterException.UnknownVariableException} when the
-     * TVarRef cannot be
-     * found.
-     * <p>
-     * This throws {@link InterpreterException.TStatementResolutionException} when
-     * one of the sides of a
-     * {@link TStatement} cannot be resolved to a primitive.
-     * <p>
-     * This throws {@link InterpreterException.WtfAreYouDoingException} when you try
-     * use a function as a
-     * variable or a variable as a function.
-     * <p>
-     * This throws {@link InterpreterException.WeirdAhhFunctionException} when the
-     * function name cannot
-     * be a string.
+     * It essentially un
      * 
      * @param token the token or primitive in question
      * @param vfs   The variable functions store
      * @return
-     * @throws Exception
+     * @throws InterpreterException.UnknownVariableException      when the
+     *                                                            TVarRef cannot be
+     *                                                            found.
+     * @throws InterpreterException.TStatementResolutionException
+     *                                                            when
+     *                                                            one of the sides
+     *                                                            of a
+     *                                                            {@link TStatement}
+     *                                                            cannot be resolved
+     *                                                            to a
+     *                                                            primitive.
+     * @throws InterpreterException.WtfAreYouDoingException
+     *                                                            when you try
+     *                                                            use a function as
+     *                                                            a
+     *                                                            variable or a
+     *                                                            variable as a
+     *                                                            function.
+     * @throws InterpreterException.WeirdAhhFunctionException
+     *                                                            when the
+     *                                                            function name
+     *                                                            cannot be turned
+     *                                                            into a proper ting
+     *                                                            yknow
      */
     public static Object toPrimitive(Object token, HashMap<String, MapValue> vfs, boolean returnName,
             IConfig config)
             throws Exception {
+
         if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TStatement) {
             // If the input is a TStatement, resolve the lhs and rhs.
             TStatement tStatement = (TStatement) ((Token<?>) token).getValue();
@@ -377,11 +388,11 @@ public class Primitives {
                     // int, double, boolean or string.
                     // check input first of all
                     if (!(lhs instanceof Integer) && !(lhs instanceof Double) && !(lhs instanceof Boolean)
-                            && !(lhs instanceof String) && !(lhs instanceof TVoidValue))
+                            && !(lhs instanceof String) && !(lhs instanceof TVoidValue) && !(lhs instanceof ArrayList))
                         throw new InterpreterException.TStatementResolutionException(tStatement, "left hand side",
                                 lhs.toString());
                     if (!(rhs instanceof Integer) && !(rhs instanceof Double) && !(rhs instanceof Boolean)
-                            && !(rhs instanceof String) && !(rhs instanceof TVoidValue))
+                            && !(rhs instanceof String) && !(rhs instanceof TVoidValue) && !(lhs instanceof ArrayList))
                         throw new InterpreterException.TStatementResolutionException(tStatement, "right hand side",
                                 rhs.toString());
 
@@ -391,7 +402,7 @@ public class Primitives {
                     if (lhs instanceof TVoidValue)
                         lhs = void.class;
 
-                    // handle ints
+                    // handle ALL types.
                     switch (op) {
                         case "=":
                             return lhs.equals(rhs);

@@ -169,7 +169,7 @@ khuluma(b~)! @ returns 10
 
 ##### String operations.
 
-1. Addition
+1.  Concatenation
 
     `"a" + "string"` _returns_ **`"astring"`**
 
@@ -177,7 +177,7 @@ khuluma(b~)! @ returns 10
 
     `"string" + 1` _returns_ **`"string1"`**
 
-2. Subtraction
+2.  Substring (first occurance)
 
     `"string" - "tri"` _returns_ **`"sing"`** (removes the first occuramce of rhs from the lhs. Sometimes this dont work tho lol.)
 
@@ -185,11 +185,11 @@ khuluma(b~)! @ returns 10
 
     `2 - "string"` _returns_ **`"ring"`**
 
-3. Multiplication
+3.  Multiplication
 
     `"String" * 3` _returns_ **`"StringStringString"`**
 
-4. Division
+4.  Substring (all occurances)
 
     `"remove all es please" / "e"` _returns_ **`"rmov all s plas"`** (removes ALL occurences of rhs from the lhs. Sometimes this dont work too lol.)
 
@@ -197,7 +197,13 @@ khuluma(b~)! @ returns 10
 
     `4 / "Hello ong World"` _returns_ **`"lo ong World"`** (returns the substring in the range _[(rhs' length)/lhs, rhs.length-1)_ )
 
-And of course, you can compare strings to each other using `=` and `!=`
+    And of course, you can compare strings to each other using `=` and `!=`
+
+5.  Contains
+
+    `"string" ? "tri"` _returns_ **`true`** (checks if the left-hand string contains the right-hand string)
+
+    `"string" ? "xyz"` _returns_ **`false`**
 
 ##### Escaping characters
 

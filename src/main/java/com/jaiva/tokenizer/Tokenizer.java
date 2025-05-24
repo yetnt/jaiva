@@ -577,9 +577,9 @@ public class Tokenizer {
      * @param blockChain          The block chain object.
      * @param lineNumber          The line number of the line.
      * @param config              The config object.
-     *                            * @return The token for the given line.
-     *                            * @throws Exception If the line is invalid or if
-     *                            there is an error parsing the token
+     * @return The token for the given line.
+     * @throws Exception If the line is invalid or if
+     *                   there is an error parsing the token
      */
     @SuppressWarnings("unchecked")
     public static Object readLine(String line, String previousLine, Object multipleLinesOutput, BlockChain blockChain,
@@ -752,11 +752,10 @@ public class Tokenizer {
         // here.)
         Object tryDecimate = Comments.safeDecimate(line);
 
-        if (tryDecimate instanceof Token<?>) {
+        if (tryDecimate instanceof Token<?>)
             return tryDecimate;
-        } else {
+        else
             line = ((String) tryDecimate).trim();
-        }
 
         if (line.isEmpty())
             return null;
@@ -769,9 +768,8 @@ public class Tokenizer {
 
         line = line.isEmpty() ? line : line.substring(0, line.length() - 1);
 
-        if (line.startsWith(Keywords.IMPORT.get(0)) || line.startsWith(Keywords.IMPORT.get(1))) {
+        if (line.startsWith(Keywords.IMPORT.get(0)) || line.startsWith(Keywords.IMPORT.get(1)))
             return handleImport(line, tContainer, lineNumber, config);
-        }
 
         // #STRING# is (khutla 100!) syntax which is a function return.
 
@@ -781,23 +779,23 @@ public class Tokenizer {
             String withoutKeyword = line.substring(Keywords.THROW.length()).trim();
             // Split on the operator "<=="
             String[] parts = withoutKeyword.split(Chars.THROW_ERROR);
-            if (parts.length != 2) {
+            if (parts.length != 2)
                 throw new TokenizerException.MalformedSyntaxException(
                         "Ehh baba you must use the right syntax if u wanna cima this process.", lineNumber);
-            }
+
             String errorMessage = parts[1].trim();
-            if (errorMessage.startsWith("\"") && errorMessage.endsWith("\"") && errorMessage.length() >= 2) {
+            if (errorMessage.startsWith("\"") && errorMessage.endsWith("\"") && errorMessage.length() >= 2)
                 errorMessage = errorMessage.substring(1, errorMessage.length() - 1);
-                // errorMessage = EscapeSequence.escape(errorMessage.substring(1,
-                // errorMessage.length() - 1));
-            }
+            // errorMessage = EscapeSequence.escape(errorMessage.substring(1,
+            // errorMessage.length() - 1));
+
             tokens.add(tContainer.new TThrowError(errorMessage, lineNumber).toToken());
             return tokens;
         }
 
         line = line.trim();
 
-        if (line.startsWith(Keywords.LC_BREAK) || line.startsWith(Keywords.LC_CONTINUE)) {
+        if (line.startsWith(Keywords.LC_BREAK) || line.startsWith(Keywords.LC_CONTINUE))
             switch (line) {
                 case "voetsek", "nevermind":
                     return tContainer.new TLoopControl(line, lineNumber).toToken();
@@ -806,7 +804,6 @@ public class Tokenizer {
                             "Loop control keywords should be by themselves big bro. Remove whatever is on line ",
                             lineNumber);
             }
-        }
 
         if (line.startsWith(Keywords.RETURN)) {
             tokens.add(
@@ -834,13 +831,13 @@ public class Tokenizer {
                 tokens.add(tContainer.new TVarReassign(tContainer.processContext(varName,
                         lineNumber), varValue, lineNumber).toToken());
                 return tokens;
-            } else {
+            } else
                 tokens.add(
                         tContainer.new TVarReassign(parts[0].trim(), tContainer.processContext(parts[1].trim(),
                                 lineNumber),
                                 lineNumber)
                                 .toToken());
-            }
+
             return tokens;
         }
 

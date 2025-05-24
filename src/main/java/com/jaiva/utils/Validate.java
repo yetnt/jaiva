@@ -32,10 +32,14 @@ public class Validate {
      * This is made only for Context Dispatcher
      * <p>
      * Checks if a character is considered an operator.
+     * <p>
+     * TODO: Revamp to use {@link Chars.Operators} and not hard code the chars.
+     * 
+     * @param c The character
      */
     public static boolean isOperator(char c) {
         return c == '+' || c == '-' || c == '*' || c == '/' || c == '|' || c == '>' || c == '<' || c == '&' || c == '!'
-                || c == '=' | c == '%' || c == '^';
+                || c == '=' | c == '%' || c == '^' || c == '?';
     }
 
     /**
