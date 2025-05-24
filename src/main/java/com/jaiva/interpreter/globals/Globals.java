@@ -28,8 +28,10 @@ public class Globals<T extends GlobalType> extends BaseGlobals {
 
     /**
      * Constructor to create and get the globals.
+     * 
+     * @throws InterpreterException
      */
-    public Globals(IConfig config) {
+    public Globals(IConfig config) throws InterpreterException {
         super(GlobalType.MAIN);
         vfs.put("getVarClass", new MapValue(new FGetVarClass(container)));
         vfs.put("reservedKeywords", new MapValue(new VReservedKeywords(container)));

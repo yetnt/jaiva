@@ -2,6 +2,7 @@ package com.jaiva.interpreter.symbol;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import com.jaiva.errors.InterpreterException;
@@ -99,6 +100,8 @@ public class BaseFunction extends Symbol {
         }
 
         // first check if we jsut dont have args.
+        if (Collections.frequency(tFunc.isArgOptional, true) == tFunc.isArgOptional.size() && tFuncCall.args.isEmpty())
+            return;
         if (tFuncCall.args.isEmpty() && (tFunc.isArgOptional.size() > 0 ||
                 tFunc.isArgOptional.isEmpty())) {
             throw new InterpreterException.FunctionParametersException(this,

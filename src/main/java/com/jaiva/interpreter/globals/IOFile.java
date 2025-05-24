@@ -1,16 +1,28 @@
 package com.jaiva.interpreter.globals;
 
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
+
+import com.jaiva.errors.InterpreterException;
+import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.interpreter.MapValue;
+import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
+import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.Token.TArrayVar;
+import com.jaiva.tokenizer.Token.TFuncCall;
 
 public class IOFile extends BaseGlobals {
-    IOFile(IConfig config) {
+    IOFile(IConfig config) throws InterpreterException {
         super(GlobalType.LIB, "file");
         vfs.put("f_name", new MapValue(new VFileName(container, config)));
         vfs.put("f_dir", new MapValue(new VDirectory(container, config)));
         vfs.put("f_bin", new MapValue(new VBinaryDirectory(container, config)));
+        vfs.put("f_this", new MapValue(new VThis(container, config)));
+        vfs.put("f_file", new MapValue(new FFile(container, config)));
     }
 
     /**
@@ -86,6 +98,166 @@ public class IOFile extends BaseGlobals {
 
                     config.JAIVA_SRC.toAbsolutePath().toString());
             freeze();
+        }
+    }
+
+    /**
+     * Represents a special variable that encapsulates information about the current
+     * file context
+     * within the interpreter. The structure of this variable is as follows:
+     * 
+     * <pre>
+     * [
+     *   "fileName",                // Name of the current file, or "REPL" if not in a file context
+     *   "fileDir",                 // Directory of the current file, or void value if not in a file context
+     *   [contents],                // List of lines in the file, or a default list in REPL mode
+     *   [canRead?, canWrite?, canExecute?] // File permission flags, or defaults in REPL mode
+     * ]
+     * </pre>
+     * <p>
+     * If the interpreter is running in REPL mode (no file context), default values
+     * are used.
+     * Otherwise, the file's name, directory, contents, and permissions are
+     * extracted and stored.
+     * The variable is frozen after initialization to prevent further modification.
+     */
+    public class VThis extends BaseVariable {
+        /**
+         * Constructs a VThis object representing the current file's structure and
+         * metadata.
+         * <p>
+         * The structure of the array assigned to this variable is as follows:
+         * 
+         * <pre>
+         * [
+         *   "fileName",                // Name of the file or "REPL" if not in a file context
+         *   "fileDir",                 // Directory of the file or void value if not in a file context
+         *   [contents],                // List of file contents (lines) or sample data in REPL
+         *   [canRead?, canWrite?, canExecute?] // List of booleans indicating file permissions
+         * ]
+         * </pre>
+         * 
+         * If the interpreter is running in REPL mode (no file context), default values
+         * are used.
+         * Otherwise, the file's name, directory, contents, and permissions are
+         * extracted and stored.
+         *
+         * @param container The token container for this variable.
+         * @param config    The interpreter configuration, including file path and
+         *                  directory.
+         * @throws InterpreterException If the file does not exist or cannot be read.
+         */
+        public VThis(Token<?> container, IConfig config) throws InterpreterException {
+            super("f_this", container.new TArrayVar("f_this", new ArrayList<>(), -1,
+                    "Returns an array containing the current file's properties \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]"),
+                    new ArrayList<>());
+            // create the array containign this current file's structure
+            // if we're in the file.
+            /*
+             * [
+             * "fileName",
+             * "fileDir",
+             * [contents],
+             * [canRead?, canWrite?, canExecute?]
+             * ]
+             */
+            if (config.filePath == null) {
+                ((TArrayVar) this.token).contents.addAll(Arrays.asList(
+                        "REPL",
+                        Token.voidValue(-1),
+                        new ArrayList<>(Arrays.asList("fweah!", "seeyuh")),
+                        new ArrayList<>(Arrays.asList(false, true, false))));
+                return;
+            }
+
+            ArrayList<Object> file = new ArrayList<>();
+            File f = config.filePath.toFile();
+            Scanner fs;
+            try {
+                fs = new Scanner(f);
+            } catch (FileNotFoundException e) {
+                throw new InterpreterException.CatchAllException("Well, the current file doesnt exist??...", -1);
+            }
+            ArrayList<String> contents = new ArrayList<>();
+            while (fs.hasNextLine())
+                contents.add(fs.nextLine());
+            fs.close();
+
+            file.add(f.getName());
+            file.add(config.fileDirectory);
+            file.add(contents);
+            file.add(new ArrayList<>(Arrays.asList(f.canRead(), f.canWrite(), f.canExecute())));
+
+            ((TArrayVar) this.token).contents = file; // set the token.
+            a_set(file); // set the interpreter variable.
+
+            freeze(); // freeze this variable.
+        }
+    }
+
+    /**
+     * FFile is a function that retrieves properties and contents of a specified
+     * file.
+     * <p>
+     * Usage: f_file(path)
+     * </p>
+     * <ul>
+     * <li>Checks if the provided path is a string and resolves it relative to the
+     * current configuration's file path if necessary.</li>
+     * <li>Throws an exception if the file does not exist.</li>
+     * <li>Reads the file contents line by line into a list.</li>
+     * <li>Returns an ArrayList of the file properties
+     * </ul>
+     */
+    public class FFile extends BaseFunction {
+        // function looks for the file and returns its properties in the structure.
+        public FFile(Token<?> container, IConfig config) {
+            super("f_file", container.new TFunction("f_file", new String[] { "path" }, null, -1,
+                    "Returns an array containing the properties of the file at the given `path` \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]"));
+            freeze();
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+                throws Exception {
+            checkParams(tFuncCall);
+            Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            if (!(path instanceof String))
+                throw new WtfAreYouDoingException("Da path must be a string.",
+                        tFuncCall.lineNumber);
+
+            Path baseDir = (config.filePath != null) ? config.filePath.getParent() : null;
+            Path filePath;
+            if (baseDir != null) {
+                filePath = Paths.get((String) path);
+                if (!filePath.isAbsolute()) {
+                    filePath = baseDir.resolve((String) path).normalize();
+                }
+            } else {
+                filePath = Paths.get((String) path);
+            }
+
+            File file = filePath.toFile();
+            if (!file.exists())
+                throw new WtfAreYouDoingException("File does not exist: " + filePath, tFuncCall.lineNumber);
+
+            ArrayList<String> contents = new ArrayList<>();
+            try (Scanner scanner = new Scanner(file)) {
+                while (scanner.hasNextLine()) {
+                    contents.add(scanner.nextLine());
+                }
+            } catch (FileNotFoundException e) {
+                throw new CatchAllException("Cannot read file but we found it... " + filePath, tFuncCall.lineNumber);
+            }
+
+            ArrayList<Object> result = new ArrayList<>();
+            result.add(file.getName());
+            result.add(file.getParentFile() != null ? file.getParentFile().getAbsolutePath()
+                    : Token.voidValue(tFuncCall.lineNumber));
+            result.add(contents);
+            result.add(new ArrayList<>(Arrays.asList(file.canRead(), file.canWrite(), file.canExecute())));
+            return result;
+
         }
     }
 }

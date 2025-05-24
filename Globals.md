@@ -27,7 +27,7 @@ See **[Main.java](./src/main/java/com/jaiva/Main.java)** where this is defined.
 khuluma(version)! @ Prints 1.0.0-beta.2 (at the time of writing)
 ```
 
-#### `reservedKeywords <-| `_*`"string"`*_
+#### `reservedKeywords <-| `_*`(["string"])`*_
 
 An array of all the reserved keywords in Jaiva. This includes keywords like `if`, `mara`, `nikhil`, `tsea`, etc.
 
@@ -156,9 +156,62 @@ The following are the libraries that are available
 
 This library contains variables (and soon maybe functions) for handling file related things.
 
+#### `[file]` Structure
+
+Some of these functions return an array which contains relevant information about the file in question.
+
+This is the format all these arrays follow
+
+```jaiva
+[fileName, fileDir, [contents], [canRead, canWrite, canExecute]]
+```
+
+So for a file "C:/Users/Documents/myfile.js", with the content:
+
+```js
+console.log("I love Brotherkupa.");
+console.log("Nobody asked.");
+```
+
+the array will contain the following:
+
+```json
+[
+    "myfile.js",
+    "C:/Users/Documents/"
+    [
+        "console.log(\"I love Brotherkupa.\");",
+        "console.log(\"Nobody asked.\");"
+    ],
+    [
+        true, true, true
+    ]
+]
+```
+
 See [IOFile.java](./src/main/java/com/jaiva/interpreter/globals/IOFile.java) where this is defined.
 
 For all exmaples, the "current" file is located in C:\Users\me\file.jiv
+
+#### `f_this <- `_*`[file]!`*_
+
+Returns an array containing the current file's properties ([Structure](#file-structure))
+
+```jiv
+tsea "jaiva/file"!
+maak fileInfo <- f_this()! @ Gets the current file's properties.
+khuluma(fileInfo)! @ Prints the array with file name, directory, contents, and permissions.
+```
+
+#### `f_file(path) -> `_*`khutla ([file])!`*_
+
+Returns an array containing the properties of the file at the given `path` ([Structure](#file-structure)).
+
+```jiv
+tsea "jaiva/file"!
+maak fileInfo <- f_file("C:/Users/me/anotherfile.js")! @ Gets the properties of anotherfile.js.
+khuluma(fileInfo)! @ Prints the array with file name, directory, contents, and permissions.
+```
 
 #### `f_name <- `_*`"string"`*_
 

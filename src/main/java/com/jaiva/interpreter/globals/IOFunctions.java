@@ -53,8 +53,10 @@ public class IOFunctions extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
                 IConfig config)
                 throws Exception {
+            checkParams(tFuncCall);
             String output;
-            Object o = params.get(0);
+            Object o = params.size() > 0 ? params.get(0) : null;
+            Object newO = o;
             if (o == null || o instanceof TVoidValue) {
                 System.out.println();
                 return Token.voidValue(tFuncCall.lineNumber);
@@ -72,6 +74,7 @@ public class IOFunctions extends BaseGlobals {
                 Object value = Interpreter.handleVariables(input, vfs, config);
                 // System.out.println(value);
                 output = value.toString();
+                newO = value;
             } else if (o instanceof ThrowIfGlobalContext) {
                 // we dont have context, so just alert the user.
                 // that either, they tried using the "voetsek" or "nevermind" outside of a for
@@ -82,10 +85,15 @@ public class IOFunctions extends BaseGlobals {
             } else {
                 output = o.toString();
             }
+
+            String isJustStr = newO instanceof String ? "\"" : "";
+
             if (v instanceof Boolean && (Boolean) v == true) {
-                System.out.print(EscapeSequence.fromEscape(output.toString(), tFuncCall.lineNumber));
+                System.out.print(
+                        isJustStr + EscapeSequence.fromEscape(output.toString(), tFuncCall.lineNumber) + isJustStr);
             } else {
-                System.out.println(EscapeSequence.fromEscape(output.toString(), tFuncCall.lineNumber));
+                System.out.println(
+                        isJustStr + EscapeSequence.fromEscape(output.toString(), tFuncCall.lineNumber) + isJustStr);
             }
             return Token.voidValue(tFuncCall.lineNumber);
         }
