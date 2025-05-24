@@ -6,13 +6,10 @@ import java.util.HashMap;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-import com.jaiva.errors.InterpreterException;
-import com.jaiva.errors.JaivaException;
-import com.jaiva.errors.InterpreterException.CatchAllException;
-import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
+import com.jaiva.errors.*;
+import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.interpreter.runtime.IConfig;
-import com.jaiva.interpreter.symbol.BaseFunction;
-import com.jaiva.interpreter.symbol.BaseVariable;
+import com.jaiva.interpreter.symbol.*;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.Token;
@@ -244,7 +241,8 @@ public class Primitives {
                         throw new InterpreterException.StringCalcException(ts);
                     return op.equals("+") ? (String) lhs + (String) rhs
                             : op.equals("-")
-                                    ? ((String) lhs).replace(Pattern.quote((String) rhs), Matcher.quoteReplacement(""))
+                                    ? ((String) lhs).replaceFirst(Pattern.quote((String) rhs),
+                                            Matcher.quoteReplacement(""))
                                     : op.equals("/")
                                             ? ((String) lhs).replaceAll(Pattern.quote((String) rhs),
                                                     Matcher.quoteReplacement(""))
@@ -422,8 +420,6 @@ public class Primitives {
                     return t;
                 }
             }
-            if (tVarRef.varName instanceof String)
-                tVarRef.varName = ((String) tVarRef.varName).replace("~", "");
             MapValue v = vfs.get(tVarRef.varName instanceof Token<?>
                     ? Primitives.toPrimitive(tVarRef.varName, vfs, true, config)
                     : (tVarRef).varName);

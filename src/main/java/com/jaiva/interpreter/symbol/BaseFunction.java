@@ -217,22 +217,27 @@ public class BaseFunction extends Symbol {
                     // throw an error
                     // if found, create aq copy of that MapValue, and name it to instead this new
                     // name and add to the vfs.
-                    TVarRef tVarRef = (TVarRef) ((Token<?>) value).getValue();
-                    if (tVarRef.index == null && tVarRef.name instanceof String) {
-                        MapValue v = vfs.get(tVarRef.varName);
-                        if (v == null)
-                            throw new InterpreterException.UnknownVariableException(tVarRef);
-                        if (!(v.getValue() instanceof BaseVariable))
-                            throw new InterpreterException.WtfAreYouDoingException(v.getValue(), BaseVariable.class,
-                                    tVarRef.lineNumber);
+                    Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), vfs, false, config);
+                    wrappedValue = new BaseVariable(name, tFuncCall, o);
+                    // TVarRef tVarRef = (TVarRef) ((Token<?>) value).getValue();
+                    // if (tVarRef.index == null && tVarRef.name instanceof String) {
+                    // MapValue v = vfs.get(tVarRef.varName);
+                    // if (v == null)
+                    // throw new InterpreterException.UnknownVariableException(tVarRef);
+                    // if (!(v.getValue() instanceof BaseVariable))
+                    // throw new InterpreterException.WtfAreYouDoingException(v.getValue(),
+                    // BaseVariable.class,
+                    // tVarRef.lineNumber);
 
-                        wrappedValue = v.getValue();
-                    } else {
-                        Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarRef), vfs, false, config);
-                        wrappedValue = BaseVariable.create(name,
-                                tContainer.new TUnknownVar(name, o, tFuncCall.lineNumber),
-                                o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Arrays.asList(o)), false);
-                    }
+                    // wrappedValue = v.getValue();
+                    // } else {
+                    // Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarRef), vfs,
+                    // false, config);
+                    // wrappedValue = BaseVariable.create(name,
+                    // tContainer.new TUnknownVar(name, o, tFuncCall.lineNumber),
+                    // o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Arrays.asList(o)),
+                    // false);
+                    // }
                 } else if (Primitives.isPrimitive(value)) {
                     // primitivers ong
                     wrappedValue = BaseVariable.create(name,
@@ -246,6 +251,9 @@ public class BaseFunction extends Symbol {
                             tContainer.new TUnknownVar(name, o, tFuncCall.lineNumber),
                             o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Arrays.asList(o)), false);
                 }
+                // wrappedValue =
+                // Primitives.toPrimitive(Primitives.parseNonPrimitive(wrappedValue), vfs,
+                // false, config);
                 newVfs.put(name.replace("F~", "").replace("V~", ""), new MapValue(wrappedValue));
             }
             Object t = Interpreter.interpret((ArrayList<Token<?>>) ((TFunction) this.token).body.lines,

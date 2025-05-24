@@ -1079,7 +1079,10 @@ public class Token<T extends TokenDefault> {
          */
         TVarRef(Object name, int ln, boolean getLength) {
             super("TVarRef", ln);
-            this.varName = name;
+            if (name instanceof String n)
+                this.varName = n.endsWith(Chars.LENGTH_CHAR + "") ? n.substring(0, n.length() - 1) : n;
+            else
+                this.varName = name;
             this.getLength = getLength;
         }
 
@@ -1094,7 +1097,10 @@ public class Token<T extends TokenDefault> {
         TVarRef(Object name, Object index, int ln, boolean getLength) {
             super("TVarRef", ln);
             this.index = index;
-            this.varName = name;
+            if (name instanceof String n)
+                this.varName = n.endsWith(Chars.LENGTH_CHAR + "") ? n.substring(0, n.length() - 1) : n;
+            else
+                this.varName = name;
             this.getLength = getLength;
         }
 
