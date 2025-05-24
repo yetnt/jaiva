@@ -100,16 +100,16 @@ public class FindTest {
         String inputStr = "\"dd\" - \"$\"32\"";
         ArrayList<Tuple2<Integer, Integer>> actual = Find.quotationPairs(inputStr);
         ArrayList<Tuple2<Integer, Integer>> expected = new ArrayList<>(Arrays.asList(
-                new Tuple2(0, 3),
-                new Tuple2(7, 12)));
+                new Tuple2<>(0, 3),
+                new Tuple2<>(7, 12)));
         Assertions.assertEquals(expected, actual);
 
         // test to make sure double $$ doesnt trigger escaping the " character.
         inputStr = "\"dd - $$\"\" $\" \"";
         actual = Find.quotationPairs(inputStr);
         expected = new ArrayList<>(Arrays.asList(
-                new Tuple2(inputStr.indexOf('"'), 8),
-                new Tuple2(9, inputStr.lastIndexOf('"'))));
+                new Tuple2<>(inputStr.indexOf('"'), 8),
+                new Tuple2<>(9, inputStr.lastIndexOf('"'))));
         Assertions.assertEquals(expected, actual);
     }
 
