@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.Context;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
@@ -195,8 +196,9 @@ public class REPL {
      *             For example, STANDARD mode processes and evaluates input, while
      *             PRINT_TOKEN
      *             mode outputs tokens.
+     * @throws InterpreterException
      */
-    public REPL(int mode) {
+    public REPL(int mode) throws InterpreterException {
         this.iConfig.REPL = true;
         this.vfs = new Globals(this.iConfig).vfs;
         this.state = State.ACTIVE;

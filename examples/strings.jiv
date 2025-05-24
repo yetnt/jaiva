@@ -1,0 +1,23 @@
+maak d <- "16 letter string"!
+
+khuluma(d~)! @ get the length of the string (doesnt work for string literals)
+
+khuluma("con" + "cat")! @ puts the 2 strings togehter
+
+khuluma("con" + 10)! @ puts the 2 stuff together
+
+khuluma("what's good bro" - 2)! @ Remove the last 2 characters
+
+khuluma(2 - "what's good bro")! @ Remove the first 2 characters
+
+khuluma("foobar" / 2)! @ Half the string and return the first substring
+
+khuluma(2 / "foobar")! @ Half the string and return the last substring.
+
+khuluma("what's good bro" - "o")! @ Remove the first o
+
+khuluma("what's good bro" / "o")! @ Remove all o
+
+khuluma("I'm going to repeat this, " * 3)! @ Repeat string 3 times
+
+khuluma("Hello World" ? "o W")! @ Checks if the lhs contains rhs

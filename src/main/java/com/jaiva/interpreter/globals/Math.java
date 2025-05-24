@@ -28,32 +28,34 @@ public class Math extends BaseGlobals {
      * <p>
      * The {@code FRandom} class extends {@link BaseFunction} and implements a
      * function
-     * named {@code m_random} that takes two parameters: {@code start} and
-     * {@code end}.
-     * It returns a random integer between {@code start} and {@code end}, both
+     * named {@code m_random} that takes two parameters: {@code lower} and
+     * {@code upper}.
+     * It returns a random integer between {@code lower} and {@code upper}, both
      * inclusive.
      * </p>
      *
      * <p>
      * Usage:
      * <ul>
-     * <li>{@code m_random(start, end)} - Returns a random integer in the range
-     * [start, end].</li>
+     * <li>{@code m_random(lower, upper)} - Returns a random integer in the range
+     * [lower, upper].</li>
      * </ul>
      * </p>
      *
      * <p>
      * Throws {@link WtfAreYouDoingException} if:
      * <ul>
-     * <li>Either {@code start} or {@code end} is not an integer.</li>
-     * <li>{@code start} is greater than {@code end}.</li>
+     * <li>Either {@code lower} or {@code upper} is not an integer.</li>
+     * <li>{@code lower} is greater than {@code upper}.</li>
      * </ul>
      * </p>
      */
     class FRandom extends BaseFunction {
         FRandom(Token<?> container) {
-            super("m_random", container.new TFunction("m_random", new String[] { "start", "end" }, null, -1,
-                    "Returns a random number in the range of `start` and `end` both inclusive"));
+            super("m_random", container.new TFunction("m_random", new String[] { "lower", "upper" }, null, -1,
+                    "Returns a random number (integer) in the range of `lower` and `upper`\\\n" +
+                            " > ***lower***:lower bound (inclusive)\\\n" +
+                            " > ***upper***:upper bound (inclusive)\n"));
             this.freeze();
         }
 
@@ -61,20 +63,21 @@ public class Math extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
                 throws Exception {
             checkParams(tFuncCall);
-            Object startObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, isFrozen,
+            Object lowerObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, isFrozen,
                     config);
-            Object endObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, isFrozen,
+            Object upperObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, isFrozen,
                     config);
 
-            if (!(startObject instanceof Integer start))
-                throw new WtfAreYouDoingException(startObject, Integer.class, tFuncCall.lineNumber);
+            if (!(lowerObject instanceof Integer lower))
+                throw new WtfAreYouDoingException(lowerObject, Integer.class, tFuncCall.lineNumber);
 
-            if (!(endObject instanceof Integer end))
-                throw new WtfAreYouDoingException(endObject, Integer.class, tFuncCall.lineNumber);
+            if (!(upperObject instanceof Integer upper))
+                throw new WtfAreYouDoingException(upperObject, Integer.class, tFuncCall.lineNumber);
 
-            if (start > end)
-                throw new WtfAreYouDoingException("The start cannot be bigger than the end", tFuncCall.lineNumber);
-            return ThreadLocalRandom.current().nextInt(start, end + 1);
+            if (lower > upper)
+                throw new WtfAreYouDoingException("The lower bound cannot be bigger than the upper bound.",
+                        tFuncCall.lineNumber);
+            return ThreadLocalRandom.current().nextInt(lower, upper + 1);
         }
     }
 
