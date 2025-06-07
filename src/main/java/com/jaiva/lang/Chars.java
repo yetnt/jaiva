@@ -203,6 +203,20 @@ public class Chars {
         }
 
         /**
+         * Retrieves a combined list of all elements from various predefined categories.
+         *
+         * This method uses {@link Chars.Operators#getAll()} to get all the operators.
+         *
+         * @return A list containing all the operators as characters
+         */
+        public static List<Character> getAllChars() {
+            List<Character> all = new ArrayList<>();
+            getAll().forEach(str -> all.add(str.charAt(0)));
+
+            return new ArrayList<>(new HashSet<>(all));
+        }
+
+        /**
          * Retrieves a list of all predefined lists of strings.
          * 
          * This method aggregates several predefined lists, such as Exponentiation,
@@ -267,7 +281,7 @@ public class Chars {
     /**
      * Returns an arraylist of characters that cannot be used randomly.
      * 
-     * @returns An arraylist of characters that cannot be used randomly.
+     * @return An arraylist of characters that cannot be used randomly.
      */
     public static ArrayList<String> dissalowedChars() {
         StringBuilder all = new StringBuilder();
