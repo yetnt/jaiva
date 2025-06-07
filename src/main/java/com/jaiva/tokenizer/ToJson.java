@@ -104,10 +104,6 @@ public class ToJson {
         } else {
             json.append("\"").append(key).append("\": ").append(value).append(",");
         }
-
-        // if (isLast) {
-        // json.append(",");
-        // }
     }
 
     /**

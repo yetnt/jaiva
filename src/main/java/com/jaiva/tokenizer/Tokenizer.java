@@ -197,7 +197,6 @@ public class Tokenizer {
         type = multipleLinesOutput == null ? type : multipleLinesOutput.b_type;
         args = multipleLinesOutput == null ? args : multipleLinesOutput.b_args;
         int newLineNumber = multipleLinesOutput == null ? lineNumber : multipleLinesOutput.lineNumber;
-        // line = Comments.decimate(line);
         Object output = handleBlocks(isComment, Comments.decimate(line) + "\n",
                 (MultipleLinesOutput) multipleLinesOutput,
                 tokenizerLine, type, args, multipleLinesOutput != null ? multipleLinesOutput.specialArg : blockChain,
@@ -208,7 +207,6 @@ public class Tokenizer {
         if (output instanceof MultipleLinesOutput) {
             int endCount = ((MultipleLinesOutput) output).endCount;
             int startCount = ((MultipleLinesOutput) output).startCount;
-            // multipleLinesOutput = ((FindEnclosing.MultipleLinesOutput) output);
             if (endCount != startCount)
                 return output;
         }
@@ -539,9 +537,6 @@ public class Tokenizer {
             throw new FileOrDirectoryNotFoundException("I don't think " + path + " exits...", lineNumber);
         }
 
-        // path = path.replaceAll(Pattern.quote("\\"),
-        // Matcher.quoteReplacement("\\\\"));
-
         if (parts.length > 1) {
             // ""path"", "funcz, funca"
             ArrayList<String> args = new ArrayList<>();
@@ -623,9 +618,6 @@ public class Tokenizer {
                                                                                                         Keywords.CATCH)
                                                                                                                 ? Keywords.CATCH
                                                                                                                 : null;
-        // || (line.contains(Lang.BLOCK_OPEN) && (line.indexOf('-') > 0 &&
-        // line.charAt(line.indexOf('-') - 1) != '$' && line
-        // .charAt(line.indexOf('-') - 1) != '<'));
 
         if ((line.contains(Chars.BLOCK_OPEN) && line.indexOf(Chars.BLOCK_OPEN) < line.indexOf("\n")) && type == null
                 && !line.startsWith(Character.toString(Chars.COMMENT)))
@@ -642,12 +634,10 @@ public class Tokenizer {
         String[] lines = Comments.decimate(ls);
 
         if (lines.length > 1 || ((lines.length == 2 && !lines[1].isEmpty()) && !Comments.arrayIsOnlyComments(lines))) {
-            // System.out.println("Multiple lines detected!");
             // multiple lines.
             MultipleLinesOutput m = null;
             BlockChain b = null;
             String comment = null;
-            // int ln = lineNumber + 1;
             int ln = lineNumber + 1;
             for (int i = 0; i != ls.length; i++) {
                 ln = lineNumber + i;
@@ -659,10 +649,7 @@ public class Tokenizer {
                 } else {
                     l = ls[i] + (!containsNewln ? Character.toString(Chars.END_LINE) : "");
                 }
-                // System.out.println("Reading line " + i + "...");
                 String previousLine2 = i == 0 ? previousLine : ls[i - 1];
-                // System.out.println(previousLine2);
-                // System.out.println(lines[i]);
                 Object something = readLine(l, previousLine2, m, b, ln, config);
                 if (something instanceof MultipleLinesOutput) {
                     m = ((MultipleLinesOutput) something);
@@ -717,8 +704,6 @@ public class Tokenizer {
                     b = null;
                     comment = null;
                 }
-                // if (b == null)
-                // ln++;
             }
             return tokens;
         }
@@ -786,8 +771,6 @@ public class Tokenizer {
             String errorMessage = parts[1].trim();
             if (errorMessage.startsWith("\"") && errorMessage.endsWith("\"") && errorMessage.length() >= 2)
                 errorMessage = errorMessage.substring(1, errorMessage.length() - 1);
-            // errorMessage = EscapeSequence.escape(errorMessage.substring(1,
-            // errorMessage.length() - 1));
 
             tokens.add(tContainer.new TThrowError(errorMessage, lineNumber).toToken());
             return tokens;

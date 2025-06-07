@@ -118,7 +118,6 @@ public class ContextDispatcher {
         int opIndex = Find.operatorIndex(line.toCharArray()) != -1
                 ? Find.operatorIndex(line.toCharArray())
                 : Integer.MAX_VALUE; // this is so EB can be handled properly.
-        // SB = line.startsWith("(");
         EO = Validate.containsOperator(line.toCharArray()) != -1;
         EB = (line.contains("(")) && ((opIndex > line.indexOf("("))) ||
                 (line.contains(")")) && (opIndex > line.indexOf(")")) ||
@@ -136,12 +135,6 @@ public class ContextDispatcher {
             bits |= 0b0010; // Add BC
         if (EIB)
             bits |= 0b0001; // Add EIB
-
-        // // Add SB only if the other bits make 1101 or 1000
-        // if (((bits == 0b1101) || (bits == 0b1000)) && SB) {
-        // System.out.println("SB");
-        // bits |= 0b10000;
-        // } // Add SB as a fifth bit
 
         if (bits == 0b1001 && !(line.equals(")") || line.equals("]")))
             bits |= 0b0010; // if mistaken for 0b1001 (single brace) and its not a single brace, its a clean
@@ -176,7 +169,7 @@ public class ContextDispatcher {
             case 16 -> "empty string";
             default -> "ERROR";
         };
-        
+
     }
 
     /**
@@ -192,20 +185,20 @@ public class ContextDispatcher {
         /**
          * The statement parsed should be handled by {@link Token#processContext}
          */
-        PROCESS_CONTENT, 
+        PROCESS_CONTENT,
         /**
          * The statement is a singular brace
          */
-        SINGLE_BRACE, 
+        SINGLE_BRACE,
         /**
          * The statement is empty.
          */
-        EMPTY_STRING, 
+        EMPTY_STRING,
         /**
          * The statement just doesnt work
          */
         ERROR
-        
+
     }
 
     /**

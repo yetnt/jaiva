@@ -60,11 +60,8 @@ public class Find {
             } else {
                 if (line.charAt(i) == end.charAt(0)) {
                     if (i + 1 < line.length() && line.charAt(i + 1) == end.charAt(1)) {
-                        // if (!isStart) {
                         return new MultipleLinesOutput(i, i, previousLines + line, type, args, blockChain, lineNumber);
-                        // }
                     }
-                    // System.out.println("Found!");
                     isStart = !isStart;
                 }
             }

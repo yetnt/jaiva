@@ -228,9 +228,6 @@ public class Interpreter {
             Symbol var = (Symbol) mapValue.getValue();
             if (var.isFrozen)
                 throw new FrozenSymbolException(var, ((TVarReassign) t).lineNumber);
-            // if (!isVariableToken(((TVarReassign) t).newValue))
-            // throw new WtfAreYouDoingException(
-            // ((TVarReassign) t).newValue + " isn't like a valid var thingy yknow??");
 
             Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(((TVarReassign) t).newValue), vfs, false,
                     config);
@@ -288,7 +285,10 @@ public class Interpreter {
         // Step 2: go throguh eahc token
         for (Token<?> t : tokens) {
             TokenDefault token = t.getValue();
-            if (token instanceof TImport tImport) {
+            if (token instanceof TVoidValue) {
+                // Well, the user placed idk by itself, so i also don't know what to do with it.
+                continue;
+            } else if (token instanceof TImport tImport) {
                 Globals g = new Globals<>(config);
                 Path importPath = Path.of(tImport.filePath);
 
@@ -329,38 +329,20 @@ public class Interpreter {
                 }
                 vfs.putAll(vfsFromFile);
             } else if (isVariableToken(token)) {
-                // Object contextValue = null;
-                // handles the following cases:
-                // TNumberVar, TBooleanVar, TStringVar, TUnknownVar, TVarReassign, TArrayVar
-                // including TStatement, TFuncCall and TVarRef. This also includes primitives.
-                /* contextValue = */
                 if (token instanceof TFuncCall || token instanceof TVarRef)
                     handleVariables(t, vfs, config);
                 else
                     handleVariables(token, vfs, config);
                 // If it returns a meaningful value, then oh well, because in this case they
                 // basically called a function that returned soemthing but dont use that value.
-            } else if (token instanceof TVoidValue) {
-                // void
-                continue;
             } else if (token instanceof TFuncReturn tFuncReturn && !config.importVfs) {
                 Object c = handleVariables(tFuncReturn.value, vfs, config);
                 ThrowIfGlobalContext g = throwIfGlobalContext(context, c, token.lineNumber);
                 return g;
             } else if (token instanceof TLoopControl loopControl && !config.importVfs) {
-                // if (loopControl.type == Keywords.LoopControl.CONTINUE && context !=
-                // Context.FOR)
-                // throw new WtfAreYouDoingException(
-                // "kanti why is ther a nevermind on line " + loopControl.lineNumber);
-                // if (loopControl.type == Keywords.LoopControl.BREAK
-                // && (context != Context.WHILE && context != Context.FOR))
-                // throw new WtfAreYouDoingException(
-                // "kanti why is there a voetsek on line " + loopControl.lineNumber);
-
                 Object lc = loopControl.type;
                 ThrowIfGlobalContext g = throwIfGlobalContext(context, lc, loopControl.lineNumber);
                 return g;
-
             } else if (token instanceof TThrowError lc && !config.importVfs) {
                 ThrowIfGlobalContext g = throwIfGlobalContext(context, lc, lc.lineNumber);
                 return g;
@@ -376,9 +358,6 @@ public class Interpreter {
                         if (old.c instanceof Keywords.LoopControl && old.c == Keywords.LoopControl.BREAK)
                             break;
                         ThrowIfGlobalContext checker = throwIfGlobalContext(context, out, old.lineNumber);
-                        // if (Primitives.isPrimitive(checker.c))
-                        // return checker;
-
                         if (checker.c instanceof Keywords.LoopControl && checker.c == Keywords.LoopControl.BREAK)
                             break;
                         return checker;
@@ -469,9 +448,6 @@ public class Interpreter {
                         v.s_set(o);
                         Object out = Interpreter.interpret(tForLoop.body.lines, Context.FOR, vfs, config);
                         if (out instanceof ThrowIfGlobalContext g) {
-                            // if (Primitives.isPrimitive(checker.c))
-                            // return checker;
-
                             if (g.c instanceof Keywords.LoopControl
                                     && g.c == Keywords.LoopControl.BREAK)
                                 break;
@@ -513,9 +489,6 @@ public class Interpreter {
                 try {
                     Object out = Interpreter.interpret(throwError.tryBlock.lines, Context.TRY, vfs, config);
                     if (out instanceof ThrowIfGlobalContext g) {
-                        // if (Primitives.isPrimitive(checker.c))
-                        // return checker;
-
                         if (((ThrowIfGlobalContext) out).c instanceof Keywords) {
                             ThrowIfGlobalContext checker = throwIfGlobalContext(context, out, g.lineNumber);
                             return checker;

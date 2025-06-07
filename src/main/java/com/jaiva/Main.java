@@ -209,7 +209,6 @@ public class Main {
                     case "-s", "--string" -> {
                         for (Token<?> t : tokens) {
                             System.out.println(t.toString());
-                            // System.out.println(t.getValue().getContents(0));
                         }
                         System.exit(0);
                         return;
@@ -335,8 +334,6 @@ public class Main {
         int lineNum = 1;
         while (scanner.hasNextLine()) {
             String line = (b != null ? b.getCurrentLine() : scanner.nextLine());
-            // System.out.println(line);
-            // System.out.println(line);
             Object something = Tokenizer.readLine(line, (b != null ? "" : previousLine), m, b, lineNum, config);
             if (something instanceof MultipleLinesOutput multipleLinesOutput) {
                 m = multipleLinesOutput;
@@ -404,7 +401,6 @@ public class Main {
                 lineNum++;
         }
 
-        // System.out.println(tokens.size());
         scanner.close();
 
         return tokens;

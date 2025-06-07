@@ -1239,9 +1239,6 @@ public class Token<T extends TokenDefault> {
             }
             this.statement = statement;
 
-            // if (statement.startsWith("\"") && statement.endsWith("\""))
-            // return processContext(statement, lineNumber);
-
             int lastBraceIndex = Find.lastOutermostBracePair(statement);
             if ((statement.startsWith("(") && statement.endsWith(")")) && lastBraceIndex == 0) {
                 return parse(statement.substring(1, statement.length() - 1).trim());

@@ -31,11 +31,6 @@ public class TokenDefault {
      */
     public boolean exportSymbol = false;
 
-    // public TokenDefault(String name) {
-    // this.name = name;
-    // this.json = new ToJson(name, getClass().getSimpleName(), -1);
-    // }
-
     /**
      * Constructor for a basic token
      * 

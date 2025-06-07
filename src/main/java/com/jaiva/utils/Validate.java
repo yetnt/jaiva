@@ -39,8 +39,6 @@ public class Validate {
      */
     public static boolean isOperator(char c) {
         return Chars.Operators.getAllChars().contains(c);
-//        return c == '+' || c == '-' || c == '*' || c == '/' || c == '|' || c == '>' || c == '<' || c == '&' || c == '!'
-//                || c == '=' | c == '%' || c == '^' || c == '?';
     }
 
     /**

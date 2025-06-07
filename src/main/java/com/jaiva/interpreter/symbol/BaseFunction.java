@@ -180,10 +180,6 @@ public class BaseFunction extends Symbol {
             // so we can make name value pairs.
             String[] paramNames = ((TFunction) this.token).args;
             HashMap<String, MapValue> newVfs = (HashMap) vfs.clone();
-            // if (paramNames.length != params.size())
-            // throw new InterpreterException.FunctionParametersException(this,
-            // params.size(),
-            // tFuncCall.lineNumber);
             checkParams(tFuncCall);
             for (int i = 0; i < paramNames.length; i++) {
                 String name = paramNames[i];
@@ -222,25 +218,6 @@ public class BaseFunction extends Symbol {
                     // name and add to the vfs.
                     Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), vfs, false, config);
                     wrappedValue = new BaseVariable(name, tFuncCall, o);
-                    // TVarRef tVarRef = (TVarRef) ((Token<?>) value).getValue();
-                    // if (tVarRef.index == null && tVarRef.name instanceof String) {
-                    // MapValue v = vfs.get(tVarRef.varName);
-                    // if (v == null)
-                    // throw new InterpreterException.UnknownVariableException(tVarRef);
-                    // if (!(v.getValue() instanceof BaseVariable))
-                    // throw new InterpreterException.WtfAreYouDoingException(v.getValue(),
-                    // BaseVariable.class,
-                    // tVarRef.lineNumber);
-
-                    // wrappedValue = v.getValue();
-                    // } else {
-                    // Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarRef), vfs,
-                    // false, config);
-                    // wrappedValue = BaseVariable.create(name,
-                    // tContainer.new TUnknownVar(name, o, tFuncCall.lineNumber),
-                    // o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Arrays.asList(o)),
-                    // false);
-                    // }
                 } else if (Primitives.isPrimitive(value)) {
                     // primitivers ong
                     wrappedValue = BaseVariable.create(name,
@@ -254,9 +231,6 @@ public class BaseFunction extends Symbol {
                             tContainer.new TUnknownVar(name, o, tFuncCall.lineNumber),
                             o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Arrays.asList(o)), false);
                 }
-                // wrappedValue =
-                // Primitives.toPrimitive(Primitives.parseNonPrimitive(wrappedValue), vfs,
-                // false, config);
                 newVfs.put(name.replace("F~", "").replace("V~", ""), new MapValue(wrappedValue));
             }
             Object t = Interpreter.interpret((ArrayList<Token<?>>) ((TFunction) this.token).body.lines,

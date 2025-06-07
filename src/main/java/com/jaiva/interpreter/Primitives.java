@@ -527,17 +527,7 @@ public class Primitives {
             MapValue v = vfs.get(name);
             if (v == null)
                 throw new UnknownVariableException(tFuncCall);
-            // if (!(v.getValue() instanceof BaseFunction)) {
-            // if (v.getValue() instanceof BaseVariable) {
-            // ret = toPrimitive(parseNonPrimitive(name), vfs, false);
-            // if (!(ret instanceof BaseFunction) && !(name instanceof String)) {
-            // return ret;
-            // }
-            // } else {
-            // throw new WtfAreYouDoingException(v.getValue(), BaseFunction.class,
-            // tFuncCall.lineNumber);
-            // }
-            // }
+
             if (!(v.getValue() instanceof BaseFunction)
                     && !(v.getValue() instanceof String)) {
                 throw new WtfAreYouDoingException(v.getValue(), BaseFunction.class, tFuncCall.lineNumber);
@@ -563,7 +553,6 @@ public class Primitives {
                     ? EscapeSequence.fromEscape((String) returnValue, tFuncCall.lineNumber).length()
                     : returnValue instanceof ArrayList && tFuncCall.getLength ? ((ArrayList) returnValue).size()
                             : returnValue;
-            // MapValue mapValue = vfs.get();
         } else if (token instanceof Integer || token instanceof Double || token instanceof Boolean
                 || token instanceof String) {
             // its not a token so its def jus a primitive, so we wanna parse it as a

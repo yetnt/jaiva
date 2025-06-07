@@ -62,7 +62,6 @@ public class EscapeSequence {
                     .replace("$=", "=")
                     .replace("$,", ",")
                     .replace("$!", "!")
-                    // .replace("$s", " ")
                     .replace("$@", "@")
                     .replace("$n", "\n")
                     .replace("$t", "\t")
@@ -173,14 +172,12 @@ public class EscapeSequence {
                     .replace("=", "$=")
                     .replace(",", "$,")
                     .replace("!", "$!")
-                    // .replace(" ", "$s")
                     .replace("@", "$@")
                     .replace("\n", "$n")
                     .replace("\t", "$t")
                     .replace("\r", "$r")
                     .replace("\b", "$b")
                     .replace("\f", "$f")
-                    // .replace("'", "$'")
                     .replace("\"", "$\"");
         // If it contaisn the $ character, go through the entire string.
         StringBuilder build = new StringBuilder();
@@ -204,18 +201,6 @@ public class EscapeSequence {
                         build.append(Chars.ESCAPE);
 
                         switch (c) {
-                            // case '=':
-                            // build.append('=');
-                            // break;
-                            // case ',':
-                            // build.append(',');
-                            // break;
-                            // case '!':
-                            // build.append('!');
-                            // break;
-                            // case '@':
-                            // build.append('@');
-                            // break;
                             case '\n':
                                 build.append('n');
                                 break;
@@ -231,9 +216,6 @@ public class EscapeSequence {
                             case '\f':
                                 build.append('f');
                                 break;
-                            // case '"':
-                            // build.append('"');
-                            // break;
                             default:
                                 build.append(c);
                                 break;
