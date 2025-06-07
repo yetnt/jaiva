@@ -245,4 +245,39 @@ public class BaseVariable extends Symbol {
          */
         UNKNOWN
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((scalar == null) ? 0 : scalar.hashCode());
+        result = prime * result + ((array == null) ? 0 : array.hashCode());
+        result = prime * result + ((variableType == null) ? 0 : variableType.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        BaseVariable other = (BaseVariable) obj;
+        if (scalar == null) {
+            if (other.scalar != null)
+                return false;
+        } else if (!scalar.equals(other.scalar))
+            return false;
+        if (array == null) {
+            if (other.array != null)
+                return false;
+        } else if (!array.equals(other.array))
+            return false;
+        if (variableType != other.variableType)
+            return false;
+        return true;
+    }
+
 }
