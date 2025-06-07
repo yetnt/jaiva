@@ -6,6 +6,8 @@ import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.Symbol;
+import com.jaiva.interpreter.symbol.BaseFunction.DefinedFunction;
+import com.jaiva.interpreter.symbol.BaseVariable.DefinedVariable;
 import com.jaiva.tokenizer.TokenDefault;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TFunction;
@@ -22,6 +24,72 @@ import com.jaiva.tokenizer.Token.TWhileLoop;
 public class InterpreterException extends JaivaException {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Returns a user-friendly name for a given class or type name.
+     * <p>
+     * Maps internal class or type names to more readable strings:
+     * <ul>
+     * <li>If the name matches {@code DefinedFunction} or {@code BaseFunction},
+     * returns "function".</li>
+     * <li>If the name matches {@code DefinedVariable} or {@code BaseVariable},
+     * returns "variable".</li>
+     * <li>If the name matches {@code String}, returns "string".</li>
+     * <li>If the name matches {@code int} or {@code double}, returns "number".</li>
+     * <li>If the name matches {@code boolean}, returns "boolean".</li>
+     * <li>Otherwise, returns the original name.</li>
+     * </ul>
+     *
+     * @param s the simple name of the class or type
+     * @return a user-friendly string representing the type
+     */
+    private static String friendlyName(Class<?> c) {
+        if (c == BaseFunction.class || c == DefinedFunction.class)
+            return "function";
+        else if (c == BaseVariable.class || c == DefinedVariable.class)
+            return "variable";
+        else if (c == String.class)
+            return "string";
+        else if (c == int.class || c == double.class)
+            return "number";
+        else if (c == boolean.class)
+            return "boolean";
+        else
+            return c.getSimpleName();
+    }
+
+    /**
+     * Returns a user-friendly name for a given class or type name.
+     * <p>
+     * Maps internal class or type names to more readable strings:
+     * <ul>
+     * <li>If the name matches {@code DefinedFunction} or {@code BaseFunction},
+     * returns "function".</li>
+     * <li>If the name matches {@code DefinedVariable} or {@code BaseVariable},
+     * returns "variable".</li>
+     * <li>If the name matches {@code String}, returns "string".</li>
+     * <li>If the name matches {@code int} or {@code double}, returns "number".</li>
+     * <li>If the name matches {@code boolean}, returns "boolean".</li>
+     * <li>Otherwise, returns the original name.</li>
+     * </ul>
+     *
+     * @param s the simple name of the class or type
+     * @return a user-friendly string representing the type
+     */
+    private static String friendlyName(String s) {
+        if (s.equals(DefinedFunction.class.getSimpleName()) || s.equals(BaseFunction.class.getSimpleName()))
+            return "function";
+        else if (s.equals(DefinedVariable.class.getSimpleName()) || s.equals(BaseVariable.class.getSimpleName()))
+            return "variable";
+        else if (s.equals(String.class.getSimpleName()))
+            return "string";
+        else if (s.equals(int.class.getSimpleName()) || s.equals(double.class.getSimpleName()))
+            return "number";
+        else if (s.equals(boolean.class.getSimpleName()))
+            return "boolean";
+        else
+            return s;
+    }
 
     /**
      * Interpreter Exception Constructor
@@ -259,9 +327,9 @@ public class InterpreterException extends JaivaException {
          */
         public WtfAreYouDoingException(Object s, Class<?> correctClass, int lineNumber) {
             super(lineNumber,
-                    "Alright bub. if you're going to start mixing and matching, you might as well write lua code."
-                            + "(You tried using a " + s.getClass().getName() + " as if it were a "
-                            + correctClass.getName());
+                    "Alright bub. if you're going to start mixing and matching, you might as well write lua code. "
+                            + "(You tried using a " + friendlyName(s.getClass()) + " as if it were a "
+                            + friendlyName(correctClass.getSimpleName()) + ")");
         }
 
         /**
