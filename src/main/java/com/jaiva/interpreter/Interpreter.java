@@ -41,12 +41,17 @@ import com.jaiva.tokenizer.TokenDefault;
 public class Interpreter {
 
     /**
-     * The ThrowIfGlobalContext class is a base class which is thrown when the
+     * The ThrowIfGlobalContext class is a helper class which is thrown when the
      * interpreter does not return a usual value, like it returns maybe an error or
      * it exits out of a loop.
      * <p>
      * It's the same idea as a software interrupt. Execution is halted to handle
-     * whatever needs tobe handled.
+     * whatever needs to be handled
+     * <p>
+     * For example, we could be deeply nested in a function and some other
+     * constructs and it decides to break, this class helps to keep exiting out of
+     * the nested calls until we are in a loop to break out if, UNLESS we're in the
+     * global context then it throws an error.
      */
     public static class ThrowIfGlobalContext {
         /**
@@ -183,9 +188,15 @@ public class Interpreter {
             vfs.put(((TStringVar) t).name, new MapValue(var));
         } else if (t instanceof TUnknownVar) {
             Object something = Primitives.toPrimitive(((TUnknownVar) t).value, vfs, false, config);
-            BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
-                    something instanceof ArrayList ? (ArrayList) something : new ArrayList<>(Arrays.asList(something)),
-                    false);
+            Symbol var;
+            if (something instanceof BaseFunction)
+                // this assigns
+                var = (Symbol) something;
+            else
+                var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
+                        something instanceof ArrayList ? (ArrayList) something
+                                : new ArrayList<>(Arrays.asList(something)),
+                        false);
             vfs.put(((TUnknownVar) t).name, new MapValue(var));
         } else if (t instanceof TArrayVar) {
             ArrayList<Object> arr = new ArrayList<>();
@@ -210,10 +221,11 @@ public class Interpreter {
         } else if (t instanceof TVarReassign) {
             MapValue mapValue = vfs.get(((TVarReassign) t).name);
             if (MapValue.isEmpty(mapValue)
-                    || (mapValue.getValue() == null || !(mapValue.getValue() instanceof BaseVariable)))
+                    || (mapValue.getValue() == null || !(mapValue.getValue() instanceof BaseVariable
+                            || mapValue.getValue() instanceof BaseFunction)))
                 throw new UnknownVariableException((TVarReassign) t);
 
-            BaseVariable var = (BaseVariable) mapValue.getValue();
+            Symbol var = (Symbol) mapValue.getValue();
             if (var.isFrozen)
                 throw new FrozenSymbolException(var, ((TVarReassign) t).lineNumber);
             // if (!isVariableToken(((TVarReassign) t).newValue))
@@ -223,10 +235,14 @@ public class Interpreter {
             Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(((TVarReassign) t).newValue), vfs, false,
                     config);
 
-            if (o instanceof ArrayList) {
-                var.a_set((ArrayList) o);
-            } else {
-                var.s_set(o);
+            if (o instanceof BaseFunction) {
+                mapValue.setValue(o);
+            } else if (var instanceof BaseVariable v) {
+                if (o instanceof ArrayList) {
+                    v.a_set((ArrayList) o);
+                } else {
+                    v.s_set(o);
+                }
             }
 
             // so hopefully this chanegs the instance and yeah 👍
