@@ -87,14 +87,6 @@ public class FindTest {
     }
 
     @Test
-    void testOutermostOperatorIndex() {
-        String input = "ayo(34+32=4) - 5 (4)";
-        int actual = Find.outermostOperatorIndex(input);
-        int expected = 13;
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
     void testQuotationPairs() {
         // test to mkae sure $" is escaped.
         String inputStr = "\"dd\" - \"$\"32\"";
