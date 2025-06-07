@@ -1,5 +1,8 @@
 package com.jaiva.utils;
 
+import com.jaiva.tokenizer.Token.TStatement;
+import com.jaiva.tokenizer.Token;
+
 /**
  * This class is used to determine the context of a line of code in Jaiva.
  * It checks for various conditions such as whether the line is empty, contains
@@ -117,10 +120,10 @@ public class ContextDispatcher {
                 : Integer.MAX_VALUE; // this is so EB can be handled properly.
         // SB = line.startsWith("(");
         EO = Validate.containsOperator(line.toCharArray()) != -1;
-        EB = (line.indexOf("(") != -1) && ((opIndex > line.indexOf("("))) ||
-                (line.indexOf(")") != -1) && (opIndex > line.indexOf(")")) ||
-                (line.indexOf("[") != -1) && ((opIndex > line.indexOf("["))) ||
-                (line.indexOf("]") != -1) && (opIndex > line.indexOf("]"));
+        EB = (line.contains("(")) && ((opIndex > line.indexOf("("))) ||
+                (line.contains(")")) && (opIndex > line.indexOf(")")) ||
+                (line.contains("[")) && ((opIndex > line.indexOf("["))) ||
+                (line.contains("]")) && (opIndex > line.indexOf("]"));
         BC = checkBracesClosedBeforeOutermostOperand(line);
 
         EIB = line.charAt(line.length() - 1) == ')' || line.charAt(line.length() - 1) == ']';
@@ -163,20 +166,17 @@ public class ContextDispatcher {
      * Returns the bits as the string of the output that should be used, as stated
      * in the table.
      * 
+     * @return string representing the case to use.
      */
     public String printCase() {
-        switch (bits) {
-            case 6, 7, 12, 14, 15:
-                return "TStatement";
-            case 0, 11, 13, 17:
-                return "processContext";
-            case 9, 8:
-                return "single brace";
-            case 16:
-                return "empty string";
-            default:
-                return "ERROR";
-        }
+        return switch (bits) {
+            case 6, 7, 12, 14, 15 -> "TStatement";
+            case 0, 11, 13, 17 -> "processContext";
+            case 9, 8 -> "single brace";
+            case 16 -> "empty string";
+            default -> "ERROR";
+        };
+        
     }
 
     /**
@@ -185,7 +185,27 @@ public class ContextDispatcher {
      * This enum is only available via ContextDispatcher class.
      */
     public enum To {
-        TSTATEMENT, PROCESS_CONTENT, SINGLE_BRACE, EMPTY_STRING, ERROR
+        /**
+         * The statement parsed should be handled by {@link TStatement}
+         */
+        TSTATEMENT,
+        /**
+         * The statement parsed should be handled by {@link Token#processContext}
+         */
+        PROCESS_CONTENT, 
+        /**
+         * The statement is a singular brace
+         */
+        SINGLE_BRACE, 
+        /**
+         * The statement is empty.
+         */
+        EMPTY_STRING, 
+        /**
+         * The statement just doesnt work
+         */
+        ERROR
+        
     }
 
     /**
@@ -198,17 +218,12 @@ public class ContextDispatcher {
      * @return the delegation target as a To enum value.
      */
     public To getDeligation() {
-        switch (bits) {
-            case 6, 7, 12, 14, 15:
-                return To.TSTATEMENT;
-            case 0, 11, 13, 17:
-                return To.PROCESS_CONTENT;
-            case 9, 8:
-                return To.SINGLE_BRACE;
-            case 16:
-                return To.EMPTY_STRING;
-            default:
-                return To.ERROR;
-        }
+        return switch (bits) {
+            case 6, 7, 12, 14, 15 -> To.TSTATEMENT;
+            case 0, 11, 13, 17 -> To.PROCESS_CONTENT;
+            case 9, 8 -> To.SINGLE_BRACE;
+            case 16 -> To.EMPTY_STRING;
+            default -> To.ERROR;
+        };
     }
 }
