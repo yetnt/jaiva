@@ -33,13 +33,14 @@ public class Validate {
      * <p>
      * Checks if a character is considered an operator.
      * <p>
-     * TODO: Revamp to use {@link Chars.Operators} and not hard code the chars.
      * 
      * @param c The character
+     * @return boolean indicating whether the given char is a string.
      */
     public static boolean isOperator(char c) {
-        return c == '+' || c == '-' || c == '*' || c == '/' || c == '|' || c == '>' || c == '<' || c == '&' || c == '!'
-                || c == '=' | c == '%' || c == '^' || c == '?';
+        return Chars.Operators.getAllChars().contains(c);
+//        return c == '+' || c == '-' || c == '*' || c == '/' || c == '|' || c == '>' || c == '<' || c == '&' || c == '!'
+//                || c == '=' | c == '%' || c == '^' || c == '?';
     }
 
     /**

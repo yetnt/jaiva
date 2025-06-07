@@ -77,9 +77,13 @@ public class Find {
      * This takes in startCount and endCount so that it doesnt have to traverse the
      * entire string again but rather just the new portion.
      * 
-     * @param line  The string to search in.
-     * @param start The starting character.
-     * @param end   The ending character.
+     * @param line       The string to search in.
+     * @param start      The starting character.
+     * @param end        The ending character.
+     * @param startCount The start count from another {@link MultipleLinesOutput}
+     *                   object
+     * @param endCount   The end count from another {@link MultipleLinesOutput}
+     *                   object
      * @return
      */
     public static MultipleLinesOutput closingCharIndexML(String line, char start, char end,
@@ -143,32 +147,6 @@ public class Find {
     }
 
     /**
-     * Returns the index of the outermost operator (at top level, i.e. depth==0).
-     * Returns -1 if there is no operator at the outer level.
-     * 
-     * <p>
-     * 
-     * @deprecated Use {@link Find#leastImportantOperator(String)} instead.
-     * 
-     * @param s the string in question
-     */
-    public static int outermostOperatorIndex(String s) {
-        int depth = 0;
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (c == '(' || c == '[') {
-                depth++;
-            } else if (c == ')' || c == ']') {
-                depth--;
-            } else if (depth == 0 && Validate.isOperator(c)) {
-                // We found an operator while at depth 0: that's our outermost operator.
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
      * Method will return the index of the opening brace which is part of the last,
      * outermost brace pair. Both () and [] are checked for agasinst each other.
      * This will r
@@ -184,6 +162,7 @@ public class Find {
      * </blockquote>
      * 
      * @param line Input.
+     * @return the index where the outermost brace pair starts
      * @returns int
      */
     public static int lastOutermostBracePair(String line) {
@@ -397,8 +376,6 @@ public class Find {
                     indexes2.add(opIndex);
                 } else if (group == Operators.getType(op)) {
                     indexes2.add(opIndex);
-                } else {
-                    continue;
                 }
             }
         }
@@ -492,7 +469,7 @@ public class Find {
                 if (oldCharIndex == -1) {
                     oldCharIndex = i;
                 } else {
-                    arr.add(new Tuple2<Integer, Integer>(oldCharIndex, i));
+                    arr.add(new Tuple2<>(oldCharIndex, i));
                     oldCharIndex = -1;
                 }
             }
