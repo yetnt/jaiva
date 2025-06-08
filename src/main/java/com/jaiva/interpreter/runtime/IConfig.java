@@ -1,6 +1,9 @@
 package com.jaiva.interpreter.runtime;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+
+import com.jaiva.Main;
 
 /**
  * The IConfig class provides configuration settings for the interpreter
@@ -9,6 +12,19 @@ import java.nio.file.Path;
  * options.
  */
 public class IConfig {
+    /**
+     * The command-line arguments passed to the Jaiva tokenizer and interpreter.
+     * This array is used to tell the user what arguments were passed to the current
+     * file.
+     */
+    public String[] args = null;
+    /**
+     * The sanitised arguments list stores the command-line arguments without
+     * arguments used by jaiva. It removes the first argument (File path) and
+     * possibly second argument (which is sometimes the debug flag).
+     * This is useful for processing the arguments in a more user-friendly way.
+     */
+    public ArrayList<String> sanitisedArgs = new ArrayList<>();
     /**
      * This flag is used when the interpreter needs to import the vfs from another
      * file to use in the current file. (This means it will skip tokenizing other
@@ -50,14 +66,56 @@ public class IConfig {
      * This constructor is used to set the path of the current file being
      * interpreted.
      *
+     * @param args            The command-line arguments passed to the jaiva
+     *                        command.
      * @param currentFilePath The path of the current file being interpreted.
+     * @param jSrc            The path to the Jaiva source directory.
+     * @throws NullPointerException if {@code currentFilePath} or {@code jSrc} is
      */
-    public IConfig(String currentFilePath, String jSrc) {
+    public IConfig(String[] args, String currentFilePath, String jSrc) {
+        this.args = args;
+        for (String arg : args) {
+            if (!arg.equals(currentFilePath) && !Main.tokenArgs.contains(arg)
+            /* && !Main.replArgs.contains(arg) */) {
+                // because if this overload is invoked, we're running a file, so we dont need to
+                // check for REPL args.
+                sanitisedArgs.add(arg);
+            }
+        }
         filePath = Path.of(currentFilePath != null ? currentFilePath : "");
         fileDirectory = Path.of(currentFilePath != null ? currentFilePath : "").getParent();
         JAIVA_SRC = Path.of(jSrc);
     }
 
+    /**
+     * Constructs a new IConfig instance with the specified file path and Jaiva
+     * source directory.
+     * <p>
+     * This constructor is used when the current file path and Jaiva source
+     * directory
+     * are provided as arguments. Primarily used by the interpreter when importing
+     * other files into the current context. This is so that we can just pass the
+     * sanitized args already.
+     *
+     * @param args            The sanitized command-line arguments passed to the
+     *                        jaiva
+     *                        command.
+     * @param currentFilePath The path of the current file being interpreted.
+     * @param jSrc            The path to the Jaiva source directory.
+     */
+    public IConfig(ArrayList<String> args, String currentFilePath, String jSrc) {
+        this(args.toArray(new String[0]), currentFilePath, jSrc);
+    }
+
+    /**
+     * Constructs a new IConfig instance with the specified Jaiva source directory.
+     * <p>
+     * This constructor is used when only the Jaiva source directory is provided,
+     * typically in a REPL context.
+     * 
+     * 
+     * @param jSrc The path to the Jaiva source directory.
+     */
     public IConfig(String jSrc) {
         JAIVA_SRC = Path.of(jSrc);
     }

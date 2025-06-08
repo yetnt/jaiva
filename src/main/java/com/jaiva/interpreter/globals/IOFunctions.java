@@ -1,6 +1,7 @@
 package com.jaiva.interpreter.globals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
@@ -12,6 +13,7 @@ import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Interpreter.ThrowIfGlobalContext;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
+import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
@@ -29,12 +31,14 @@ public class IOFunctions extends BaseGlobals {
     /**
      * Constructs the IOFunctions with the Input/Output functions.
      */
-    public IOFunctions() {
+    public IOFunctions(IConfig config) {
         super(GlobalType.GLOBAL);
         vfs.put("khuluma", new MapValue(new FKhuluma(container)));
         vfs.put("mamela", new MapValue(new FMamela(container)));
         vfs.put("ask", new MapValue(new FAsk(container)));
         vfs.put("clear", new MapValue(new FClear(container)));
+        vfs.put("args", new MapValue(new VArgs(container, config)));
+        vfs.put("uargs", new MapValue(new VUArgs(container, config)));
     }
 
     /**
@@ -187,4 +191,29 @@ public class IOFunctions extends BaseGlobals {
         }
     }
 
+    /**
+     * Represents the "args" variable, which contains the command-line arguments
+     * passed to the Jaiva interpreter.
+     * <p>
+     * This variable is automatically populated with the arguments provided when
+     * running the Jaiva command.
+     * </p>
+     */
+    class VArgs extends BaseVariable {
+        VArgs(Token<?> container, IConfig config) {
+            super("args", container.new TArrayVar("args", new ArrayList(Arrays.asList(config.args)), -1,
+                    "The command-line arguments passed to the jaiva command"),
+                    new ArrayList(Arrays.asList(config.args)));
+            this.freeze();
+        }
+    }
+
+    class VUArgs extends BaseVariable {
+        VUArgs(Token<?> container, IConfig config) {
+            super("uArgs", container.new TArrayVar("uargs", (ArrayList) config.sanitisedArgs, -1,
+                    "The command-line arguments without jaiva specific arguments. "),
+                    config.sanitisedArgs);
+            this.freeze();
+        }
+    }
 }

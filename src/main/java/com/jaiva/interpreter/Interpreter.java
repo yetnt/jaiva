@@ -311,7 +311,8 @@ public class Interpreter {
                 if (tks.size() == 0)
                     continue;
 
-                IConfig newConfig = new IConfig(importPath.toString(), config.JAIVA_SRC.toString());
+                IConfig newConfig = new IConfig(config.sanitisedArgs, importPath.toString(),
+                        config.JAIVA_SRC.toString());
 
                 newConfig.importVfs = true;
 

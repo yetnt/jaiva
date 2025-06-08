@@ -38,7 +38,7 @@ public class Globals<T extends GlobalType> extends BaseGlobals {
         vfs.put("version", new MapValue(new VJaivaVersion(container)));
         vfs.put("flat", new MapValue(new FFlat(container)));
         vfs.put("sleep", new MapValue(new FSleep(container)));
-        vfs.putAll(new IOFunctions().vfs);
+        vfs.putAll(new IOFunctions(config).vfs);
 
         Conversions c = new Conversions();
         builtInGlobals.put(c.path, c.vfs);

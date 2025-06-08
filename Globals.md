@@ -37,6 +37,31 @@ See **[Keywords.java](./src/main/java/com/jaiva/lang/Keywords.java)** where this
 khuluma(reservedKeywords)! @ Prints all the reserved keywords.
 ```
 
+#### `args <-| `_*`(["string"])`*_
+
+An array of all the command line arguments passed to the Jaiva program.
+
+See [Main.java](./src/main/java/com/jaiva/Main.java) where this is defined.
+Then See [IConfig.java](./src/main/java/com/jaiva/interpreter/runtime/IConfig.java) where this is used by the interpreter.
+
+```jiv
+
+khuluma(args)! @ Prints all the command line arguments passed to the Jaiva program.
+```
+
+#### `uargs <-| `_*`(["string"])`*_
+
+An array of all the user arguments passed to the Jaiva program. This is the same as `args`, but without the file path, and any other optional Jaiva flags you can pass such as the `-d`\\`--debug` flags. (See [CLI](./CLI.md) for more information on the CLI flags.)
+
+This is useful if you want to pass your own arguments to a Jaiva file without Jaiva's flags.
+
+See [Main.java](./src/main/java/com/jaiva/Main.java) where this is defined.
+Then See [IConfig.java](./src/main/java/com/jaiva/interpreter/runtime/IConfig.java) where this is used by the interpreter.
+
+```jiv
+khuluma(uargs)! @ Prints all the user arguments passed to the Jaiva program.
+```
+
 ### <center> Functions
 
 #### `khuluma(msg, removeNewLn?) -> `_*`khutla (idk)!`*_
@@ -244,6 +269,22 @@ Returns the directory where you can find the `jaiva.jar` file
 ```jiv
 tsea "jaiva/file"!
 khuluma(f_bin)! @ C:\Users\jaiva\
+```
+
+#### `f_new(path, content, canRead?, canWrite?, canExecute?) -> `_*`khutla boolean`*_
+
+\*_**Independent**_
+
+Creates a new file at the given `path` with the given `content`. The `canRead`, `canWrite`, and `canExecute` parameters are optional and default to true if not provided.
+
+Returns true if the file was created successfully, false otherwise.
+Therefore if the file already exists or could not be created, it will return false.
+
+```jiv
+tsea "jaiva/file"!
+maak filePath <- f_bin + "newfile.jiv"! @ Creates a new file in the bin directory
+f_new(filePath, "khuluma(\"Hello, world!\")!")! @ Creates a new file with the given content.
+khuluma("File created at " + filePath)! @ Prints the file path
 ```
 
 ### `math`

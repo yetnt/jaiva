@@ -191,6 +191,24 @@ public class InterpreterException extends JaivaException {
                     : nthParam.endsWith("2") ? "nd" : nthParam.endsWith("3") ? "rd" : "") + " parameter in " + s.name
                     + "() is required. (Either you didn't set it or set it to idk)");
         }
+
+        /**
+         * Exception thrown when a function is called with an invalid parameter type.
+         *
+         * @param s          The function where the parameter is invalid.
+         * @param nthParam   The position of the parameter in the function call.
+         * @param param      The parameter that was passed in.
+         * @param expected   The expected class of the paramter
+         * @param lineNumber The line number in the source code where the exception
+         *                   occurred.
+         */
+        public FunctionParametersException(BaseFunction s, String nthParam, Object param, Class<?> expected,
+                int lineNumber) {
+            super(lineNumber, "The " + nthParam + (nthParam.endsWith("1") ? "st"
+                    : nthParam.endsWith("2") ? "nd" : nthParam.endsWith("3") ? "rd" : "") + " parameter in " + s.name
+                    + "() is required to be a " + friendlyName(expected) + ", but you gave me a "
+                    + friendlyName(param.getClass()) + ". Wtf bro.");
+        }
     }
 
     /**

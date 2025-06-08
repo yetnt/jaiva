@@ -37,6 +37,22 @@ import com.jaiva.utils.*;
  */
 public class Main {
     /**
+     * List of command-line arguments that are used to start the REPL mode.
+     * These arguments include options for printing tokens, displaying help,
+     * showing version information, running tests, and updating instructions.
+     */
+    public static ArrayList<String> replArgs = new ArrayList<>(
+            Arrays.asList("--print-tokens", "-p", "--help", "-h", "--version", "-v", "--test", "-t", "--update",
+                    "-u"));
+    /**
+     * List of command-line arguments that are used when running a Jaiva source
+     * file.
+     * These arguments include options for printing tokens in string format,
+     * JSON format, JSON format with globals, and enabling debug mode.
+     */
+    public static ArrayList<String> tokenArgs = new ArrayList<>(
+            Arrays.asList("-s", "-j", "--string", "-json", "-jg", "--json-with-globals", "-d", "--debug"));
+    /**
      * Version of the Jaiva programming language interpreter. This is a string
      * variable that holds the version number in the format
      * "major.minor.patch-(beta|rc|alpha)
@@ -110,11 +126,6 @@ public class Main {
      *             interpreter.
      */
     public static void main(String[] args) throws Exception {
-        ArrayList<String> replArgs = new ArrayList<>(
-                Arrays.asList("--print-tokens", "-p", "--help", "-h", "--version", "-v", "--test", "-t", "--update",
-                        "-u"));
-        ArrayList<String> tokenArgs = new ArrayList<>(
-                Arrays.asList("-s", "-j", "--string", "-json", "-jg", "--json-with-globals", "-d", "--debug"));
         if (args.length == 0) {
             new REPL(0);
             System.exit(0);
@@ -187,7 +198,7 @@ public class Main {
             return;
         }
 
-        IConfig iconfig = new IConfig(args[0], callJaivaSrc());
+        IConfig iconfig = new IConfig(args, args[0], callJaivaSrc());
         boolean debug = false;
         try {
             if (args.length > 1)
