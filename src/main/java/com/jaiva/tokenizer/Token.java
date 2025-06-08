@@ -116,6 +116,12 @@ public class Token<T extends TokenDefault> {
      */
     public class TImport extends TokenDefault {
         /**
+         * Indicates whether this import is a library import.
+         * <p>
+         * If true, the import is considered a library import.
+         */
+        public boolean isLib = false;
+        /**
          * The import file path.
          */
         public String filePath;
@@ -135,9 +141,10 @@ public class Token<T extends TokenDefault> {
          * @param file The file path.
          * @param ln   The line number.
          */
-        public TImport(String file, String fileName, int ln) {
+        public TImport(String file, String fileName, boolean isLib, int ln) {
             super("TImport", ln);
             filePath = file;
+            this.isLib = isLib;
             this.fileName = fileName;
         }
 
@@ -148,9 +155,10 @@ public class Token<T extends TokenDefault> {
          * @param names The imported symbols.
          * @param ln    The line number.
          */
-        public TImport(String file, String fileName, ArrayList<String> names, int ln) {
+        public TImport(String file, String fileName, boolean isLib, ArrayList<String> names, int ln) {
             super("TImport", ln);
             filePath = file;
+            this.isLib = isLib;
             this.fileName = fileName;
             symbols.addAll(names);
         }
@@ -159,6 +167,7 @@ public class Token<T extends TokenDefault> {
         public String toJson() throws JaivaException {
             json.append("filePath", filePath, false);
             json.append("fileName", fileName, false);
+            json.append("isLib", isLib, false);
             json.append("symbols", symbols, true);
             return super.toJson();
         }

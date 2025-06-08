@@ -22,7 +22,7 @@ maak newArray <- a_remove(array, 5)! @ Removes 5 elements from the end of the ar
 khuluma(newArray)! @ Prints [1, 2, 3, 4, 5]
 ```
 
-## `a_unshift(arr, n) -> `_*`khutla (array)!`*_
+## `a_shift(arr, n) -> `_*`khutla (array)!`*_
 
 \*_**Independent**_
 
@@ -31,7 +31,7 @@ Returns an array which contains the original array (`arr`) with `n` amount of el
 ```jiv
 tsea "jaiva/arrays"! @ Import the arrays library
 maak array <-| 1, 2, 3, 4, 5, 6, 7, 8, 9, 10!
-maak newArray <- a_unshift(array, 5)! @ Removes 5 elements from the start of the array.
+maak newArray <- a_shift(array, 5)! @ Removes 5 elements from the start of the array.
 khuluma(newArray)! @ Prints [6, 7, 8, 9, 10]
 ```
 
@@ -63,7 +63,7 @@ maak newArray <- a_push(array, 11)! @ Appends 11 to the end of the array.
 khuluma(newArray)! @ Prints [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 ```
 
-## `a_shift(arr, element) -> `_*`khutla (array)!`*_
+## `a_unshift(arr, element) -> `_*`khutla (array)!`*_
 
 \*_**Independent**_
 
@@ -72,7 +72,7 @@ Returns a new array with the `element` appended at the start of the original arr
 ```jiv
 tsea "jaiva/arrays"! @ Import the arrays library
 maak array <-| 1, 2, 3, 4, 5, 6, 7, 8, 9, 10!
-maak newArray <- a_shift(array, 0)! @ Appends 0 to the start of the array.
+maak newArray <- a_unshift(array, 0)! @ Appends 0 to the start of the array.
 khuluma(newArray)! @ Prints [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 ```
 

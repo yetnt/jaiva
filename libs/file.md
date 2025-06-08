@@ -108,6 +108,6 @@ Therefore if the file already exists or could not be created, it will return fal
 ```jiv
 tsea "jaiva/file"!
 maak filePath <- f_bin + "newfile.jiv"! @ Creates a new file in the bin directory
-f_new(filePath, "khuluma(\"Hello, world!\")!")! @ Creates a new file with the given content.
+f_new(filePath, "khuluma($"Hello, world$!$")!")! @ Creates a new file with the given content.
 khuluma("File created at " + filePath)! @ Prints the file path
 ```
