@@ -25,6 +25,8 @@ public class Math extends BaseGlobals {
         vfs.put("m_abs", new MapValue(new FAbs(container)));
         vfs.put("m_sqrt", new MapValue(new FSqrt(container)));
         vfs.put("m_pow", new MapValue(new FPow(container)));
+        vfs.put("m_floor", new MapValue(new FFloor(container)));
+        vfs.put("m_ceil", new MapValue(new FCeil(container)));
         vfs.putAll(new Constants().vfs); // Add constants like m_pi, m_e, etc.
         vfs.putAll(new Trig().vfs); // Add trigonometric functions like m_sin, m_cos, etc.
     }
@@ -64,7 +66,7 @@ public class Math extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
                 throws Exception {
             checkParams(tFuncCall);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, isFrozen, config);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
 
             if (value instanceof Integer i)
                 return java.lang.Math.abs(i);
@@ -117,9 +119,9 @@ public class Math extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
                 throws Exception {
             checkParams(tFuncCall);
-            Object lowerObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, isFrozen,
+            Object lowerObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false,
                     config);
-            Object upperObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, isFrozen,
+            Object upperObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false,
                     config);
 
             if (!(lowerObject instanceof Integer lower))
@@ -161,7 +163,7 @@ public class Math extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
                 throws Exception {
             checkParams(tFuncCall);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, isFrozen, config);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
 
             if (value instanceof Integer)
                 return value;
@@ -208,7 +210,7 @@ public class Math extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
                 throws Exception {
             checkParams(tFuncCall);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, isFrozen, config);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
 
             if (value instanceof Integer i)
                 return java.lang.Math.sqrt(i);
@@ -257,8 +259,8 @@ public class Math extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
                 throws Exception {
             checkParams(tFuncCall);
-            Object base = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, isFrozen, config);
-            Object exponent = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, isFrozen,
+            Object base = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object exponent = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false,
                     config);
 
             if (!(base instanceof Number))
@@ -307,7 +309,7 @@ public class Math extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
                 throws Exception {
             checkParams(tFuncCall);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, isFrozen, config);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
 
             if (value instanceof Integer i)
                 return i;
@@ -354,7 +356,7 @@ public class Math extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
                 throws Exception {
             checkParams(tFuncCall);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, isFrozen, config);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
 
             if (value instanceof Integer i)
                 return i;
