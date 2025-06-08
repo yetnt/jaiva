@@ -23,6 +23,7 @@ public class IOFile extends BaseGlobals {
         vfs.put("f_bin", new MapValue(new VBinaryDirectory(container, config)));
         vfs.put("f_this", new MapValue(new VThis(container, config)));
         vfs.put("f_file", new MapValue(new FFile(container, config)));
+        vfs.put("f_new", new MapValue(new FNew(container, config)));
     }
 
     /**
@@ -258,6 +259,109 @@ public class IOFile extends BaseGlobals {
             result.add(new ArrayList<>(Arrays.asList(file.canRead(), file.canWrite(), file.canExecute())));
             return result;
 
+        }
+    }
+
+    /**
+     * FNew is a function that creates a new file with specified content and
+     * permissions.
+     * <p>
+     * Usage: f_new(path, content, canRead?, canWrite?, canExecute?)
+     * </p>
+     * <ul>
+     * <li>Checks if the provided path is a string.</li>
+     * <li>Creates the file at the specified path with the given content.</li>
+     * <li>Sets the file permissions based on the provided boolean flags.</li>
+     * <li>Returns true if the file was created successfully, false otherwise.</li>
+     * </ul>
+     */
+    public class FNew extends BaseFunction {
+        public FNew(Token<?> container, IConfig config) {
+            /*
+             * [
+             * "fileName",
+             * "fileDir",
+             * [contents],
+             * [canRead?, canWrite?, canExecute?]
+             * ]
+             */
+            super("f_new", container.new TFunction("f_new",
+                    new String[] { "path", "content", "canRead?", "canWrite?", "canExecute?" }, null, -1,
+                    "Creates a new file at the given `path` with the specified `content` and permissions. \\n Returns boolean indicating success."));
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+                throws Exception {
+            // TODO Auto-generated method stub
+            checkParams(tFuncCall);
+            Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            if (!(path instanceof String))
+                throw new FunctionParametersException(this, "1", params.get(0), String.class, tFuncCall.lineNumber);
+
+            Object content = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config);
+            StringBuilder outBuilder = new StringBuilder();
+            String output = content instanceof String ? (String) content : "";
+            if (!(content instanceof String) && !(content instanceof ArrayList))
+                throw new FunctionParametersException(this, "2", params.get(1), String.class, tFuncCall.lineNumber);
+            if (content instanceof ArrayList list) {
+                if (list.size() == 0)
+                    output = "";
+                // if the list has only one element, we can just use that as the content
+                else if (list.size() == 1)
+                    output = list.get(0).toString();
+                else {
+                    list.stream()
+                            .filter(Objects::nonNull)
+                            .map(Object::toString)
+                            .forEach(s -> outBuilder.append(s).append("\n"));
+                    output = outBuilder.toString();
+                }
+            }
+
+            boolean canRead = true, canWrite = true, canExecute = true;
+            if (params.size() > 2) {
+                Object cr = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(2)), vfs, false, config);
+                if (!(cr instanceof Boolean))
+                    throw new FunctionParametersException(this, "3", params.get(2), boolean.class,
+                            tFuncCall.lineNumber);
+                canRead = cr.equals(Boolean.TRUE);
+            }
+            if (params.size() > 3) {
+                Object cw = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(3)), vfs, false, config);
+                if (!(cw instanceof Boolean))
+                    throw new FunctionParametersException(this, "4", params.get(3), boolean.class,
+                            tFuncCall.lineNumber);
+                canWrite = cw.equals(Boolean.TRUE);
+            }
+            if (params.size() > 4) {
+                Object ce = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(4)), vfs, false, config);
+                if (!(ce instanceof Boolean))
+                    throw new FunctionParametersException(this, "5", params.get(4), boolean.class,
+                            tFuncCall.lineNumber);
+                canExecute = ce.equals(Boolean.TRUE);
+            }
+            Path baseDir = (config.filePath != null) ? config.filePath.getParent() : null;
+            Path newFilePath = Paths.get((String) path);
+
+            if (newFilePath.toFile().exists())
+                return false; // file already exists.
+
+            if (baseDir != null && !newFilePath.isAbsolute()) {
+                newFilePath = baseDir.resolve((String) path).normalize();
+            }
+            try {
+                Files.createDirectories(newFilePath.getParent()); // ensure parent directories exist
+                Files.writeString(newFilePath, output, StandardOpenOption.CREATE_NEW);
+                File newFile = newFilePath.toFile();
+                newFile.setReadable(canRead);
+                newFile.setWritable(canWrite);
+                newFile.setExecutable(canExecute);
+            } catch (IOException e) {
+                return false; // failed to create file
+            }
+            return true; // file created successfully
+            // return super.call(tFuncCall, params, vfs, config);
         }
     }
 }
