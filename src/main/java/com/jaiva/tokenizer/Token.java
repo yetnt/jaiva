@@ -429,6 +429,18 @@ public class Token<T extends TokenDefault> {
             this.value = value;
         }
 
+        /**
+         * Constructor for TNumberVar (used for exporting globals.)
+         * 
+         * @param name  The name of the variable.
+         * @param value The value of the variable.
+         * @param ln    The line number.
+         */
+        public TNumberVar(String name, Object value, int ln, String customTooltip) {
+            super(name, ln, customTooltip);
+            this.value = value;
+        }
+
         @Override
         public String toJson() throws JaivaException {
             json.append("value", value, true);

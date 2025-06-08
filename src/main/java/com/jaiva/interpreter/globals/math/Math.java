@@ -1,4 +1,4 @@
-package com.jaiva.interpreter.globals;
+package com.jaiva.interpreter.globals.math;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.globals.BaseGlobals;
+import com.jaiva.interpreter.globals.GlobalType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.Token;
@@ -20,6 +22,56 @@ public class Math extends BaseGlobals {
         super(GlobalType.LIB, "math");
         vfs.put("m_random", new MapValue(new FRandom(container)));
         vfs.put("m_round", new MapValue(new FRound(container)));
+        vfs.put("m_abs", new MapValue(new FAbs(container)));
+        vfs.putAll(new Constants().vfs); // Add constants like m_pi, m_e, etc.
+        vfs.putAll(new Trig().vfs); // Add trigonometric functions like m_sin, m_cos, etc.
+    }
+
+    /**
+     * Represents a function that returns the absolute value of a number.
+     * <p>
+     * The {@code FAbs} class extends {@link BaseFunction} and implements a
+     * function
+     * named {@code m_abs} that takes one parameter: {@code value}.
+     * It returns the absolute value of the provided number.
+     * </p>
+     *
+     * <p>
+     * Usage:
+     * <ul>
+     * <li>{@code m_abs(value)} - Returns the absolute value of the number
+     * provided.</li>
+     * </ul>
+     * </p>
+     *
+     * <p>
+     * Throws {@link WtfAreYouDoingException} if:
+     * <ul>
+     * <li>{@code value} is not a number (Integer or Double).</li>
+     * </ul>
+     * </p>
+     */
+    class FAbs extends BaseFunction {
+        FAbs(Token<?> container) {
+            super("m_abs", container.new TFunction("m_abs", new String[] { "value" }, null, -1,
+                    "Returns the absolute value of a number"));
+            this.freeze();
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+                throws Exception {
+            checkParams(tFuncCall);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, isFrozen, config);
+
+            if (value instanceof Integer i) {
+                return java.lang.Math.abs(i);
+            } else if (value instanceof Double d) {
+                return java.lang.Math.abs(d);
+            } else {
+                throw new WtfAreYouDoingException(value, Number.class, tFuncCall.lineNumber);
+            }
+        }
     }
 
     /**

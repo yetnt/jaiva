@@ -50,7 +50,7 @@ public class InterpreterException extends JaivaException {
             return "variable";
         else if (c == String.class)
             return "string";
-        else if (c == int.class || c == double.class)
+        else if (c == int.class || c == double.class || c == Number.class)
             return "number";
         else if (c == boolean.class)
             return "boolean";
