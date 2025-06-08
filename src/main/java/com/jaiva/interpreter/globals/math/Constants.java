@@ -90,4 +90,29 @@ public class Constants extends BaseGlobals {
             this.freeze();
         }
     }
+
+    /**
+     * Represents a variable that holds the mathematical constant φ (phi), also
+     * known as the golden ratio.
+     * <p>
+     * The {@code VPhi} class extends {@link BaseVariable} and provides a variable
+     * named {@code m_phi} that contains the value of φ, which is approximately
+     * 1.61803.
+     * </p>
+     *
+     * <p>
+     * Usage:
+     * <ul>
+     * <li>{@code m_phi} - Represents the golden ratio φ (approximately
+     * 1.61803).</li>
+     * </ul>
+     * </p>
+     */
+    class VPhi extends BaseVariable {
+        VPhi(Token<?> container) {
+            super("m_phi", container.new TNumberVar("m_phi", (1 + java.lang.Math.sqrt(5)) / 2, -1,
+                    "The golden ratio φ (phi)"), (1 + java.lang.Math.sqrt(5)) / 2);
+            this.freeze();
+        }
+    }
 }
