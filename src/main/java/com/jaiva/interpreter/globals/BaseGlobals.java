@@ -34,7 +34,7 @@ public class BaseGlobals<T extends GlobalType> {
      * 
      * @param value The type of this Globals holder.
      */
-    BaseGlobals(T value) {
+    public BaseGlobals(T value) {
         type = value;
     }
 
@@ -44,7 +44,7 @@ public class BaseGlobals<T extends GlobalType> {
      * @param value The type of this Globals holder.
      * @param p     The "filename" (without the extension)
      */
-    BaseGlobals(T value, String p) {
+    public BaseGlobals(T value, String p) {
         type = value;
         path = p;
     }

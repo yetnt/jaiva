@@ -13,6 +13,7 @@ import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.globals.math.Math;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.*;
 import com.jaiva.lang.Keywords;
