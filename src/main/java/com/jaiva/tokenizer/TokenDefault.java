@@ -8,6 +8,15 @@ import com.jaiva.errors.JaivaException;
  */
 public class TokenDefault {
     /**
+     * Boolean which defines whether this token is in experimental usage or not.
+     * <p>
+     * Currently, this is not used in the Jaiva language, but it can be used
+     * in the future to mark tokens that are experimental and not yet fully
+     * implemented.
+     * </p>
+     */
+    public boolean experimental = false;
+    /**
      * The name of the token.
      * <p>
      * If the token is one that doesnt have a definitive name, such as an if
