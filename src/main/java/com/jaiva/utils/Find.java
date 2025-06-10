@@ -224,14 +224,10 @@ public class Find {
             this.op = op;
             this.index = index;
             switch (group) {
-                case 0:
-                    tStatementType = 1; // Exponentiation
-                    break;
-                case 1:
-                    tStatementType = 1; // DivMult
-                    break;
-                case 2:
-                    tStatementType = 1; // AddSub
+                case 0:// Exponentiation
+                case 1:// DivMult
+                case 2:// AddSub
+                    tStatementType = 1;
                     break;
                 case 3:
                     tStatementType = 0; // Bools
