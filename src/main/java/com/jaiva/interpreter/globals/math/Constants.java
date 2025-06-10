@@ -16,6 +16,7 @@ public class Constants extends BaseGlobals {
         vfs.put("m_e", new MapValue(new VE(container)));
         vfs.put("m_pi", new MapValue(new VPi(container)));
         vfs.put("m_tau", new MapValue(new VTau(container)));
+        vfs.put("m_phi", new MapValue(new VPhi(container)));
     }
 
     /**
