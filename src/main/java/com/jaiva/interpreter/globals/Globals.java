@@ -108,7 +108,7 @@ public class Globals<T extends GlobalType> extends BaseGlobals {
             Symbol symbol = (Symbol) var.getValue();
             // We need to convert the named token to a raw token so we can call .toString()
             // on it.
-            return symbol.token.toString();
+            return symbol.token.getClass().getSimpleName();
         }
     }
 
