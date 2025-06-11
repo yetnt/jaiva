@@ -8,7 +8,7 @@ import com.jaiva.tokenizer.Token;
  * 
  * 
  * 
- * Class that represents that the intepreter needs to call readline again for
+ * Class that represents that the tokenizer needs to call readline again for
  * some reason.
  * <p>
  * For {@code Find.closingCharIndexML()}
