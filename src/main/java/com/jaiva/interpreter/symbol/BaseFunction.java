@@ -217,7 +217,12 @@ public class BaseFunction extends Symbol {
                     // if found, create aq copy of that MapValue, and name it to instead this new
                     // name and add to the vfs.
                     Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), vfs, false, config);
-                    wrappedValue = new BaseVariable(name, tFuncCall, o);
+                    // wrappedValue = new BaseVariable(name, tFuncCall, o);
+                    wrappedValue = BaseVariable.create(name,
+                            o instanceof ArrayList ? tContainer.new TArrayVar(name, (ArrayList) o, tFuncCall.lineNumber)
+                                    : tContainer.new TUnknownVar(name, o, tFuncCall.lineNumber),
+                            o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Arrays.asList(o)),
+                            o instanceof ArrayList);
                 } else if (Primitives.isPrimitive(value)) {
                     // primitivers ong
                     wrappedValue = BaseVariable.create(name,
