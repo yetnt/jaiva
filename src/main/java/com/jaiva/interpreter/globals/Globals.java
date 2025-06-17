@@ -47,6 +47,8 @@ public class Globals<T extends GlobalType> extends BaseGlobals {
         builtInGlobals.put(m.path, m.vfs);
         IOFile f = new IOFile(config);
         builtInGlobals.put(f.path, f.vfs);
+        Debug d = new Debug(config);
+        builtInGlobals.put(d.path, d.vfs);
     }
 
     /**

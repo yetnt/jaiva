@@ -1,0 +1,6 @@
+@ Warning, changing this file will break any tests in src/test/java/com/jaiva/full/ITTest.java
+@ Unless you reflect changes in that file, dont change this file.
+
+tsea "debug"!           @ Import the debug library
+khuluma("Yoo")!         @ Function call.
+d_emit("Hello World")!  @ Throw an error.

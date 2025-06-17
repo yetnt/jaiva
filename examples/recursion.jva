@@ -1,0 +1,6 @@
+@ Since this is a functional programming language, we gotta have recursion.
+
+tsea "./somelib/recursion" <- facorial, fibonacci!
+
+khuluma(facorial(10))!
+khuluma(fibonacci(10))!

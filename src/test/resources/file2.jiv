@@ -1,0 +1,14 @@
+@ Warning, changing this file will break any tests in src/test/java/com/jaiva/full/ITTest.java
+@ Unless you reflect changes in that file, dont change this file.
+
+tsea "debug"!               @ Import debug ibrary
+
+@* Documentation comment, this should not be in the tokens arraylist
+kwenza infinity() ->        @ Define infinity function
+    khutla infinity!        @ Infinity function returns a reference to itself
+<~
+
+@ Throw error, with chained infinity function call.
+@ This won't actually interpret (The idk - 1 will error) but the test for this only tests the
+@ tokenizer, so it's no worry
+d_emit(infinity(idk - 1, -10 + 3)(true && aowa)(1 / 10)("string things" != 10e4))!  

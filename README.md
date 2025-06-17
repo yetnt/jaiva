@@ -681,7 +681,7 @@ if (a = 10) ->
 addition(10, 20)! @ Will also error, because addition() is not defined in this scope.
 ```
 
-## <center> Tsea (import) and exporting files
+## <center>Tsea (import) and exporting files
 
 Importing isn't that bad. Here's a simple import.
 
