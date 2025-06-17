@@ -112,7 +112,7 @@ public class JaivaException extends Exception {
             this.components = comp;
             this.vfs = vfs;
             this.config = config;
-            close();
+            // close();
         }
 
         /**
@@ -124,7 +124,7 @@ public class JaivaException extends Exception {
         public DebugException(Exception e) {
             super("A debug error with the following components has been used: " + e.getMessage());
             this.error = e;
-            close();
+            // close();
         }
 
         /**

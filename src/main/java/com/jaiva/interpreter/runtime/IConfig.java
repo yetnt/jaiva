@@ -17,7 +17,7 @@ public class IConfig {
      * This array is used to tell the user what arguments were passed to the current
      * file.
      */
-    public String[] args = null;
+    public String[] args = new String[] {};
     /**
      * The sanitised arguments list stores the command-line arguments without
      * arguments used by jaiva. It removes the first argument (File path) and
