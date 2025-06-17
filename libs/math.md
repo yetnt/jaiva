@@ -4,7 +4,7 @@ This library contains (some) math functions. Unless really needed I don't see my
 
 All functions and variables from this library are prefixed with `m_` to avoid conflicts with other libraries.
 
-See [Math.java](./src/main/java/com/jaiva/interpreter/globals/Math.java) where this is defined.
+See [Math.java](../src/main/java/com/jaiva/interpreter/globals/Math.java) where this is defined.
 
 ## Constants
 

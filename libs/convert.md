@@ -2,7 +2,7 @@
 
 This library contains functions for converting stuff to different types.
 
-See [Conversions.java](./src/main/java/com/jaiva/interpreter/globals/Conversions.java) where this is defined.
+See [Conversions.java](../src/main/java/com/jaiva/interpreter/globals/Conversions.java) where this is defined.
 
 ## `c_numToString(num) -> `_*`khutla "string"!`*_
 
