@@ -1,7 +1,10 @@
 package com.jaiva.full;
 
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,8 +19,19 @@ import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.TFuncCall;
 
 public class ITTest {
+    private static final Path FILE_JIV;
 
-    private static String fileJIV = "C:\\Users\\ACER\\Documents\\code\\jaiva\\target\\test-classes\\file.jiv";
+    static {
+        try {
+            FILE_JIV = Path.of(
+                    Objects.requireNonNull(
+                            ITTest.class.getClassLoader()
+                                    .getResource("file.jiv"))
+                            .toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Test
     void run1() {
@@ -27,8 +41,10 @@ public class ITTest {
             // Main.main(new String[] { fileJIV, "-d" });
 
             // or invoke the required things so we can customize the environment.
-            tokens = Main.parseTokens(fileJIV, false);
-            IConfig c = new IConfig(new ArrayList<>(Arrays.asList(fileJIV)), fileJIV,
+            tokens = Main.parseTokens(FILE_JIV.toString(), false);
+            IConfig c = new IConfig(new ArrayList<>(Arrays.asList(
+                    FILE_JIV.toString())),
+                    FILE_JIV.toString(),
                     Main.callJaivaSrc());
             Interpreter.interpret(tokens, Context.GLOBAL, new Globals(c).vfs, c);
 

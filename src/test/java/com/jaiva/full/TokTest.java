@@ -1,6 +1,9 @@
 package com.jaiva.full;
 
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,8 +19,19 @@ import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.tokenizer.Token.TVoidValue;
 
 public class TokTest {
+    private static final Path FILE_JIV;
 
-    private static String fileJIV = "C:\\Users\\ACER\\Documents\\code\\jaiva\\target\\test-classes\\file2.jiv";
+    static {
+        try {
+            FILE_JIV = Path.of(
+                    Objects.requireNonNull(
+                            ITTest.class.getClassLoader()
+                                    .getResource("file2.jiv") // looks in test-resources root
+                    ).toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Test
     void run1() {
@@ -26,7 +40,7 @@ public class TokTest {
             // Main.main(new String[] { fileJIV, "-d" });
 
             // or invoke the required things so we can customize the environment.
-            ArrayList<Token<?>> tokens = Main.parseTokens(fileJIV, false);
+            ArrayList<Token<?>> tokens = Main.parseTokens(FILE_JIV.toString(), false);
 
             // Now the pain begins...
 
