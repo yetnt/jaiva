@@ -1,6 +1,6 @@
 # `debug`
 
-This library contains functions for converting stuff to different types.
+This library contains functions for.. debugging, what'd ya think??
 
 See [Debug.java](../src/main/java/com/jaiva/interpreter/globals/Debug.java) where this is defined.
 
