@@ -20,13 +20,22 @@ import com.jaiva.tokenizer.Token.TVoidValue;
 
 public class TokTest {
     private static final Path FILE_JIV;
+    private static final Path FILE2_JIV;
 
     static {
         try {
+
             FILE_JIV = Path.of(
                     Objects.requireNonNull(
-                            ITTest.class.getClassLoader()
-                                    .getResource("file2.jiv") // looks in test-resources root
+                            TokTest.class.getClassLoader()
+                                    .getResource("file.jiv"))
+                            .toURI());
+
+            FILE2_JIV = Path.of(
+                    Objects.requireNonNull(
+                        TokTest.class.getClassLoader()
+                                    .getResource("file2.jiv") // looks in
+                                                              // test-resources root
                     ).toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
@@ -34,13 +43,37 @@ public class TokTest {
     }
 
     @Test
-    void run1() {
+    void fileJiv() {
+        try {
+
+            // or invoke the required things so we can customize the environment.
+            ArrayList<Token<?>> tokens = Main.parseTokens(FILE_JIV.toString(), false);
+
+            // check that there are exactly 3 outer tokens.
+            Assertions.assertEquals(3, tokens.size(), "Token size is NOT exactly 3.");
+
+            // check that the last token is a TFuncCall
+            Assertions.assertInstanceOf(Token.TFuncCall.class, ((Token) tokens.getLast()).getValue(),
+                    "The last token is not a function call, thats weird thats literally what causes this DebugException.");
+            // As this was emitted, the LAST token in the tokens list, should be a TFuncCall
+            // and it's first parameter, should contain the exact same stirng.
+            // Check if the tokenizer has the string.
+            Assertions.assertEquals("Hello World", ((TFuncCall) ((Token) tokens.getLast()).getValue()).args.get(0),
+                    "d_emit did not receive the exact stirng hello world (Token)");
+        } catch (Exception e) {
+            // catch any other exception that we realistically don't want to catch
+            Assertions.fail("Exception thrown: " + e.getMessage(), e);
+        }
+    }
+
+    @Test
+    void file2Jiv() {
         try {
             // run main directly
             // Main.main(new String[] { fileJIV, "-d" });
 
             // or invoke the required things so we can customize the environment.
-            ArrayList<Token<?>> tokens = Main.parseTokens(FILE_JIV.toString(), false);
+            ArrayList<Token<?>> tokens = Main.parseTokens(FILE2_JIV.toString(), false);
 
             // Now the pain begins...
 
@@ -62,7 +95,8 @@ public class TokTest {
                         "Path in TImprot doesn't contain \"debug.jiv\"");
 
                 // No symbols where defined (wildcard import)
-                Assertions.assertTrue(i.symbols.isEmpty(), "TImport contains specific symbols when it shouldn't");
+                Assertions.assertTrue(i.symbols.isEmpty(),
+                        "TImport contains specific symbols when it shouldn't");
             }
 
             // Check the second token
@@ -86,9 +120,11 @@ public class TokTest {
                         "Function body ends on a different line number other than 9");
 
                 // It's body should contain 1 token.
-                Assertions.assertEquals(1, f.body.lines.size(), "Function body contains more or less than 1 token.");
+                Assertions.assertEquals(1, f.body.lines.size(),
+                        "Function body contains more or less than 1 token.");
                 // That token should be a TFuncReturn
-                Assertions.assertInstanceOf(TFuncReturn.class, ((Token) f.body.lines.getFirst()).getValue(),
+                Assertions.assertInstanceOf(TFuncReturn.class,
+                        ((Token) f.body.lines.getFirst()).getValue(),
                         "First line of function body is not a return statement.");
                 TFuncReturn return1 = (TFuncReturn) ((Token) f.body.lines.getFirst()).getValue();
                 // This TFuncReturn shold be on line number 8.
@@ -124,9 +160,12 @@ public class TokTest {
                  * d_emit(infinity(idk - 1, -10 + 3)(true && aowa)(1 / 10)("string things" !=
                  * 10e4))
                  */
-                Assertions.assertEquals(LINE_NUMBER, f.lineNumber, "d_emit function call is not on line number 14");
-                Assertions.assertEquals("d_emit", f.functionName, "d_emit function call is not \"d_emit\"");
-                Assertions.assertEquals(1, f.args.size(), "d_emit was given more or less args than expected.");
+                Assertions.assertEquals(LINE_NUMBER, f.lineNumber,
+                        "d_emit function call is not on line number 14");
+                Assertions.assertEquals("d_emit", f.functionName,
+                        "d_emit function call is not \"d_emit\"");
+                Assertions.assertEquals(1, f.args.size(),
+                        "d_emit was given more or less args than expected.");
                 Assertions.assertInstanceOf(TFuncCall.class, ((Token) f.args.getFirst()).getValue());
 
                 TFuncCall call4 = (TFuncCall) ((Token) f.args.getFirst()).getValue();
@@ -138,8 +177,10 @@ public class TokTest {
                  * who's args is a TStatement ("string things" != 10e4)
                  */
                 Assertions.assertEquals(LINE_NUMBER, call4.lineNumber, "Last call, is not on line 14");
-                Assertions.assertEquals(1, call4.args.size(), "Last call, has more or less args than 1");
-                Assertions.assertInstanceOf(TStatement.class, (TStatement) ((Token) call4.args.getFirst()).getValue(),
+                Assertions.assertEquals(1, call4.args.size(),
+                        "Last call, has more or less args than 1");
+                Assertions.assertInstanceOf(TStatement.class,
+                        (TStatement) ((Token) call4.args.getFirst()).getValue(),
                         "Last call's arguments is not a TStatement.");
                 TStatement lastCallStatement = (TStatement) ((Token) call4.args.getFirst()).getValue();
                 Assertions.assertEquals(LINE_NUMBER, lastCallStatement.lineNumber,
@@ -163,7 +204,8 @@ public class TokTest {
                  */
                 Assertions.assertEquals(LINE_NUMBER, call3.lineNumber, "3rd call, is not on line 14");
                 Assertions.assertEquals(1, call3.args.size(), "3rd call, has more or less args than 1");
-                Assertions.assertInstanceOf(TStatement.class, (TStatement) ((Token) call3.args.getFirst()).getValue(),
+                Assertions.assertInstanceOf(TStatement.class,
+                        (TStatement) ((Token) call3.args.getFirst()).getValue(),
                         "3rd call's arguments is not a TStatement.");
                 TStatement call3Statement = (TStatement) ((Token) call3.args.getFirst()).getValue();
                 Assertions.assertEquals(LINE_NUMBER,
@@ -191,7 +233,8 @@ public class TokTest {
                  */
                 Assertions.assertEquals(LINE_NUMBER, call2.lineNumber, "2nd call, is not on line 14");
                 Assertions.assertEquals(1, call2.args.size(), "2nd call, has more or less args than 1");
-                Assertions.assertInstanceOf(TStatement.class, (TStatement) ((Token) call2.args.getFirst()).getValue(),
+                Assertions.assertInstanceOf(TStatement.class,
+                        (TStatement) ((Token) call2.args.getFirst()).getValue(),
                         "2nd call's arguments is not a TStatement.");
                 TStatement call2Statement = (TStatement) ((Token) call2.args.getFirst()).getValue();
                 Assertions.assertEquals(LINE_NUMBER,
@@ -220,10 +263,13 @@ public class TokTest {
                  * arg2: -10 + 3 (Where -10 is itself a TStatement, being 10 * -1)
                  */
                 Assertions.assertEquals(LINE_NUMBER, call1.lineNumber, "First call, is not on line 14");
-                Assertions.assertEquals(2, call1.args.size(), "First call, has more or less args than 1");
-                Assertions.assertInstanceOf(TStatement.class, (TStatement) ((Token) call1.args.getFirst()).getValue(),
+                Assertions.assertEquals(2, call1.args.size(),
+                        "First call, has more or less args than 1");
+                Assertions.assertInstanceOf(TStatement.class,
+                        (TStatement) ((Token) call1.args.getFirst()).getValue(),
                         "First call's 1st arg is not a TStatement.");
-                Assertions.assertInstanceOf(TStatement.class, (TStatement) ((Token) call1.args.getLast()).getValue(),
+                Assertions.assertInstanceOf(TStatement.class,
+                        (TStatement) ((Token) call1.args.getLast()).getValue(),
                         "First call's 2nd arg is not a TStatement.");
                 TStatement call1Statement1 = (TStatement) ((Token) call1.args.getFirst()).getValue();
                 TStatement call1Statement2 = (TStatement) ((Token) call1.args.getLast()).getValue();
