@@ -134,5 +134,11 @@ public class JaivaException extends Exception {
         private void close() {
             config.resources.release();
         }
+
+        @Override
+        public String toString() {
+            return "DebugException [lineNumber=" + lineNumber + ", components=" + components + ", vfs=" + vfs
+                    + ", config=" + config + ", error=" + error + "]";
+        }
     }
 }
