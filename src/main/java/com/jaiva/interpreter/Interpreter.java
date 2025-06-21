@@ -292,38 +292,43 @@ public class Interpreter {
                 Globals g = new Globals<>(config);
                 Path importPath = Path.of(tImport.filePath);
 
-                if (g.builtInGlobals.containsKey(tImport.fileName)) {
-                    vfs.putAll((HashMap<String, MapValue>) g.builtInGlobals.get(tImport.fileName));
-                    continue;
-                }
+                HashMap<String, MapValue> vfsFromFile;
 
-                // Check if the path is not absolute
-                if (!importPath.isAbsolute()) {
-                    // Resolve it relative to the current file's directory,
-                    // then normalize to tidy up any relative path elements.
-                    importPath = config.fileDirectory.resolve(importPath).normalize();
-                }
+                if (g.builtInGlobals.containsKey(tImport.fileName))
+                    vfsFromFile = (HashMap<String, MapValue>) g.builtInGlobals.get(tImport.fileName);
+                else {
 
-                importPath = importPath.toAbsolutePath();
+                    // Check if the path is not absolute
+                    if (!importPath.isAbsolute()) {
+                        // Resolve it relative to the current file's directory,
+                        // then normalize to tidy up any relative path elements.
+                        importPath = config.fileDirectory.resolve(importPath).normalize();
+                    }
 
-                ArrayList<Token<?>> tks = Main.parseTokens(importPath.toString(), true);
+                    importPath = importPath.toAbsolutePath();
 
-                if (tks.size() == 0)
-                    continue;
+                    ArrayList<Token<?>> tks = Main.parseTokens(importPath.toString(), true);
 
-                IConfig newConfig = new IConfig(config.sanitisedArgs, importPath.toString(),
-                        config.JAIVA_SRC.toString());
+                    if (tks.size() == 0)
+                        continue; // Nohing to import.
 
-                newConfig.importVfs = true;
+                    IConfig newConfig = new IConfig(config.sanitisedArgs, importPath.toString(),
+                            config.JAIVA_SRC.toString());
 
-                HashMap<String, MapValue> vfsFromFile = (HashMap<String, MapValue>) Interpreter.interpret(tks, context,
-                        vfs, newConfig);
+                    newConfig.importVfs = true; // This tells the interpreter to only parse exported symbols. (Functions
+                                                // and variables)
 
-                if (!(vfsFromFile instanceof HashMap) && (vfsFromFile == null)) {
-                    // error? maybe not yet but print for debugging
-                    System.out.println(
-                            importPath.toString() + " either had nothing to export or somethign wqent horribly wrong.");
-                    continue;
+                    vfsFromFile = (HashMap<String, MapValue>) Interpreter.interpret(tks, context,
+                            vfs, newConfig);
+
+                    if (!(vfsFromFile instanceof HashMap) && (vfsFromFile == null)) {
+                        // error? maybe not yet but throw.
+                        throw new CatchAllException(
+                                importPath.toString()
+                                        + " either had nothing to export or somethign wqent horribly wrong.",
+                                tImport.lineNumber);
+                        // continue;
+                    }
                 }
                 if (tImport.symbols.size() > 0) {
                     vfsFromFile.entrySet().removeIf(e -> !tImport.symbols.contains(e.getKey()));
