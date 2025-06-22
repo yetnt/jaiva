@@ -4,8 +4,9 @@ import java.nio.file.Path;
 import java.util.*;
 
 import com.jaiva.Main;
-import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.InterpreterException.*;
+import com.jaiva.errors.JaivaException;
+import com.jaiva.errors.JaivaException.DebugException;
 import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.*;
@@ -101,11 +102,13 @@ public class Interpreter {
      *                                 error.
      */
     public static ThrowIfGlobalContext throwIfGlobalContext(Context context, Object lc, int lineNumber)
-            throws InterpreterException {
+            throws JaivaException {
         if (lc instanceof ThrowIfGlobalContext) {
             lc = ((ThrowIfGlobalContext) lc).c;
         }
-        if (lc instanceof Keywords.LoopControl) {
+        if (lc instanceof DebugException dlc)
+            throw dlc; // user shouldnt catch it anywhere fr.
+        else if (lc instanceof Keywords.LoopControl) {
             if (context == Context.GLOBAL)
                 throw new WtfAreYouDoingException("So. You tried using "
                         + (lc.toString().equals("BREAK") ? Keywords.LC_BREAK : Keywords.LC_CONTINUE)
@@ -492,6 +495,11 @@ public class Interpreter {
                 // for loop
             } else if (token instanceof TTryCatchStatement throwError && !config.importVfs) {
 
+                HashMap<String, MapValue> errorVfs = ((HashMap<String, MapValue>) vfs.clone());
+                errorVfs.entrySet().removeIf(vf -> !vf.getKey().contains("error"));
+
+                String varName = "error" + (errorVfs.size() > 0 ? errorVfs.size() : "");
+
                 try {
                     Object out = Interpreter.interpret(throwError.tryBlock.lines, Context.TRY, vfs, config);
                     if (out instanceof ThrowIfGlobalContext g) {
@@ -501,16 +509,18 @@ public class Interpreter {
                         } else if (((ThrowIfGlobalContext) out).c instanceof TThrowError) {
                             Token<?> tContainer = new Token<>(null);
                             TThrowError err = (TThrowError) ((ThrowIfGlobalContext) out).c;
-                            vfs.put("error",
-                                    new MapValue(BaseVariable.create("error",
-                                            tContainer.new TStringVar("error", err.errorMessage,
+                            vfs.put(varName,
+                                    new MapValue(BaseVariable.create(
+                                            varName,
+                                            tContainer.new TStringVar(
+                                                    varName, err.errorMessage,
                                                     err.lineNumber),
                                             new ArrayList<>(Arrays.asList(
                                                     err.errorMessage)),
                                             false)));
                             Object out2 = Interpreter.interpret(throwError.catchBlock.lines, Context.CATCH, vfs,
                                     config);
-                            vfs.remove("error");
+                            vfs.remove(varName);
                             if (out2 instanceof ThrowIfGlobalContext g2) {
                                 ThrowIfGlobalContext checker2 = throwIfGlobalContext(context, out2, g2.lineNumber);
                                 return checker2;
@@ -522,15 +532,19 @@ public class Interpreter {
                 } catch (Exception e) {
                     // catch any exception, and call the catch block with the error.
                     Token<?> tContainer = new Token<>(null);
-                    vfs.put("error",
-                            new MapValue(BaseVariable.create("error",
-                                    tContainer.new TStringVar("error", e.getMessage(),
+
+                    vfs.put(varName,
+                            new MapValue(BaseVariable.create(
+                                    varName,
+                                    tContainer.new TStringVar(
+                                            varName, e.getMessage(),
                                             throwError.catchBlock.lineNumber),
                                     new ArrayList<>(Arrays.asList(
                                             e.getMessage())),
                                     false)));
-                    Object out2 = Interpreter.interpret(throwError.catchBlock.lines, Context.CATCH, vfs, config);
-                    vfs.remove("error");
+                    Object out2 = Interpreter.interpret(throwError.catchBlock.lines, Context.CATCH, vfs, config); // line
+                                                                                                                  // 542
+                    vfs.remove(varName);
                     if (out2 instanceof ThrowIfGlobalContext g2) {
                         ThrowIfGlobalContext checker2 = throwIfGlobalContext(context, out2, g2.lineNumber);
                         return checker2;

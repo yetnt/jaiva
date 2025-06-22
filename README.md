@@ -269,7 +269,7 @@ khuluma(func())! @ Prints idk, as the parameter t did not get a value.
 | braces for ordering             | `(` `)`  |
 
 > [!NOTE]
-> You cannot negate an expression. Sorry not sorry.
+> You cannot negate a boolean expression. Sorry not sorry.
 
 ### Blocks
 
@@ -278,7 +278,7 @@ Blocks are defined by the `->` and `<~` symbols. The `->` symbol opens a block, 
 I think this is where jaiva deviates from normal programming languages, Especially since your usual `{` `}` is reserved for comments.
 
 > [!NOTE]
-> You can have multiple blocks in a single line, but this is not recommended. It makes the code hard to read. (And i dont think i implemented or tested that case.)
+> You can have multiple blocks in a single line, but this is not recommended. It makes the code hard to read. (And i dont think i implemented or tested that case, ur crazy if u think im finna allow that )
 
 > [!NOTE]
 > You can only have a block after like, an if, or a function and whatever, you cant just open an new arbitrary block in the middle of your code. This is a design choice, and i think it makes sense.
@@ -569,6 +569,9 @@ if (variable != 100) ->
 <~
 ```
 
+> [!NOTE]
+> Other languages allow you to put a variable as a the condition to check for truthiness. We don't allow that here, check it against [true](#bools) or [idk](#idk)
+
 > [!WARNING]
 > You cannot put the mara keyword underneath the end of an if block, it HAS to be on the same line as the closing `<~` symbol. This makes it easier for me lol.
 
@@ -737,9 +740,31 @@ zama zama ->
 zama zama ->
     khuluma(true + 1)!
 <~ chaai ->
-    khuluma(error)! @ error is a special variable which holds the error message.
+    khuluma(error)!
 <~
 ```
+
+#### Error variable
+
+When in a `chaai` block, Jaiva gives you access to a variable named `"error"` which holds the error that ocurred in string form however if there already is a variable named error, it will increment the new error variable by 1.
+
+```jiv
+zama zama ->
+    khuluma(idk - 1)! @ throws error
+<~ chaai ->
+    zama zama ->
+        khuluma("an error bruh" - idk)! @ another error
+    <~ chaai ->
+        khuluma(error)!     @ This is the (idk - 1) error
+        khuluma(error1)!    @ This is this context's error (So the ("an error bruh" - idk) error)
+    <~
+<~
+```
+
+> [!NOTE]
+> The way the code works, is it looks in it's current context for any variable which contains the exact word "error", so if you have like 4 variables named error, and you decide to open a chaai block, the name of the error variable will be "error4" (it counts the amount of current variables named error, and adds it to the variable name)
+> Just keep this in mind
+> This is defined in [Interpreter.java on line 499](/src/main/java/com/jaiva/interpreter/Interpreter.java)
 
 ## <center>Scopes
 
