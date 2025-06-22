@@ -3,4 +3,4 @@
 
 tsea "debug"!           @ Import the debug library
 khuluma("Yoo")!         @ Function call.
-d_emit("Hello World")!  @ Throw an error.
+d_emit("Hello World!")!  @ Throw an error.

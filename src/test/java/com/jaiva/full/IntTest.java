@@ -62,7 +62,7 @@ public class IntTest {
             Assertions.assertNull(e.error, "An error ocurred and was saved into DebugException.error");
 
             // Then check if the interpreter has the string.
-            Assertions.assertEquals("Hello World", e.components.get(0),
+            Assertions.assertEquals("Hello World!", e.components.get(0),
                     "d_emit did not get \"Hello World\" as a component");
         } catch (Exception e) {
             // catch any other exception that we realistically don't want to catch

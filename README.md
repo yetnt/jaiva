@@ -229,11 +229,6 @@ Table of escape characters
 | `"` (double qoutes)    | `$"`            |
 | `$`                    | `$$`            |
 
-> [!WARNING]
-> I have no fucking clue why this happens. But if you want to use a ! character in a string you always have to escape it.
-> Or else some weird ahh infinite recursion will happen and Java will throw a Stack Overflow error. This probably has something to do with
-> how i check whether or not ! is the terminating character, but just escape it to be safe.
-
 #### idk
 
 This is a constant and value which is used to represent nothingness.

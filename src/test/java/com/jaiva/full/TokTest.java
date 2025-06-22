@@ -33,7 +33,7 @@ public class TokTest {
 
             FILE2_JIV = Path.of(
                     Objects.requireNonNull(
-                        TokTest.class.getClassLoader()
+                            TokTest.class.getClassLoader()
                                     .getResource("file2.jiv") // looks in
                                                               // test-resources root
                     ).toURI());
@@ -58,7 +58,8 @@ public class TokTest {
             // As this was emitted, the LAST token in the tokens list, should be a TFuncCall
             // and it's first parameter, should contain the exact same stirng.
             // Check if the tokenizer has the string.
-            Assertions.assertEquals("Hello World", ((TFuncCall) ((Token) tokens.getLast()).getValue()).args.get(0),
+            Assertions.assertEquals("Hello World$!",
+                    ((TFuncCall) ((Token) tokens.getLast()).getValue()).args.get(0),
                     "d_emit did not receive the exact stirng hello world (Token)");
         } catch (Exception e) {
             // catch any other exception that we realistically don't want to catch

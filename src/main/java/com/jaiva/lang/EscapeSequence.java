@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.jaiva.errors.TokenizerException;
+import com.jaiva.utils.Find;
+import com.jaiva.utils.Tuple2;
 
 /**
  * EscapeSequence class is a utility class that provides methods for escaping
@@ -254,10 +256,13 @@ public class EscapeSequence {
     /**
      * Escape all strings in a line.
      * 
+     * @deprecated Use {@link EscapeSequence#escapeAll(String)}. This only exists if
+     *             code which relied on this breaks and i need to use this again. (I
+     *             preferably would not like to)
      * @param line
      * @return
      */
-    public static String escapeAll(String line) {
+    public static String oldEscapeAll(String line) {
         // maak a <- "heelo"!
         // func("weird thing", "with multiple strings")
         // We have to escape anything in EVEN number stuff (ODD number in 0-based
@@ -276,6 +281,36 @@ public class EscapeSequence {
             } else {
                 b.append(parts[i]);
             }
+        }
+
+        return b.toString();
+    }
+
+    /**
+     * This method escapes all contents within string literals.
+     * <p>
+     * This uses the {@link Find#quotationPairs(String)} which if there is an
+     * unclosed string, does not consider as a pir.
+     * 
+     * @param line
+     * @return
+     */
+    public static String escapeAll(String line) {
+        ArrayList<Tuple2<Integer, Integer>> pairs = Find.quotationPairs(line);
+        if (pairs.isEmpty())
+            return line;
+        StringBuilder b = new StringBuilder();
+        // put the substring before the first pair
+        b.append(line.substring(0, pairs.get(0).first + 1)); // include the first "
+        for (int i = 0; i < pairs.size(); i++) {
+            Tuple2<Integer, Integer> pair = pairs.get(i);
+            String sub = line.substring(pair.first + 1, pair.second);
+            b.append(toEscape(sub));
+            // append " then the rest of the string, and then another "
+            b.append(line.substring(
+                    pair.second,
+                    i != pairs.size() - 1 ? pairs.get(i + 1).first + 1 : line.length()));
+
         }
 
         return b.toString();
