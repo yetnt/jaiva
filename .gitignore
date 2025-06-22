@@ -1,3 +1,7 @@
+# Release vers
+/jaiva-cli
+/src/test/java/com/jaiva/playground.java
+
 # Compiled class file
 *.class
 *.cmd

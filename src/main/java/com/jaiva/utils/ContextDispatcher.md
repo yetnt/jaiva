@@ -68,3 +68,7 @@ Errors:
 -   empty string = 16
 -   single brace = 9, 8
 -   impossible cases = 1, 2, 3, 4, 5, 10, 18 - 31
+
+Quick side note: Some cases are either incorrectly made or implemented, however all of them still have the correct output as documented in the table anwyays.
+
+Such as : the BC bit, its quite interesting as some cases for it do not act as its suppsoed to, but still show the correct output.

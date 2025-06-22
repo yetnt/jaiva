@@ -6,9 +6,7 @@ Version **_1.0.3_**
 
 This esolang of mine is still in development, so expect alot of updates.
 
-Expect : Confusion, Regret, and a bit of fun.
-
-Expect not : A good time, a good language, or a good experience.
+This is for the most part _supposed_ to be a functional programming language.
 
 To setup, see [Install.md](./Install.md)
 To run, see [CLI.md](./CLI.md)
@@ -47,6 +45,7 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
             -   [idk](#idk)
         -   _[Arithmetic and Boolean Comparisons](#arithmetic-and-boolean-comparisons)_
         -   _[Blocks](#blocks)_
+        -   _[Chaining](#chaining)_
     -   **[Keywords](#keywords)**
     -   **[Variables](#variables)**
         -   _[Definition](#definition)_
@@ -56,6 +55,7 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
     -   **[Functions](#functions)**
         -   _[Definition](#definition-1)_
         -   _[Calling](#calling)_
+        -   _[Referencing](#referencing)_
         -   _[Parameters](#parameters)_
             -   [Higher-Order Functions](#higher-order-functions)
             -   [Optional Arguments](#optional-arguments)
@@ -119,7 +119,7 @@ maak a <- 10!
 `<-` Is the basic assignment operator in this language. Any assignment you do is with this.
 
 > [!NOTE]
-> In the case of defining an array, use `<-|`
+> In the case of defining an array, use `<-|` See [Arrays](#arrays)
 
 ### Primitives
 
@@ -137,7 +137,7 @@ maak c <- 9.321!
 (also scientific notation is supported)
 
 ```
-maak b <- 1e4!
+maak b <- 1e4! @ This gets parsed as 10000
 ```
 
 #### Bools
@@ -229,18 +229,29 @@ Table of escape characters
 | `"` (double qoutes)    | `$"`            |
 | `$`                    | `$$`            |
 
+> [!WARNING]
+> I have no fucking clue why this happens. But if you want to use a ! character in a string you always have to escape it.
+> Or else some weird ahh infinite recursion will happen and Java will throw a Stack Overflow error. This probably has something to do with
+> how i check whether or not ! is the terminating character, but just escape it to be safe.
+
 #### idk
 
-This is a primitive which is used to represent nothingness.
+This is a constant and value which is used to represent nothingness.
 
 ```jaiva
-maak a <- idk!
-maak b!
+maak a <- idk!  @ Using idk as a value
+maak b!         @ Creating a variable with no value assigns idk to it
 maak c <- 10!
 
 khuluma(a = idk)! @ true
 khuluma(b = idk)! @ true
 khuluma(c != idk)! @ true
+
+kwenza func(t?) ->
+    khutla t!
+<-
+
+khuluma(func())! @ Prints idk, as the parameter t did not get a value.
 ```
 
 > [!NOTE]
@@ -283,28 +294,69 @@ if (a = 10) ->
 <~
 ```
 
+### Chaining
+
+In Jaiva you have array indexing with `[]` (See [Arrays](#arrays)) and function calling with `()` (See [Functions](#functions))
+
+Naturally, you can make some code like this:
+
+```jiv
+kwenza returnArray() ->
+    maak arr <-| 10, 39, returnArray, 4!    @ Creates an array with values and at index 2, contains a reference to itself.
+    khutla arr!
+<~
+```
+
+Instead of assigning each value returned to a variable, you can chain array indexing and function calls together, multiple times, in any order or any fashion
+
+```jiv
+returnArray()[1]!               @ holds 39
+returnArray()[1 + 1]!           @ ([1+1] becomes [2]) holds the referencing to itself, allowing it to call itself.
+returnArray()[-1 + 3]()!        @ ([-1+3] becomes [2]) returns the same array.
+returnArray()[2]()[4/2]!        @ ([4/2] becomes [2]) holds the exact same reference to itself, allowing infinite calls to itself
+
+@ holds the exact same reference, every time.
+returnArray()[2]()[2]()[2]()[2]()[2]()[2]()[2]()[2]!
+```
+
+One of my favourite examples is the infinity function
+
+```jiv
+kwenza infinity() ->
+    khutla infinity!
+<~
+
+infinity()!             @ Returns itself
+infinity()()()()!       @ Returns itself
+infinity()()()()()()()()()()()()()()()()()()()()()()! @ Still returns itself.
+```
+
+Jaiva's Interpreter however will take a while to resolve this mess of code when the chaining gets absurdly long. But if you give it time it will work.
+
 ## <center>Keywords
 
-Alot of the keywords refer to words from south african languages, so if you happen to know one, you've got the advantage
+Alot of the keywords refer to words from South African languages, so if you happen to know one, you've got the advantage
 here's a cheat table though
 
-| keyword   | meaning and what it's assigned to                        | language origin |
-| --------- | -------------------------------------------------------- | --------------- |
-| maak      | make/new (variable declaration keyword)                  | Afrikaans       |
-| aowa      | no (`false`)                                             | Sepedi          |
-| yebo      | yes (`true`)                                             | Zulu            |
-| khuluma   | talk (print to console)                                  | Zulu            |
-| mara      | but (`else` block)                                       | Sesotho         |
-| kwenza    | does (defines a function)                                | Zulu            |
-| khutla    | return (function return keyword)                         | Zulu            |
-| colonize  | for (for loop)                                           | English         |
-| zama zama | try (try block)                                          | Zulu            |
-| cima      | turn off (throw)                                         | Zulu            |
-| chaai     | "oh no!" or "oh shit!" (catch block)                     | idk             |
-| voetsek   | "fuck off" (`break` keyword)                             | Afrikaans       |
-| nevermind | Self-Explanatory (`continue` keyword)                    | English         |
-| with      | keyword used to define for each loop along with colonize | English         |
-| tsea      | import from another file                                 | Sepedi          |
+| keyword   | meaning                      | use in jaiva                                                  | language origin       | reference                                   |
+| --------- | ---------------------------- | ------------------------------------------------------------- | --------------------- | ------------------------------------------- |
+| maak      | "make"                       | variable declaration keyword                                  | Afrikaans             | [Variables](#variables)                     |
+| aowa      | "no"                         | `false`                                                       | Sepedi                | [Bools](#bools)                             |
+| yebo      | "yes"                        | `true`                                                        | Zulu                  | [Bools](#bools)                             |
+| if        | -                            | conditional execution keyword                                 | English               | [If Statements](#if-statements)             |
+| mara      | "but"                        | keyword to start an `else` block                              | Sesotho               | [Mara (else)](#mara-else)                   |
+| kwenza    | "does"                       | function definition keyword                                   | Zulu                  | [Functions](#functions)                     |
+| khutla    | "return"                     | function return keyword                                       | Zulu                  | [Functions](#functions)                     |
+| colonize  | -                            | loop constructs (for loop and for-each loop)                  | English               | [Colonize loops](#colonize-loops-for-loops) |
+| nikhil    | -                            | while loop keyword                                            | it's a name, not sure | [Colonize loops](#colonize-loops-for-loops) |
+| zama zama | "try"                        | try block                                                     | Zulu (informal?)      | [Errror Handling](#error-handling)          |
+| cima      | "turn off"                   | keyword to throw an error                                     | Zulu                  | [Throw an error](#throw-an-error)           |
+| chaai     | "oh no" (subjective meaning) | catch block                                                   | lowkey dont know      | [Error Handling](#error-handling)           |
+| voetsek   | "fuck off"                   | `break` keyword                                               | Afrikaans             | [Control flow](#control-flow)               |
+| nevermind | -                            | `continue` keyword                                            | English               | [Control flow](#control-flow)               |
+| with      | -                            | keyword used to define for each loop along with colonize      | English               | [Colonize loops](#colonize-loops-for-loops) |
+| tsea      | "take"                       | keyword to import symbols from another file                   | Sepedi                | [Tsea](#tsea-import-and-exporting-files)    |
+| idk       | -                            | This is a special keyword, as it also acts as a value. (null) | English               | [idk](#idk)                                 |
 
 ## <center>Variables
 
@@ -361,6 +413,8 @@ You can reassign any type really. This shit aint type safe.
 
 **Arrays are 0-indexed. This isn't Lua afterall**
 
+**Array literals do not exist. Sorry not sorry.**
+
 ```jiv
 maak a <-| 20, 23, 56, 324, 354!
 maak b <-|! @ Empty array.
@@ -409,6 +463,40 @@ maak c <- addition(10, 20)! @ 30
 ```
 
 Function parameters can take any type of variable, including arrays and other functions.
+
+### Referencing
+
+You can reference a function by excluding the parameter braces.
+
+```jiv
+khuluma(additon)! @ This will print to the console, the function's defintion. So "addition(param1, param2)"
+```
+
+And you can pass this reference as a value anywhere you want really
+
+(See [Higher-Order Functions](#higher-order-functions) for passing function references in other functions)
+
+```jiv
+maak new <- addition!   @ This will mkae the variable new hold the reference to the function addition
+khuluma(new(10, 10))!   @ Now new can be used as a function, and will act exactly like addition
+khuluma(new)!           @ Printing new will give you the original function's declaration so "addition(param1, param2)"
+```
+
+And some more funky examples
+
+```jiv
+kwenza anotherFunc() ->
+    khutla 10!
+<-
+
+maak t <- anotherFunc!  @ This assigns t, the reference to anotherFunc
+anotherFunc <- khuluma! @ This reassigns anotherFunc as a reference to khuluma
+
+khuluma(t)!             @ Print "anotherFunc()"
+khuluma(t())!           @ Prints 10
+khuluma(anotherFunc)    @ Prints "khuluma(msg, removeNewLn?)"
+anotherFunc("hello")!   @ Prints "hello" (Since this is just khuluma.)
+```
 
 ### Parameters
 
