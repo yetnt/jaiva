@@ -82,6 +82,12 @@ public class Primitives {
                 case "^":
                     result = Math.pow(iLhs, iRhs);
                     break;
+                case "&":
+                    result = iLhs & iRhs;
+                    break;
+                case "|":
+                    result = iLhs | iRhs;
+                    break;
                 default:
                     throw new CatchAllException("Invalid operator given", lineNumber);
             }
@@ -313,7 +319,7 @@ public class Primitives {
                 return sTuff;
 
             // Check the input type, where input 1 is arithmatic, and 0 is boolean.
-            if (tStatement.statementType == 1) {
+            if (tStatement.statementType == 1 || (op.equals("|") || op.equals("&"))) {
                 // check input first of all
                 if (!(lhs instanceof Integer) && !(lhs instanceof Double))
                     throw new TStatementResolutionException(tStatement, "left hand side",
@@ -330,7 +336,7 @@ public class Primitives {
                 }
             } else {
                 // In this else branch, the type is boolean logic
-                if (op.equals("&&") || op.equals("&") || op.equals("||") || op.equals("|")) {
+                if (op.equals("&&") || op.equals("||")) {
                     // if the logic operator is one of these naturally, the input has to be boolean
                     // check input first of all
                     if (!(lhs instanceof Boolean))
@@ -341,9 +347,9 @@ public class Primitives {
                                 rhs.toString());
 
                     switch (op) {
-                        case "&&", "&":
+                        case "&&":
                             return ((Boolean) lhs) && ((Boolean) rhs);
-                        case "||", "|":
+                        case "||":
                             return ((Boolean) lhs) || ((Boolean) rhs);
                     }
                 } else if (op.equals(">=") || op.equals("<=") || op.equals("<") || op.equals(">")) {

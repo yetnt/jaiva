@@ -125,8 +125,20 @@
         "numbers": {
             "patterns": [
                 {
+                    "name": "constant.numeric.hex.jaiva",
+                    "match": "\\b-?0x[0-9a-fA-F]+\\b"
+                },
+                {
+                    "name": "constant.numeric.binary.jaiva",
+                    "match": "\\b-?0b[01]+\\b"
+                },
+                {
+                    "name": "constant.numeric.octal.jaiva",
+                    "match": "\\b-?0c[0-9]+\\b"
+                },
+                {
                     "name": "constant.numeric.jaiva",
-                    "match": "\\b\\d+(\\.|e\\d+)?\\b"
+                    "match": "\\b-?\\d+(\\.\\d+)?(e-?\\d+)?\\b"
                 }
             ]
         }

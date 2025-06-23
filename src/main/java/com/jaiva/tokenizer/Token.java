@@ -1426,7 +1426,7 @@ public class Token<T extends TokenDefault> {
             // if it fails, return TVarRef
             // if it succeeds, return the primitive type
             try {
-                return Integer.parseInt(line);
+                return parseIntegerLiteral(line);
             } catch (NumberFormatException e) {
                 try {
                     return Double.parseDouble(line);
@@ -1481,6 +1481,42 @@ public class Token<T extends TokenDefault> {
                 throw new CatchAllException("yeah sum went wrong with ur dispatch code", lineNumber);
         }
 
+    }
+
+    /**
+     * Parses a string representing an integer literal in decimal, hexadecimal,
+     * binary, or octal format.
+     * <p>
+     * Supported formats:
+     * <ul>
+     * <li>Decimal: e.g., "42", "-17"</li>
+     * <li>Hexadecimal: prefixed with "0x" or "0X", e.g., "0x2A", "-0X1F"</li>
+     * <li>Binary: prefixed with "0b" or "0B", e.g., "0b1010", "-0B1101"</li>
+     * <li>Octal: prefixed with "0c" or "0C", e.g., "0c52", "-0C17"</li>
+     * </ul>
+     * Leading and trailing whitespace is ignored. Negative numbers are supported.
+     *
+     * @param input the string to parse as an integer literal
+     * @return the parsed integer value
+     * @throws NumberFormatException if the input is not a valid integer literal
+     */
+    public static int parseIntegerLiteral(String input) throws NumberFormatException {
+        input = input.trim();
+        boolean negation = input.charAt(0) == '-';
+        input = negation ? input.substring(1) : input; // remove the negation
+        String prefix = input.length() > 1 ? input.substring(0, 2) : null;
+        if (new ArrayList(Arrays.asList("0x", "0X", "0b", "0B", "0c", "0C")).contains(prefix)) {
+            String literal = (negation ? "-" : "") + input.substring(2);
+            switch (prefix) {
+                case "0x", "0X":
+                    return Integer.parseInt(literal, 16);
+                case "0b", "0B":
+                    return Integer.parseInt(literal, 2);
+                case "0c", "0C":
+                    return Integer.parseInt(literal, 8);
+            }
+        }
+        return Integer.parseInt(input); // allows this method to throw.
     }
 
 }
