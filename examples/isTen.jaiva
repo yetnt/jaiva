@@ -1,0 +1,26 @@
+@* Assign the variable print the reference to the khuluma function, so you can read this properly
+maak print <- khuluma!
+
+@* Array holding 10 in hex, 10 in binary, and 8 in octal, and then 10 in decimal
+maak values <-| 0xA, 0b1010, 0c10, 10!
+
+@* Calculate whether or not a value is 10
+kwenza isTen(input, F~error) ->
+    if (input != 10) ->
+        error()!
+        khutla aowa!
+    <~ mara ->
+        khutla yebo! @ Return yebo (true)
+    <~
+<~
+
+kwenza errorFunc() ->
+    print("$nThat shit aint 10??$n")!
+<~
+
+colonize value with values ->
+    maak bool <- isTen(value, errorFunc)!
+    if (bool = true) ->
+        print(bool)!
+    <~
+<~

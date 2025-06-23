@@ -1,6 +1,14 @@
-# <center> <img src="images/jaiva-full-logo.png" width="50"> Jaiva!
+<h1> <center> <img src="images/jaiva-full-logo.png" width="50"> Jaiva!</h1>
 
-Version **_2.0.0_**
+(Current) Version : **_1.0.2_**
+
+(Beta) Version : **_2.0.0-beta.0_**
+
+![isTen](./images/isTen.png)
+
+![screenshot of the testType.jiv program](./images/testType.png)
+
+<!-- ![sc](./images/game.png) -->
 
 ---
 
@@ -32,7 +40,6 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
 -   **[Jaiva!](#jaiva)**
     -   **[Prerequisites](#prerequisites)**
     -   **[Index](#index)** <- you are here.
-    -   **[Screenshots](#screenshots)**
     -   **[Syntax](#syntax)**
         -   _[Comments](#comments)_
         -   _[Assignment Operators](#assignment-operators)_
@@ -43,7 +50,7 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
                 -   [String Operations](#string-operations)
                 -   [Escaping Characters](#escaping-characters)
             -   [idk](#idk)
-        -   _[Arithmetic and Boolean Comparisons](#arithmetic-and-boolean-comparisons)_
+        -   _[Operators](#operators)_
         -   _[Blocks](#blocks)_
         -   _[Chaining](#chaining)_
     -   **[Keywords](#keywords)**
@@ -73,10 +80,6 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
         -   _[zama zama (Try) chaai (Catch) Block](#zama-zama-try-chaai-catch-block)_
     -   **[Scopes](#scopes)**
     -   **[Tsea (Import) and Exporting Files](#tsea-import-and-exporting-files)**
-
-## <center>Screenshots
-
-![sc](./images/game.png)
 
 ## <center>Syntax
 
@@ -118,8 +121,9 @@ maak a <- 10!
 
 `<-` Is the basic assignment operator in this language. Any assignment you do is with this.
 
-> [!NOTE]
-> In the case of defining an array, use `<-|` See [Arrays](#arrays)
+Accept for arrays, thats specifically `<-|` (See [Arrays](#arrays))
+
+And also for throwing errors, thats `<==` (See [Throw an error](#throw-an-error))
 
 ### Primitives
 
@@ -260,7 +264,7 @@ khuluma(func())! @ Prints idk, as the parameter t did not get a value.
 > [!NOTE]
 > In the case of passing `idk` into a function call, unless the paramter is marked as optional, you cannot pass `idk` into a required parameter.
 
-### Arithmatic and Boolean Comparisons
+### Operators
 
 | operation                       | operator |
 | ------------------------------- | -------- |

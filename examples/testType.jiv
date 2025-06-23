@@ -1,0 +1,29 @@
+@* Test if the input is number or double
+kwenza testType(input) ->
+    maak out!
+    zama zama ->
+        out <- 1 ^ input! @ If its a number, out will be set.
+        khutla "number"!
+    <~ chaai ->
+        zama zama ->
+            if (input != yebo && input != aowa) ->
+                cima <== "Hai check for string"!
+            <~
+            khutla "boolean"!
+        <~ chaai ->
+            zama zama ->
+                out <- input * 3! @ if its a string, the sting will be repeated 3 times
+                khutla "string"!
+            <~ chaai ->
+                @ Return idk type if we dont know
+                khutla idk!
+            <~
+        <~
+    <~
+<~
+
+maak arr <-| 130, 23, "sss", idk, yebo, true, idk, aowa, false, 0x10FC!
+
+colonize v with arr ->
+    khuluma(testType(v))!
+<~

@@ -503,7 +503,8 @@ public class Interpreter {
                 try {
                     Object out = Interpreter.interpret(throwError.tryBlock.lines, Context.TRY, vfs, config);
                     if (out instanceof ThrowIfGlobalContext g) {
-                        if (((ThrowIfGlobalContext) out).c instanceof Keywords) {
+                        if (((ThrowIfGlobalContext) out).c instanceof Keywords
+                                || isVariableToken(((ThrowIfGlobalContext) out).c)) {
                             ThrowIfGlobalContext checker = throwIfGlobalContext(context, out, g.lineNumber);
                             return checker;
                         } else if (((ThrowIfGlobalContext) out).c instanceof TThrowError) {

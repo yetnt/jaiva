@@ -50,7 +50,7 @@ kwenza shop() ->
     khuluma()!
     khuluma("1:$tUPGRADE UR CAR (IT WILL BE MORE EXPENSIVE TO MAINTAIN.) FOR R" + upgradePrice)!
     khuluma("2:$tFUEL UR CAR FOR R" + monPerFuel)!
-    khuluma("3:$tWIN THE GAME R" + 100000000)!
+    khuluma("3:$tWIN THE GAME R" + 1e4)!
     khuluma("4:$tLEAVE THE ESTABISHMENT.")!
     maak option <- mamela()!
     if (option = "1" && (money > upgradePrice)) ->
