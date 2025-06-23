@@ -90,7 +90,7 @@ public class IOFunctions extends BaseGlobals {
                 output = o.toString();
             }
 
-            String isJustStr = newO instanceof String ? "\"" : "";
+            String isJustStr = newO instanceof String && config.isDebugEnv ? "\"" : "";
 
             if (v instanceof Boolean && (Boolean) v == true) {
                 System.out.print(
