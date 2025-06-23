@@ -129,15 +129,23 @@ This is just any integer or real number
 
 They don't need any special format, you can just type the number out to use it
 
-```
+```jiv
 maak b <- 10!
 maak c <- 9.321!
 ```
 
 (also scientific notation is supported)
 
-```
+```jiv
 maak b <- 1e4! @ This gets parsed as 10000
+```
+
+even binary, hex and octal notation is supported! (it always gets parsed as an integer)
+
+```jiv
+maak c <- 0b1010    @ Integer 10 in binary
+maak d <- 0xA       @ Integer 10 in hexadecimal
+maak e <- 0c12      @ Integer 10 in Octal
 ```
 
 #### Bools
@@ -146,7 +154,7 @@ maak b <- 1e4! @ This gets parsed as 10000
 
 They don't need any special format, you can just type the bool out to use it
 
-```
+```jiv
 maak b <- aowa!
 ```
 
@@ -156,13 +164,13 @@ Strings, stolen striaght from Java use `"` (double quotes) to start and end a st
 
 These are the only characters for strings. No string literals or multi line strings because wtf dawg.
 
-```
+```jiv
 maak b <- "String"!
 ```
 
 To get the length of a string use the `~` operator
 
-```
+```jiv
 maak b <- "let's gooo"!
 khuluma(b~)! @ returns 10
 ```
@@ -257,6 +265,7 @@ khuluma(func())! @ Prints idk, as the parameter t did not get a value.
 | operation                       | operator |
 | ------------------------------- | -------- |
 | modulu                          | `%`      |
+| power                           | `^`      |
 | division                        | `/`      |
 | multiplication                  | `*`      |
 | addition                        | `+`      |
@@ -266,7 +275,24 @@ khuluma(func())! @ Prints idk, as the parameter t did not get a value.
 | is not equal to                 | `!=`     |
 | greater than (and equal to)     | `>` `>=` |
 | less than (and equal to)        | `<` `<=` |
+| logical and                     | `&&`     |
+| logical or                      | `\|\|`   |
+| bitwise AND                     | `&`      |
+| bitwise OR                      | `\|`     |
 | braces for ordering             | `(` `)`  |
+
+#### Order of Operations
+
+All Operations follow this exact order:
+
+1. Exponentiation
+2. Division, Multiplcation, Modulo
+3. Addition, Subtraction
+4. Bitwise Operators
+5. Comparisons
+6. Logical Operators
+
+Use `(`braces`)` to change the order however you wish.
 
 > [!NOTE]
 > You cannot negate a boolean expression. Sorry not sorry.

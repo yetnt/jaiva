@@ -52,12 +52,11 @@ public class Validate {
      */
     public static int containsOperator(char[] string) {
         for (char c : string) {
-            if (Chars.Operators.getArithmetic().contains(String.valueOf(c))) {
-                return 1;
-            }
-            if (Chars.Operators.getBoolean().contains(String.valueOf(c))) {
-                return 0;
-            }
+            int t = Chars.Operators.getType(c + "");
+            if (t == -1)
+                continue;
+            else
+                return t;
         }
         return -1;
     }

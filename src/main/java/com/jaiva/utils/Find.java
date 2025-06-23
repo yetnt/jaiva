@@ -188,32 +188,33 @@ public class Find {
         return -1;
     }
 
-    public class TStatementOpIndex {
-        public String op;
-        public int index;
-        public int tStatementType;
+    // public class TStatementOpIndex {
+    // public String op;
+    // public int index;
+    // public int tStatementType;
 
-        public TStatementOpIndex(String op, int index, int type) {
-            this.op = op;
-            this.index = index;
-            switch (type) {
-                case 0:
-                    tStatementType = 1; // Exponentiation
-                    break;
-                case 1:
-                    tStatementType = 1; // DivMult
-                    break;
-                case 2:
-                    tStatementType = 1; // AddSub
-                    break;
-                case 3:
-                    tStatementType = 0; // Bools
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid type: " + type);
-            }
-        }
-    }
+    // public TStatementOpIndex(String op, int index, int type) {
+    // this.op = op;
+    // this.index = index;
+    // switch (type) {
+    // case 0:// Exponentiation
+    // case 1:// DivMult
+    // case 2:// AddSub
+    // case 3:// Bitwise operations. Normally this should be by itself, but since
+    // the
+    // // interprter knows how to handle bitwise stuff and its in the number
+    // handling
+    // // method, group it under numbers
+    // tStatementType = 1;
+    // break;
+    // case 4, 5: // Comparison and logical operators
+    // tStatementType = 0;
+    // break;
+    // default:
+    // throw new IllegalArgumentException("Invalid type: " + type);
+    // }
+    // }
+    // }
 
     public static class LeastImportantOperator {
         public String op;
@@ -227,10 +228,13 @@ public class Find {
                 case 0:// Exponentiation
                 case 1:// DivMult
                 case 2:// AddSub
+                case 3:// Bitwise operations. Normally this should be by itself, but since the
+                       // interprter knows how to handle bitwise stuff and its in the number handling
+                       // method, group it under numbers
                     tStatementType = 1;
                     break;
-                case 3:
-                    tStatementType = 0; // Bools
+                case 4, 5: // Comparison and logical operators
+                    tStatementType = 0;
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid group: " + group);
@@ -338,6 +342,8 @@ public class Find {
      */
     public static LeastImportantOperator leastImportantOperator(String statement) {
         int level = 0;
+        if (statement.trim().isEmpty())
+            return new LeastImportantOperator();
         ArrayList<Integer> indexes1 = new ArrayList<>();
         for (int i = 0; i < statement.length(); i++) {
             char c = statement.charAt(i);
@@ -353,7 +359,8 @@ public class Find {
 
         if (indexes1.isEmpty())
             return new LeastImportantOperator(); // exit early if no operators are found.
-        int group = -1; // 0 = Exponentiation, 1 = DivMult, 2 = AddSub, 3 = Bools
+        int group = -1; // 0 = Exponentiation, 1 = DivMult, 2 = AddSub, 3 = Bitwise, 4 = Comparison, 5 =
+                        // Logical
 
         ArrayList<Integer> indexes2 = new ArrayList<>();
 
@@ -429,9 +436,7 @@ public class Find {
      */
     public static int operatorIndex(char[] string) {
         for (int i = 0; i < string.length; i++) {
-            if (Operators.getArithmetic().contains(String.valueOf(string[i])))
-                return i;
-            if (Operators.getBoolean().contains(String.valueOf(string[i])))
+            if (Operators.getAllChars().contains(string[i]))
                 return i;
         }
         return -1;

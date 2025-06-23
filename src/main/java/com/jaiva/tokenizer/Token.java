@@ -1254,6 +1254,9 @@ public class Token<T extends TokenDefault> {
         public Object parse(String statement) {
             statement = statement.trim();
 
+            if (statement.isEmpty()) {
+                return null;
+            }
             ContextDispatcher d = new ContextDispatcher(statement);
             if (d.getDeligation() == To.PROCESS_CONTENT) {
                 return processContext(statement, lineNumber);

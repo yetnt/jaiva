@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import com.jaiva.utils.Find;
+
 /**
  * The Chars class defines a set of constants and utility methods for tokenizing
  * and parsing JAIVA. It includes definitions for comment markers,
@@ -138,13 +140,44 @@ public class Chars {
          */
         public static final List<String> AddSub = Arrays.asList("+", "-");
         /**
-         * List of boolean operators.
+         * Bitwise operations
          */
-        public static final List<String> Bools = Arrays.asList("|", "&", ">", "<", "=", "!", "?");
+        public static final List<String> Bitwise = Arrays.asList("&", "|");
+
         /**
-         * List of double boolean operators.
+         * Comparison operators
+         * <p>
+         * The ! operator is listed here, because
+         * {@link Find#leastImportantOperator(String)} works on a character by character
+         * basis. Therefore we can't actually just get 2 length operators immediately,
+         * it will later add the next part of the operator when needed. Therefore,
+         * {@code !} only exists, such that {@code !=} can also exist. If you don't get
+         * it. Your fault for trying to udnerstand this mess. But an exmaple would be
+         * the {@link Chars.Operators#Bitwise} which contains the single operators
+         * {@code &} and {@code |}. If they didn't exist, then
+         * {@link Chars.Operators#Logical}'s Operators being the {@code &&} and
+         * {@code ||} would break. Just like deleting {@code !} would break {@code !=}.
+         * Only difference being that {@code !} is not a valid operator, while every
+         * other case is.
          */
-        public static final List<String> DoubleBools = Arrays.asList("||", "&&", "!=", ">=", "<=");
+        public static final List<String> Comparison = Arrays.asList("=", "!=", ">=", "<=", "<", ">", "!", "?");
+
+        /**
+         * Logical operators
+         */
+        public static final List<String> Logical = Arrays.asList("||", "&&");
+
+        // /**
+        // * List of boolean operators.
+        // */
+        // public static final List<String> Bools = Arrays.asList(">", "<", "=", "!",
+        // "?");
+
+        // /**
+        // * List of double boolean operators.
+        // */
+        // public static final List<String> DoubleBools = Arrays.asList("||", "&&",
+        // "!=", ">=", "<=");
 
         /**
          * List of all arithmetic operators.
@@ -165,18 +198,19 @@ public class Chars {
         }
 
         /**
-         * List of all boolean operators.
+         * List of all boolean (Catch all term for anything returning a boolean)
+         * operators.
          *
          * This method aggregates elements from the following lists:
-         * - DoubleBools
-         * - Bools
+         * - Comparison
+         * - Logical
          *
          * @return A list containing all boolean operators from the above categories.
          */
         public static List<String> getBoolean() {
             List<String> all = new ArrayList<>();
-            all.addAll(DoubleBools);
-            all.addAll(Bools);
+            all.addAll(Comparison);
+            all.addAll(Logical);
             return all;
         }
 
@@ -187,8 +221,9 @@ public class Chars {
          * - Exponentiation
          * - DivMult
          * - AddSub
-         * - DoubleBools
-         * - Bools
+         * - Bitwise
+         * - Comparison
+         * - Logical
          *
          * @return A list containing all elements from the above categories.
          */
@@ -197,8 +232,9 @@ public class Chars {
             all.addAll(Exponentiation);
             all.addAll(DivMult);
             all.addAll(AddSub);
-            all.addAll(DoubleBools);
-            all.addAll(Bools);
+            all.addAll(Bitwise);
+            all.addAll(Comparison);
+            all.addAll(Logical);
             return all;
         }
 
@@ -226,14 +262,12 @@ public class Chars {
          */
         public static List<List<String>> getAllLists() {
             List<List<String>> all = new ArrayList<>();
-            List<String> bools = new ArrayList<>();
-            bools.addAll(Bools);
-            bools.addAll(DoubleBools);
-
             all.add(Exponentiation);
             all.add(DivMult);
             all.add(AddSub);
-            all.add(bools);
+            all.add(Bitwise);
+            all.add(Comparison);
+            all.add(Logical);
             return all;
         }
 
@@ -248,7 +282,9 @@ public class Chars {
          *         0 - Exponentiation
          *         1 - Division/Multiplication
          *         2 - Addition/Subtraction
-         *         3 - Boolean operators
+         *         3 - Bitwise
+         *         4 - Comparison
+         *         5 - Logical
          *         -1 - Not an operator
          */
         public static int getType(String op) {
@@ -258,9 +294,14 @@ public class Chars {
                 return 1;
             else if (AddSub.contains(op))
                 return 2;
-            else if (Bools.contains(op) || DoubleBools.contains(op))
+            else if (Bitwise.contains(op))
                 return 3;
-            return -1;
+            else if (Comparison.contains(op))
+                return 4;
+            else if (Logical.contains(op))
+                return 5;
+            else
+                return -1;
         }
     }
 
