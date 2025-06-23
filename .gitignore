@@ -1,6 +1,7 @@
 # Release vers
 /jaiva-cli
 /src/test/java/com/jaiva/playground.java
+/src/test/resources/dummy.jiv
 
 # Compiled class file
 *.class

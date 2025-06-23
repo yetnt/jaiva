@@ -1,6 +1,6 @@
 # <center> <img src="images/jaiva-full-logo.png" width="50"> Jaiva!
 
-Version **_1.0.3_**
+Version **_2.0.0_**
 
 ---
 
