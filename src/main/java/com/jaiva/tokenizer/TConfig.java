@@ -1,5 +1,7 @@
 package com.jaiva.tokenizer;
 
+import com.jaiva.Config;
+
 /**
  * TConfig class is a configuration class for the Jaiva tokenizer that holds the
  * path to the Jaiva source
@@ -10,11 +12,7 @@ package com.jaiva.tokenizer;
  * <p>
  * The path is stored in the {@link TConfig#JAIVA_SRC} field.
  */
-public class TConfig {
-    /**
-     * The path to the Jaiva source code.
-     */
-    public String JAIVA_SRC;
+public class TConfig extends Config {
 
     /**
      * The constructor for the TConfig class.
@@ -24,6 +22,6 @@ public class TConfig {
      * @param jaiva_src The path to the Jaiva source code.
      */
     public TConfig(String jaiva_src) {
-        JAIVA_SRC = jaiva_src;
+        super(jaiva_src);
     }
 }

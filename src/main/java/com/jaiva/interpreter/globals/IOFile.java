@@ -94,10 +94,10 @@ public class IOFile extends BaseGlobals {
      */
     public class VBinaryDirectory extends BaseVariable {
         public VBinaryDirectory(Token<?> container, IConfig config) {
-            super("f_bin", container.new TStringVar("f_bin", config.JAIVA_SRC.toAbsolutePath().toString(), 0,
+            super("f_bin", container.new TStringVar("f_bin", config.JAIVA_SRC_PATH.toAbsolutePath().toString(), 0,
                     "Variable that holds the directory where you can find jaiva.jar"),
 
-                    config.JAIVA_SRC.toAbsolutePath().toString());
+                    config.JAIVA_SRC_PATH.toAbsolutePath().toString());
             freeze();
         }
     }

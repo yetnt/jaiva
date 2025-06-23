@@ -3,6 +3,7 @@ package com.jaiva.interpreter.runtime;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+import com.jaiva.Config;
 import com.jaiva.Main;
 
 /**
@@ -11,7 +12,11 @@ import com.jaiva.Main;
  * It allows customization of interpreter behavior through various flags and
  * options.
  */
-public class IConfig {
+public class IConfig extends Config {
+    /**
+     * Whether or not the user used the "-d" flag to toggle debug mode.
+     */
+    public boolean isDebugEnv = false;
     /**
      * The command-line arguments passed to the Jaiva tokenizer and interpreter.
      * This array is used to tell the user what arguments were passed to the current
@@ -56,7 +61,7 @@ public class IConfig {
      * This variable should point to the root directory containing Jaiva source
      * files.
      */
-    public Path JAIVA_SRC;
+    public Path JAIVA_SRC_PATH;
 
     // ...add more interpreter settings.
 
@@ -73,18 +78,21 @@ public class IConfig {
      * @throws NullPointerException if {@code currentFilePath} or {@code jSrc} is
      */
     public IConfig(String[] args, String currentFilePath, String jSrc) {
+        super(jSrc);
         this.args = args;
         for (String arg : args) {
             if (!arg.equals(currentFilePath) && !Main.tokenArgs.contains(arg)
             /* && !Main.replArgs.contains(arg) */) {
                 // because if this overload is invoked, we're running a file, so we dont need to
                 // check for REPL args.
+                if (arg.equals("-d") || arg.equals("--debug"))
+                    isDebugEnv = !isDebugEnv;
                 sanitisedArgs.add(arg);
             }
         }
         filePath = Path.of(currentFilePath != null ? currentFilePath : "");
         fileDirectory = Path.of(currentFilePath != null ? currentFilePath : "").getParent();
-        JAIVA_SRC = Path.of(jSrc);
+        JAIVA_SRC_PATH = Path.of(jSrc);
     }
 
     /**
@@ -117,6 +125,7 @@ public class IConfig {
      * @param jSrc The path to the Jaiva source directory.
      */
     public IConfig(String jSrc) {
-        JAIVA_SRC = Path.of(jSrc);
+        super(jSrc);
+        JAIVA_SRC_PATH = Path.of(jSrc);
     }
 }
