@@ -18,6 +18,9 @@ import com.jaiva.tokenizer.Token.TFuncCall;
  * Math functions ofc
  */
 public class Math extends BaseGlobals {
+    /**
+     * Default Constructor
+     */
     public Math() {
         super(GlobalType.LIB, "math");
         vfs.put("m_random", new MapValue(new FRandom(container)));
@@ -32,21 +35,7 @@ public class Math extends BaseGlobals {
     }
 
     /**
-     * Represents a function that returns the absolute value of a number.
-     * <p>
-     * The {@code FAbs} class extends {@link BaseFunction} and implements a
-     * function
-     * named {@code m_abs} that takes one parameter: {@code value}.
-     * It returns the absolute value of the provided number.
-     * </p>
-     *
-     * <p>
-     * Usage:
-     * <ul>
-     * <li>{@code m_abs(value)} - Returns the absolute value of the number
-     * provided.</li>
-     * </ul>
-     * </p>
+     * {@code m_abs(value)} -> returns the absolute value of the given number.
      *
      * <p>
      * Throws {@link WtfAreYouDoingException} if:
@@ -79,24 +68,8 @@ public class Math extends BaseGlobals {
     }
 
     /**
-     * Represents a function that generates a random integer within a specified
-     * range.
-     * <p>
-     * The {@code FRandom} class extends {@link BaseFunction} and implements a
-     * function
-     * named {@code m_random} that takes two parameters: {@code lower} and
-     * {@code upper}.
-     * It returns a random integer between {@code lower} and {@code upper}, both
-     * inclusive.
-     * </p>
-     *
-     * <p>
-     * Usage:
-     * <ul>
-     * <li>{@code m_random(lower, upper)} - Returns a random integer in the range
-     * [lower, upper].</li>
-     * </ul>
-     * </p>
+     * {@code m_random(lower, upper)} -> returns a random integer with [lower,
+     * upper]
      *
      * <p>
      * Throws {@link WtfAreYouDoingException} if:
@@ -138,7 +111,7 @@ public class Math extends BaseGlobals {
     }
 
     /**
-     * Represents a function that rounds a double value to the nearest integer.
+     * {@code m_round(value)} -> rounds an approximatio to the nearest integer.
      * <p>
      * If the input value is already an integer, it is returned as-is.
      * If the input value is a double, it is rounded to the nearest integer using
@@ -155,7 +128,7 @@ public class Math extends BaseGlobals {
     class FRound extends BaseFunction {
         FRound(Token<?> container) {
             super("m_round", container.new TFunction("m_round", new String[] { "value" }, null, -1,
-                    "Rounds a double to the nearest integer, or returns the integer if already an integer"));
+                    "Rounds the given real nmber to an integer. This is for the real ones who hate working with precision."));
             this.freeze();
         }
 
@@ -176,21 +149,8 @@ public class Math extends BaseGlobals {
     }
 
     /**
-     * Represents a function that calculates the square root of a number.
-     * <p>
-     * The {@code FSqrt} class extends {@link BaseFunction} and implements a
-     * function
-     * named {@code m_sqrt} that takes one parameter: {@code value}.
-     * It returns the square root of the provided number.
-     * </p>
-     *
-     * <p>
-     * Usage:
-     * <ul>
-     * <li>{@code m_sqrt(value)} - Returns the square root of the number
-     * provided.</li>
-     * </ul>
-     * </p>
+     * {@code m_sqrt(value)} -> Returns the (positive) square root of the number
+     * provided
      *
      * <p>
      * Throws {@link WtfAreYouDoingException} if:
@@ -202,7 +162,7 @@ public class Math extends BaseGlobals {
     class FSqrt extends BaseFunction {
         FSqrt(Token<?> container) {
             super("m_sqrt", container.new TFunction("m_sqrt", new String[] { "value" }, null, -1,
-                    "Returns the square root of a number"));
+                    "Returns the (positive) square root of the number provided"));
             this.freeze();
         }
 
@@ -223,22 +183,8 @@ public class Math extends BaseGlobals {
     }
 
     /**
-     * Represents a function that raises a base to the power of an exponent.
-     * <p>
-     * The {@code FPow} class extends {@link BaseFunction} and implements a
-     * function
-     * named {@code m_pow} that takes two parameters: {@code base} and
-     * {@code exponent}.
-     * It returns the result of raising the base to the power of the exponent.
-     * </p>
-     *
-     * <p>
-     * Usage:
-     * <ul>
-     * <li>{@code m_pow(base, exponent)} - Returns the result of base raised to
-     * the power of exponent.</li>
-     * </ul>
-     * </p>
+     * {@code m_pow(base, exponent)} <- Returns the result of base raised to
+     * the power of exponent.
      *
      * <p>
      * Throws {@link WtfAreYouDoingException} if:
@@ -274,22 +220,8 @@ public class Math extends BaseGlobals {
     }
 
     /**
-     * Represents a function that returns the largest integer less than or equal to
-     * a given value.
-     * <p>
-     * The {@code FFloor} class extends {@link BaseFunction} and implements a
-     * function
-     * named {@code m_floor} that takes one parameter: {@code value}.
-     * It returns the largest integer less than or equal to the provided value.
-     * </p>
-     *
-     * <p>
-     * Usage:
-     * <ul>
-     * <li>{@code m_floor(value)} - Returns the largest integer less than or equal
-     * to the number provided.</li>
-     * </ul>
-     * </p>
+     * {@code m_floor(value)} - Returns the largest integer less than or equal
+     * to the number provided.
      *
      * <p>
      * Throws {@link WtfAreYouDoingException} if:
@@ -321,22 +253,8 @@ public class Math extends BaseGlobals {
     }
 
     /**
-     * Represents a function that returns the smallest integer greater than or equal
-     * to a given value.
-     * <p>
-     * The {@code FCeil} class extends {@link BaseFunction} and implements a
-     * function
-     * named {@code m_ceil} that takes one parameter: {@code value}.
-     * It returns the smallest integer greater than or equal to the provided value.
-     * </p>
-     *
-     * <p>
-     * Usage:
-     * <ul>
-     * <li>{@code m_ceil(value)} - Returns the smallest integer greater than or
-     * equal to the number provided.</li>
-     * </ul>
-     * </p>
+     * {@code m_ceil(value)} - Returns the smallest integer greater than or
+     * equal to the number provided.
      *
      * <p>
      * Throws {@link WtfAreYouDoingException} if:

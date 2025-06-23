@@ -62,7 +62,7 @@ khuluma(m_abs(5))! @ Prints 5
 
 \*_**Independent**_
 
-Returns the square root of the given number. This is useful for finding the root of a number.
+Returns the square root of the given number.
 
 ```jiv
 tsea "jaiva/math"!
@@ -74,7 +74,7 @@ khuluma(m_sqrt(25))! @ Prints 5
 
 \*_**Independent**_
 
-Raises the `base` to the power of `exponent`. This is useful for exponentiation.
+Raises the `base` to the power of `exponent`.
 
 ```jiv
 tsea "jaiva/math"!
@@ -86,7 +86,7 @@ khuluma(m_pow(5, 2))! @ Prints 25
 
 \*_**Independent**_
 
-Returns the sine of the given angle in radians. This is useful for trigonometric calculations.
+Returns the sine of the given angle in radians.
 
 ```jiv
 tsea "jaiva/math"!
@@ -98,7 +98,7 @@ khuluma(m_sin(m_pi))! @ Prints 0.0
 
 \*_**Independent**_
 
-Returns the cosine of the given angle in radians. This is useful for trigonometric calculations.
+Returns the cosine of the given angle in radians.
 
 ```jiv
 tsea "jaiva/math"!
@@ -110,7 +110,7 @@ khuluma(m_cos(m_pi))! @ Prints -1.0
 
 \*_**Independent**_
 
-Returns the tangent of the given angle in radians. This is useful for trigonometric calculations.
+Returns the tangent of the given angle in radians.
 
 ```jiv
 tsea "jaiva/math"!
@@ -182,7 +182,7 @@ khuluma(m_toDeg(m_pi / 2))! @ Prints 90.0
 
 \*_**Independent**_
 
-Rounds the given real number down to the nearest integer. This is useful for getting the largest integer less than or equal to the number.
+Rounds the given real number down to the nearest integer.
 
 ```jiv
 tsea "jaiva/math"!
@@ -194,7 +194,7 @@ khuluma(m_floor(-4.51))! @ Prints -5
 
 \*_**Independent**_
 
-Rounds the given real number up to the nearest integer. This is useful for getting the smallest integer greater than or equal to the number.
+Rounds the given real number up to the nearest integer.
 
 ```jiv
 tsea "jaiva/math"!

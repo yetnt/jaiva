@@ -58,7 +58,6 @@ public class Globals<T extends GlobalType> extends BaseGlobals {
      * @return string with the JSON representation of the global tokens.
      * @throws JaivaException TODO
      */
-    @SuppressWarnings("unchecked")
     public String returnGlobalsJSON(boolean removeTrailingComma) throws JaivaException {
         StringBuilder string = new StringBuilder();
         vfs.forEach((name, vf) -> {
@@ -151,7 +150,6 @@ public class Globals<T extends GlobalType> extends BaseGlobals {
             this.freeze();
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
                 IConfig config)
@@ -208,7 +206,7 @@ public class Globals<T extends GlobalType> extends BaseGlobals {
     class FSleep extends BaseFunction {
         FSleep(Token<?> cont) {
             super("sleep", cont.new TFunction("sleep", new String[] { "milliseconds" }, null, -1,
-                    "Sleep for `ms` amount of milliseconds."));
+                    "Sleep for `ms` amount of milliseconds. (Keep in mind this function still has to take your value and turn it into a Java primitive and other things, so the delay might not be exact. If you're looking for accuracy maybe remove x amount of ms till it's accurate.)"));
             this.freeze();
         }
 

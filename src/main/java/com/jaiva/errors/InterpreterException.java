@@ -40,7 +40,7 @@ public class InterpreterException extends JaivaException {
      * <li>Otherwise, returns the original name.</li>
      * </ul>
      *
-     * @param s the simple name of the class or type
+     * @param c the class
      * @return a user-friendly string representing the type
      */
     private static String friendlyName(Class<?> c) {
@@ -94,7 +94,8 @@ public class InterpreterException extends JaivaException {
     /**
      * Interpreter Exception Constructor
      * 
-     * @param message Message to send.
+     * @param lineNumber the line number
+     * @param message    Message to send.
      */
     public InterpreterException(int lineNumber, String message) {
         super(message, lineNumber);
@@ -109,6 +110,8 @@ public class InterpreterException extends JaivaException {
         /**
          * Base error to throw. Use this when you REALLY don't know the symbol instance.
          * This is an esolang but try be as descriptive as possible.
+         * 
+         * @param lineNumber the line number
          */
         public FrozenSymbolException(int lineNumber) {
             super(lineNumber, "You tried to modify a frozen symbol. Don't do that.");
@@ -117,7 +120,8 @@ public class InterpreterException extends JaivaException {
         /**
          * Error to throw when we know the symbol.
          * 
-         * @param s The symbol in question
+         * @param s          The symbol in question
+         * @param lineNumber the line number
          */
         public FrozenSymbolException(Symbol s, int lineNumber) {
             super(lineNumber,
@@ -136,8 +140,9 @@ public class InterpreterException extends JaivaException {
         /**
          * Throw this overload when a user tries to modify a global symbol.
          * 
-         * @param s        The symbol in question
-         * @param isGlobal true
+         * @param s          The symbol in question
+         * @param isGlobal   true
+         * @param lineNumber the line number
          */
         public FrozenSymbolException(Symbol s, boolean isGlobal, int lineNumber) {
             super(lineNumber, "Now tell me. How do you try and modify a global symbol? Specifically, \"" + s.name
@@ -160,7 +165,7 @@ public class InterpreterException extends JaivaException {
          * @param amtGiven   the amount of parameters they gave.
          * @param lineNumber the line number this happened on
          */
-        @SuppressWarnings("rawtypes")
+
         public FunctionParametersException(BaseFunction s, int amtGiven, int lineNumber) {
             super(lineNumber, s.name + "() only needs " + ((TFunction) s.token).args.length
                     + " parameter" + (amtGiven == 1 ? "" : "s") + ", and your goofy ahh gave " + amtGiven
@@ -248,7 +253,7 @@ public class InterpreterException extends JaivaException {
          * @param side      "lhs" or "rhs"
          * @param incorrect The .toString() of the Object we received.
          */
-        public TStatementResolutionException(@SuppressWarnings("rawtypes") TStatement s, String side,
+        public TStatementResolutionException(TStatement s, String side,
                 String incorrect) {
             super(s.lineNumber,
                     incorrect + " (the " + side + ") in (" + s.statement + ") is not allowed in" +
@@ -266,7 +271,7 @@ public class InterpreterException extends JaivaException {
          * @param expected What it expected (in string form)
          * @param received What it received (in string form)
          */
-        public TStatementResolutionException(TokenDefault outer, @SuppressWarnings("rawtypes") TStatement s,
+        public TStatementResolutionException(TokenDefault outer, TStatement s,
                 String expected, String received) {
             super(s.lineNumber,
                     "i expected (" + s.statement + ") to resolve to a " + expected
@@ -288,7 +293,7 @@ public class InterpreterException extends JaivaException {
          * 
          * @param s The variable reference.
          */
-        public UnknownVariableException(@SuppressWarnings("rawtypes") TVarRef s) {
+        public UnknownVariableException(TVarRef s) {
             super(s.lineNumber, "Lowkey can't find variable named " + s.varName
                     + " that you used anywhere. It prolly aint in this block's scope fr.");
         }
@@ -311,7 +316,7 @@ public class InterpreterException extends JaivaException {
          * 
          * @param s The variable reassignment token
          */
-        public UnknownVariableException(@SuppressWarnings("rawtypes") TVarReassign s) {
+        public UnknownVariableException(TVarReassign s) {
             super(s.lineNumber, "Lowkey can't find the variable named " + s.name
                     + " that you're trying to reassign anywhere. It prolly aint in this block's scope fr.");
         }
@@ -322,7 +327,7 @@ public class InterpreterException extends JaivaException {
          * 
          * @param s The function call token.
          */
-        public UnknownVariableException(@SuppressWarnings("rawtypes") TFuncCall s) {
+        public UnknownVariableException(TFuncCall s) {
             super(s.lineNumber, "Lowkey can't find the function named " + s.functionName
                     + " that you used anywhere. It prolly aint in this block's scope fr.");
         }
@@ -381,7 +386,7 @@ public class InterpreterException extends JaivaException {
          *
          * @param tFuncCall The weird function in question.
          */
-        public WeirdAhhFunctionException(@SuppressWarnings("rawtypes") TFuncCall tFuncCall) {
+        public WeirdAhhFunctionException(TFuncCall tFuncCall) {
             super(tFuncCall.lineNumber,
                     tFuncCall.name + " could NOT be resolved to a poper function name. Idk what else to tell you zawg");
         }
@@ -399,7 +404,7 @@ public class InterpreterException extends JaivaException {
          * 
          * @param st The TStatement.
          */
-        public StringCalcException(@SuppressWarnings("rawtypes") TStatement st) {
+        public StringCalcException(TStatement st) {
             super(st.lineNumber,
                     st.statement + "A statement contains invalid string operations. Not telling u what tho lolol.");
         }
@@ -411,7 +416,7 @@ public class InterpreterException extends JaivaException {
          * @param s The TStatement.
          * @param e The Exception that got caught.
          */
-        public StringCalcException(@SuppressWarnings("rawtypes") TStatement s, Exception e) {
+        public StringCalcException(TStatement s, Exception e) {
             super(s.lineNumber,
                     e instanceof StringIndexOutOfBoundsException
                             ? "Bro, whatever you did, it's out of the string's bounbds. fix it pls 🙏"
