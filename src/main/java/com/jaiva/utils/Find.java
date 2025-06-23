@@ -362,38 +362,54 @@ public class Find {
         int group = -1; // 0 = Exponentiation, 1 = DivMult, 2 = AddSub, 3 = Bitwise, 4 = Comparison, 5 =
                         // Logical
 
-        ArrayList<Integer> indexes2 = new ArrayList<>();
+        ArrayList<Tuple2<String, Integer>> indexes2 = new ArrayList<>(); // WHere the string, is the op itself, the
+                                                                         // integer is the index.
 
+        List<Character> multiOpChars = Arrays.asList('|', '&', '='); // If the op is 2 chars long, it's last
+                                                                     // char must be one of these.
+        List<Character> prevOpChars = Arrays.asList('|', '&', '!', '<', '>');
         for (int i = Operators.getAllLists().size() - 1; i >= 0; i--) {
             List<String> list = Operators.getAllLists().get(i);
+            char second = 0;
             for (int opIndex : indexes1) {
                 String op = statement.substring(opIndex, opIndex + 1); // stuff thats 2 chars long are generally in the
                                                                        // same gorup.
+                boolean isMulti = multiOpChars.contains(statement.charAt(opIndex + 1));
+                char prevChar = opIndex > 0 ? statement.charAt(opIndex - 1) : 0;
+                op = statement.substring(
+                        opIndex,
+                        isMulti ? (opIndex + 2)
+                                : (opIndex + 1));
+
                 if (!list.contains(op))
                     continue;
+
+                if (isMulti && second == 0)
+                    second = op.charAt(1);
+                else if (isMulti && prevChar != 0 && prevOpChars.contains(prevChar)) {
+                    second = 0;
+                    continue; // skip this iteration as we got it earlier.
+                } else {
+                    // clean up second
+                    second = 0;
+                }
+
                 if (group == -1) {
                     group = i;
-                    indexes2.add(opIndex);
+                    indexes2.add(new Tuple2<String, Integer>(op, opIndex));
                 } else if (group == Operators.getType(op)) {
-                    indexes2.add(opIndex);
+                    indexes2.add(new Tuple2<String, Integer>(op, opIndex));
                 }
             }
         }
 
-        List<Character> multiOpChars = Arrays.asList('|', '&', '>', '<', '='); // If the op is 2 chars long, it's last
-                                                                               // char must be one of these.
-
         if (indexes2.isEmpty())
             return new LeastImportantOperator();
-        int finalIndex = indexes2.getLast();
 
-        // The operator can sometimes be the length of 2
-        String op = statement.substring(finalIndex,
-                multiOpChars.contains(statement.charAt(finalIndex + 1)) ? (finalIndex + 2)
-                        : (finalIndex + 1));
+        Tuple2<String, Integer> fTuple2 = indexes2.getLast();
 
         return new LeastImportantOperator(
-                op, finalIndex,
+                fTuple2.first, fTuple2.second,
                 group);
     }
 

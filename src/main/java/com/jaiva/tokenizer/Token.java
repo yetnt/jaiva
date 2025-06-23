@@ -1505,6 +1505,8 @@ public class Token<T extends TokenDefault> {
      */
     public static int parseIntegerLiteral(String input) throws NumberFormatException {
         input = input.trim();
+        if (input.isBlank())
+            throw new NumberFormatException();
         boolean negation = input.charAt(0) == '-';
         input = negation ? input.substring(1) : input; // remove the negation
         String prefix = input.length() > 1 ? input.substring(0, 2) : null;
