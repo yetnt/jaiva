@@ -81,12 +81,12 @@ public class IConfig extends Config {
         super(jSrc);
         this.args = args;
         for (String arg : args) {
+            if (arg.equals("-d") || arg.equals("--debug"))
+                isDebugEnv = !isDebugEnv;
             if (!arg.equals(currentFilePath) && !Main.tokenArgs.contains(arg)
             /* && !Main.replArgs.contains(arg) */) {
                 // because if this overload is invoked, we're running a file, so we dont need to
                 // check for REPL args.
-                if (arg.equals("-d") || arg.equals("--debug"))
-                    isDebugEnv = !isDebugEnv;
                 sanitisedArgs.add(arg);
             }
         }
