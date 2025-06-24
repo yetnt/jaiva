@@ -669,8 +669,7 @@ maak a <- input > high => high however input < low => low however input!
 Where `a` is bound to a high value of `10` and a low value of `0`
 
 > [!WARNING]
-> I tried encasing the nest in braces, it crashed. Dont do it
-> Also, you cant have ternaries on new lines, they hve to be in the sam eline if you chain them unfortunately
+> You cant have ternaries on new lines, they hve to be in the sam eline if you chain them unfortunately
 
 ## <center>Loops
 

@@ -1457,12 +1457,16 @@ public class Token<T extends TokenDefault> {
         if (d.bits == 18) {
             // Ternary expression
             // (cond) => true however false
-            String[] parts = line.split(Pattern.quote(Chars.TERNARY));
-            Object condition = new TStatement(lineNumber).parse(parts[0].trim());
-            String[] expressions = parts[1].trim().split(Pattern.quote(Keywords.TERNARY));
+            String c = line.substring(0, line.indexOf(Chars.TERNARY)).trim();
+            String expressions = line.substring(line.indexOf(Chars.TERNARY) + 2).trim();
 
-            return new TTernary(condition, processContext(expressions[0].trim(), lineNumber),
-                    processContext(expressions[1].trim(), lineNumber), lineNumber).toToken();
+            Object condition = new TStatement(lineNumber).parse(c.trim());
+            String expr1 = expressions.substring(0, expressions.indexOf(Keywords.TERNARY)).trim();
+            String expr2 = expressions.substring(expressions.indexOf(Keywords.TERNARY) + Keywords.TERNARY.length())
+                    .trim();
+
+            return new TTernary(condition, processContext(expr1, lineNumber),
+                    processContext(expr2, lineNumber), lineNumber).toToken();
         } else if (index != -1 && (line.charAt(index) == '(')) {
             // then its a TFuncCall
             String name = line.substring(0, index).trim();
