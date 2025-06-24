@@ -642,8 +642,10 @@ This is your shorthand one line if statement that returns a value too.
 This is the syntax
 
 ```jiv
-condition => expression2 however expression1
+(condition) => (expression2) however (expression1)
 ```
+
+**(With or without braces)**
 
 (Yes including the `however` keyword)
 
@@ -651,7 +653,8 @@ So you can do things like
 
 ```jiv
 maak control!
-maak a <- control > 10 => 10 however control!
+@* braces are added to make it more readable, you don't need them
+maak a <- ((control > 10) => 10 however control)!
 ```
 
 Where if the variable `control` is bigger than `10`, the variable `a` will be set to `10`. Capping it to a maximum of `10` and below.
@@ -660,13 +663,15 @@ And you can chain them
 
 ```jiv
 maak input <- mamela("enter a number")! @ Waits for number input fom the console.
-maak high <- 10!
-maak low <- 0!
 
-maak a <- input > high => high however input < low => low however input!
+kwenza clamp(number, min, max) ->
+    khutla (number > max => max however (number < min => min however number))!
+<~
+
+khuluma(clamp(input, 0, 50))!
 ```
 
-Where `a` is bound to a high value of `10` and a low value of `0`
+Here we define a function `clamp` which will... clamp, what'd you think, the given number to the given minimum value and maximum value.
 
 > [!WARNING]
 > You cant have ternaries on new lines, they hve to be in the sam eline if you chain them unfortunately
