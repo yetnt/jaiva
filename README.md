@@ -642,8 +642,10 @@ This is your shorthand one line if statement that returns a value too.
 This is the syntax
 
 ```jiv
-(condition) => (expression2) however (expression1)
+(condition) => (expression1) however (expression2)
 ```
+
+Where if `(condition)` returns true, it returns `(expression1)` **_however_** if not, return `(expression2)`.
 
 **(With or without braces)**
 
@@ -654,10 +656,10 @@ So you can do things like
 ```jiv
 maak control!
 @* braces are added to make it more readable, you don't need them
-maak a <- ((control > 10) => 10 however control)!
+maak a <- ((control = idk) => idk however 0xFFFF)!
 ```
 
-Where if the variable `control` is bigger than `10`, the variable `a` will be set to `10`. Capping it to a maximum of `10` and below.
+Where if the variable `control` is [idk](#idk) , thne variable `a` will be set to idk too. Otherwise, it will be set to the integer `0xFFFF`
 
 And you can chain them
 
