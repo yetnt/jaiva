@@ -140,9 +140,7 @@ public class IntTest {
                 if (comp instanceof Symbol s) {
                     Assertions.assertInstanceOf(BaseFunction.class, comp, s + " is not a BaseFunction");
 
-                    // All functions (not prefixed a_) should be frozen
-                    if (!s.name.startsWith("a_"))
-                        Assertions.assertTrue(s.isFrozen, s.name + " is not frozen.");
+                    Assertions.assertTrue(s.isFrozen, s.name + " is not frozen.");
                 } else {
                     Assertions.assertInstanceOf(Double.class, comp,
                             comp + " which is not a symbol, is also not a double.");
