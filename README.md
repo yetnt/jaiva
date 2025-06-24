@@ -675,6 +675,9 @@ khuluma(clamp(input, 0, 50))!
 
 Here we define a function `clamp` which will... clamp, what'd you think, the given number to the given minimum value and maximum value.
 
+> [!NOTE]
+> While it's not required to have braces around the expressions or condition. Just have them you maniac.
+
 > [!WARNING]
 > You cant have ternaries on new lines, they hve to be in the sam eline if you chain them unfortunately
 
