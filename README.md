@@ -43,7 +43,7 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
     -   **[Syntax](#syntax)**
         -   _[Comments](#comments)_
         -   _[Assignment Operators](#assignment-operators)_
-        -   _[Primitives](#primitives)_
+        -   _[Types](#types)_
             -   [Number](#number)
             -   [Booleans](#booleans)
             -   [Strings](#strings)
@@ -125,7 +125,9 @@ Accept for arrays, thats specifically `<-|` (See [Arrays](#arrays))
 
 And also for throwing errors, thats `<==` (See [Throw an error](#throw-an-error))
 
-### Primitives
+### Types
+
+In terms of actual types, Jaiva doesnt have type syntax like Java or Typescript. This is a loosely typed language. However some functions do error when you do not provide the correct type, so keep that in mind.
 
 #### Number
 

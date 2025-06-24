@@ -3,6 +3,7 @@ package com.jaiva.full;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 import org.junit.jupiter.api.Assertions;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jaiva.Main;
 import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.Token.TArrayVar;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TFuncReturn;
 import com.jaiva.tokenizer.Token.TFunction;
@@ -21,6 +23,7 @@ import com.jaiva.tokenizer.Token.TVoidValue;
 public class TokTest {
     private static final Path FILE_JIV;
     private static final Path FILE2_JIV;
+    private static final Path IMPORT_JIV;
 
     static {
         try {
@@ -34,9 +37,14 @@ public class TokTest {
             FILE2_JIV = Path.of(
                     Objects.requireNonNull(
                             TokTest.class.getClassLoader()
-                                    .getResource("file2.jiv") // looks in
-                                                              // test-resources root
-                    ).toURI());
+                                    .getResource("file2.jiv"))
+                            .toURI());
+
+            IMPORT_JIV = Path.of(
+                    Objects.requireNonNull(
+                            TokTest.class.getClassLoader()
+                                    .getResource("import.jiv"))
+                            .toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -320,6 +328,78 @@ public class TokTest {
                 Assertions.assertEquals("infinity", call1.functionName,
                         "First call's function name is not a function call.");
             }
+
+        } catch (Exception e) {
+            // catch any other exception that we realistically don't want to catch
+            Assertions.fail("Exception thrown: " + e.getMessage(), e);
+        }
+    }
+
+    @Test
+    void importJiv() {
+        try {
+
+            // or invoke the required things so we can customize the environment.
+            ArrayList<Token<?>> tokens = Main.parseTokens(IMPORT_JIV.toString(), false);
+
+            // check that there are exactly 5 outer tokens.
+            Assertions.assertEquals(5, tokens.size(), "Token size is NOT exactly 5.");
+
+            // first 3 tokens should all be TImport tokens
+            tokens.subList(0, 3)
+                    .forEach(token -> Assertions.assertInstanceOf(TImport.class, ((Token<?>) token).getValue(),
+                            token + " is not a TImport."));
+
+            TImport import0 = (TImport) tokens.getFirst().getValue();
+            TImport import1 = (TImport) tokens.get(1).getValue();
+            TImport import2 = (TImport) tokens.get(2).getValue();
+
+            Assertions.assertEquals(1, import0.lineNumber, "First import is on the wrong line.");
+            Assertions.assertTrue(import0.filePath.contains("arrays.jiv"),
+                    "First import doesnt contain arrays.jiv in its path");
+            Assertions.assertEquals(new ArrayList<>(Arrays.asList("a_push", "a_filter")), import0.symbols,
+                    "First import does not import the correct symbols");
+
+            Assertions.assertEquals(2, import1.lineNumber, "Second import is on the wrong line.");
+            Assertions.assertTrue(import1.filePath.contains("math.jiv"),
+                    "Second import doesnt contain math.jiv in its path");
+            Assertions.assertEquals(new ArrayList<>(Arrays.asList("m_pi", "m_sqrt")), import1.symbols,
+                    "Second import does not import the correct symbols");
+
+            Assertions.assertEquals(3, import2.lineNumber, "Third import is on the wrong line.");
+            Assertions.assertTrue(import2.filePath.contains("debug.jiv"), "Third import doesnt contain debug.jiv");
+            Assertions.assertEquals(new ArrayList<>(), import2.symbols,
+                    "Third import imports symbols when it should be a wildcard import.");
+
+            ArrayList<String> values = new ArrayList<>(Arrays.asList("a_push", "a_filter", "m_pi", "m_sqrt"));
+            // The 4th token, should be a TArrayVar with 4 elements (All TVarRef)
+            Assertions.assertInstanceOf(TArrayVar.class, tokens.get(3).getValue(), "4th token is not a TArrayVar");
+            TArrayVar arr = (TArrayVar) tokens.get(3).getValue();
+            // assert on same line
+            Assertions.assertEquals(5, arr.lineNumber);
+            // Check against each value in the array.
+            Assertions.assertEquals(values.size(), arr.contents.size(), "Array content is not 4");
+            for (int i = 0; i < values.size(); i++) {
+                Object v = arr.contents.get(i);
+                Assertions.assertInstanceOf(TVarRef.class, ((Token<?>) v).getValue(), v + " is not a TVarRef");
+                TVarRef varRef = (TVarRef) ((Token<?>) v).getValue();
+                Assertions.assertEquals(5, varRef.lineNumber,
+                        "TVarRef in arr array (" + varRef.varName + ") is not on line 5.");
+                Assertions.assertEquals(values.get(i), varRef.varName,
+                        "TVarRef in arr array (" + varRef.varName + ") does not refer to it's expected value "
+                                + values.get(i));
+                Assertions.assertNull(varRef.index,
+                        "TVarRef in arr array (" + varRef.varName + ") contains an index when it shouldnt");
+                Assertions.assertFalse(varRef.getLength,
+                        "TVarRef in arr array (" + varRef.varName + ") has a length boolea when it shouldnt");
+            }
+
+            // Last token should be a TFuncCall
+            Assertions.assertInstanceOf(TFuncCall.class, tokens.getLast().getValue(), "Last toke is not a TFuncCall");
+            // on line 7
+            TFuncCall tFuncCall = (TFuncCall) tokens.getLast().getValue();
+            Assertions.assertEquals(7, tFuncCall.lineNumber, "TFuncCall is not on line 7");
+            Assertions.assertEquals("d_emit", tFuncCall.functionName, "Function call is not d_emit");
 
         } catch (Exception e) {
             // catch any other exception that we realistically don't want to catch

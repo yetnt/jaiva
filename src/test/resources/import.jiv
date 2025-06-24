@@ -1,0 +1,7 @@
+tsea "jaiva/arrays" <- a_push, a_filter! @ This line should ONLY take the a_push and a_filter symbols from arrays
+tsea "math" <- m_pi, m_sqrt! @ Same as above, but we ONLY import the constant m_pi and the fnction m_sqrt
+tsea "debug"!
+
+maak arr <-| a_push, a_filter, m_pi, m_sqrt!
+
+d_emit(arr)!
