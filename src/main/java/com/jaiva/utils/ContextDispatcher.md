@@ -24,50 +24,51 @@ Now they both call each other to make sure that we are in the correct context, b
 
 `e` - EIB : Line **E**nds **I**n a **B**race.
 
-| Input statement                                    | SE  | EB  | EO  | BC  | EIB | The output     |
-| -------------------------------------------------- | --- | --- | --- | --- | --- | -------------- |
-| `a`                                                | -   | 0   | 0   | 0   | 0   | processContext |
-| impossible case                                    | -   | 0   | 0   | 0   | 1   | ERROR          |
-| impossible case                                    | -   | 0   | 0   | 1   | 0   | ERROR          |
-| imppossible case                                   | -   | 0   | 0   | 1   | 1   | ERROR          |
-| impossible                                         | -   | 0   | 1   | 0   | 0   | ERROR          |
-| impossible                                         | -   | 0   | 1   | 0   | 1   | ERROR          |
-| `1 + a`                                            | -   | 0   | 1   | 1   | 0   | TStatement     |
-| `a + func(b)`                                      | -   | 0   | 1   | 1   | 1   | TStatement     |
-| `1 + a - (a / b)`                                  | -   | 0   | 1   | 1   | 1   | TStatement     |
-| impossible case                                    | -   | 0   | 1   | 1   | 0   | ERROR          |
-| impossible case                                    | -   | 0   | 1   | 1   | 1   | ERROR          |
-| impoissible case                                   | -   | 1   | 0   | 0   | 0   | ERROR          |
-| `(`                                                | -   | 1   | 0   | 0   | 0   | ERROR          |
-| `)`                                                | -   | 1   | 0   | 0   | 1   | ERROR          |
-| imnpossible case                                   | -   | 1   | 0   | 1   | 0   | ERROR          |
-| `func()`                                           | -   | 1   | 0   | 1   | 1   | processContext |
-| `(1 - c) + n`                                      | -   | 1   | 1   | 0   | 0   | TStatement     |
-| `func(a + b)`                                      | -   | 1   | 1   | 0   | 1   | processContext |
-| `func(a + (b - a))`                                | -   | 1   | 1   | 0   | 1   | processContext |
-| `func(func(a - b))`                                | -   | 1   | 1   | 0   | 1   | processContext |
-| `func(func(a) \| b)`                               | -   | 1   | 1   | 0   | 1   | processContext |
-| `func((1 > 1) \| func(10))`                        | -   | 1   | 1   | 0   | 1   | processContext |
-| `func(a) + b`                                      | -   | 1   | 1   | 1   | 0   | TStatement     |
-| `func(q) - a`                                      | -   | 1   | 1   | 1   | 0   | TStatement     |
-| `func(func(b)) - a`                                | -   | 1   | 1   | 1   | 0   | TStatement     |
-| `func(a + func(c)) + v`                            | -   | 1   | 1   | 1   | 0   | TStatement     |
-| `(1 > 1) \| func(10)`                              | -   | 1   | 1   | 1   | 1   | TStatement     |
-| `func(2) > func(4)`                                | -   | 1   | 1   | 1   | 1   | TStatement     |
-| ``                                                 | 1   | 0   | 0   | 0   | 0   | Empty String   |
-| (Reserved case for input encased in double quotes) | 1   | 0   | 0   | 0   | 1   | processContext |
+| Input statement                                    | SE  | EB  | EO  | BC  | EIB | The output       |
+| -------------------------------------------------- | --- | --- | --- | --- | --- | ---------------- |
+| `a`                                                | -   | 0   | 0   | 0   | 0   | processContext   |
+| impossible case                                    | -   | 0   | 0   | 0   | 1   | ERROR            |
+| impossible case                                    | -   | 0   | 0   | 1   | 0   | ERROR            |
+| imppossible case                                   | -   | 0   | 0   | 1   | 1   | ERROR            |
+| impossible                                         | -   | 0   | 1   | 0   | 0   | ERROR            |
+| impossible                                         | -   | 0   | 1   | 0   | 1   | ERROR            |
+| `1 + a`                                            | -   | 0   | 1   | 1   | 0   | TStatement       |
+| `a + func(b)`                                      | -   | 0   | 1   | 1   | 1   | TStatement       |
+| `1 + a - (a / b)`                                  | -   | 0   | 1   | 1   | 1   | TStatement       |
+| impossible case                                    | -   | 0   | 1   | 1   | 0   | ERROR            |
+| impossible case                                    | -   | 0   | 1   | 1   | 1   | ERROR            |
+| impoissible case                                   | -   | 1   | 0   | 0   | 0   | ERROR            |
+| `(`                                                | -   | 1   | 0   | 0   | 0   | ERROR            |
+| `)`                                                | -   | 1   | 0   | 0   | 1   | ERROR            |
+| imnpossible case                                   | -   | 1   | 0   | 1   | 0   | ERROR            |
+| `func()`                                           | -   | 1   | 0   | 1   | 1   | processContext   |
+| `(1 - c) + n`                                      | -   | 1   | 1   | 0   | 0   | TStatement       |
+| `func(a + b)`                                      | -   | 1   | 1   | 0   | 1   | processContext   |
+| `func(a + (b - a))`                                | -   | 1   | 1   | 0   | 1   | processContext   |
+| `func(func(a - b))`                                | -   | 1   | 1   | 0   | 1   | processContext   |
+| `func(func(a) \| b)`                               | -   | 1   | 1   | 0   | 1   | processContext   |
+| `func((1 > 1) \| func(10))`                        | -   | 1   | 1   | 0   | 1   | processContext   |
+| `func(a) + b`                                      | -   | 1   | 1   | 1   | 0   | TStatement       |
+| `func(q) - a`                                      | -   | 1   | 1   | 1   | 0   | TStatement       |
+| `func(func(b)) - a`                                | -   | 1   | 1   | 1   | 0   | TStatement       |
+| `func(a + func(c)) + v`                            | -   | 1   | 1   | 1   | 0   | TStatement       |
+| `(1 > 1) \| func(10)`                              | -   | 1   | 1   | 1   | 1   | TStatement       |
+| `func(2) > func(4)`                                | -   | 1   | 1   | 1   | 1   | TStatement       |
+| ``                                                 | 1   | 0   | 0   | 0   | 0   | Empty String     |
+| (Reserved case for input encased in double quotes) | 1   | 0   | 0   | 0   | 1   | processContext   |
+| (Reserbed case for ternary input)                  | 1   | 0   | 0   | 1   | 0   | processContext() |
 
 The integers we get are:
 
 TStatement = 6, 7, 12, 14, 15
 
-processContext = 0, 11, 13, 17
+processContext = 0, 11, 13, 17, 18
 
 Errors:
 
 -   empty string = 16
 -   single brace = 9, 8
--   impossible cases = 1, 2, 3, 4, 5, 10, 18 - 31
+-   impossible cases = 1, 2, 3, 4, 5, 10, 19 - 31
 
 Quick side note: Some cases are either incorrectly made or implemented, however all of them still have the correct output as documented in the table anwyays.
 

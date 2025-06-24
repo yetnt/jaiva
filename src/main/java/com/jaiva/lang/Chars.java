@@ -122,6 +122,10 @@ public class Chars {
      * The character used to denote a function's argument is optional.
      */
     public static char OPTIONAL_ARG = '?';
+    /**
+     * Represents the ternary operator symbol used in the language.
+     */
+    public static String TERNARY = "=>";
 
     /**
      * The Operators class defines a set of arithmetic and boolean operators.

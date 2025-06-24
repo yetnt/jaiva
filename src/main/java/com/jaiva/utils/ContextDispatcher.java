@@ -2,6 +2,8 @@ package com.jaiva.utils;
 
 import com.jaiva.tokenizer.Token.TStatement;
 import com.jaiva.tokenizer.Token;
+import com.jaiva.lang.Chars;
+import com.jaiva.lang.Keywords;
 
 /**
  * This class is used to determine the context of a line of code in Jaiva.
@@ -141,6 +143,28 @@ public class ContextDispatcher {
                             // function call
                             // so bump brac es closed bit
 
+        // hard coded value. If we find => in the outermost pair of braces, it's 100% a
+        // ternary
+        // Only do this if it contains both the characters and the keyword
+        if (line.contains(Chars.TERNARY) && line.contains(Keywords.TERNARY)) {
+            // go thru the whole line, make sure the ternary is not in some nested shi
+            int count = 0;
+            for (int i = 0; i < line.length(); i++) {
+                char next = i != line.length() - 1 ? line.charAt(i + 1) : 0;
+                char c = line.charAt(i);
+                // char previous = i != 0 ? line.charAt(i - 1) : 0;
+                if (c == '(' || c == '[')
+                    count++;
+                if (c == ')' || c == ']')
+                    count--;
+                if (count == 0) {
+                    if (c == Chars.TERNARY.charAt(0) && next == Chars.TERNARY.charAt(1)) {
+                        bits = 0b10010;
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -164,7 +188,7 @@ public class ContextDispatcher {
     public String printCase() {
         return switch (bits) {
             case 6, 7, 12, 14, 15 -> "TStatement";
-            case 0, 11, 13, 17 -> "processContext";
+            case 0, 11, 13, 17, 18 -> "processContext";
             case 9, 8 -> "single brace";
             case 16 -> "empty string";
             default -> "ERROR";
@@ -213,10 +237,17 @@ public class ContextDispatcher {
     public To getDeligation() {
         return switch (bits) {
             case 6, 7, 12, 14, 15 -> To.TSTATEMENT;
-            case 0, 11, 13, 17 -> To.PROCESS_CONTENT;
+            case 0, 11, 13, 17, 18 -> To.PROCESS_CONTENT;
             case 9, 8 -> To.SINGLE_BRACE;
             case 16 -> To.EMPTY_STRING;
             default -> To.ERROR;
         };
     }
+
+    @Override
+    public String toString() {
+        return "ContextDispatcher [line=" + line + ", EIB=" + EIB + ", SE=" + SE + ", EB=" + EB + ", EO=" + EO + ", BC="
+                + BC + ", bits=" + bits + ", printCase()=" + printCase() + ", getDeligation()=" + getDeligation() + "]";
+    }
+
 }

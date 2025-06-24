@@ -14,10 +14,12 @@ import com.jaiva.interpreter.symbol.*;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.TokenDefault;
 import com.jaiva.tokenizer.Token.TForLoop;
 import com.jaiva.tokenizer.Token.TFuncCall;
 import com.jaiva.tokenizer.Token.TIfStatement;
 import com.jaiva.tokenizer.Token.TStatement;
+import com.jaiva.tokenizer.Token.TTernary;
 import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.tokenizer.Token.TVoidValue;
 import com.jaiva.tokenizer.Token.TWhileLoop;
@@ -559,6 +561,14 @@ public class Primitives {
                     ? EscapeSequence.fromEscape((String) returnValue, tFuncCall.lineNumber).length()
                     : returnValue instanceof ArrayList && tFuncCall.getLength ? ((ArrayList) returnValue).size()
                             : returnValue;
+        } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TTernary ternary) {
+            // parse the condition.
+            Object condition = setCondition(ternary, vfs, config);
+
+            if (((Boolean) condition).booleanValue())
+                return Primitives.toPrimitive(ternary.trueExpr, vfs, false, config);
+            else
+                return Primitives.toPrimitive(ternary.falseExpr, vfs, false, config);
         } else if (token instanceof Integer || token instanceof Double || token instanceof Boolean
                 || token instanceof String) {
             // its not a token so its def jus a primitive, so we wanna parse it as a
@@ -616,13 +626,15 @@ public class Primitives {
         return t instanceof TStatement
                 ? ((TStatement) t).toToken()
                 : t instanceof TVarRef ? ((TVarRef) t).toToken()
-                        : t instanceof TFuncCall ? ((TFuncCall) t).toToken() : t;
+                        : t instanceof TFuncCall ? ((TFuncCall) t).toToken()
+                                : t instanceof TTernary ? ((TFuncCall) t).toToken() : t;
     }
 
     /**
-     * Evaluates and sets the condition for a `TForLoop` statement.
+     * Evaluates and sets the condition for a `TForLoop`, `TWhileLoop`,
+     * `TIfStatement` and `TTernary` statement.
      *
-     * @param t   The `TForLoop` object containing the condition to be evaluated.
+     * @param t   The Object containing the condition to be evaluated.
      * @param vfs A `HashMap` representing the variable frame stack, where variable
      *            names are mapped to their corresponding `MapValue` objects.
      * @return The evaluated condition as an `Object`. The returned value is
@@ -631,62 +643,17 @@ public class Primitives {
      * @throws Exception If the condition cannot be resolved to a `Boolean` or if
      *                   there is an error during variable handling or parsing.
      */
-    public static Object setCondition(TForLoop t, HashMap<String, MapValue> vfs, IConfig config)
+    public static Object setCondition(TokenDefault t, HashMap<String, MapValue> vfs, IConfig config)
             throws Exception {
+        Object c = t instanceof TForLoop ? ((TForLoop) t).condition
+                : t instanceof TWhileLoop ? ((TWhileLoop) t).condition
+                        : t instanceof TIfStatement ? ((TIfStatement) t).condition
+                                : t instanceof TTernary ? ((TTernary) t).condition : null;
         Object condition = Interpreter.handleVariables(
-                parseNonPrimitive(t.condition), vfs, config);
+                parseNonPrimitive(c), vfs, config);
         if (!(condition instanceof Boolean))
             throw new TStatementResolutionException(
-                    t, ((TStatement) t.condition),
-                    "boolean", condition.getClass().getName());
-
-        return condition;
-    }
-
-    /**
-     * Evaluates and sets the condition for a TWhileLoop statement.
-     *
-     * @param t   The TWhileLoop object containing the condition to be evaluated.
-     * @param vfs A HashMap representing the variable function scope, where variable
-     *            names are mapped to their corresponding MapValue objects.
-     * @return The evaluated condition as an Object, which must be a Boolean.
-     * @throws Exception If the condition cannot be resolved to a Boolean or if
-     *                   there is an error during variable handling or parsing.
-     */
-    public static Object setCondition(TWhileLoop t, HashMap<String, MapValue> vfs, IConfig config)
-            throws Exception {
-        Object condition = Interpreter.handleVariables(
-                parseNonPrimitive(t.condition), vfs, config);
-        if (!(condition instanceof Boolean))
-            throw new TStatementResolutionException(
-                    t, ((TStatement) t.condition),
-                    "boolean", condition.getClass().getName());
-
-        return condition;
-    }
-
-    /**
-     * Evaluates and sets the condition for an `if` statement by parsing and
-     * resolving
-     * the provided condition expression. Ensures that the condition evaluates to a
-     * boolean value.
-     *
-     * @param t   The `TIfStatement` object containing the condition to be
-     *            evaluated.
-     * @param vfs A map of variable names to their corresponding `MapValue` objects,
-     *            used for resolving variables in the condition.
-     * @return The evaluated condition as a boolean object.
-     * @throws Exception If the condition cannot be resolved to a boolean or if any
-     *                   error occurs during variable handling or parsing.
-     */
-    public static Object setCondition(TIfStatement t, HashMap<String, MapValue> vfs,
-            IConfig config)
-            throws Exception {
-        Object condition = Interpreter.handleVariables(
-                parseNonPrimitive(t.condition), vfs, config);
-        if (!(condition instanceof Boolean))
-            throw new TStatementResolutionException(
-                    t, ((TStatement) t.condition),
+                    t, ((TStatement) c),
                     "boolean", condition.getClass().getName());
 
         return condition;

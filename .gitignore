@@ -2,6 +2,7 @@
 /jaiva-cli
 /src/test/java/com/jaiva/playground.java
 /src/test/resources/dummy.jiv
+changelog.txt
 
 # Compiled class file
 *.class

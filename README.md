@@ -2,7 +2,7 @@
 
 (Current) Version : **_1.0.2_**
 
-(Beta) Version : **_2.0.0-beta.0_**
+(Beta) Version : **_2.0.0-beta.1_**
 
 ![isTen](./images/isTen.png)
 
@@ -70,6 +70,7 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
         -   _[Basic If](#basic-if)_
         -   _[mara (else)](#mara-else)_
         -   _[mara (else) with if](#mara-else-with-if)_
+        -   _[Ternary Ifs](#ternary-ifs)_
     -   **[Loops](#loops)**
         -   _[Nikhil Loops (While Loops)](#nikhil-loops-while-loops)_
         -   _[Colonize Loops (For Loops)](#colonize-loops-for-loops)_
@@ -384,6 +385,7 @@ here's a cheat table though
 | with      | -                            | keyword used to define for each loop along with colonize      | English               | [Colonize loops](#colonize-loops-for-loops) |
 | tsea      | "take"                       | keyword to import symbols from another file                   | Sepedi                | [Tsea](#tsea-import-and-exporting-files)    |
 | idk       | -                            | This is a special keyword, as it also acts as a value. (null) | English               | [idk](#idk)                                 |
+| however   | -                            | (`else` keyword in a ternary)                                 | English               | [Ternary ifs](#ternary-ifs)                 |
 
 ## <center>Variables
 
@@ -632,6 +634,43 @@ You can also nest if statements. because why not.
 
 > [!WARNING]
 > You can use a normal `mara` block along with other `mara if` blocks. However the `mara` block must be the LAST block of the entire if chain.
+
+### Ternary Ifs
+
+This is your shorthand one line if statement that returns a value too.
+
+This is the syntax
+
+```jiv
+condition => expression2 however expression1
+```
+
+(Yes including the `however` keyword)
+
+So you can do things like
+
+```jiv
+maak control!
+maak a <- control > 10 => 10 however control!
+```
+
+Where if the variable `control` is bigger than `10`, the variable `a` will be set to `10`. Capping it to a maximum of `10` and below.
+
+And you can chain them
+
+```jiv
+maak input <- mamela("enter a number")! @ Waits for number input fom the console.
+maak high <- 10!
+maak low <- 0!
+
+maak a <- input > high => high however input < low => low however input!
+```
+
+Where `a` is bound to a high value of `10` and a low value of `0`
+
+> [!WARNING]
+> I tried encasing the nest in braces, it crashed. Dont do it
+> Also, you cant have ternaries on new lines, they hve to be in the sam eline if you chain them unfortunately
 
 ## <center>Loops
 

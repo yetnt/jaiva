@@ -267,6 +267,57 @@ public class Token<T extends TokenDefault> {
     }
 
     /**
+     * Represents a ternary expression such as
+     * {@code condition => expr1 however expr2}
+     */
+    public class TTernary extends TokenDefault {
+        /**
+         * The condition of the ternary expression.
+         */
+        public Object condition;
+        /**
+         * The expression if the condition is true.
+         */
+        public Object trueExpr;
+        /**
+         * The expression if the condition is false.
+         */
+        public Object falseExpr;
+
+        /**
+         * Constructor for TTernary
+         *
+         * @param condition The condition of the ternary expression.
+         * @param trueExpr  The expression if the condition is true.
+         * @param falseExpr The expression if the condition is false.
+         * @param ln        The line number.
+         */
+        public TTernary(Object condition, Object trueExpr, Object falseExpr, int ln) {
+            super("TTernary", ln);
+            this.condition = condition;
+            this.trueExpr = trueExpr;
+            this.falseExpr = falseExpr;
+        }
+
+        @Override
+        public String toJson() throws JaivaException {
+            json.append("condition", condition, false);
+            json.append("trueExpr", trueExpr, false);
+            json.append("falseExpr", falseExpr, true);
+            return super.toJson();
+        }
+
+        /**
+         * Converts this token to the default {@link Token}
+         *
+         * @returns {@link Token} with a T value of {@link Token.TTernary}
+         */
+        public Token<TTernary> toToken() {
+            return new Token<>(this);
+        }
+    }
+
+    /**
      * Represents a variable where it's type can only be resolved by the interpeter
      * such as {@code maak name <- functionCall()!}; or if they made a variable but
      * didnt declare the value.
@@ -1398,11 +1449,21 @@ public class Token<T extends TokenDefault> {
 
         if (index == 0) {
             // the outmost pair is just () so its prolly a TStatement, remove the stuff then
-            // parse as TStatement
+            // parse as TStatement, if it isnt a TStatement,TStatement will route back here
+            // anyways.
             return new TStatement(lineNumber).parse(line.substring(1, line.length() - 1));
         }
 
-        if (index != -1 && (line.charAt(index) == '(')) {
+        if (d.bits == 18) {
+            // Ternary expression
+            // (cond) => true however false
+            String[] parts = line.split(Pattern.quote(Chars.TERNARY));
+            Object condition = new TStatement(lineNumber).parse(parts[0].trim());
+            String[] expressions = parts[1].trim().split(Pattern.quote(Keywords.TERNARY));
+
+            return new TTernary(condition, processContext(expressions[0].trim(), lineNumber),
+                    processContext(expressions[1].trim(), lineNumber), lineNumber).toToken();
+        } else if (index != -1 && (line.charAt(index) == '(')) {
             // then its a TFuncCall
             String name = line.substring(0, index).trim();
             String params = line.substring(index + 1, line.lastIndexOf(")")).trim();

@@ -32,7 +32,7 @@
             "patterns": [
                 {
                     "name": "keyword.other",
-                    "match": "\\b(tsea|maak|if|mara|zama zama|kwenza|cima|colonize|chaai|khutla|with|nikhil|kota|idk)\\b"
+                    "match": "\\b(however|tsea|maak|if|mara|zama zama|kwenza|cima|colonize|chaai|khutla|with|nikhil|idk)\\b"
                 },
                 {
                     "name": "keyword.control.jaiva",

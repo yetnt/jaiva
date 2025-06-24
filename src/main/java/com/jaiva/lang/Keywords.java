@@ -79,6 +79,11 @@ public class Keywords {
      */
     public static ArrayList<String> IMPORT = new ArrayList<>(Arrays.asList("tsea", "tšea"));
 
+    /**
+     * The keyword used to define the else section in a ternary.
+     */
+    public static String TERNARY = "however";
+
     /*
      * All keywords in JAIVA.
      */
