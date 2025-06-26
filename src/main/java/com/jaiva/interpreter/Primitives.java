@@ -90,6 +90,18 @@ public class Primitives {
                 case "|":
                     result = iLhs | iRhs;
                     break;
+                case "<<": // bitshift left
+                    result = iLhs << iRhs;
+                    break;
+                case ">>": // bitshift right
+                    result = iLhs >> iRhs;
+                    break;
+                case "<x": // hexshift left
+                    result = iLhs << (iRhs * 4);
+                    break;
+                case ">x": // hexshift right
+                    result = iLhs >> (iRhs * 4);
+                    break;
                 default:
                     throw new CatchAllException("Invalid operator given", lineNumber);
             }
@@ -338,13 +350,13 @@ public class Primitives {
                 }
             } else {
                 // In this else branch, the type is boolean logic
-                if (op.equals("&&") || op.equals("||")) {
+                if (op.equals("&&") || op.equals("||") || op.equals("'")) {
                     // if the logic operator is one of these naturally, the input has to be boolean
                     // check input first of all
                     if (!(lhs instanceof Boolean))
                         throw new TStatementResolutionException(tStatement, "left hand side",
                                 lhs.toString());
-                    if (!(rhs instanceof Boolean))
+                    if (!op.equals("'") && !(rhs instanceof Boolean))
                         throw new TStatementResolutionException(tStatement, "right hand side",
                                 rhs.toString());
 
@@ -353,6 +365,8 @@ public class Primitives {
                             return ((Boolean) lhs) && ((Boolean) rhs);
                         case "||":
                             return ((Boolean) lhs) || ((Boolean) rhs);
+                        case "'":
+                            return !((Boolean) lhs);
                     }
                 } else if (op.equals(">=") || op.equals("<=") || op.equals("<") || op.equals(">")) {
                     // however if its these the input is a number or a double

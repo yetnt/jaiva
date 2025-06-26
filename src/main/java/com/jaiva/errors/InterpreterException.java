@@ -257,7 +257,8 @@ public class InterpreterException extends JaivaException {
                 String incorrect) {
             super(s.lineNumber,
                     incorrect + " (the " + side + ") in (" + s.statement + ") is not allowed in" +
-                            (s.statementType == 0 ? " a (number) comparison" : " an arithmetic")
+                            (s.op.equals("'") || s.op.equals("||") || s.op.equals("&&") ? " a logical"
+                                    : s.statementType == 0 ? " a comparison" : " an arithmetic")
                             + " statement.");
         }
 

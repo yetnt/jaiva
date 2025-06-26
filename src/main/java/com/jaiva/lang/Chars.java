@@ -144,6 +144,10 @@ public class Chars {
          */
         public static final List<String> AddSub = Arrays.asList("+", "-");
         /**
+         * Gotta have them shifts ong
+         */
+        public static final List<String> Shift = Arrays.asList(">>", "<<", ">x", "<x");
+        /**
          * Bitwise operations
          */
         public static final List<String> Bitwise = Arrays.asList("&", "|");
@@ -169,7 +173,7 @@ public class Chars {
         /**
          * Logical operators
          */
-        public static final List<String> Logical = Arrays.asList("||", "&&");
+        public static final List<String> Logical = Arrays.asList("||", "&&", "'");
 
         // /**
         // * List of boolean operators.
@@ -218,6 +222,13 @@ public class Chars {
             return all;
         }
 
+        public static List<String> getInteger() {
+            List<String> all = new ArrayList<>();
+            all.addAll(Shift);
+            all.addAll(Bitwise);
+            return all;
+        }
+
         /**
          * Retrieves a combined list of all elements from various predefined categories.
          *
@@ -225,6 +236,7 @@ public class Chars {
          * - Exponentiation
          * - DivMult
          * - AddSub
+         * - Shifts
          * - Bitwise
          * - Comparison
          * - Logical
@@ -236,6 +248,7 @@ public class Chars {
             all.addAll(Exponentiation);
             all.addAll(DivMult);
             all.addAll(AddSub);
+            all.addAll(Shift);
             all.addAll(Bitwise);
             all.addAll(Comparison);
             all.addAll(Logical);
@@ -260,7 +273,8 @@ public class Chars {
          * Retrieves a list of all predefined lists of strings.
          * 
          * This method aggregates several predefined lists, such as Exponentiation,
-         * DivMult, AddSub, DoubleBools, and Bools, into a single list of lists.
+         * DivMult, AddSub, Shift, Bitwise, Comparison and Logical, into a single list
+         * of lists.
          * 
          * @return A list containing all predefined lists of strings.
          */
@@ -269,6 +283,7 @@ public class Chars {
             all.add(Exponentiation);
             all.add(DivMult);
             all.add(AddSub);
+            all.add(Shift);
             all.add(Bitwise);
             all.add(Comparison);
             all.add(Logical);
@@ -286,9 +301,10 @@ public class Chars {
          *         0 - Exponentiation
          *         1 - Division/Multiplication
          *         2 - Addition/Subtraction
-         *         3 - Bitwise
-         *         4 - Comparison
-         *         5 - Logical
+         *         3 - Shifts
+         *         4 - Bitwise
+         *         5 - Comparison
+         *         6 - Logical
          *         -1 - Not an operator
          */
         public static int getType(String op) {
@@ -298,12 +314,14 @@ public class Chars {
                 return 1;
             else if (AddSub.contains(op))
                 return 2;
-            else if (Bitwise.contains(op))
+            else if (Shift.contains(op))
                 return 3;
-            else if (Comparison.contains(op))
+            else if (Bitwise.contains(op))
                 return 4;
-            else if (Logical.contains(op))
+            else if (Comparison.contains(op))
                 return 5;
+            else if (Logical.contains(op))
+                return 6;
             else
                 return -1;
         }

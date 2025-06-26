@@ -78,7 +78,16 @@ public class Validate {
      *                                         for the given input string.
      */
     public static boolean isUnaryMinus(int unaryMinusIndex, int opBeforeUnaryMinusIndex, String inputString) {
-        return inputString.substring(opBeforeUnaryMinusIndex + 1, unaryMinusIndex).trim().isEmpty();
+        if (inputString.charAt(unaryMinusIndex) != '-')
+            return false;
+        return inputString.substring(
+                opBeforeUnaryMinusIndex != 0 ? opBeforeUnaryMinusIndex + 1 : 0, unaryMinusIndex).trim().isEmpty();
+    }
+
+    public static boolean isLogicalNot(int logicalNotIndex, int opAfterLogicalNotIndex, String inputString) {
+        if (inputString.charAt(logicalNotIndex) != '\'')
+            return false;
+        return inputString.substring(logicalNotIndex + 1, opAfterLogicalNotIndex).trim().isEmpty();
     }
 
     /**

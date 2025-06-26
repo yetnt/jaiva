@@ -1369,6 +1369,11 @@ public class Token<T extends TokenDefault> {
                 statement.lHandSide = -1;
                 statement.op = "*";
             }
+            // handled by the interpreter
+            // else if (statement.rHandSide == null && statement.op.equals("'")) {
+            // statement.rHandSide = false;
+            // statement.op = "=";
+            // }
 
             return statement;
         }

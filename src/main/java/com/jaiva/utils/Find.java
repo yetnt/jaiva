@@ -228,12 +228,13 @@ public class Find {
                 case 0:// Exponentiation
                 case 1:// DivMult
                 case 2:// AddSub
-                case 3:// Bitwise operations. Normally this should be by itself, but since the
+                case 3:// Bitwise shifts, Also handled within number handling.
+                case 4:// Bitwise operations. Normally this should be by itself, but since the
                        // interprter knows how to handle bitwise stuff and its in the number handling
                        // method, group it under numbers
                     tStatementType = 1;
                     break;
-                case 4, 5: // Comparison and logical operators
+                case 5, 6: // Comparison and logical operators
                     tStatementType = 0;
                     break;
                 default:
@@ -365,34 +366,41 @@ public class Find {
         ArrayList<Tuple2<String, Integer>> indexes2 = new ArrayList<>(); // WHere the string, is the op itself, the
                                                                          // integer is the index.
 
-        List<Character> multiOpChars = Arrays.asList('|', '&', '='); // If the op is 2 chars long, it's last
-                                                                     // char must be one of these.
-        List<Character> prevOpChars = Arrays.asList('|', '&', '!', '<', '>');
+        List<Character> multiOpChars = Arrays.asList('|', '&', '=', 'x', '>', '<'); // If the op is 2 chars long, it's
+                                                                                    // last
+        // char must be one of these.
+        List<Character> prevOpChars = Arrays.asList('|', '&', '!', '>', '<');
         for (int i = Operators.getAllLists().size() - 1; i >= 0; i--) {
             List<String> list = Operators.getAllLists().get(i);
-            char second = 0;
+            char first = 0;
             for (int opIndex : indexes1) {
-                String op = statement.substring(opIndex, opIndex + 1); // stuff thats 2 chars long are generally in the
-                                                                       // same gorup.
-                boolean isMulti = multiOpChars.contains(statement.charAt(opIndex + 1));
+                String op = statement.substring(opIndex, opIndex + 1);
+                boolean isMulti = first != 0 ? true
+                        : opIndex + 1 != statement.length()
+                                ? multiOpChars.contains(statement.charAt(opIndex + 1))
+                                : false;
                 char prevChar = opIndex > 0 ? statement.charAt(opIndex - 1) : 0;
                 op = statement.substring(
                         opIndex,
                         isMulti ? (opIndex + 2)
-                                : (opIndex + 1));
+                                : (opIndex + 1))
+                        .trim();
+
+                // String test = (first + op).trim();
+
+                if (isMulti && first == 0)
+                    first = op.charAt(0);
+                else if (isMulti && prevChar != 0 && prevOpChars.contains(prevChar)
+                /* && Operators.getType(test) < i */) {
+                    first = 0;
+                    continue; // skip this iteration as we got it earlier.
+                } else {
+                    // clean up first
+                    first = 0;
+                }
 
                 if (!list.contains(op))
                     continue;
-
-                if (isMulti && second == 0)
-                    second = op.charAt(1);
-                else if (isMulti && prevChar != 0 && prevOpChars.contains(prevChar)) {
-                    second = 0;
-                    continue; // skip this iteration as we got it earlier.
-                } else {
-                    // clean up second
-                    second = 0;
-                }
 
                 if (group == -1) {
                     group = i;
@@ -415,7 +423,8 @@ public class Find {
 
     /**
      * Sanitizes a list of operator indexes in a given statement by removing indexes
-     * that correspond to unary minus operators, while preserving other operator
+     * that correspond to unary minus operators and logical not operators, while
+     * preserving other operator
      * indexes.
      *
      * @param statement The input string containing the statement to be analyzed.
@@ -426,18 +435,73 @@ public class Find {
      *         correspond to unary minus operators.
      */
     public static ArrayList<Integer> sanitizeStatement(String statement, ArrayList<Integer> opIndexes) {
+        // ArrayList<Integer> sanitized = new ArrayList<>();
+
+        // for (int i = 0; i < opIndexes.size(); i++) {
+        // int opIndex = opIndexes.get(i);
+        // if (i == 0) {
+        // if (opIndexes.size() == 1 && !(statement.charAt(opIndex) == '-'))
+        // sanitized.add(opIndex);
+        // continue;
+
+        // } else if (i == opIndexes.size() - 1) {
+        // if (opIndexes.size() == 1 && !(statement.charAt(opIndex) == '\'')) {
+        // sanitized.add(opIndex);
+        // continue;
+        // }
+
+        // }
+        // int opIndexBeforeUnary = i != 0 ? opIndexes.get(i - 1) : 0;
+        // int opIndexAfterNOT = i != opIndexes.size() - 1 ? opIndexes.get(i + 1) :
+        // statement.length() - 1;
+        // boolean isUnary = Validate.isUnaryMinus(opIndex, opIndexBeforeUnary,
+        // statement);
+        // boolean isLogicalNot = Validate.isLogicalNot(opIndex, opIndexAfterNOT,
+        // statement);
+        // if (!isUnary && !isLogicalNot)
+        // sanitized.add(opIndex);
+        // }
+
+        ArrayList<Integer> remInt = removeUNARY(statement, opIndexes);
+        ArrayList<Integer> remNOT = removeNOT(statement, remInt);
+
+        return remNOT;
+    }
+
+    public static ArrayList<Integer> removeUNARY(String statement, ArrayList<Integer> opIndexes) {
         ArrayList<Integer> sanitized = new ArrayList<>();
 
         for (int i = 0; i < opIndexes.size(); i++) {
             int opIndex = opIndexes.get(i);
-            if (i == 0) {
-                if (opIndexes.size() == 1 || !(statement.charAt(opIndex) == '-'))
-                    sanitized.add(opIndex);
+            if (i == 0 && opIndexes.size() == 1) {
+                // if (!(statement.charAt(opIndex) == '-'))
+                sanitized.add(opIndex);
                 continue;
+
             }
-            int opIndexBeforeUnary = opIndexes.get(i - 1);
+            int opIndexBeforeUnary = i != 0 ? opIndexes.get(i - 1) : 0;
             boolean isUnary = Validate.isUnaryMinus(opIndex, opIndexBeforeUnary, statement);
             if (!isUnary)
+                sanitized.add(opIndex);
+        }
+
+        return sanitized;
+    }
+
+    public static ArrayList<Integer> removeNOT(String statement, ArrayList<Integer> opIndexes) {
+        ArrayList<Integer> sanitized = new ArrayList<>();
+
+        for (int i = 0; i < opIndexes.size(); i++) {
+            int opIndex = opIndexes.get(i);
+            if (i == opIndexes.size() - 1 && opIndexes.size() == 1) {
+                // if (!(statement.charAt(opIndex) == '\''))
+                sanitized.add(opIndex);
+                continue;
+
+            }
+            int opIndexAfterNOT = i != opIndexes.size() - 1 ? opIndexes.get(i + 1) : statement.length() - 1;
+            boolean isLogicalNot = Validate.isLogicalNot(opIndex, opIndexAfterNOT, statement);
+            if (!isLogicalNot)
                 sanitized.add(opIndex);
         }
 

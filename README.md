@@ -2,7 +2,7 @@
 
 (Current) Version : **_1.0.2_**
 
-(Beta) Version : **_2.0.0-beta.1_**
+(Beta) Version : **_2.0.0-beta.2_**
 
 ![isTen](./images/isTen.png)
 
@@ -282,27 +282,33 @@ khuluma(func())! @ Prints idk, as the parameter t did not get a value.
 | is not equal to                 | `!=`     |
 | greater than (and equal to)     | `>` `>=` |
 | less than (and equal to)        | `<` `<=` |
-| logical and                     | `&&`     |
-| logical or                      | `\|\|`   |
+| logical AND                     | `&&`     |
+| logical OR                      | `\|\|`   |
+| Logical NOT (Negation)          | `'`      |
 | bitwise AND                     | `&`      |
 | bitwise OR                      | `\|`     |
 | braces for ordering             | `(` `)`  |
+| bitshift left                   | `<<`     |
+| bitshift right                  | `>>`     |
+| hexshift left                   | `<x`     |
+| hexshift right                  | `>x`     |
+
+> [!NOTE]
+> Where other languages use `!` as logical NOT as a prefix to the expression. Jaiva uses `'` as a logical NOT as a `post`fix expression. Where a normal language would right `!(var != 3)` in Jaiva the equivalent is `(var != 3)'`
 
 #### Order of Operations
 
 All Operations follow this exact order:
 
-1. Exponentiation
+1. Exponentiation (Highest precedence)
 2. Division, Multiplcation, Modulo
 3. Addition, Subtraction
-4. Bitwise Operators
-5. Comparisons
-6. Logical Operators
+4. Bit/Hex Shifts
+5. Bitwise Operators
+6. Comparisons
+7. Logical Operators (Lowest precedence)
 
 Use `(`braces`)` to change the order however you wish.
-
-> [!NOTE]
-> You cannot negate a boolean expression. Sorry not sorry.
 
 ### Blocks
 
