@@ -167,12 +167,12 @@ public class Find {
         int depth = 0;
         for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
-            if (c == '(' || c == '[') {
+            if ((c == '(' || c == '[') && Validate.isOpInQuotePair(line, i) == -1) {
                 depth++;
                 if (depth == 1)
                     indexes.add(i);
             }
-            if (c == ')' || c == ']') {
+            if ((c == ')' || c == ']') && Validate.isOpInQuotePair(line, i) == -1) {
                 depth--;
             }
         }
@@ -187,34 +187,6 @@ public class Find {
 
         return -1;
     }
-
-    // public class TStatementOpIndex {
-    // public String op;
-    // public int index;
-    // public int tStatementType;
-
-    // public TStatementOpIndex(String op, int index, int type) {
-    // this.op = op;
-    // this.index = index;
-    // switch (type) {
-    // case 0:// Exponentiation
-    // case 1:// DivMult
-    // case 2:// AddSub
-    // case 3:// Bitwise operations. Normally this should be by itself, but since
-    // the
-    // // interprter knows how to handle bitwise stuff and its in the number
-    // handling
-    // // method, group it under numbers
-    // tStatementType = 1;
-    // break;
-    // case 4, 5: // Comparison and logical operators
-    // tStatementType = 0;
-    // break;
-    // default:
-    // throw new IllegalArgumentException("Invalid type: " + type);
-    // }
-    // }
-    // }
 
     public static class LeastImportantOperator {
         public String op;
@@ -435,33 +407,6 @@ public class Find {
      *         correspond to unary minus operators.
      */
     public static ArrayList<Integer> sanitizeStatement(String statement, ArrayList<Integer> opIndexes) {
-        // ArrayList<Integer> sanitized = new ArrayList<>();
-
-        // for (int i = 0; i < opIndexes.size(); i++) {
-        // int opIndex = opIndexes.get(i);
-        // if (i == 0) {
-        // if (opIndexes.size() == 1 && !(statement.charAt(opIndex) == '-'))
-        // sanitized.add(opIndex);
-        // continue;
-
-        // } else if (i == opIndexes.size() - 1) {
-        // if (opIndexes.size() == 1 && !(statement.charAt(opIndex) == '\'')) {
-        // sanitized.add(opIndex);
-        // continue;
-        // }
-
-        // }
-        // int opIndexBeforeUnary = i != 0 ? opIndexes.get(i - 1) : 0;
-        // int opIndexAfterNOT = i != opIndexes.size() - 1 ? opIndexes.get(i + 1) :
-        // statement.length() - 1;
-        // boolean isUnary = Validate.isUnaryMinus(opIndex, opIndexBeforeUnary,
-        // statement);
-        // boolean isLogicalNot = Validate.isLogicalNot(opIndex, opIndexAfterNOT,
-        // statement);
-        // if (!isUnary && !isLogicalNot)
-        // sanitized.add(opIndex);
-        // }
-
         ArrayList<Integer> remInt = removeUNARY(statement, opIndexes);
         ArrayList<Integer> remNOT = removeNOT(statement, remInt);
 
