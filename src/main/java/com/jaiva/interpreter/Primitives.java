@@ -233,27 +233,24 @@ public class Primitives {
 
         ArrayList<String> IS = new ArrayList<>(Arrays.asList("+", "-", "*", "/", "=", "!="));
         ArrayList<String> SS = new ArrayList<>(Arrays.asList("+", "-", "=", "!=", "/", "?"));
+        ArrayList<String> idk = new ArrayList<>(Arrays.asList("+", "=", "!="));
 
         try {
             switch (switchTing) {
                 case "idkS":
-                case "idkI":
-                case "idkD":
-                case "idkB":
-                    if (!op.equals("+"))
+                    // case "idkI":
+                    // case "idkD":
+                    // case "idkB":
+                    if (!idk.contains(op))
                         throw new StringCalcException(ts);
-                    return "idk" + rhs;
+                    return op.equals("=") ? false : op.equals("!=") ? true : "idk" + rhs;
                 case "Sidk":
-                case "Iidk":
-                case "Didk":
-                case "Bidk":
-                    if (!op.equals("+"))
+                    // case "Iidk":
+                    // case "Didk":
+                    // case "Bidk":
+                    if (!idk.contains(op))
                         throw new StringCalcException(ts);
-                    return lhs + "idk";
-                case "idkidk": // who in the right mind would even do this shit
-                    if (!op.equals("+"))
-                        throw new StringCalcException(ts);
-                    return "idkidk";
+                    return op.equals("=") ? false : op.equals("!=") ? true : lhs + "idk";
                 case "IS":
                     if (!IS.contains(op))
                         throw new StringCalcException(ts);

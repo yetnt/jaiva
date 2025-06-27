@@ -292,7 +292,7 @@ public class Interpreter {
                 // Well, the user placed idk by itself, so i also don't know what to do with it.
                 continue;
             } else if (token instanceof TImport tImport) {
-                Globals g = new Globals<>(config);
+                Globals g = new Globals(config);
                 Path importPath = Path.of(tImport.filePath);
 
                 HashMap<String, MapValue> vfsFromFile;

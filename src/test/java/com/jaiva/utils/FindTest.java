@@ -9,8 +9,10 @@ import org.junit.jupiter.api.Test;
 import com.jaiva.utils.Find.LeastImportantOperator;
 
 public class FindTest {
-    @Test
-    void testClosingCharIndex() {
+
+    public static
+
+    @Test void testClosingCharIndex() {
         // Test with ()
         String line = "3211232 412 1312(239(()((())))12()3)";
         Assertions.assertEquals(line.lastIndexOf(")"), Find.closingCharIndex(line, '(', ')'));
@@ -103,6 +105,33 @@ public class FindTest {
                 new Tuple2<>(inputStr.indexOf('"'), 8),
                 new Tuple2<>(9, inputStr.lastIndexOf('"'))));
         Assertions.assertEquals(expected, actual);
+    }
+
+    public static String inputString = "function([function])[2 + 4] - (\"hi hi(\")' + -2-2-2-2";
+
+    public static ArrayList<Tuple2<Integer, Integer>> braces = new ArrayList<>(
+            Arrays.asList(
+                    new Tuple2<>(9, 18),
+                    new Tuple2<>(8, 19),
+                    new Tuple2<>(20, 26),
+                    new Tuple2<>(30, 39)));
+    public static ArrayList<Tuple2<Integer, Integer>> quotes = new ArrayList<>(
+            Arrays.asList(
+                    new Tuple2<>(31, 38)));
+
+    @Test
+    void testBracePairs() {
+        ArrayList<Tuple2<Integer, Integer>> actual = Find.bracePairs(inputString);
+        for (Tuple2<Integer, Integer> tuple2 : actual) {
+            Assertions.assertNotEquals(-1, braces.indexOf(tuple2), tuple2 + " does not exist in expected array");
+        }
+    }
+
+    @Test
+    void testLastIndexOf() {
+        Assertions.assertEquals(0, Find.lastIndexOf(inputString, "function"));
+        Assertions.assertEquals(-1, Find.lastIndexOf(inputString, "hi"));
+        Assertions.assertEquals(49, Find.lastIndexOf(inputString, "2-"));
     }
 
     @Test

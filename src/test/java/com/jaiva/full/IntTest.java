@@ -102,9 +102,9 @@ public class IntTest {
             Assertions.assertNotNull(e.error, "Code does not throw an error when it should.");
 
             // Make sure the error is of the right class, a TStatementResolutionException
-            Assertions.assertInstanceOf(StringCalcException.class, e.error);
+            Assertions.assertInstanceOf(TStatementResolutionException.class, e.error);
 
-            StringCalcException error = (StringCalcException) e.error;
+            TStatementResolutionException error = (TStatementResolutionException) e.error;
 
             // The error is on line 14
             Assertions.assertTrue(error.getMessage().startsWith("[14]"), "Error is not on line 14.");

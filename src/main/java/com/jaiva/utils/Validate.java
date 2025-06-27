@@ -18,18 +18,18 @@ public class Validate {
      * that its NOT an integer, string or null.
      * It has to be TFuncCall, TVarRef, TStatement or a primitive boolean.
      * 
-     * @param t
+     * @param t The objecgt to check.
      * @return
      */
     public static boolean isValidBoolInput(Object t) {
         return t instanceof Token<?>.TFuncCall || t instanceof Token<?>.TVarRef || t instanceof Token<?>.TIfStatement
-                || t instanceof Token<?> || t instanceof Boolean;
+                || t instanceof Token<?> || t instanceof Token<?>.TTernary || t instanceof Boolean;
     }
 
     /**
      * Simple Check.
      * <p>
-     * This is made only for Context Dispatcher
+     * This is made only for {@link ContextDispatcher}
      * <p>
      * Checks if a character is considered an operator.
      * <p>
@@ -84,10 +84,62 @@ public class Validate {
                 opBeforeUnaryMinusIndex != 0 ? opBeforeUnaryMinusIndex + 1 : 0, unaryMinusIndex).trim().isEmpty();
     }
 
+    /**
+     * Determines if a '{@code'}' character at a specified index in the input string
+     * is a logical NOT.
+     *
+     * A '{@code'}' is considered a logical NOT if the substring between the
+     * operator
+     * after it and the '{@code'}' itself is empty or contains only whitespace.
+     *
+     * @param logicalNotIndex        The index of the '{@code'}' character in the
+     *                               input
+     *                               string.
+     * @param opAfterLogicalNotIndex The index of the operator after the
+     *                               '{@code'}'
+     *                               character.
+     * @param inputString            The input string to analyze.
+     * @return {@code true} if the '{@code'}' is a logical NOT; {@code false}
+     *         otherwise.
+     * @throws StringIndexOutOfBoundsException if the indices are out of bounds
+     *                                         for the given input string.
+     */
     public static boolean isLogicalNot(int logicalNotIndex, int opAfterLogicalNotIndex, String inputString) {
         if (inputString.charAt(logicalNotIndex) != '\'')
             return false;
-        return inputString.substring(logicalNotIndex + 1, opAfterLogicalNotIndex).trim().isEmpty();
+        return inputString.substring(logicalNotIndex != inputString.length() - 1 ? logicalNotIndex + 1
+                : inputString
+                        .length(),
+                opAfterLogicalNotIndex).trim().isEmpty();
+    }
+
+    /**
+     * General method to check whether `opIndex` is within the range of any one of
+     * the Tuple2 pairs in the `list`
+     * <p>
+     * Currently used by {@link Validate#isOpInQuotePair(String, int)} and
+     * {@link Find#lastIndexOf(String, String)}
+     * <p>
+     * A given `index` is considered enclosed within the set of pairs if it is
+     * within the domain `(first, second)` (Both numbers exclusive, as the index
+     * you're looking for cannot also be part of the pair)
+     * 
+     * @param index The index to search for
+     * @param list  An arraylist of Tuple2 objects containing the pairs of ranges.
+     *              Generally you can make this list by calling either
+     *              {@link Find#quotationPairs(String)} or
+     *              {@link Find#bracePairs(String)}
+     * @returns The index of the list in which the `index` was found to be in range.
+     *          Otherwise `-1`
+     */
+    public static int isOpInPair(int index, ArrayList<Tuple2<Integer, Integer>> list) {
+        for (int i = 0; i < list.size(); i++) {
+            Tuple2<Integer, Integer> tuple2 = list.get(i);
+            if (index > tuple2.first && index < tuple2.second)
+                return i;
+
+        }
+        return -1;
     }
 
     /**
@@ -102,13 +154,7 @@ public class Validate {
      */
     public static int isOpInQuotePair(String line, int opIndex) {
         ArrayList<Tuple2<Integer, Integer>> quotePairs = Find.quotationPairs(line);
-        for (int i = 0; i < quotePairs.size(); i++) {
-            Tuple2<Integer, Integer> tuple2 = quotePairs.get(i);
-            if (opIndex > tuple2.first && opIndex < tuple2.second) {
-                return i;
-            }
-        }
-        return -1;
+        return isOpInPair(opIndex, quotePairs);
     }
 
     /**
@@ -116,6 +162,35 @@ public class Validate {
      * This class exists such that if it is a valid symbol, we can use it.
      */
     public static class IsValidSymbolName {
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((op == null) ? 0 : op.hashCode());
+            result = prime * result + (isValid ? 1231 : 1237);
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            IsValidSymbolName other = (IsValidSymbolName) obj;
+            if (op == null) {
+                if (other.op != null)
+                    return false;
+            } else if (!op.equals(other.op))
+                return false;
+            if (isValid != other.isValid)
+                return false;
+            return true;
+        }
+
         /**
          * The invalid character found in the symbol name, if any.
          */
@@ -142,6 +217,7 @@ public class Validate {
          */
         public IsValidSymbolName() {
         }
+
     }
 
     /**

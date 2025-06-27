@@ -1462,12 +1462,14 @@ public class Token<T extends TokenDefault> {
         if (d.bits == 18) {
             // Ternary expression
             // (cond) => true however false
-            String c = line.substring(0, line.indexOf(Chars.TERNARY)).trim();
-            String expressions = line.substring(line.indexOf(Chars.TERNARY) + 2).trim();
+            // String c = line.substring(0, line.indexOf(Chars.TERNARY)).trim();
+            String c = line.substring(0, Find.lastIndexOf(line, Chars.TERNARY)).trim();
+            String expressions = line.substring(Find.lastIndexOf(line, Chars.TERNARY) + 2).trim();
 
             Object condition = new TStatement(lineNumber).parse(c.trim());
-            String expr1 = expressions.substring(0, expressions.indexOf(Keywords.TERNARY)).trim();
-            String expr2 = expressions.substring(expressions.indexOf(Keywords.TERNARY) + Keywords.TERNARY.length())
+            String expr1 = expressions.substring(0, Find.lastIndexOf(expressions, Keywords.TERNARY)).trim();
+            String expr2 = expressions.substring(Find.lastIndexOf(
+                    expressions, Keywords.TERNARY) + Keywords.TERNARY.length())
                     .trim();
 
             return new TTernary(condition, processContext(expr1, lineNumber),

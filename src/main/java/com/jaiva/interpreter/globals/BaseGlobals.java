@@ -10,7 +10,7 @@ import com.jaiva.tokenizer.Token;
 /**
  * Base class for global holder classes.
  */
-public class BaseGlobals<T extends GlobalType> {
+public class BaseGlobals {
     /**
      * Token container to create tokens
      */
@@ -19,7 +19,7 @@ public class BaseGlobals<T extends GlobalType> {
     /**
      * The type of the BaseGlobal container.
      */
-    public T type;
+    public GlobalType type;
     /**
      * The path if this container is defined as {@link GlobalType}.LIB
      */
@@ -34,7 +34,7 @@ public class BaseGlobals<T extends GlobalType> {
      * 
      * @param value The type of this Globals holder.
      */
-    public BaseGlobals(T value) {
+    public BaseGlobals(GlobalType value) {
         type = value;
     }
 
@@ -44,7 +44,7 @@ public class BaseGlobals<T extends GlobalType> {
      * @param value The type of this Globals holder.
      * @param p     The "filename" (without the extension)
      */
-    public BaseGlobals(T value, String p) {
+    public BaseGlobals(GlobalType value, String p) {
         type = value;
         path = p;
     }

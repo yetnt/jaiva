@@ -22,7 +22,7 @@ import com.jaiva.lang.Keywords;
  * Globals class holds all the global symbols that are injected into the
  * variable functions store.
  */
-public class Globals<T extends GlobalType> extends BaseGlobals {
+public class Globals extends BaseGlobals {
     // public HashMap<String, MapValue> vfs = new HashMap<>();
 
     public HashMap<String, HashMap<String, MapValue>> builtInGlobals = new HashMap<>();

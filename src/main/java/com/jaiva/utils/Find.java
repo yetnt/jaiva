@@ -500,4 +500,75 @@ public class Find {
         return arr;
     }
 
+    /**
+     * Finds and returns all pairs of indices representing the positions of matching
+     * closing and opening parenthesis and brackets in the given string. Each pair
+     * consists of the starting index
+     * of an opening opening brace and the ending index of the corresponding
+     * closing brace.
+     * <p>
+     * Both [] and ()
+     *
+     * @param line The input string to search for quotation brace pairs.
+     * @return An ArrayList of Tuple2 objects, where each Tuple2 contains two
+     *         integers:
+     *         the starting and ending indices of a pair of matching braces
+     *         If no pairs are found, an empty list is returned.
+     */
+    public static ArrayList<Tuple2<Integer, Integer>> bracePairs(String line) {
+        ArrayList<Tuple2<Integer, Integer>> finalArr = new ArrayList<>();
+        ArrayList<Tuple2<Integer, Character>> arr = new ArrayList<>();
+
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if ((c == '[' || c == '(') && Validate.isOpInQuotePair(line, i) == -1)
+                arr.add(new Tuple2<Integer, Character>(i, c));
+
+            if ((c == ']' || c == ')') && Validate.isOpInQuotePair(line, i) == -1) {
+                Tuple2<Integer, Character> t = arr.getLast();
+                if ((t.second == '[' && c == ']') || (t.second == '(' && c == ')')) {
+                    finalArr.add(new Tuple2<Integer, Integer>(t.first, i));
+                    arr.removeLast();
+                }
+            }
+        }
+
+        return finalArr;
+    }
+
+    /**
+     * Finds the last index of the given input string in statement, while
+     * disregarding input enclosed in quotation marks or inside a set of brackets []
+     * or parenthesis ()
+     * <p>
+     * This is meant for {@link Token#processContext(String, int)} to properly split
+     * nested {@link Token.TTernary} at the correct places. It can be used elsewhere
+     * provided with caution
+     * 
+     * @param statement The statement to check within
+     * @param input     The input to check for
+     * @returns the integer corresponding to the index of the first character of the
+     *          found input in the statement
+     *          Else: -1 if no valid index is found.
+     */
+    public static int lastIndexOf(String statement, String input) {
+        int index = -1;
+        boolean containsIndex = true;
+
+        while (containsIndex) {
+            int i = statement.indexOf(input);
+
+            if (i == -1) {
+                containsIndex = !containsIndex;
+                continue;
+            }
+            if (Validate.isOpInQuotePair(statement, i) == -1
+                    && Validate.isOpInPair(i, Find.bracePairs(statement)) == -1)
+                index = i;
+            statement = statement.replaceFirst(input, "-".repeat(input.length()));
+        }
+
+        return index;
+    }
+
 }

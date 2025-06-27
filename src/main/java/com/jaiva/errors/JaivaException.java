@@ -130,9 +130,9 @@ public class JaivaException extends Exception {
          * Closes the console input resource associated with the configuration.
          * This method releases any system resources tied to the console input stream.
          */
-        private void close() {
-            config.resources.release();
-        }
+        // private void close() {
+        // config.resources.release();
+        // }
 
         @Override
         public String toString() {
