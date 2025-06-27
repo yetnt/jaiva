@@ -8,7 +8,7 @@ import com.jaiva.errors.TokenizerException;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.errors.JaivaException.*;
 import com.jaiva.interpreter.*;
-import com.jaiva.interpreter.globals.Conversions;
+import com.jaiva.interpreter.globals.Types;
 import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.lang.EscapeSequence;
@@ -59,7 +59,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "2.0.0-beta.2";
+    public static String version = "2.0.0-beta.3";
     /**
      * Author, it's just me.
      */
@@ -175,7 +175,7 @@ public class Main {
                     System.exit(0);
                 }
                 case "--test", "-t" -> {
-                    System.out.println(new Conversions().toJson());
+                    System.out.println(new Types().toJson());
                     System.exit(0);
                 }
                 case "--update", "-u" -> {

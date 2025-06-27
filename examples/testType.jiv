@@ -1,5 +1,7 @@
 @* Test if the input is number or double
-kwenza testType(input) ->
+@* This function does not support functions, and to make your life easier
+@* just import the `t_of(input?)` from `jaiva/types` to get this same functionality with functions included.
+kwenza *testType(input) ->
     maak out!
     zama zama ->
         out <- 1 ^ input! @ If its a number, out will be set.
@@ -22,7 +24,7 @@ kwenza testType(input) ->
     <~
 <~
 
-maak arr <-| 130, 23, "sss", idk, yebo, true, idk, aowa, false, 0x10FC!
+maak *arr <-| 130, 23, "sss", idk, yebo, true, idk, aowa, false, 0x10FC!
 
 colonize v with arr ->
     khuluma(testType(v))!

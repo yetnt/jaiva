@@ -236,6 +236,24 @@ public class Primitives {
 
         try {
             switch (switchTing) {
+                case "idkS":
+                case "idkI":
+                case "idkD":
+                case "idkB":
+                    if (!op.equals("+"))
+                        throw new StringCalcException(ts);
+                    return "idk" + rhs;
+                case "Sidk":
+                case "Iidk":
+                case "Didk":
+                case "Bidk":
+                    if (!op.equals("+"))
+                        throw new StringCalcException(ts);
+                    return lhs + "idk";
+                case "idkidk": // who in the right mind would even do this shit
+                    if (!op.equals("+"))
+                        throw new StringCalcException(ts);
+                    return "idkidk";
                 case "IS":
                     if (!IS.contains(op))
                         throw new StringCalcException(ts);
