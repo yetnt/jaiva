@@ -337,7 +337,8 @@ public class Chars {
      */
     public static ArrayList<String> dissalowedCharsForSymbolName() {
         ArrayList<String> dList = dissalowedChars();
-        dList.remove(Character.toString(EXPORT_SYMBOL));
+        dList.remove(Character.toString(EXPORT_SYMBOL));// remove the * symbol
+        dList.remove("x"); // removed the letter x that comes from <x and >x
         return dList;
     }
 

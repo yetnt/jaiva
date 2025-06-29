@@ -8,9 +8,8 @@ tsea "jaiva/math"!
         3. Print driving.                       DONE
         4. Stop when needed.                    DONE
         5. Run out of fuel.                     DONE
-        6. Repay on fuel
-        7. Upgrades.
-        8. Fuel costs R10
+        6. Repay on fuel                        DONE
+        7. Upgrades.                            DONE
 }
 
 maak money <- 500!
@@ -65,11 +64,13 @@ kwenza shop() ->
 
         earnings <- earnings + (carLvl * 2)!
 
-        if (SLEEP_TIME > 20) ->
-            SLEEP_TIME <- SLEEP_TIME / 2!
-        <~ mara ->
-            SLEEP_TIME <- 20!
-        <~
+        @ if (SLEEP_TIME > 20) ->
+        @     SLEEP_TIME <- SLEEP_TIME / 2!
+        @ <~ mara ->
+        @     SLEEP_TIME <- 20!
+        @ <~
+        @ Replaced with new ternary notation below,
+        SLEEP_TIME <- SLEEP_TIME > 20 => SLEEP_TIME / 2 however SLEEP_TIME!
 
     <~ mara if (option = "2" && (money >= monPerFuel)) ->
         maak needed <- maxFuel - fuelAmt!

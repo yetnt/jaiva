@@ -1426,15 +1426,16 @@ public class Token<T extends TokenDefault> {
     }
 
     /**
-     * This method serves 2 purposes, to tokenize a function call and to tokenize a
-     * varibale call too.
+     * ALl this method does is to parse any given input into either:
+     * - A function call
+     * - A variable reference (can be both a function reference or array access call
+     * or just standrard variable)
+     * - Ternary operators
+     * - Or Primitives
      * 
-     * The TFuncCall and TVarRef are so versatile, that this method is the ONLY
-     * method which isnt static in the entire tokenizer, and also the only method
-     * under the Token class.
+     * Anything handled by this method means it can be placed as a valid construct
+     * in any other construct in Jaiva.
      * 
-     * Because both any token and the tokenizer need thius function, its THAT
-     * useful.
      * 
      * NOTE : This function will call ContextDispatcher and if needed will switch to
      * use TStatement and parse as an arithmatioc operation/boolean rather than a
@@ -1460,6 +1461,8 @@ public class Token<T extends TokenDefault> {
         }
 
         if (d.bits == 18) {
+            // 18 corresponds to the Ternary case from ContextDispatcher. See
+            // ../utils/ContextDispatcher.md
             // Ternary expression
             // (cond) => true however false
             // String c = line.substring(0, line.indexOf(Chars.TERNARY)).trim();

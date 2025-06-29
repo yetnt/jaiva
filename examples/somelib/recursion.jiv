@@ -1,11 +1,13 @@
 
 kwenza *facorial(n) ->
-    if (n = 0) ->
-        khutla 1!
-    <~ mara if (n = 1) ->
-        khutla n!
-    <~
-    khutla n * facorial(n - 1)!
+    @ if (n = 0) ->
+    @     khutla 1!
+    @ <~ mara if (n = 1) ->
+    @     khutla n!
+    @ <~
+    @ khutla n * facorial(n - 1)!
+
+    khutla n = 0 => 1 however (n = 1 => n however n * facorial(n - 1))!
 <~
 
 kwenza *fibonacci(n) ->
