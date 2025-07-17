@@ -36,6 +36,17 @@ public class ToJson {
     }
 
     /**
+     * Checks if a key exists in the JSON string.
+     *
+     * @param key The key to check for existence in the JSON string.
+     * @return true if the key exists, false otherwise.
+     */
+    public boolean keyExists(String key) {
+        // Check if the key exists in the JSON string
+        return json.indexOf("\"" + key + "\":") != -1;
+    }
+
+    /**
      * Removes a key-value pair from the JSON string based on the specified key.
      *
      * @param key the key of the key-value pair to be removed from the JSON string.

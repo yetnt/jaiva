@@ -407,7 +407,8 @@ public class Token<T extends TokenDefault> {
 
         @Override
         public String toJson() throws JaivaException {
-            json.append("value", value, true);
+            if (!json.keyExists("value"))
+                json.append("value", value, true);
             return super.toJson();
         }
 
