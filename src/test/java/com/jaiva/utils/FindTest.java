@@ -121,7 +121,7 @@ public class FindTest {
 
     @Test
     void testBracePairs() {
-        ArrayList<Tuple2<Integer, Integer>> actual = Find.bracePairs(inputString);
+        ArrayList<Tuple2<Integer, Integer>> actual = Find.bracePairs(inputString).first;
         for (Tuple2<Integer, Integer> tuple2 : actual) {
             Assertions.assertNotEquals(-1, braces.indexOf(tuple2), tuple2 + " does not exist in expected array");
         }

@@ -748,6 +748,12 @@ public class Tokenizer {
         if (line.isEmpty())
             return null;
 
+        // NEW CODE:
+        if (!Find.bracePairs(line).second.isEmpty())
+            throw new MalformedSyntaxException(
+                    "Ayo, you got some unclosed braces in your code. Fix that bro wtf.", lineNumber);
+        // END OF NEW CODE
+
         if (!line.isEmpty() && !line.equals(Chars.BLOCK_CLOSE) && !line.endsWith(Chars.BLOCK_OPEN)
                 && (!line.endsWith(Character.toString(Chars.END_LINE)))) {
             throw new MalformedSyntaxException(

@@ -510,30 +510,34 @@ public class Find {
      * Both [] and ()
      *
      * @param line The input string to search for quotation brace pairs.
-     * @return An ArrayList of Tuple2 objects, where each Tuple2 contains two
-     *         integers:
-     *         the starting and ending indices of a pair of matching braces
-     *         If no pairs are found, an empty list is returned.
+     * @return A Tuple2 containing two ArrayLists:
+     *         - The first ArrayList contains pairs of indices representing the
+     *         beginning
+     *         and end of matching braces.
+     *         - The second ArrayList contains pairs of indices representing
+     *         unmatched
+     *         braces.
      */
-    public static ArrayList<Tuple2<Integer, Integer>> bracePairs(String line) {
+    public static Tuple2<ArrayList<Tuple2<Integer, Integer>>, ArrayList<Tuple2<Integer, Character>>> bracePairs(
+            String line) {
         ArrayList<Tuple2<Integer, Integer>> finalArr = new ArrayList<>();
-        ArrayList<Tuple2<Integer, Character>> arr = new ArrayList<>();
+        ArrayList<Tuple2<Integer, Character>> stack = new ArrayList<>();
 
         for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
             if ((c == '[' || c == '(') && Validate.isOpInQuotePair(line, i) == -1)
-                arr.add(new Tuple2<Integer, Character>(i, c));
+                stack.add(new Tuple2<Integer, Character>(i, c));
 
             if ((c == ']' || c == ')') && Validate.isOpInQuotePair(line, i) == -1) {
-                Tuple2<Integer, Character> t = arr.getLast();
+                Tuple2<Integer, Character> t = stack.getLast();
                 if ((t.second == '[' && c == ']') || (t.second == '(' && c == ')')) {
                     finalArr.add(new Tuple2<Integer, Integer>(t.first, i));
-                    arr.removeLast();
+                    stack.removeLast();
                 }
             }
         }
 
-        return finalArr;
+        return new Tuple2(finalArr, stack);
     }
 
     /**
@@ -563,7 +567,7 @@ public class Find {
                 continue;
             }
             if (Validate.isOpInQuotePair(statement, i) == -1
-                    && Validate.isOpInPair(i, Find.bracePairs(statement)) == -1)
+                    && Validate.isOpInPair(i, Find.bracePairs(statement).first) == -1)
                 index = i;
             statement = statement.replaceFirst(input, "-".repeat(input.length()));
         }
