@@ -102,7 +102,7 @@ public class InterpreterException extends JaivaException {
     }
 
     /**
-     * Exception to throw whenever a user tries to modify a frozen symbol.
+     * Exception to throw whenever a user tries to modify a symbol.
      */
     public static class FrozenSymbolException extends InterpreterException {
         private static final long serialVersionUID = 1L;
@@ -295,7 +295,7 @@ public class InterpreterException extends JaivaException {
          * @param s The variable reference.
          */
         public UnknownVariableException(TVarRef s) {
-            super(s.lineNumber, "Lowkey can't find variable named " + s.varName
+            super(s.lineNumber, "Lowkey can't find symbol named " + s.varName
                     + " that you used anywhere. It prolly aint in this block's scope fr.");
         }
 
