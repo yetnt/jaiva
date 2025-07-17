@@ -448,7 +448,8 @@ public class Main {
 
             // Wait for the process to finish and check its exit code
             int exitCode = process.waitFor();
-            if (exitCode != 0) {
+            if (exitCode != 0 && exitCode != 20) {
+                // TODO: idk wtf is up with 20, but in linux it returns 20 and spams the console
                 System.err.println("jaiva-src exited with code: " + exitCode);
             }
         } catch (IOException | InterruptedException e) {
