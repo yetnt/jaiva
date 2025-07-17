@@ -423,12 +423,15 @@ public class Primitives {
                     // here, the inputs can be either a
                     // int, double, boolean or string.
                     // check input first of all
+                    // TODO: This is literally just anything that can be input. Fix
                     if (!(lhs instanceof Integer) && !(lhs instanceof Double) && !(lhs instanceof Boolean)
-                            && !(lhs instanceof String) && !(lhs instanceof TVoidValue) && !(lhs instanceof ArrayList))
+                            && !(lhs instanceof String) && !(lhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
+                            && !(lhs instanceof BaseFunction))
                         throw new TStatementResolutionException(tStatement, "left hand side",
                                 lhs.toString());
                     if (!(rhs instanceof Integer) && !(rhs instanceof Double) && !(rhs instanceof Boolean)
-                            && !(rhs instanceof String) && !(rhs instanceof TVoidValue) && !(lhs instanceof ArrayList))
+                            && !(rhs instanceof String) && !(rhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
+                            && !(lhs instanceof BaseFunction))
                         throw new TStatementResolutionException(tStatement, "right hand side",
                                 rhs.toString());
 
