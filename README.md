@@ -2,7 +2,7 @@
 
 (Current) Version : **_1.0.2_**
 
-(Beta) Version : **_2.0.0-beta.2_**
+(Beta) Version : **_2.0.0-beta.4_**
 
 ![isTen](./images/isTen.png)
 
