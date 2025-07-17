@@ -317,50 +317,6 @@ public class Token<T extends TokenDefault> {
         }
     }
 
-    /**
-     * Represents a variable where it's type can only be resolved by the interpeter
-     * such as {@code maak name <- functionCall()!}; or if they made a variable but
-     * didnt declare the value.
-     */
-    public class TUnknownVar extends TokenDefault {
-        /**
-         * The value of the variable.
-         */
-        public Object value;
-
-        /**
-         * Constructor for TUnknownVar
-         * 
-         * @param name  The name of the variable.
-         * @param value The value of the variable.
-         * @param ln    The line number.
-         */
-        public TUnknownVar(String name, Object value, int ln) {
-            super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
-                    (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
-                            ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
-                                    Matcher.quoteReplacement(""))
-                            : name),
-                    ln);
-            this.value = value;
-        }
-
-        @Override
-        public String toJson() throws JaivaException {
-            json.append("value", value, true);
-            return super.toJson();
-        }
-
-        /**
-         * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TUnknownVar}
-         */
-        public Token<TUnknownVar> toToken() {
-            return new Token<>(this);
-        }
-    }
-
     public class TVarReassign extends TokenDefault {
         /**
          * The new value of the variable.
@@ -408,13 +364,67 @@ public class Token<T extends TokenDefault> {
     }
 
     /**
+     * Represents a variable where it's type can only be resolved by the interpeter
+     * such as {@code maak name <- functionCall()!}; or if they made a variable but
+     * didnt declare the value.
+     * 
+     * @param <Type> The type of the variable.
+     */
+    public class TUnknownVar<Type> extends TokenDefault {
+        /**
+         * The value of the variable.
+         */
+        public Type value;
+
+        /**
+         * Constructor for basic.
+         * 
+         * @param name  The name of the variable.
+         * @param value The value of the variable.
+         * @param ln    The line number.
+         */
+        public TUnknownVar(String name, Type value, int ln) {
+            super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
+                    (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
+                            ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
+                                    Matcher.quoteReplacement(""))
+                            : name),
+                    ln);
+            this.value = value;
+        }
+
+        /**
+         * Constructor for exporting globals.
+         * 
+         * @param name  The name of the variable.
+         * @param value The value of the variable.
+         * @param ln    The line number.
+         */
+        public TUnknownVar(String name, Type value, int ln, String customToolTip) {
+            super(name, ln, customToolTip);
+            this.value = value;
+        }
+
+        @Override
+        public String toJson() throws JaivaException {
+            json.append("value", value, true);
+            return super.toJson();
+        }
+
+        /**
+         * Converts this token to the default {@link Token}
+         * 
+         * @returns {@link Token} with a T value of {@link Token.TUnknownVar}
+         */
+        public Token<TUnknownVar> toToken() {
+            return new Token<>(this);
+        }
+    }
+
+    /**
      * Represents a string variable such as {@code maak name <- "John"};
      */
-    public class TStringVar extends TokenDefault {
-        /**
-         * The value of the string variable.
-         */
-        public String value;
+    public class TStringVar extends TUnknownVar<String> {
 
         /**
          * Constructor for TStringVar
@@ -424,12 +434,7 @@ public class Token<T extends TokenDefault> {
          * @param ln    The line number.
          */
         public TStringVar(String name, String value, int ln) {
-            super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
-                    (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
-                            ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
-                                    Matcher.quoteReplacement(""))
-                            : name),
-                    ln);
+            super(name, value, ln);
             this.value = value;
         }
 
@@ -441,7 +446,7 @@ public class Token<T extends TokenDefault> {
          * @param ln    The line number.
          */
         public TStringVar(String name, String value, int ln, String customToolTip) {
-            super(name, ln, customToolTip);
+            super(name, value, ln, customToolTip);
             this.value = value;
         }
 
@@ -458,7 +463,8 @@ public class Token<T extends TokenDefault> {
          * 
          * @returns {@link Token} with a T value of {@link Token.TStringVar}
          */
-        public Token<TStringVar> toToken() {
+        @Override
+        public Token toToken() {
             return new Token<>(this);
         }
     }
@@ -466,12 +472,7 @@ public class Token<T extends TokenDefault> {
     /**
      * Represents a number variable such as {@code maak age <- 20};
      */
-    public class TNumberVar extends TokenDefault {
-        /**
-         * The value of the number variable.
-         */
-        public Object value;
-
+    public class TNumberVar extends TUnknownVar<Object> {
         /**
          * Constructor for TNumberVar
          * 
@@ -480,12 +481,7 @@ public class Token<T extends TokenDefault> {
          * @param ln    The line number.
          */
         TNumberVar(String name, Object value, int ln) {
-            super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
-                    (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
-                            ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
-                                    Matcher.quoteReplacement(""))
-                            : name),
-                    ln);
+            super(name, value, ln);
             this.value = value;
         }
 
@@ -497,7 +493,7 @@ public class Token<T extends TokenDefault> {
          * @param ln    The line number.
          */
         public TNumberVar(String name, Object value, int ln, String customTooltip) {
-            super(name, ln, customTooltip);
+            super(name, value, ln, customTooltip);
             this.value = value;
         }
 
@@ -512,7 +508,8 @@ public class Token<T extends TokenDefault> {
          * 
          * @returns {@link Token} with a T value of {@link Token.TNumberVar}
          */
-        public Token<TNumberVar> toToken() {
+        @Override
+        public Token toToken() {
             return new Token<>(this);
         }
     }
@@ -520,11 +517,7 @@ public class Token<T extends TokenDefault> {
     /**
      * Represents a boolean variable such as {@code maak isTrue <- true};
      */
-    public class TBooleanVar extends TokenDefault {
-        /**
-         * The value of the boolean variable.
-         */
-        public Object value;
+    public class TBooleanVar extends TUnknownVar<Object> {
 
         /**
          * Constructor for TBooleanVar
@@ -534,12 +527,7 @@ public class Token<T extends TokenDefault> {
          * @param ln    The line number.
          */
         TBooleanVar(String name, boolean value, int ln) {
-            super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
-                    (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
-                            ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
-                                    Matcher.quoteReplacement(""))
-                            : name),
-                    ln);
+            super(name, value, ln);
             this.value = value;
         }
 
@@ -551,12 +539,7 @@ public class Token<T extends TokenDefault> {
          * @param ln    The line number.
          */
         TBooleanVar(String name, Object value, int ln) {
-            super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
-                    (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
-                            ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
-                                    Matcher.quoteReplacement(""))
-                            : name),
-                    ln);
+            super(name, value, ln);
             this.value = value;
         }
 
@@ -571,7 +554,8 @@ public class Token<T extends TokenDefault> {
          * 
          * @returns {@link Token} with a T value of {@link Token.TBooleanVar}
          */
-        public Token<TBooleanVar> toToken() {
+        @Override
+        public Token toToken() {
             return new Token<>(this);
         }
     }

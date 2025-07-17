@@ -318,7 +318,7 @@ public class Tokenizer {
                             args[2].replace(Chars.STATEMENT_CLOSE, ' ').trim(),
                             codeblock, finalMOutput.lineNumber).toToken();
                 } else {
-                    TUnknownVar variable = (Token<TUnknownVar>.TUnknownVar) ((ArrayList<Token<?>>) readLine(
+                    TUnknownVar variable = (Token<TUnknownVar>.TUnknownVar<?>) ((ArrayList<Token<?>>) readLine(
                             Keywords.D_VAR + " "
                                     + args[0].replaceFirst("\\" + Character.toString(Chars.STATEMENT_OPEN), " ").trim()
                                     + Chars.END_LINE,
