@@ -436,7 +436,8 @@ public class Tokenizer {
                 throw new MalformedSyntaxException(
                         "if you're finna define a variable without a value, remove the assignment operator.",
                         lineNumber);
-            return tContainer.new TUnknownVar(parts[0], tContainer.new TVoidValue(lineNumber), lineNumber).toToken();
+            return tContainer.new TUnknownVar<Object>(parts[0], tContainer.new TVoidValue(lineNumber), lineNumber)
+                    .toToken();
         }
         parts[1] = parts[1].trim();
 
@@ -468,7 +469,7 @@ public class Tokenizer {
                             }
                         }
 
-                        return tContainer.new TUnknownVar(parts[0], output, lineNumber).toToken();
+                        return tContainer.new TUnknownVar<Object>(parts[0], output, lineNumber).toToken();
                     }
                 }
             }
