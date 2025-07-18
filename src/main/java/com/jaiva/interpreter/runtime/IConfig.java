@@ -14,9 +14,14 @@ import com.jaiva.Main;
  */
 public class IConfig extends Config {
     /**
-     * Whether or not the user used the "-d" flag to toggle debug mode.
+     * The debug controller instance used to manage debugging features.
      */
-    public boolean isDebugEnv = false;
+    public DebugController dc = new DebugController();
+    /**
+     * This flag is used to print stack traces when an error occurs during
+     * interpretation.
+     */
+    public boolean printStacks = false;
     /**
      * The command-line arguments passed to the Jaiva tokenizer and interpreter.
      * This array is used to tell the user what arguments were passed to the current
@@ -81,8 +86,12 @@ public class IConfig extends Config {
         super(jSrc);
         this.args = args;
         for (String arg : args) {
-            if (arg.equals("-d") || arg.equals("--debug"))
-                isDebugEnv = !isDebugEnv;
+            if (arg.equals("-is") || arg.equals("--include-stacks"))
+                printStacks = !printStacks;
+            if (arg.equals("-d") || arg.equals("--debug")) {
+                printStacks = !printStacks;
+                dc.activate();
+            }
             if (!arg.equals(currentFilePath) && !Main.tokenArgs.contains(arg)
             /* && !Main.replArgs.contains(arg) */) {
                 // because if this overload is invoked, we're running a file, so we dont need to

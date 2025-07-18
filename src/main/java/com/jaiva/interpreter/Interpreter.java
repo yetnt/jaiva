@@ -33,6 +33,7 @@ import com.jaiva.tokenizer.Token.TVarRef;
 import com.jaiva.tokenizer.Token.TVoidValue;
 import com.jaiva.tokenizer.Token.TWhileLoop;
 import com.jaiva.tokenizer.TokenDefault;
+import com.jaiva.utils.Tuple2;
 
 /**
  * The Interpreter class is one of the 3 main classes which handle Jaiva code.
@@ -288,6 +289,19 @@ public class Interpreter {
         // Step 2: go throguh eahc token
         for (Token<?> t : tokens) {
             TokenDefault token = t.getValue();
+            // first check if we're in a debug environment
+            if (config.dc.active) {
+                if (config.dc.getBreakpoints().contains(token.lineNumber)) {
+                    // if we are, then we pause the execution and wait for the user to continue.
+                    config.dc.print(token.lineNumber, null, t, vfs);
+                }
+                if (config.dc.stepOver.equals(new Tuple2(true, false))) {
+                    config.dc.print(token.lineNumber, null, t, vfs);
+                    continue;
+                } else if (config.dc.stepOver.equals(new Tuple2(false, true))) {
+                    config.dc.print(token.lineNumber, null, t, vfs);
+                }
+            }
             if (token instanceof TVoidValue) {
                 // Well, the user placed idk by itself, so i also don't know what to do with it.
                 continue;
@@ -558,6 +572,10 @@ public class Interpreter {
         }
         // System.out.println("heyy");
 
+        if (config.dc.active && context == Context.GLOBAL) {
+            // if we're in the global context, then we end the debugging session.
+            config.dc.endOfFile(vfs);
+        }
         return config.importVfs || config.REPL ? vfs : void.class;
     }
 }

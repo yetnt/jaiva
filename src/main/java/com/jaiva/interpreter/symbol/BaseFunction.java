@@ -60,6 +60,11 @@ public class BaseFunction extends Symbol {
         return name + Arrays.asList(((TFunction) token).args).toString().replace("[", "(").replace("]", ")");
     }
 
+    @Override
+    public String toDebugString() {
+        return this.toString();
+    }
+
     /**
      * Calls the function with the given parameters and variable functions store.
      * * This method is called by the interpreter when the function is called.

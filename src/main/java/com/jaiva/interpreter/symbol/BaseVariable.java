@@ -44,6 +44,11 @@ public class BaseVariable extends Symbol {
         }
     }
 
+    @Override
+    public String toDebugString() {
+        return scalar != null ? scalar.toString() : array.toString();
+    }
+
     /**
      * Constructs a new BaseVariable instance with the specified name, token, and
      * scalar value.

@@ -51,7 +51,8 @@ public class Main {
      * JSON format, JSON format with globals, and enabling debug mode.
      */
     public static ArrayList<String> tokenArgs = new ArrayList<>(
-            Arrays.asList("-s", "-j", "--string", "-json", "-jg", "--json-with-globals", "-d", "--debug"));
+            Arrays.asList("-s", "-j", "--string", "-json", "-jg", "--json-with-globals", "-d", "--debug", "-is",
+                    "--incude-stacks"));
     /**
      * Version of the Jaiva programming language interpreter. This is a string
      * variable that holds the version number in the format
@@ -59,7 +60,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "2.0.0-beta.4";
+    public static String version = "2.0.0-beta.5";
     /**
      * Author, it's just me.
      */
@@ -162,7 +163,8 @@ public class Main {
                     System.out.println("\t--json-with-globals, -jg: Print tokens including globals in JSON format.");
                     System.out.println("\t--string, -s: Print tokens in string format.");
                     System.out.println(
-                            "\t--debug, -d: Enable debug mode. (All errors will print as an uncaught Java Exception.)");
+                            "\t--incude-stacks, -is: All errors will include stack traces in the output.");
+                    System.out.println("\t--debug, -d: Enable debug mode.");
                     System.out.println();
                     System.exit(0);
                 }
@@ -199,11 +201,15 @@ public class Main {
         }
 
         IConfig iconfig = new IConfig(args, args[0], callJaivaSrc());
+        boolean stackTraces = false;
         boolean debug = false;
         try {
-            if (args.length > 1)
+            if (args.length > 1) {
+                if (args[1].equals("-is") || args[1].equals("--incude-stacks"))
+                    stackTraces = true;
                 if (args[1].equals("-d") || args[1].equals("--debug"))
                     debug = true;
+            }
             ArrayList<Token<?>> tokens = parseTokens(args[0], false);
             if (tokens.isEmpty()) {
                 System.exit(0);
@@ -214,8 +220,12 @@ public class Main {
                 // here, args[1] is the tokens mode
                 // return tokens mode.
                 switch (args[1]) {
-                    case "-d", "--debug" -> {
+                    case "-is", "--incude-stacks" -> {
                         break;
+                    }
+                    case "-d", "--debug" -> {
+                        new Debugger(iconfig, tokens, args[1].equals("-d"));
+                        return;
                     }
                     case "-s", "--string" -> {
                         for (Token<?> t : tokens) {

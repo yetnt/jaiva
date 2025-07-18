@@ -115,6 +115,15 @@ public class Symbol {
         return true;
     }
 
+    /**
+     * This is the exact same as toString, however it exists such that
+     * {@link BaseVariable} can be toStringed inside {@link DebugController}
+     */
+    public String toDebugString() {
+        return "Symbol{name='" + name + "', symbolType=" + symbolType + ", isFrozen=" + isFrozen + ", token=" + token
+                + "}";
+    }
+
     @Override
     public String toString() {
         return "Symbol [name=" + name + ", symbolType=" + symbolType + ", isFrozen=" + isFrozen + ", token=" + token
