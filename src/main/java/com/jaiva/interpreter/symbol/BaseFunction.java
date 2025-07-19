@@ -91,7 +91,7 @@ public class BaseFunction extends Symbol {
      * @param tFuncCall the function call
      * @throws InterpreterException when args are wrong.
      */
-    protected void checkParams(TFuncCall tFuncCall) throws InterpreterException {
+    protected void checkParams(TFuncCall tFuncCall, ContextTrace cTrace) throws InterpreterException {
         TFunction tFunc = (TFunction) this.token;
 
         // this if sanitizes tFuncCall, as if it has 1 singular entry and that entry is
@@ -110,7 +110,7 @@ public class BaseFunction extends Symbol {
             return;
         if (tFuncCall.args.isEmpty() && (tFunc.isArgOptional.size() > 0 ||
                 tFunc.isArgOptional.isEmpty())) {
-            throw new InterpreterException.FunctionParametersException(this,
+            throw new InterpreterException.FunctionParametersException(cTrace, this,
                     Integer.toString(1),
                     tFuncCall.lineNumber);
         }
@@ -121,14 +121,15 @@ public class BaseFunction extends Symbol {
             // optional
             if ((!tFuncCall.args.isEmpty() && tFuncCall.args.size() != i)) {
                 if (tFuncCall.args.get(i) instanceof TVoidValue && !isOptional)
-                    throw new InterpreterException.FunctionParametersException(this, Integer.toString(i + 1),
+                    throw new InterpreterException.FunctionParametersException(cTrace, this, Integer.toString(i + 1),
                             tFuncCall.lineNumber);
             } else {
                 // the function call has less arguments than required by the function.
                 // check if all the remaining arguments are defined as optional.
                 for (int j = i; j < tFunc.isArgOptional.size(); j++) {
                     if (!(boolean) tFunc.isArgOptional.get(j) && j != 0) {
-                        throw new InterpreterException.FunctionParametersException(this, Integer.toString(j + 1),
+                        throw new InterpreterException.FunctionParametersException(cTrace, this,
+                                Integer.toString(j + 1),
                                 tFuncCall.lineNumber);
                     }
                 }
@@ -186,7 +187,7 @@ public class BaseFunction extends Symbol {
             // so we can make name value pairs.
             String[] paramNames = ((TFunction) this.token).args;
             HashMap<String, MapValue> newVfs = (HashMap) vfs.clone();
-            checkParams(tFuncCall);
+            checkParams(tFuncCall, cTrace);
             for (int i = 0; i < paramNames.length; i++) {
                 String name = paramNames[i];
                 Object value;
@@ -209,9 +210,9 @@ public class BaseFunction extends Symbol {
                     TVarRef tVarRef = (TVarRef) ((Token<?>) value).getValue();
                     MapValue v = vfs.get(tVarRef.varName);
                     if (v == null)
-                        throw new InterpreterException.UnknownVariableException(tVarRef);
+                        throw new InterpreterException.UnknownVariableException(cTrace, tVarRef);
                     if (!(v.getValue() instanceof BaseFunction))
-                        throw new InterpreterException.WtfAreYouDoingException(v.getValue(), BaseFunction.class,
+                        throw new InterpreterException.WtfAreYouDoingException(cTrace, v.getValue(), BaseFunction.class,
                                 tVarRef.lineNumber);
 
                     wrappedValue = v.getValue();

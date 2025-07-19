@@ -56,7 +56,7 @@ public class Math extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
-            checkParams(tFuncCall);
+            checkParams(tFuncCall, cTrace);
             Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
                     cTrace);
 
@@ -65,7 +65,7 @@ public class Math extends BaseGlobals {
             else if (value instanceof Double d)
                 return java.lang.Math.abs(d);
             else
-                throw new FunctionParametersException(this, "1", value, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(cTrace, this, "1", value, Number.class, tFuncCall.lineNumber);
 
         }
     }
@@ -95,20 +95,22 @@ public class Math extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
-            checkParams(tFuncCall);
+            checkParams(tFuncCall, cTrace);
             Object lowerObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false,
                     config, cTrace);
             Object upperObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false,
                     config, cTrace);
 
             if (!(lowerObject instanceof Integer lower))
-                throw new FunctionParametersException(this, "1", lowerObject, Integer.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(cTrace, this, "1", lowerObject, Integer.class,
+                        tFuncCall.lineNumber);
 
             if (!(upperObject instanceof Integer upper))
-                throw new FunctionParametersException(this, "2", upperObject, Integer.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(cTrace, this, "2", upperObject, Integer.class,
+                        tFuncCall.lineNumber);
 
             if (lower > upper)
-                throw new WtfAreYouDoingException("The lower bound cannot be bigger than the upper bound.",
+                throw new WtfAreYouDoingException(cTrace, "The lower bound cannot be bigger than the upper bound.",
                         tFuncCall.lineNumber);
             return ThreadLocalRandom.current().nextInt(lower, upper + 1);
         }
@@ -140,7 +142,7 @@ public class Math extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
-            checkParams(tFuncCall);
+            checkParams(tFuncCall, cTrace);
             Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
                     cTrace);
 
@@ -149,7 +151,7 @@ public class Math extends BaseGlobals {
             else if (value instanceof Double d)
                 return (int) java.lang.Math.round(d);
             else
-                throw new FunctionParametersException(this, "1", value, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(cTrace, this, "1", value, Number.class, tFuncCall.lineNumber);
 
         }
     }
@@ -176,7 +178,7 @@ public class Math extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
-            checkParams(tFuncCall);
+            checkParams(tFuncCall, cTrace);
             Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
                     cTrace);
 
@@ -185,7 +187,7 @@ public class Math extends BaseGlobals {
             else if (value instanceof Double d)
                 return java.lang.Math.sqrt(d);
             else
-                throw new FunctionParametersException(this, "1", value, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(cTrace, this, "1", value, Number.class, tFuncCall.lineNumber);
 
         }
     }
@@ -213,16 +215,16 @@ public class Math extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
-            checkParams(tFuncCall);
+            checkParams(tFuncCall, cTrace);
             Object base = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
                     cTrace);
             Object exponent = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false,
                     config, cTrace);
 
             if (!(base instanceof Number))
-                throw new FunctionParametersException(this, "1", base, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(cTrace, this, "1", base, Number.class, tFuncCall.lineNumber);
             if (!(exponent instanceof Number))
-                throw new FunctionParametersException(this, "2", exponent, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(cTrace, this, "2", exponent, Number.class, tFuncCall.lineNumber);
 
             return java.lang.Math.pow(((Number) base).doubleValue(), ((Number) exponent).doubleValue());
 
@@ -251,7 +253,7 @@ public class Math extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
-            checkParams(tFuncCall);
+            checkParams(tFuncCall, cTrace);
             Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
                     cTrace);
 
@@ -260,7 +262,7 @@ public class Math extends BaseGlobals {
             else if (value instanceof Double d)
                 return (int) java.lang.Math.floor(d);
             else
-                throw new FunctionParametersException(this, "1", value, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(cTrace, this, "1", value, Number.class, tFuncCall.lineNumber);
         }
     }
 
@@ -286,7 +288,7 @@ public class Math extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
-            checkParams(tFuncCall);
+            checkParams(tFuncCall, cTrace);
             Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
                     cTrace);
 
@@ -295,7 +297,7 @@ public class Math extends BaseGlobals {
             else if (value instanceof Double d)
                 return (int) java.lang.Math.ceil(d);
             else
-                throw new FunctionParametersException(this, "1", value, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(cTrace, this, "1", value, Number.class, tFuncCall.lineNumber);
         }
     }
 }

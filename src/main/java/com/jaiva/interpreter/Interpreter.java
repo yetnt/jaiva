@@ -89,7 +89,7 @@ public class Interpreter {
      * This is used to handle the case where a function return or a loop control is
      * used in the global context.
      *
-     * @param ctrace     The context of the code being interpreted.
+     * @param cTrace     The context of the code being interpreted.
      * @param lc         The object which caused the interuption.
      * @param lineNumber The line number of the token which caused the interuption.
      * @return Returns a new instance of the ThrowIfGlobalContext class with the
@@ -102,7 +102,7 @@ public class Interpreter {
      *                                 and the object is an
      *                                 error.
      */
-    public static ThrowIfGlobalContext throwIfGlobalContext(ContextTrace ctrace, Object lc, int lineNumber)
+    public static ThrowIfGlobalContext throwIfGlobalContext(ContextTrace cTrace, Object lc, int lineNumber)
             throws JaivaException {
         if (lc instanceof ThrowIfGlobalContext) {
             lc = ((ThrowIfGlobalContext) lc).c;
@@ -110,19 +110,19 @@ public class Interpreter {
         if (lc instanceof DebugException dlc)
             throw dlc; // user shouldnt catch it anywhere fr.
         else if (lc instanceof Keywords.LoopControl) {
-            if (ctrace.current == Context.GLOBAL)
-                throw new WtfAreYouDoingException("So. You tried using "
+            if (cTrace.current == Context.GLOBAL)
+                throw new WtfAreYouDoingException(cTrace, "So. You tried using "
                         + (lc.toString().equals("BREAK") ? Keywords.LC_BREAK : Keywords.LC_CONTINUE)
                         + ". But like, we're not in a loop yknow? ", lineNumber);
         } else if (Primitives.isPrimitive(lc)) {
             // a function return thing then
-            if (ctrace.current == Context.GLOBAL)
-                throw new WtfAreYouDoingException(
+            if (cTrace.current == Context.GLOBAL)
+                throw new WtfAreYouDoingException(cTrace,
                         "What are you trying to return out of if we're not in a function??", lineNumber);
 
         } else if (lc instanceof TThrowError) {
-            if (ctrace.current == Context.GLOBAL)
-                throw new CimaException(((TThrowError) lc).errorMessage, lineNumber);
+            if (cTrace.current == Context.GLOBAL)
+                throw new CimaException(cTrace, ((TThrowError) lc).errorMessage, lineNumber);
         }
         return new ThrowIfGlobalContext(lc, lineNumber);
     }
@@ -227,11 +227,11 @@ public class Interpreter {
             if (MapValue.isEmpty(mapValue)
                     || (mapValue.getValue() == null || !(mapValue.getValue() instanceof BaseVariable
                             || mapValue.getValue() instanceof BaseFunction)))
-                throw new UnknownVariableException((TVarReassign) t);
+                throw new UnknownVariableException(cTrace, (TVarReassign) t);
 
             Symbol var = (Symbol) mapValue.getValue();
             if (var.isFrozen)
-                throw new FrozenSymbolException(var, ((TVarReassign) t).lineNumber);
+                throw new FrozenSymbolException(cTrace, var, ((TVarReassign) t).lineNumber);
 
             Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(((TVarReassign) t).newValue), vfs, false,
                     config, cTrace);
@@ -240,9 +240,9 @@ public class Interpreter {
                 mapValue.setValue(o);
             } else if (var instanceof BaseVariable v) {
                 if (o instanceof ArrayList) {
-                    v.a_set((ArrayList) o);
+                    v.a_set((ArrayList) o, cTrace);
                 } else {
-                    v.s_set(o);
+                    v.s_set(o, cTrace);
                 }
             }
 
@@ -340,7 +340,7 @@ public class Interpreter {
 
                     if (!(vfsFromFile instanceof HashMap) && (vfsFromFile == null)) {
                         // error? maybe not yet but throw.
-                        throw new CatchAllException(
+                        throw new CatchAllException(cTrace,
                                 importPath.toString()
                                         + " either had nothing to export or somethign wqent horribly wrong.",
                                 tImport.lineNumber);
@@ -393,7 +393,7 @@ public class Interpreter {
             } else if (token instanceof TIfStatement ifStatement && !config.importVfs) {
                 // if statement handling below
                 if (!(ifStatement.condition instanceof TStatement))
-                    throw new WtfAreYouDoingException(
+                    throw new WtfAreYouDoingException(cTrace,
                             "Okay well idk how i will check for true in " + ifStatement,
                             token.lineNumber);
                 Object cond = Primitives.setCondition(ifStatement, vfs, config, cTrace);
@@ -413,7 +413,7 @@ public class Interpreter {
                     for (Object e : ifStatement.elseIfs) {
                         TIfStatement elseIf = (TIfStatement) e;
                         if (!(elseIf.condition instanceof TStatement))
-                            throw new WtfAreYouDoingException(
+                            throw new WtfAreYouDoingException(cTrace,
                                     "Okay well idk how i will check for true in " + elseIf, token.lineNumber);
                         Object cond2 = Primitives.setCondition(elseIf, vfs, config, cTrace);
                         if (((Boolean) cond2).booleanValue() == true) {
@@ -444,7 +444,7 @@ public class Interpreter {
                 handleVariables(tForLoop.variable, vfs, config, cTrace);
                 Object vObject = vfs.get(tForLoop.variable.name).getValue();
                 if (!(vObject instanceof BaseVariable))
-                    throw new WtfAreYouDoingException(vObject, BaseVariable.class,
+                    throw new WtfAreYouDoingException(cTrace, vObject, BaseVariable.class,
                             tForLoop.lineNumber);
                 BaseVariable v = (BaseVariable) vObject;
                 // if (!(v.s_get() instanceof Integer))
@@ -453,13 +453,13 @@ public class Interpreter {
                     // for each
                     MapValue mapValue = vfs.get(tForLoop.array.varName);
                     if (mapValue == null || !((mapValue.getValue()) instanceof BaseVariable))
-                        throw new UnknownVariableException(tForLoop.array);
+                        throw new UnknownVariableException(cTrace, tForLoop.array);
                     BaseVariable arr = (BaseVariable) mapValue.getValue();
 
                     if (arr.variableType != VariableType.ARRAY
                             && arr.variableType != VariableType.A_FUCKING_AMALGAMATION
                             && !(arr.s_get() instanceof String))
-                        throw new WtfAreYouDoingException(
+                        throw new WtfAreYouDoingException(cTrace,
                                 "Ayo that variable argument on " + tForLoop.lineNumber + " gotta be an array.",
                                 token.lineNumber);
 
@@ -472,7 +472,7 @@ public class Interpreter {
                             : arr.a_getAll();
 
                     for (Object o : list) {
-                        v.s_set(o);
+                        v.s_set(o, cTrace);
                         Object out = Interpreter.interpret(tForLoop.body.lines,
                                 new ContextTrace(Context.FOR, token, cTrace), vfs, config);
                         if (out instanceof ThrowIfGlobalContext g) {
@@ -499,14 +499,14 @@ public class Interpreter {
                                 break;
                             if (g.c instanceof Keywords.LoopControl
                                     && g.c == Keywords.LoopControl.CONTINUE) {
-                                v.s_set(((Integer) v.s_get()).intValue() + (increment == '+' ? 1 : -1));
+                                v.s_set(((Integer) v.s_get()).intValue() + (increment == '+' ? 1 : -1), cTrace);
                                 cond = Primitives.setCondition(tForLoop, vfs, config, cTrace);
                                 continue;
                             }
                             ThrowIfGlobalContext checker = throwIfGlobalContext(cTrace, out, g.lineNumber);
                             return checker;
                         }
-                        v.s_set(((Integer) v.s_get()).intValue() + (increment == '+' ? 1 : -1));
+                        v.s_set(((Integer) v.s_get()).intValue() + (increment == '+' ? 1 : -1), cTrace);
                         cond = Primitives.setCondition(tForLoop, vfs, config, cTrace);
                     }
                 }

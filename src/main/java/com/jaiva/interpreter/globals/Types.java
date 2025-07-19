@@ -68,12 +68,13 @@ public class Types extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
-            this.checkParams(tFuncCall);
+            this.checkParams(tFuncCall, cTrace);
             Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
                     cTrace);
 
             if (!(val instanceof String value))
-                throw new WtfAreYouDoingException(params.get(0) + " cannot become a number kau", tFuncCall.lineNumber);
+                throw new WtfAreYouDoingException(cTrace, params.get(0) + " cannot become a number kau",
+                        tFuncCall.lineNumber);
 
             int type = value.startsWith("0b") ? 2 : value.startsWith("0x") ? 16 : value.startsWith("0c") ? 8 : -1;
             value = type != -1 ? value.substring(2) : value;
@@ -87,13 +88,14 @@ public class Types extends BaseGlobals {
                     Object r = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config,
                             cTrace);
                     if (!(r instanceof TVoidValue) && !(r instanceof Integer))
-                        throw new FunctionParametersException(this, "2", tFuncCall.lineNumber);
+                        throw new FunctionParametersException(cTrace, this, "2", tFuncCall.lineNumber);
                     int radix = r instanceof TVoidValue ? -1 : (int) r;
 
                     return Integer.parseInt(value, type != -1 ? type : radix != -1 ? radix : 10);
                 }
             } catch (NumberFormatException e) {
-                throw new WtfAreYouDoingException(params.get(0) + " cannot become a number kau", tFuncCall.lineNumber);
+                throw new WtfAreYouDoingException(cTrace, params.get(0) + " cannot become a number kau",
+                        tFuncCall.lineNumber);
             }
         }
     }
@@ -114,7 +116,7 @@ public class Types extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
-            this.checkParams(tFuncCall);
+            this.checkParams(tFuncCall, cTrace);
             Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
                     cTrace);
 
@@ -130,7 +132,7 @@ public class Types extends BaseGlobals {
                 Object r = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config,
                         cTrace);
                 if (!(r instanceof TVoidValue) && !(r instanceof Integer))
-                    throw new FunctionParametersException(this, "2", tFuncCall.lineNumber);
+                    throw new FunctionParametersException(cTrace, this, "2", tFuncCall.lineNumber);
                 int radix = r instanceof TVoidValue ? null : (int) r;
                 switch (radix) {
                     case 2:
@@ -145,7 +147,8 @@ public class Types extends BaseGlobals {
             } else if (val instanceof TVoidValue v) {
                 return v.toString();
             } else {
-                throw new WtfAreYouDoingException(params.get(0) + " cannot become a string kau", tFuncCall.lineNumber);
+                throw new WtfAreYouDoingException(cTrace, params.get(0) + " cannot become a string kau",
+                        tFuncCall.lineNumber);
             }
         }
     }
@@ -162,7 +165,7 @@ public class Types extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
 
-            this.checkParams(tFuncCall);
+            this.checkParams(tFuncCall, cTrace);
             if (params.size() == 0)
                 return Token.voidValue(tFuncCall.lineNumber);
             Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,

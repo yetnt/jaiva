@@ -58,7 +58,7 @@ public class IOFunctions extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
                 IConfig config, ContextTrace cTrace)
                 throws Exception {
-            checkParams(tFuncCall);
+            checkParams(tFuncCall, cTrace);
             String output;
             Object o = params.size() > 0 ? params.get(0) : null;
             Object newO = o;
@@ -84,7 +84,7 @@ public class IOFunctions extends BaseGlobals {
                 // we dont have context, so just alert the user.
                 // that either, they tried using the "voetsek" or "nevermind" outside of a for
                 // loop context or cima was called with a custom error.
-                throw new InterpreterException.WtfAreYouDoingException(
+                throw new InterpreterException.WtfAreYouDoingException(cTrace,
                         "Cannot use 'voetsek' or 'nevermind' outside of a loop context, or 'cima' was called with a custom error.",
                         tFuncCall.lineNumber);
             } else {
@@ -152,7 +152,7 @@ public class IOFunctions extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
-            checkParams(tFuncCall);
+            checkParams(tFuncCall, cTrace);
             return JOptionPane.showInputDialog(params.get(0));
         }
     }

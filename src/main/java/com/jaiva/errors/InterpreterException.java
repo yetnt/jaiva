@@ -2,6 +2,7 @@ package com.jaiva.errors;
 
 import java.util.HashMap;
 
+import com.jaiva.interpreter.ContextTrace;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
@@ -24,6 +25,7 @@ import com.jaiva.tokenizer.Token.TWhileLoop;
 public class InterpreterException extends JaivaException {
 
     private static final long serialVersionUID = 1L;
+    public ContextTrace cTrace;
 
     /**
      * Returns a user-friendly name for a given class or type name.
@@ -97,8 +99,8 @@ public class InterpreterException extends JaivaException {
      * @param lineNumber the line number
      * @param message    Message to send.
      */
-    public InterpreterException(int lineNumber, String message) {
-        super(message, lineNumber);
+    public InterpreterException(ContextTrace ct, int lineNumber, String message) {
+        super(message + "\n" + ct, lineNumber);
     }
 
     /**
@@ -113,8 +115,8 @@ public class InterpreterException extends JaivaException {
          * 
          * @param lineNumber the line number
          */
-        public FrozenSymbolException(int lineNumber) {
-            super(lineNumber, "You tried to modify a frozen symbol. Don't do that.");
+        public FrozenSymbolException(ContextTrace ct, int lineNumber) {
+            super(ct, lineNumber, "You tried to modify a frozen symbol. Don't do that.");
         }
 
         /**
@@ -123,8 +125,8 @@ public class InterpreterException extends JaivaException {
          * @param s          The symbol in question
          * @param lineNumber the line number
          */
-        public FrozenSymbolException(Symbol s, int lineNumber) {
-            super(lineNumber,
+        public FrozenSymbolException(ContextTrace ct, Symbol s, int lineNumber) {
+            super(ct, lineNumber,
                     "The symbol \"" + s.name + "\" is lowkey frozen. You can't modify it.");
         }
 
@@ -133,8 +135,8 @@ public class InterpreterException extends JaivaException {
          * 
          * @param s The symbol in question
          */
-        public FrozenSymbolException(Symbol s) {
-            super(-1, "The symbol \"" + s.name + "\" is lowkey frozen. You can't modify it.");
+        public FrozenSymbolException(ContextTrace ct, Symbol s) {
+            super(ct, -1, "The symbol \"" + s.name + "\" is lowkey frozen. You can't modify it.");
         }
 
         /**
@@ -144,8 +146,8 @@ public class InterpreterException extends JaivaException {
          * @param isGlobal   true
          * @param lineNumber the line number
          */
-        public FrozenSymbolException(Symbol s, boolean isGlobal, int lineNumber) {
-            super(lineNumber, "Now tell me. How do you try and modify a global symbol? Specifically, \"" + s.name
+        public FrozenSymbolException(ContextTrace ct, Symbol s, boolean isGlobal, int lineNumber) {
+            super(ct, lineNumber, "Now tell me. How do you try and modify a global symbol? Specifically, \"" + s.name
                     + "\". Shame be upon you!");
         }
     }
@@ -166,8 +168,8 @@ public class InterpreterException extends JaivaException {
          * @param lineNumber the line number this happened on
          */
 
-        public FunctionParametersException(BaseFunction s, int amtGiven, int lineNumber) {
-            super(lineNumber, s.name + "() only needs " + ((TFunction) s.token).args.length
+        public FunctionParametersException(ContextTrace ct, BaseFunction s, int amtGiven, int lineNumber) {
+            super(ct, lineNumber, s.name + "() only needs " + ((TFunction) s.token).args.length
                     + " parameter" + (amtGiven == 1 ? "" : "s") + ", and your goofy ahh gave " + amtGiven
                     + ". ☠️");
         }
@@ -178,8 +180,8 @@ public class InterpreterException extends JaivaException {
          * @param s          Base function instance
          * @param lineNumber the line number this happened on
          */
-        public FunctionParametersException(BaseFunction s, int lineNumber) {
-            super(lineNumber, s.name + "() takes no input, why did you give it input??");
+        public FunctionParametersException(ContextTrace ct, BaseFunction s, int lineNumber) {
+            super(ct, lineNumber, s.name + "() takes no input, why did you give it input??");
         }
 
         /**
@@ -191,8 +193,8 @@ public class InterpreterException extends JaivaException {
          * @param lineNumber The line number in the source code where the exception
          *                   occurred.
          */
-        public FunctionParametersException(BaseFunction s, String nthParam, int lineNumber) {
-            super(lineNumber, "The " + nthParam + (nthParam.endsWith("1") ? "st"
+        public FunctionParametersException(ContextTrace ct, BaseFunction s, String nthParam, int lineNumber) {
+            super(ct, lineNumber, "The " + nthParam + (nthParam.endsWith("1") ? "st"
                     : nthParam.endsWith("2") ? "nd" : nthParam.endsWith("3") ? "rd" : "") + " parameter in " + s.name
                     + "() is required. (Either you didn't set it or set it to idk)");
         }
@@ -207,9 +209,10 @@ public class InterpreterException extends JaivaException {
          * @param lineNumber The line number in the source code where the exception
          *                   occurred.
          */
-        public FunctionParametersException(BaseFunction s, String nthParam, Object param, Class<?> expected,
+        public FunctionParametersException(ContextTrace ct, BaseFunction s, String nthParam, Object param,
+                Class<?> expected,
                 int lineNumber) {
-            super(lineNumber, "The " + nthParam + (nthParam.endsWith("1") ? "st"
+            super(ct, lineNumber, "The " + nthParam + (nthParam.endsWith("1") ? "st"
                     : nthParam.endsWith("2") ? "nd" : nthParam.endsWith("3") ? "rd" : "") + " parameter in " + s.name
                     + "() is required to be a " + friendlyName(expected) + ", but you gave me a "
                     + friendlyName(param.getClass()) + ". Wtf bro.");
@@ -229,9 +232,9 @@ public class InterpreterException extends JaivaException {
          * @param s          The base variable the user is trying to set.
          * @param lineNumber The line number this occured on.
          */
-        public DualVariableReassignWarning(BaseVariable s, int lineNumber) {
+        public DualVariableReassignWarning(ContextTrace ct, BaseVariable s, int lineNumber) {
             // tokenizer.
-            super(lineNumber, s.name
+            super(ct, lineNumber, s.name
                     + " has already been defined as either an array or some value. Do not reassign it as vice versa. If you know what you are doing however, place a ~ after the variable name in the declaration.");
         }
 
@@ -253,9 +256,9 @@ public class InterpreterException extends JaivaException {
          * @param side      "lhs" or "rhs"
          * @param incorrect The .toString() of the Object we received.
          */
-        public TStatementResolutionException(TStatement s, String side,
+        public TStatementResolutionException(ContextTrace ct, TStatement s, String side,
                 String incorrect) {
-            super(s.lineNumber,
+            super(ct, s.lineNumber,
                     incorrect + " (the " + side + ") in (" + s.statement + ") is not allowed in" +
                             (s.op.equals("'") || s.op.equals("||") || s.op.equals("&&") ? " a logical"
                                     : s.statementType == 0 ? " a comparison" : " an arithmetic")
@@ -272,9 +275,9 @@ public class InterpreterException extends JaivaException {
          * @param expected What it expected (in string form)
          * @param received What it received (in string form)
          */
-        public TStatementResolutionException(TokenDefault outer, TStatement s,
+        public TStatementResolutionException(ContextTrace ct, TokenDefault outer, TStatement s,
                 String expected, String received) {
-            super(s.lineNumber,
+            super(ct, s.lineNumber,
                     "i expected (" + s.statement + ") to resolve to a " + expected
                             + ". (I'm pretty sure a " + outer.name
                             + " does not take in a" + received + ")");
@@ -294,8 +297,8 @@ public class InterpreterException extends JaivaException {
          * 
          * @param s The variable reference.
          */
-        public UnknownVariableException(TVarRef s) {
-            super(s.lineNumber, "Lowkey can't find symbol named " + s.varName
+        public UnknownVariableException(ContextTrace ct, TVarRef s) {
+            super(ct, s.lineNumber, "Lowkey can't find symbol named " + s.varName
                     + " that you used anywhere. It prolly aint in this block's scope fr.");
         }
 
@@ -306,8 +309,8 @@ public class InterpreterException extends JaivaException {
          * @param name       The variable name
          * @param lineNumber The line this occured on.
          */
-        public UnknownVariableException(String name, int lineNumber) {
-            super(lineNumber, "Lowkey can't find the variable named " + name
+        public UnknownVariableException(ContextTrace ct, String name, int lineNumber) {
+            super(ct, lineNumber, "Lowkey can't find the variable named " + name
                     + " that you used anywhere. It prolly aint in this block's scope fr.");
         }
 
@@ -317,8 +320,8 @@ public class InterpreterException extends JaivaException {
          * 
          * @param s The variable reassignment token
          */
-        public UnknownVariableException(TVarReassign s) {
-            super(s.lineNumber, "Lowkey can't find the variable named " + s.name
+        public UnknownVariableException(ContextTrace ct, TVarReassign s) {
+            super(ct, s.lineNumber, "Lowkey can't find the variable named " + s.name
                     + " that you're trying to reassign anywhere. It prolly aint in this block's scope fr.");
         }
 
@@ -328,8 +331,8 @@ public class InterpreterException extends JaivaException {
          * 
          * @param s The function call token.
          */
-        public UnknownVariableException(TFuncCall s) {
-            super(s.lineNumber, "Lowkey can't find the function named " + s.functionName
+        public UnknownVariableException(ContextTrace ct, TFuncCall s) {
+            super(ct, s.lineNumber, "Lowkey can't find the function named " + s.functionName
                     + " that you used anywhere. It prolly aint in this block's scope fr.");
         }
     }
@@ -349,8 +352,8 @@ public class InterpreterException extends JaivaException {
          * @param correctClass The correct class.
          * @param lineNumber   The line number this occured on.
          */
-        public WtfAreYouDoingException(Object s, Class<?> correctClass, int lineNumber) {
-            super(lineNumber,
+        public WtfAreYouDoingException(ContextTrace ct, Object s, Class<?> correctClass, int lineNumber) {
+            super(ct, lineNumber,
                     "Alright bub. if you're going to start mixing and matching, you might as well write lua code. "
                             + "(You tried using a " + friendlyName(s.getClass()) + " as if it were a "
                             + friendlyName(correctClass.getSimpleName()) + ")");
@@ -362,8 +365,8 @@ public class InterpreterException extends JaivaException {
          * @param s          The message to send.
          * @param lineNumber The line it occured at.
          */
-        public WtfAreYouDoingException(String s, int lineNumber) {
-            super(lineNumber, s);
+        public WtfAreYouDoingException(ContextTrace ct, String s, int lineNumber) {
+            super(ct, lineNumber, s);
         }
 
     }
@@ -387,8 +390,8 @@ public class InterpreterException extends JaivaException {
          *
          * @param tFuncCall The weird function in question.
          */
-        public WeirdAhhFunctionException(TFuncCall tFuncCall) {
-            super(tFuncCall.lineNumber,
+        public WeirdAhhFunctionException(ContextTrace ct, TFuncCall tFuncCall) {
+            super(ct, tFuncCall.lineNumber,
                     tFuncCall.name + " could NOT be resolved to a poper function name. Idk what else to tell you zawg");
         }
     }
@@ -405,8 +408,8 @@ public class InterpreterException extends JaivaException {
          * 
          * @param st The TStatement.
          */
-        public StringCalcException(TStatement st) {
-            super(st.lineNumber,
+        public StringCalcException(ContextTrace ct, TStatement st) {
+            super(ct, st.lineNumber,
                     st.statement + "A statement contains invalid string operations. Not telling u what tho lolol.");
         }
 
@@ -417,8 +420,8 @@ public class InterpreterException extends JaivaException {
          * @param s The TStatement.
          * @param e The Exception that got caught.
          */
-        public StringCalcException(TStatement s, Exception e) {
-            super(s.lineNumber,
+        public StringCalcException(ContextTrace ct, TStatement s, Exception e) {
+            super(ct, s.lineNumber,
                     e instanceof StringIndexOutOfBoundsException
                             ? "Bro, whatever you did, it's out of the string's bounbds. fix it pls 🙏"
                             : "So something parsed to a negative number, when sum else shouldnt have it yknow. I'm too lazy to finish writing this error tho.");
@@ -438,8 +441,8 @@ public class InterpreterException extends JaivaException {
          * @param message    The message the user wants to print.
          * @param lineNumber The line number where we can find the {@link TThrowError}
          */
-        public CimaException(String message, int lineNumber) {
-            super(lineNumber, "Ight. Stopped program. Reason: " + message);
+        public CimaException(ContextTrace ct, String message, int lineNumber) {
+            super(ct, lineNumber, "Ight. Stopped program. Reason: " + message);
         }
     }
 
@@ -462,8 +465,8 @@ public class InterpreterException extends JaivaException {
          * @param message    A detailed message describing the error.
          * @param lineNumber The line number where the error occurred.
          */
-        public CatchAllException(String message, int lineNumber) {
-            super(lineNumber, "This error shouldnt happen... (" + message + ")");
+        public CatchAllException(ContextTrace ct, String message, int lineNumber) {
+            super(ct, lineNumber, "This error shouldnt happen... (" + message + ")");
         }
     }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jaiva.errors.InterpreterException;
+import com.jaiva.interpreter.ContextTrace;
 import com.jaiva.tokenizer.TokenDefault;
 
 /**
@@ -104,9 +105,9 @@ public class BaseVariable extends Symbol {
      * @param t
      * @throws InterpreterException.FrozenSymbolException
      */
-    public void a_set(ArrayList<Object> t) throws InterpreterException.FrozenSymbolException {
+    public void a_set(ArrayList<Object> t, ContextTrace cTrace) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
-            throw new InterpreterException.FrozenSymbolException(this);
+            throw new InterpreterException.FrozenSymbolException(cTrace, this);
         array = t;
     }
 
@@ -116,9 +117,9 @@ public class BaseVariable extends Symbol {
      * @param a
      * @throws InterpreterException.FrozenSymbolException
      */
-    public void a_addAll(List<String> a) throws InterpreterException.FrozenSymbolException {
+    public void a_addAll(List<String> a, ContextTrace cTrace) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
-            throw new InterpreterException.FrozenSymbolException(this);
+            throw new InterpreterException.FrozenSymbolException(cTrace, this);
         array.addAll(a);
     }
 
@@ -128,9 +129,9 @@ public class BaseVariable extends Symbol {
      * @param a
      * @throws InterpreterException.FrozenSymbolException
      */
-    public void a_add(Object a) throws InterpreterException.FrozenSymbolException {
+    public void a_add(Object a, ContextTrace cTrace) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
-            throw new InterpreterException.FrozenSymbolException(this);
+            throw new InterpreterException.FrozenSymbolException(cTrace, this);
         array.add(a);
     }
 
@@ -168,9 +169,9 @@ public class BaseVariable extends Symbol {
      * @param value
      * @throws InterpreterException.FrozenSymbolException
      */
-    public void s_set(Object value) throws InterpreterException.FrozenSymbolException {
+    public void s_set(Object value, ContextTrace cTrace) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
-            throw new InterpreterException.FrozenSymbolException(this);
+            throw new InterpreterException.FrozenSymbolException(cTrace, this);
         this.scalar = value;
     }
 

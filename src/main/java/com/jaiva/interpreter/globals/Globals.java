@@ -94,16 +94,16 @@ public class Globals extends BaseGlobals {
             } else if (params.get(0) instanceof Token && ((Token) params.get(0)).getValue() instanceof TVarRef) {
                 name = ((TVarRef) ((Token) params.get(0)).getValue()).varName.toString();
             } else {
-                throw new InterpreterException.WtfAreYouDoingException(
+                throw new InterpreterException.WtfAreYouDoingException(cTrace,
                         "getVarClass() only accepts a variable reference or a string, whatever you sent is disgusting.",
                         tFuncCall.lineNumber);
             }
             MapValue var = vfs.get(name);
             if (var == null) {
-                throw new InterpreterException.UnknownVariableException(name, tFuncCall.lineNumber);
+                throw new InterpreterException.UnknownVariableException(cTrace, name, tFuncCall.lineNumber);
             }
             if (!(var.getValue() instanceof Symbol)) {
-                throw new InterpreterException.WtfAreYouDoingException(
+                throw new InterpreterException.WtfAreYouDoingException(cTrace,
                         name + " is not a variable nor a function, wtf. this error shouldnt happen.",
                         tFuncCall.lineNumber);
             }
@@ -156,7 +156,7 @@ public class Globals extends BaseGlobals {
                 IConfig config, ContextTrace cTrace)
                 throws Exception {
             if (tFuncCall.args.size() != params.size())
-                throw new InterpreterException.FunctionParametersException(this, params.size());
+                throw new InterpreterException.FunctionParametersException(cTrace, this, params.size());
 
             ArrayList<Object> returned = new ArrayList<>();
             tFuncCall.args.forEach(arg -> {
@@ -215,11 +215,12 @@ public class Globals extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
-            checkParams(tFuncCall);
+            checkParams(tFuncCall, cTrace);
             Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
                     cTrace);
             if (!(val instanceof Integer integer))
-                throw new WtfAreYouDoingException("Bruv, you can't just like, pls put number", tFuncCall.lineNumber);
+                throw new WtfAreYouDoingException(cTrace, "Bruv, you can't just like, pls put number",
+                        tFuncCall.lineNumber);
 
             Thread.sleep(integer);
 

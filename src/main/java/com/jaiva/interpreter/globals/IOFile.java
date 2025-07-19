@@ -178,7 +178,8 @@ public class IOFile extends BaseGlobals {
             try {
                 fs = new Scanner(f);
             } catch (FileNotFoundException e) {
-                throw new InterpreterException.CatchAllException("Well, the current file doesnt exist??...", -1);
+                throw new InterpreterException.CatchAllException(new ContextTrace(),
+                        "Well, the current file doesnt exist??...", -1);
             }
             ArrayList<String> contents = new ArrayList<>();
             while (fs.hasNextLine())
@@ -191,7 +192,7 @@ public class IOFile extends BaseGlobals {
             file.add(new ArrayList<>(Arrays.asList(f.canRead(), f.canWrite(), f.canExecute())));
 
             ((TArrayVar) this.token).contents = file; // set the token.
-            a_set(file); // set the interpreter variable.
+            a_set(file, new ContextTrace()); // set the interpreter variable.
 
             freeze(); // freeze this variable.
         }
@@ -223,11 +224,11 @@ public class IOFile extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
-            checkParams(tFuncCall);
+            checkParams(tFuncCall, cTrace);
             Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
                     cTrace);
             if (!(path instanceof String))
-                throw new WtfAreYouDoingException("Da path must be a string.",
+                throw new WtfAreYouDoingException(cTrace, "Da path must be a string.",
                         tFuncCall.lineNumber);
 
             Path baseDir = (config.filePath != null) ? config.filePath.getParent() : null;
@@ -243,7 +244,8 @@ public class IOFile extends BaseGlobals {
 
             File file = filePath.toFile();
             if (!file.exists())
-                throw new WtfAreYouDoingException("File does not exist: " + filePath, tFuncCall.lineNumber);
+                throw new WtfAreYouDoingException(new ContextTrace(), "File does not exist: " + filePath,
+                        tFuncCall.lineNumber);
 
             ArrayList<String> contents = new ArrayList<>();
             try (Scanner scanner = new Scanner(file)) {
@@ -251,7 +253,8 @@ public class IOFile extends BaseGlobals {
                     contents.add(scanner.nextLine());
                 }
             } catch (FileNotFoundException e) {
-                throw new CatchAllException("Cannot read file but we found it... " + filePath, tFuncCall.lineNumber);
+                throw new CatchAllException(new ContextTrace(),
+                        "Cannot read file but we found it... " + filePath, tFuncCall.lineNumber);
             }
 
             ArrayList<Object> result = new ArrayList<>();
@@ -298,18 +301,20 @@ public class IOFile extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             // TODO Auto-generated method stub
-            checkParams(tFuncCall);
+            checkParams(tFuncCall, cTrace);
             Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
                     cTrace);
             if (!(path instanceof String))
-                throw new FunctionParametersException(this, "1", params.get(0), String.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(cTrace, this, "1", params.get(0), String.class,
+                        tFuncCall.lineNumber);
 
             Object content = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config,
                     cTrace);
             StringBuilder outBuilder = new StringBuilder();
             String output = content instanceof String ? (String) content : "";
             if (!(content instanceof String) && !(content instanceof ArrayList))
-                throw new FunctionParametersException(this, "2", params.get(1), String.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(cTrace, this, "2", params.get(1), String.class,
+                        tFuncCall.lineNumber);
             if (content instanceof ArrayList list) {
                 if (list.size() == 0)
                     output = "";
@@ -330,7 +335,7 @@ public class IOFile extends BaseGlobals {
                 Object cr = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(2)), vfs, false, config,
                         cTrace);
                 if (!(cr instanceof Boolean))
-                    throw new FunctionParametersException(this, "3", params.get(2), boolean.class,
+                    throw new FunctionParametersException(cTrace, this, "3", params.get(2), boolean.class,
                             tFuncCall.lineNumber);
                 canRead = cr.equals(Boolean.TRUE);
             }
@@ -338,7 +343,7 @@ public class IOFile extends BaseGlobals {
                 Object cw = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(3)), vfs, false, config,
                         cTrace);
                 if (!(cw instanceof Boolean))
-                    throw new FunctionParametersException(this, "4", params.get(3), boolean.class,
+                    throw new FunctionParametersException(cTrace, this, "4", params.get(3), boolean.class,
                             tFuncCall.lineNumber);
                 canWrite = cw.equals(Boolean.TRUE);
             }
@@ -346,7 +351,7 @@ public class IOFile extends BaseGlobals {
                 Object ce = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(4)), vfs, false, config,
                         cTrace);
                 if (!(ce instanceof Boolean))
-                    throw new FunctionParametersException(this, "5", params.get(4), boolean.class,
+                    throw new FunctionParametersException(cTrace, this, "5", params.get(4), boolean.class,
                             tFuncCall.lineNumber);
                 canExecute = ce.equals(Boolean.TRUE);
             }

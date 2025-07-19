@@ -32,8 +32,9 @@ public class Debug extends BaseGlobals {
             // exception should be in the catch.
             ArrayList<Object> components = new ArrayList<>();
             try {
-                checkParams(tFuncCall); // throws if params aren't correct. So naturally we loose having varargs, so its
-                                        // fine.
+                checkParams(tFuncCall, cTrace); // throws if params aren't correct. So naturally we loose having
+                                                // varargs, so its
+                // fine.
                 if (params.size() > 0) {
                     Object param = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false,
                             config, cTrace);

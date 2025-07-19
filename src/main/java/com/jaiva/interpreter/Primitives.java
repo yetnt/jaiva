@@ -58,7 +58,7 @@ public class Primitives {
      * @throws If an invalid operator is provided or another
      *            interpreter error occurs.
      */
-    private static Object handleNumOperations(String op, Object lhs, Object rhs, int lineNumber)
+    private static Object handleNumOperations(String op, Object lhs, Object rhs, int lineNumber, ContextTrace cTrace)
             throws InterpreterException {
         Object result;
         if (lhs instanceof Integer iLhs && rhs instanceof Integer iRhs) {
@@ -102,7 +102,7 @@ public class Primitives {
                     result = iLhs >> (iRhs * 4);
                     break;
                 default:
-                    throw new CatchAllException("Invalid operator given", lineNumber);
+                    throw new CatchAllException(cTrace, "Invalid operator given", lineNumber);
             }
         } else if (lhs instanceof Double iLhs && rhs instanceof Double iRhs) {
             switch (op) {
@@ -125,7 +125,7 @@ public class Primitives {
                     result = Math.pow(iLhs, iRhs);
                     break;
                 default:
-                    throw new CatchAllException("Invalid operator given", lineNumber);
+                    throw new CatchAllException(cTrace, "Invalid operator given", lineNumber);
 
             }
         } else if (lhs instanceof Double iLhs && rhs instanceof Integer iRhs) {
@@ -149,7 +149,7 @@ public class Primitives {
                     result = Math.pow(iLhs, iRhs);
                     break;
                 default:
-                    throw new CatchAllException("Invalid operator given", lineNumber);
+                    throw new CatchAllException(cTrace, "Invalid operator given", lineNumber);
 
             }
         } else if (lhs instanceof Integer iLhs && rhs instanceof Double iRhs) {
@@ -173,7 +173,7 @@ public class Primitives {
                     result = Math.pow(iLhs, iRhs);
                     break;
                 default:
-                    throw new CatchAllException("Invalid operator given", lineNumber);
+                    throw new CatchAllException(cTrace, "Invalid operator given", lineNumber);
 
             }
         } else {
@@ -206,7 +206,7 @@ public class Primitives {
      * @throws JaivaException If an error occurs during
      *                        string calculation.
      */
-    public static Object resolveStringOperations(Object lhs, Object rhs, String op, TStatement ts)
+    public static Object resolveStringOperations(Object lhs, Object rhs, String op, TStatement ts, ContextTrace cTrace)
             throws JaivaException {
         String I = Integer.class.getSimpleName().charAt(0) + "";
         String S = String.class.getSimpleName().charAt(0) + "";
@@ -241,18 +241,18 @@ public class Primitives {
                     // case "idkD":
                     // case "idkB":
                     if (!idk.contains(op))
-                        throw new StringCalcException(ts);
+                        throw new StringCalcException(cTrace, ts);
                     return op.equals("=") ? false : op.equals("!=") ? true : "idk" + rhs;
                 case "Sidk":
                     // case "Iidk":
                     // case "Didk":
                     // case "Bidk":
                     if (!idk.contains(op))
-                        throw new StringCalcException(ts);
+                        throw new StringCalcException(cTrace, ts);
                     return op.equals("=") ? false : op.equals("!=") ? true : lhs + "idk";
                 case "IS":
                     if (!IS.contains(op))
-                        throw new StringCalcException(ts);
+                        throw new StringCalcException(cTrace, ts);
                     return op.equals("+") ? ((Integer) lhs) + ((String) rhs)
                             : op.equals("-") ? ((String) rhs).substring(
                                     ((Integer) lhs))
@@ -263,7 +263,7 @@ public class Primitives {
                                                     : op.equals("=") ? false : op.equals("!=") ? true : ((String) rhs);
                 case "SI":
                     if (!IS.contains(op))
-                        throw new StringCalcException(ts);
+                        throw new StringCalcException(cTrace, ts);
                     return op.equals("+") ? ((String) lhs) + ((Integer) rhs)
                             : op.equals("-") ? ((String) lhs).substring(0, ((String) lhs).length() - ((Integer) rhs))
                                     : op.equals("*") ? ((String) lhs).repeat((Integer) rhs)
@@ -273,7 +273,7 @@ public class Primitives {
                                                     : op.equals("=") ? false : op.equals("!=") ? true : ((String) lhs);
                 case "SS":
                     if (!SS.contains(op))
-                        throw new StringCalcException(ts);
+                        throw new StringCalcException(cTrace, ts);
                     return op.equals("+") ? (String) lhs + (String) rhs
                             : op.equals("-")
                                     ? ((String) lhs).replaceFirst(Pattern.quote((String) rhs),
@@ -288,10 +288,10 @@ public class Primitives {
             }
         } catch (StringIndexOutOfBoundsException e) {
             // too big or too small of a number
-            throw new StringCalcException(ts, e);
+            throw new StringCalcException(cTrace, ts, e);
         } catch (IllegalArgumentException e) {
             // something received a negative number, when it shouldn't have.
-            throw new StringCalcException(ts, e);
+            throw new StringCalcException(cTrace, ts, e);
         }
         return void.class;
     }
@@ -342,7 +342,7 @@ public class Primitives {
             String op = tStatement.op;
             Object rhs = toPrimitive(tStatement.rHandSide, vfs, false, config, cTrace);
 
-            Object sTuff = resolveStringOperations(lhs, rhs, op, tStatement);
+            Object sTuff = resolveStringOperations(lhs, rhs, op, tStatement, cTrace);
             if (sTuff != void.class)
                 return sTuff;
 
@@ -350,15 +350,17 @@ public class Primitives {
             if (tStatement.statementType == 1 || (op.equals("|") || op.equals("&"))) {
                 // check input first of all
                 if (!(lhs instanceof Integer) && !(lhs instanceof Double))
-                    throw new TStatementResolutionException(tStatement, "left hand side",
+                    throw new TStatementResolutionException(cTrace,
+                            tStatement, "left hand side",
                             lhs.toString());
                 if (!(rhs instanceof Integer) && !(rhs instanceof Double))
-                    throw new TStatementResolutionException(tStatement, "right hand side",
+                    throw new TStatementResolutionException(cTrace,
+                            tStatement, "right hand side",
                             rhs.toString());
 
                 // For the following if, thanks to the above condition
                 // if one is an integer then the other is an integer too
-                Object v = handleNumOperations(op, lhs, rhs, tStatement.lineNumber);
+                Object v = handleNumOperations(op, lhs, rhs, tStatement.lineNumber, cTrace);
                 if (!(v instanceof TVoidValue)) {
                     return v;
                 }
@@ -368,10 +370,12 @@ public class Primitives {
                     // if the logic operator is one of these naturally, the input has to be boolean
                     // check input first of all
                     if (!(lhs instanceof Boolean))
-                        throw new TStatementResolutionException(tStatement, "left hand side",
+                        throw new TStatementResolutionException(cTrace,
+                                tStatement, "left hand side",
                                 lhs.toString());
                     if (!op.equals("'") && !(rhs instanceof Boolean))
-                        throw new TStatementResolutionException(tStatement, "right hand side",
+                        throw new TStatementResolutionException(cTrace,
+                                tStatement, "right hand side",
                                 rhs.toString());
 
                     switch (op) {
@@ -386,10 +390,12 @@ public class Primitives {
                     // however if its these the input is a number or a double
                     // check input first of all
                     if (!(lhs instanceof Integer) && !(lhs instanceof Double))
-                        throw new TStatementResolutionException(tStatement, "left hand side",
+                        throw new TStatementResolutionException(cTrace,
+                                tStatement, "left hand side",
                                 lhs.toString());
                     if (!(rhs instanceof Integer) && !(rhs instanceof Double))
-                        throw new TStatementResolutionException(tStatement, "right hand side",
+                        throw new TStatementResolutionException(cTrace,
+                                tStatement, "right hand side",
                                 rhs.toString());
 
                     if (lhs instanceof Integer) {
@@ -426,12 +432,14 @@ public class Primitives {
                     if (!(lhs instanceof Integer) && !(lhs instanceof Double) && !(lhs instanceof Boolean)
                             && !(lhs instanceof String) && !(lhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
                             && !(lhs instanceof BaseFunction))
-                        throw new TStatementResolutionException(tStatement, "left hand side",
+                        throw new TStatementResolutionException(cTrace,
+                                tStatement, "left hand side",
                                 lhs.toString());
                     if (!(rhs instanceof Integer) && !(rhs instanceof Double) && !(rhs instanceof Boolean)
                             && !(rhs instanceof String) && !(rhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
                             && !(lhs instanceof BaseFunction))
-                        throw new TStatementResolutionException(tStatement, "right hand side",
+                        throw new TStatementResolutionException(cTrace,
+                                tStatement, "right hand side",
                                 rhs.toString());
 
                     // for TVoidValue, set to void.class
@@ -466,11 +474,11 @@ public class Primitives {
                     : (tVarRef).varName);
             Object index = (tVarRef).index == null ? null : toPrimitive(tVarRef.index, vfs, false, config, cTrace);
             if (index != null && (Integer) index <= -1)
-                return new WtfAreYouDoingException(
+                return new WtfAreYouDoingException(cTrace,
                         "Now tell me, how do you access negative data in ana array?",
                         tVarRef.lineNumber);
             if (v == null)
-                throw new UnknownVariableException(tVarRef);
+                throw new UnknownVariableException(cTrace, tVarRef);
             if (!(v.getValue() instanceof BaseVariable)) {
                 if (v.getValue() instanceof BaseFunction) {
                     if (index == null || !(index instanceof Integer))
@@ -481,7 +489,7 @@ public class Primitives {
                     // If we got BaseFunction, that means tVarRef.varName is a TFuncCall.
                     Object ret = toPrimitive(parseNonPrimitive(tVarRef.varName), vfs, false, config, cTrace);
                     if (!(ret instanceof ArrayList))
-                        throw new WtfAreYouDoingException(
+                        throw new WtfAreYouDoingException(cTrace,
                                 "The function you used there did not return an array, and you expect to be able to index into that?",
                                 tVarRef.lineNumber);
                     return ((ArrayList) ret).get((Integer) index) instanceof ArrayList && tVarRef.getLength
@@ -489,7 +497,7 @@ public class Primitives {
                             : ((ArrayList) ret)
                                     .get((Integer) index);
                 } else {
-                    throw new WtfAreYouDoingException(v.getValue(), BaseVariable.class,
+                    throw new WtfAreYouDoingException(cTrace, v.getValue(), BaseVariable.class,
                             tVarRef.lineNumber);
                 }
             }
@@ -500,7 +508,8 @@ public class Primitives {
                 // it's an array ref, where we have an index
                 ArrayList<Object> arr = variable.a_getAll();
                 if (!(index instanceof Integer) && index != null)
-                    throw new WtfAreYouDoingException(tVarRef, Integer.valueOf(0).getClass(),
+                    throw new WtfAreYouDoingException(cTrace,
+                            tVarRef, Integer.valueOf(0).getClass(),
                             tVarRef.lineNumber);
                 if (tVarRef.varName instanceof Token) {
                     Object t = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarRef.varName), vfs, returnName,
@@ -512,7 +521,7 @@ public class Primitives {
                     }
                 }
                 if (arr.size() <= (Integer) index)
-                    return new WtfAreYouDoingException(
+                    return new WtfAreYouDoingException(cTrace,
                             "Bro you're tryna access more data than there is in " + variable.name, tVarRef.lineNumber);
                 return arr.get((Integer) index) instanceof ArrayList && tVarRef.getLength
                         ? ((ArrayList) arr.get((Integer) index)).size()
@@ -535,7 +544,8 @@ public class Primitives {
                     }
                 } catch (IndexOutOfBoundsException e) {
                     // user gave an invalid index.
-                    throw new WtfAreYouDoingException("I don't think " + variable.name + " has a position " + index,
+                    throw new WtfAreYouDoingException(cTrace,
+                            "I don't think " + variable.name + " has a position " + index,
                             tVarRef.lineNumber);
                 }
             }
@@ -554,7 +564,7 @@ public class Primitives {
                     : tFuncCall.functionName, vfs, false, config, cTrace);
 
             if (!(funcName instanceof String))
-                throw new WeirdAhhFunctionException(tFuncCall);
+                throw new WeirdAhhFunctionException(cTrace, tFuncCall);
             String name = (String) funcName;
             BaseFunction f = null;
             if (!(tFuncCall.functionName instanceof String)) {
@@ -567,11 +577,11 @@ public class Primitives {
             }
             MapValue v = vfs.get(name);
             if (v == null)
-                throw new UnknownVariableException(tFuncCall);
+                throw new UnknownVariableException(cTrace, tFuncCall);
 
             if (!(v.getValue() instanceof BaseFunction)
                     && !(v.getValue() instanceof String)) {
-                throw new WtfAreYouDoingException(v.getValue(), BaseFunction.class, tFuncCall.lineNumber);
+                throw new WtfAreYouDoingException(cTrace, v.getValue(), BaseFunction.class, tFuncCall.lineNumber);
             }
             BaseFunction function = f == null ? (BaseFunction) v.getValue() : f; /*
                                                                                   * ret != null && ret instanceof
@@ -686,7 +696,7 @@ public class Primitives {
         Object condition = Interpreter.handleVariables(
                 parseNonPrimitive(c), vfs, config, cTrace);
         if (!(condition instanceof Boolean))
-            throw new TStatementResolutionException(
+            throw new TStatementResolutionException(cTrace,
                     t, ((TStatement) c),
                     "boolean", condition.getClass().getName());
 
