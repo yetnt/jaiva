@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.concurrent.Semaphore;
 
 import com.jaiva.Debugger;
+import com.jaiva.interpreter.Context;
+import com.jaiva.interpreter.ContextTrace;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.symbol.Symbol;
@@ -65,6 +67,14 @@ public class DebugController {
     public HashMap<String, MapValue> vfs = new HashMap<>();
 
     /**
+     * The context trace for the current execution.
+     * This is used to keep track of the execution context, including the current
+     * function call stack and variable values.
+     * It is updated by the interpreter as it processes each line of code.
+     */
+    public ContextTrace cTrace = new ContextTrace();
+
+    /**
      * Activates the debugger.
      */
     public void activate() {
@@ -88,12 +98,13 @@ public class DebugController {
      * @param vfs        The virtual file system containing the variables and their
      *                   values at the current execution context.
      */
-    public void print(int lineNumber, Symbol s, Token<?> t, HashMap<String, MapValue> vf) {
+    public void print(int lineNumber, Symbol s, Token<?> t, HashMap<String, MapValue> vf, ContextTrace cTrace) {
         if (active) {
             currentLineNumber = lineNumber;
             if (stepOver.first == true && stepOver.second == false) {
                 stepOver = new Tuple2(false, true);
                 vfs = vf;
+                this.cTrace = cTrace;
             } else {
                 if (stepOver.first == false && stepOver.second == true) {
                     stepOver = new Tuple2(false, false);
@@ -111,9 +122,10 @@ public class DebugController {
                 System.out.println("");
                 System.out.print(Debugger.PROMPT);
                 state = State.PAUSED;
+                this.cTrace = cTrace;
                 pause();
             }
-            removeBreakpoint(lineNumber);
+            // removeBreakpoint(lineNumber); <- Removed to support recursive functions.
         }
     }
 
@@ -136,6 +148,7 @@ public class DebugController {
             active = false;
             state = State.STOPPED;
             vfs = vf;
+            cTrace = new ContextTrace(Context.EOL, null, new ContextTrace()); // Resetting cTrace to EOL context
             pauseSem.release(); // Release the semaphore to allow the debugger to exit
         }
     }

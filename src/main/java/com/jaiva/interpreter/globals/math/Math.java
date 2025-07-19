@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.jaiva.errors.InterpreterException.*;
+import com.jaiva.interpreter.ContextTrace;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.globals.BaseGlobals;
@@ -52,10 +53,12 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+                    cTrace);
 
             if (value instanceof Integer i)
                 return java.lang.Math.abs(i);
@@ -89,13 +92,14 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
             Object lowerObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false,
-                    config);
+                    config, cTrace);
             Object upperObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false,
-                    config);
+                    config, cTrace);
 
             if (!(lowerObject instanceof Integer lower))
                 throw new FunctionParametersException(this, "1", lowerObject, Integer.class, tFuncCall.lineNumber);
@@ -133,10 +137,12 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+                    cTrace);
 
             if (value instanceof Integer)
                 return value;
@@ -167,10 +173,12 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+                    cTrace);
 
             if (value instanceof Integer i)
                 return java.lang.Math.sqrt(i);
@@ -202,12 +210,14 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object base = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object base = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+                    cTrace);
             Object exponent = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false,
-                    config);
+                    config, cTrace);
 
             if (!(base instanceof Number))
                 throw new FunctionParametersException(this, "1", base, Number.class, tFuncCall.lineNumber);
@@ -238,10 +248,12 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+                    cTrace);
 
             if (value instanceof Integer i)
                 return i;
@@ -271,10 +283,12 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+                    cTrace);
 
             if (value instanceof Integer i)
                 return i;

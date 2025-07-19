@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.jaiva.errors.InterpreterException.FunctionParametersException;
 import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
+import com.jaiva.interpreter.ContextTrace;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -64,10 +65,12 @@ public class Types extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             this.checkParams(tFuncCall);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+                    cTrace);
 
             if (!(val instanceof String value))
                 throw new WtfAreYouDoingException(params.get(0) + " cannot become a number kau", tFuncCall.lineNumber);
@@ -81,7 +84,8 @@ public class Types extends BaseGlobals {
                     if (params.size() == 1)
                         return Integer.parseInt(value, type != -1 ? type : 10);
 
-                    Object r = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config);
+                    Object r = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config,
+                            cTrace);
                     if (!(r instanceof TVoidValue) && !(r instanceof Integer))
                         throw new FunctionParametersException(this, "2", tFuncCall.lineNumber);
                     int radix = r instanceof TVoidValue ? -1 : (int) r;
@@ -107,10 +111,12 @@ public class Types extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             this.checkParams(tFuncCall);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+                    cTrace);
 
             if (val instanceof Double || val instanceof BaseFunction) {
                 return val.toString();
@@ -121,7 +127,8 @@ public class Types extends BaseGlobals {
             else if (val instanceof Integer integer) {
                 if (params.size() == 1)
                     return val.toString();
-                Object r = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config);
+                Object r = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config,
+                        cTrace);
                 if (!(r instanceof TVoidValue) && !(r instanceof Integer))
                     throw new FunctionParametersException(this, "2", tFuncCall.lineNumber);
                 int radix = r instanceof TVoidValue ? null : (int) r;
@@ -151,13 +158,15 @@ public class Types extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
 
             this.checkParams(tFuncCall);
             if (params.size() == 0)
                 return Token.voidValue(tFuncCall.lineNumber);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+                    cTrace);
 
             if (val instanceof ArrayList)
                 return "array";

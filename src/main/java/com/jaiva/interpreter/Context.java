@@ -1,13 +1,15 @@
 package com.jaiva.interpreter;
 
+import com.jaiva.interpreter.runtime.DebugController;
+
 /**
  * Context enum represents the different contexts in which a variable can be
  * defined or used.
  * <p>
- * This enum is used to determine the scope of a variable and how it can be
- * accessed.
- * <p>
  * This is the smallest class in the entire jaiva project.
+ * <p>
+ * Used in conjunction with {@link ContextTrace} to keep track of the context in
+ * which a variable is defined or used.
  */
 public enum Context {
     /**
@@ -65,5 +67,13 @@ public enum Context {
      * This context is used for variables that are defined in a local scope and can
      * only be accessed from within that scope.
      */
-    CATCH
+    CATCH,
+    /**
+     * Represents the end of a file.
+     * <p>
+     * This context is used to indicate that the end of a file has been reached
+     * and there are no more lines to interpret.
+     * It is used only in {@link DebugController#endOfFile(java.util.HashMap)}
+     */
+    EOL
 }

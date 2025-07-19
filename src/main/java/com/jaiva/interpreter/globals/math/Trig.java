@@ -3,6 +3,7 @@ package com.jaiva.interpreter.globals.math;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.jaiva.interpreter.ContextTrace;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.globals.BaseGlobals;
@@ -45,10 +46,11 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config, cTrace);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -77,10 +79,11 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config, cTrace);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -109,10 +112,11 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config, cTrace);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -141,10 +145,11 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config, cTrace);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -173,10 +178,11 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config, cTrace);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -205,10 +211,11 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config, cTrace);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -236,10 +243,12 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+                    cTrace);
             // Ensure the first parameter is a number
             if (!(value instanceof Number)) {
                 throw new FunctionParametersException(this, "1", value, Number.class, tFuncCall.lineNumber);
@@ -267,10 +276,12 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+                    cTrace);
             // Ensure the first parameter is a number
             if (!(value instanceof Number)) {
                 throw new FunctionParametersException(this, "1", value, Number.class, tFuncCall.lineNumber);

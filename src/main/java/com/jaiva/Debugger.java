@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import com.jaiva.interpreter.Context;
+import com.jaiva.interpreter.ContextTrace;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.globals.Globals;
@@ -112,17 +112,9 @@ public class Debugger {
                     config.dc.active = false; // Deactivate the debug controller
                     break; // Exit the debugger
                 }
-                // if (input.equalsIgnoreCase("vfs dump")) {
-                // if (config.dc.vfs.isEmpty()) {
-                // if (CLI)
-                // System.out.println("No variables in the current context.");
-                // } else {
-                // config.dc.vfs.forEach((key, value) -> {
-                // Symbol sym = (Symbol) value.getValue();
-                // System.out.println("\t" + key + " <- " + sym.toDebugString());
-                // });
-                // }
-                // }
+                if (input.equals("context trace") || input.equals("ct")) {
+                    System.out.println(config.dc.cTrace.toString());
+                }
                 String[] parts = input.split(" ");
                 String command = parts[0].toLowerCase();
                 switch (command) {
@@ -206,7 +198,7 @@ public class Debugger {
                             config.dc.state = DebugController.State.RUNNING;
                             new Thread(() -> {
                                 try {
-                                    Interpreter.interpret(tokens, Context.GLOBAL, new Globals(config).vfs, config);
+                                    Interpreter.interpret(tokens, new ContextTrace(), new Globals(config).vfs, config);
                                 } catch (Exception e) {
                                     System.err.println("Error during interpretation: " + e.getMessage());
                                     e.printStackTrace();

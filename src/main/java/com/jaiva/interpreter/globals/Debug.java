@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.jaiva.errors.JaivaException.DebugException;
+import com.jaiva.interpreter.ContextTrace;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -24,7 +25,8 @@ public class Debug extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws DebugException {
             // Any implementation of normal interpreter functions which could throw such an
             // exception should be in the catch.
@@ -34,7 +36,7 @@ public class Debug extends BaseGlobals {
                                         // fine.
                 if (params.size() > 0) {
                     Object param = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false,
-                            config);
+                            config, cTrace);
                     if (param instanceof ArrayList<?> arr) {
                         components.addAll(arr);
                     } else {

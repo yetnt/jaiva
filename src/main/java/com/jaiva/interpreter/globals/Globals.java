@@ -11,6 +11,7 @@ import com.jaiva.Main;
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
 import com.jaiva.errors.JaivaException;
+import com.jaiva.interpreter.ContextTrace;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.globals.math.Math;
@@ -85,7 +86,7 @@ public class Globals extends BaseGlobals {
 
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
-                IConfig config)
+                IConfig config, ContextTrace cTrace)
                 throws Exception {
             String name;
             if (params.get(0) instanceof String) {
@@ -152,7 +153,7 @@ public class Globals extends BaseGlobals {
 
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
-                IConfig config)
+                IConfig config, ContextTrace cTrace)
                 throws Exception {
             if (tFuncCall.args.size() != params.size())
                 throw new InterpreterException.FunctionParametersException(this, params.size());
@@ -174,7 +175,7 @@ public class Globals extends BaseGlobals {
                     // stuff that need be parsed, parse and pray arraylist is returned.
                     Object parsed = null;
                     try {
-                        parsed = Primitives.toPrimitive(Primitives.parseNonPrimitive(arg), vfs, false, config);
+                        parsed = Primitives.toPrimitive(Primitives.parseNonPrimitive(arg), vfs, false, config, cTrace);
                     } catch (Exception e) {
                         // do nothing.
                     }
@@ -211,10 +212,12 @@ public class Globals extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+                    cTrace);
             if (!(val instanceof Integer integer))
                 throw new WtfAreYouDoingException("Bruv, you can't just like, pls put number", tFuncCall.lineNumber);
 

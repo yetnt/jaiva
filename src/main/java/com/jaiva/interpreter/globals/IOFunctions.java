@@ -7,6 +7,7 @@ import java.util.HashMap;
 import javax.swing.JOptionPane;
 
 import com.jaiva.errors.InterpreterException;
+import com.jaiva.interpreter.ContextTrace;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
@@ -55,7 +56,7 @@ public class IOFunctions extends BaseGlobals {
 
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
-                IConfig config)
+                IConfig config, ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
             String output;
@@ -66,7 +67,7 @@ public class IOFunctions extends BaseGlobals {
                 return Token.voidValue(tFuncCall.lineNumber);
             }
             Object v = params.size() > 1
-                    ? Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config)
+                    ? Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config, cTrace)
                     : null;
             if (o instanceof Token<?> || (o instanceof TokenDefault && Interpreter.isVariableToken(o))) {
                 TokenDefault token = ((Token<?>) o).getValue();
@@ -75,7 +76,7 @@ public class IOFunctions extends BaseGlobals {
                 Object input = token instanceof TStatement || token instanceof TVarRef || token instanceof TFuncCall
                         ? o
                         : token;
-                Object value = Interpreter.handleVariables(input, vfs, config);
+                Object value = Interpreter.handleVariables(input, vfs, config, cTrace);
                 // System.out.println(value);
                 output = value.toString();
                 newO = value;
@@ -116,7 +117,7 @@ public class IOFunctions extends BaseGlobals {
 
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
-                IConfig config)
+                IConfig config, ContextTrace cTrace)
                 throws Exception {
 
             String output = config.resources.consoleIn.nextLine();
@@ -148,7 +149,8 @@ public class IOFunctions extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
             return JOptionPane.showInputDialog(params.get(0));
@@ -182,7 +184,8 @@ public class IOFunctions extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws InterpreterException {
             // Clear the console using ANSI escape codes.
             System.out.print("\033[H\033[2J");

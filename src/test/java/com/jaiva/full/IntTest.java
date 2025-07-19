@@ -10,10 +10,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.jaiva.Main;
-import com.jaiva.errors.InterpreterException.StringCalcException;
 import com.jaiva.errors.InterpreterException.TStatementResolutionException;
 import com.jaiva.errors.JaivaException.DebugException;
-import com.jaiva.interpreter.Context;
+import com.jaiva.interpreter.ContextTrace;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -62,7 +61,7 @@ public class IntTest {
                     FILE_JIV.toString())),
                     FILE_JIV.toString(),
                     Main.callJaivaSrc());
-            Interpreter.interpret(tokens, Context.GLOBAL, new Globals(c).vfs, c);
+            Interpreter.interpret(tokens, new ContextTrace(), new Globals(c).vfs, c);
 
             // DebugException was not thrown. Test failure.
             Assertions.fail("Expected DebugException, but no exception was thrown.");
@@ -92,7 +91,7 @@ public class IntTest {
                     FILE2_JIV.toString())),
                     FILE2_JIV.toString(),
                     Main.callJaivaSrc());
-            Interpreter.interpret(tokens, Context.GLOBAL, new Globals(c).vfs, c);
+            Interpreter.interpret(tokens, new ContextTrace(), new Globals(c).vfs, c);
 
             // DebugException was not thrown. Test failure.
             Assertions.fail("Expected DebugException, but no exception was thrown.");
@@ -127,7 +126,7 @@ public class IntTest {
                     IMPORT_JIV.toString())),
                     IMPORT_JIV.toString(),
                     Main.callJaivaSrc());
-            Interpreter.interpret(tokens, Context.GLOBAL, new Globals(c).vfs, c);
+            Interpreter.interpret(tokens, new ContextTrace(), new Globals(c).vfs, c);
 
             // DebugException was not thrown. Test failure.
             Assertions.fail("Expected DebugException, but no exception was thrown.");

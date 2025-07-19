@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import com.jaiva.errors.InterpreterException;
-import com.jaiva.interpreter.Context;
+import com.jaiva.interpreter.ContextTrace;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
@@ -289,11 +289,12 @@ public class REPL {
                     TokenDefault token = ((Token<?>) something).getValue();
                     if (Interpreter.isVariableToken(token)) {
                         Object value = Interpreter.handleVariables(Primitives.parseNonPrimitive(token), this.vfs,
-                                iConfig);
+                                iConfig, new ContextTrace());
+                        // TODO: This assumes the global context, which might not be correct.
                         return new ReadOuput(value.toString());
                     } else {
                         Object h = Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) something)),
-                                Context.GLOBAL,
+                                new ContextTrace(),
                                 this.vfs, iConfig);
                         if (h instanceof HashMap)
                             vfs = (HashMap<String, MapValue>) h;
@@ -314,13 +315,14 @@ public class REPL {
                             Object input = isReturnTokenClass
                                     ? ((Token<?>) tokens.get(0))
                                     : token;
-                            Object value = Interpreter.handleVariables(input, this.vfs, iConfig);
+                            // TODO: This assumes the global context, which might not be correct.
+                            Object value = Interpreter.handleVariables(input, this.vfs, iConfig, new ContextTrace());
                             return isReturnTokenClass ? new ReadOuput(value.toString())
                                     : new ReadOuput();
                         } else {
                             Object h = Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) tokens.get(
                                     0))),
-                                    Context.GLOBAL,
+                                    new ContextTrace(),
                                     this.vfs, iConfig);
                             if (h instanceof HashMap)
                                 vfs = (HashMap<String, MapValue>) h;
@@ -328,7 +330,7 @@ public class REPL {
                             return new ReadOuput();
                         }
                     } else {
-                        Object h = Interpreter.interpret(tokens, Context.GLOBAL, this.vfs, iConfig);
+                        Object h = Interpreter.interpret(tokens, new ContextTrace(), this.vfs, iConfig);
                         if (h instanceof HashMap)
                             vfs = (HashMap<String, MapValue>) h;
                         return new ReadOuput();

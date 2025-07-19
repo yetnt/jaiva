@@ -4,8 +4,6 @@ import java.io.*;
 import java.util.*;
 
 import com.jaiva.errors.*;
-import com.jaiva.errors.TokenizerException;
-import com.jaiva.errors.JaivaException;
 import com.jaiva.errors.JaivaException.*;
 import com.jaiva.interpreter.*;
 import com.jaiva.interpreter.globals.Types;
@@ -271,7 +269,7 @@ public class Main {
                 }
             }
 
-            Interpreter.interpret(tokens, Context.GLOBAL, new Globals(iconfig).vfs, iconfig);
+            Interpreter.interpret(tokens, new ContextTrace(), new Globals(iconfig).vfs, iconfig);
 
             // if we reached here, everythign went well!
 

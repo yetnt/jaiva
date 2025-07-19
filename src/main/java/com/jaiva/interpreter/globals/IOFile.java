@@ -6,6 +6,7 @@ import java.util.*;
 
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.InterpreterException.*;
+import com.jaiva.interpreter.ContextTrace;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -219,10 +220,12 @@ public class IOFile extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall);
-            Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+                    cTrace);
             if (!(path instanceof String))
                 throw new WtfAreYouDoingException("Da path must be a string.",
                         tFuncCall.lineNumber);
@@ -291,15 +294,18 @@ public class IOFile extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+                ContextTrace cTrace)
                 throws Exception {
             // TODO Auto-generated method stub
             checkParams(tFuncCall);
-            Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config);
+            Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+                    cTrace);
             if (!(path instanceof String))
                 throw new FunctionParametersException(this, "1", params.get(0), String.class, tFuncCall.lineNumber);
 
-            Object content = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config);
+            Object content = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config,
+                    cTrace);
             StringBuilder outBuilder = new StringBuilder();
             String output = content instanceof String ? (String) content : "";
             if (!(content instanceof String) && !(content instanceof ArrayList))
@@ -321,21 +327,24 @@ public class IOFile extends BaseGlobals {
 
             boolean canRead = true, canWrite = true, canExecute = true;
             if (params.size() > 2) {
-                Object cr = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(2)), vfs, false, config);
+                Object cr = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(2)), vfs, false, config,
+                        cTrace);
                 if (!(cr instanceof Boolean))
                     throw new FunctionParametersException(this, "3", params.get(2), boolean.class,
                             tFuncCall.lineNumber);
                 canRead = cr.equals(Boolean.TRUE);
             }
             if (params.size() > 3) {
-                Object cw = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(3)), vfs, false, config);
+                Object cw = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(3)), vfs, false, config,
+                        cTrace);
                 if (!(cw instanceof Boolean))
                     throw new FunctionParametersException(this, "4", params.get(3), boolean.class,
                             tFuncCall.lineNumber);
                 canWrite = cw.equals(Boolean.TRUE);
             }
             if (params.size() > 4) {
-                Object ce = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(4)), vfs, false, config);
+                Object ce = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(4)), vfs, false, config,
+                        cTrace);
                 if (!(ce instanceof Boolean))
                     throw new FunctionParametersException(this, "5", params.get(4), boolean.class,
                             tFuncCall.lineNumber);
