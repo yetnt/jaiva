@@ -161,3 +161,10 @@ _Subcommands:_
 > help
 > h
 ```
+
+9. Context Trace (Or stack trace)
+
+```sh
+- context trace
+- ct
+```
