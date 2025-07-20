@@ -74,7 +74,7 @@ public class Interpreter {
          * line number.
          *
          * @param cObject    The object which caused the interuption.
-         * @param lineNumber The line number of the token which caused the interuption.
+         * @param ln The line number of the token which caused the interuption.
          */
         public ThrowIfGlobalContext(Object cObject, int ln) {
             c = cObject;
@@ -136,10 +136,8 @@ public class Interpreter {
      * @return Returns true if the token is a variable token, false otherwise.
      */
     public static boolean isVariableToken(Object t) {
-        return t instanceof TStatement || t instanceof TNumberVar || t instanceof TBooleanVar || t instanceof TArrayVar
-                || t instanceof TStringVar
-                || t instanceof TUnknownVar || t instanceof TVarReassign || t instanceof TVarRef
-                || t instanceof TFuncCall || t instanceof TStatement || t instanceof TFunction
+        return t instanceof TUnknownVar || t instanceof TVarReassign || t instanceof TVarRef
+                || t instanceof  TArrayVar || t instanceof TFuncCall || t instanceof TStatement || t instanceof TFunction
                 || Primitives.isPrimitive(t);
     }
 
@@ -175,82 +173,90 @@ public class Interpreter {
      */
     public static Object handleVariables(Object t, HashMap<String, MapValue> vfs, IConfig config, ContextTrace cTrace)
             throws Exception {
-        if (t instanceof TNumberVar) {
-            Object number = Primitives.toPrimitive(((TNumberVar) t).value, vfs, false, config, cTrace);
-            BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
-                    new ArrayList<>(Arrays.asList(number)), false);
-            vfs.put(((TNumberVar) t).name, new MapValue(var));
-        } else if (t instanceof TBooleanVar) {
-            Object bool = Primitives.toPrimitive(((TBooleanVar) t).value, vfs, false, config, cTrace);
-            BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
-                    new ArrayList<>(Arrays.asList(bool)), false);
-            vfs.put(((TBooleanVar) t).name, new MapValue(var));
-        } else if (t instanceof TStringVar) {
-            Object string = Primitives.toPrimitive(((TStringVar) t).value, vfs, false, config, cTrace);
-            BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
-                    new ArrayList<>(Arrays.asList(string)), false);
-            vfs.put(((TStringVar) t).name, new MapValue(var));
-        } else if (t instanceof TUnknownVar) {
-            Object something = Primitives.toPrimitive(((TUnknownVar) t).value, vfs, false, config, cTrace);
-            Symbol var;
-            if (something instanceof BaseFunction)
-                // this assigns
-                var = (Symbol) something;
-            else
-                var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
-                        something instanceof ArrayList ? (ArrayList) something
-                                : new ArrayList<>(Arrays.asList(something)),
-                        false);
-            vfs.put(((TUnknownVar) t).name, new MapValue(var));
-        } else if (t instanceof TArrayVar) {
-            ArrayList<Object> arr = new ArrayList<>();
-            ((TArrayVar) t).contents.forEach(obj -> {
-                try {
-                    if (obj instanceof ArrayList) {
-                        arr.add(obj);
-                    } else {
-                        arr.add(Primitives.toPrimitive(Primitives.parseNonPrimitive(obj), vfs, false, config, cTrace));
-                    }
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t, arr, true);
-            vfs.put(((TArrayVar) t).name, new MapValue(var));
-        } else if (t instanceof TFunction) {
-            TFunction function = (TFunction) t;
-            String name = function.name.replace("F~", "");
-            BaseFunction func = BaseFunction.create(name, function);
-            vfs.put(name, new MapValue(func));
-        } else if (t instanceof TVarReassign) {
-            MapValue mapValue = vfs.get(((TVarReassign) t).name);
-            if (MapValue.isEmpty(mapValue)
-                    || (mapValue.getValue() == null || !(mapValue.getValue() instanceof BaseVariable
-                            || mapValue.getValue() instanceof BaseFunction)))
-                throw new UnknownVariableException(cTrace, (TVarReassign) t);
-
-            Symbol var = (Symbol) mapValue.getValue();
-            if (var.isFrozen)
-                throw new FrozenSymbolException(cTrace, var, ((TVarReassign) t).lineNumber);
-
-            Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(((TVarReassign) t).newValue), vfs, false,
-                    config, cTrace);
-
-            if (o instanceof BaseFunction) {
-                mapValue.setValue(o);
-            } else if (var instanceof BaseVariable v) {
-                if (o instanceof ArrayList) {
-                    v.a_set((ArrayList) o, cTrace);
-                } else {
-                    v.s_set(o, cTrace);
-                }
+        switch (t) {
+            case TNumberVar tNumberVar -> {
+                Object number = Primitives.toPrimitive(tNumberVar.value, vfs, false, config, cTrace);
+                BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
+                        new ArrayList<>(Collections.singletonList(number)), false);
+                vfs.put(tNumberVar.name, new MapValue(var));
             }
+            case TBooleanVar tBooleanVar -> {
+                Object bool = Primitives.toPrimitive(tBooleanVar.value, vfs, false, config, cTrace);
+                BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
+                        new ArrayList<>(Collections.singletonList(bool)), false);
+                vfs.put(tBooleanVar.name, new MapValue(var));
+            }
+            case TStringVar tStringVar -> {
+                Object string = Primitives.toPrimitive(tStringVar.value, vfs, false, config, cTrace);
+                BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
+                        new ArrayList<>(Collections.singletonList(string)), false);
+                vfs.put(tStringVar.name, new MapValue(var));
+            }
+            case TUnknownVar tUnknownVar -> {
+                Object something = Primitives.toPrimitive(tUnknownVar.value, vfs, false, config, cTrace);
+                Symbol var;
+                if (something instanceof BaseFunction)
+                    // this assigns
+                    var = (Symbol) something;
+                else
+                    var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
+                            something instanceof ArrayList ? (ArrayList) something
+                                    : new ArrayList<>(Collections.singletonList(something)),
+                            false);
+                vfs.put(tUnknownVar.name, new MapValue(var));
+            }
+            case TArrayVar tArrayVar -> {
+                ArrayList<Object> arr = new ArrayList<>();
+                tArrayVar.contents.forEach(obj -> {
+                    try {
+                        if (obj instanceof ArrayList) {
+                            arr.add(obj);
+                        } else {
+                            arr.add(Primitives.toPrimitive(Primitives.parseNonPrimitive(obj), vfs, false, config, cTrace));
+                        }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t, arr, true);
+                vfs.put(tArrayVar.name, new MapValue(var));
+            }
+            case TFunction function -> {
+                String name = function.name.replace("F~", "");
+                BaseFunction func = BaseFunction.create(name, function);
+                vfs.put(name, new MapValue(func));
+            }
+            case TVarReassign tVarReassign -> {
+                MapValue mapValue = vfs.get(tVarReassign.name);
+                if (MapValue.isEmpty(mapValue)
+                        || (mapValue.getValue() == null || !(mapValue.getValue() instanceof BaseVariable
+                        || mapValue.getValue() instanceof BaseFunction)))
+                    throw new UnknownVariableException(cTrace, tVarReassign);
 
-            // so hopefully this chanegs the instance and yeah 👍
-        } else {
-            // here its a primitive being parsed or recursively called
-            // or TVarRef or TFuncCall or TStatement
-            return Primitives.toPrimitive(t, vfs, false, config, cTrace);
+                Symbol var = (Symbol) mapValue.getValue();
+                if (var.isFrozen)
+                    throw new FrozenSymbolException(cTrace, var, tVarReassign.lineNumber);
+
+                Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarReassign.newValue), vfs, false,
+                        config, cTrace);
+
+                if (o instanceof BaseFunction) {
+                    mapValue.setValue(o);
+                } else if (var instanceof BaseVariable v) {
+                    if (o instanceof ArrayList a) {
+                        v.a_set(a, cTrace);
+                    } else {
+                        v.s_set(o, cTrace);
+                    }
+                }
+
+                // so hopefully this chanegs the instance and yeah 👍
+            }
+            case null, default -> {
+                // here its a primitive being parsed or recursively called
+                // or TVarRef or TFuncCall or TStatement
+                return Primitives.toPrimitive(t, vfs, false, config, cTrace);
+            }
         }
 
         return null; // return null because we are not returning anything.
@@ -295,10 +301,10 @@ public class Interpreter {
                     // if we are, then we pause the execution and wait for the user to continue.
                     config.dc.print(token.lineNumber, null, t, vfs, cTrace);
                 }
-                if (config.dc.stepOver.equals(new Tuple2(true, false))) {
+                if (config.dc.stepOver.equals(new Tuple2<>(true, false))) {
                     config.dc.print(token.lineNumber, null, t, vfs, cTrace);
                     continue;
-                } else if (config.dc.stepOver.equals(new Tuple2(false, true))) {
+                } else if (config.dc.stepOver.equals(new Tuple2<>(false, true))) {
                     config.dc.print(token.lineNumber, null, t, vfs, cTrace);
                 }
             }
@@ -326,7 +332,7 @@ public class Interpreter {
 
                     ArrayList<Token<?>> tks = Main.parseTokens(importPath.toString(), true);
 
-                    if (tks.size() == 0)
+                    if (tks.isEmpty())
                         continue; // Nohing to import.
 
                     IConfig newConfig = new IConfig(config.sanitisedArgs, importPath.toString(),
@@ -338,7 +344,7 @@ public class Interpreter {
                     vfsFromFile = (HashMap<String, MapValue>) Interpreter.interpret(tks, cTrace,
                             vfs, newConfig);
 
-                    if (!(vfsFromFile instanceof HashMap) && (vfsFromFile == null)) {
+                    if ((vfsFromFile == null)) {
                         // error? maybe not yet but throw.
                         throw new CatchAllException(cTrace,
                                 importPath.toString()
@@ -347,9 +353,10 @@ public class Interpreter {
                         // continue;
                     }
                 }
-                if (tImport.symbols.size() > 0) {
+                if (!tImport.symbols.isEmpty()) {
                     vfsFromFile.entrySet().removeIf(e -> !tImport.symbols.contains(e.getKey()));
                 }
+                assert vfs != null;
                 vfs.putAll(vfsFromFile);
             } else if (isVariableToken(token)) {
                 if (token instanceof TFuncCall || token instanceof TVarRef)
@@ -375,14 +382,14 @@ public class Interpreter {
 
                 boolean terminate = false;
 
-                while (((Boolean) cond).booleanValue() && !terminate) {
+                while ((Boolean) cond && !terminate) {
                     Object out = Interpreter.interpret(whileLoop.body.lines,
                             new ContextTrace(Context.WHILE, token, cTrace), vfs, config);
                     if (out instanceof ThrowIfGlobalContext old) {
-                        if (old.c instanceof Keywords.LoopControl && old.c == Keywords.LoopControl.BREAK)
+                        if (old.c == Keywords.LoopControl.BREAK)
                             break;
                         ThrowIfGlobalContext checker = throwIfGlobalContext(cTrace, out, old.lineNumber);
-                        if (checker.c instanceof Keywords.LoopControl && checker.c == Keywords.LoopControl.BREAK)
+                        if (checker.c == Keywords.LoopControl.BREAK)
                             break;
                         return checker;
                     }
@@ -399,13 +406,12 @@ public class Interpreter {
                 Object cond = Primitives.setCondition(ifStatement, vfs, config, cTrace);
 
                 // if if, lol i love coding
-                if (((Boolean) cond).booleanValue()) {
+                if ((Boolean) cond) {
                     // run if code.
                     Object out = Interpreter.interpret(ifStatement.body.lines,
                             new ContextTrace(Context.IF, token, cTrace), vfs, config);
                     if (out instanceof ThrowIfGlobalContext g) {
-                        ThrowIfGlobalContext checker = throwIfGlobalContext(cTrace, out, g.lineNumber);
-                        return checker;
+                        return throwIfGlobalContext(cTrace, out, g.lineNumber);
                     }
                 } else {
                     // check for else branches first
@@ -416,13 +422,12 @@ public class Interpreter {
                             throw new WtfAreYouDoingException(cTrace,
                                     "Okay well idk how i will check for true in " + elseIf, token.lineNumber);
                         Object cond2 = Primitives.setCondition(elseIf, vfs, config, cTrace);
-                        if (((Boolean) cond2).booleanValue() == true) {
+                        if ((Boolean) cond2) {
                             // run else if code.
                             Object out = Interpreter.interpret(elseIf.body.lines,
                                     new ContextTrace(Context.ELSE, token, cTrace), vfs, config);
                             if (out instanceof ThrowIfGlobalContext g) {
-                                ThrowIfGlobalContext checker = throwIfGlobalContext(cTrace, out, g.lineNumber);
-                                return checker;
+                                return throwIfGlobalContext(cTrace, out, g.lineNumber);
                             }
                             runElseBlock = false;
                             break;
@@ -433,8 +438,7 @@ public class Interpreter {
                         Object out = Interpreter.interpret(ifStatement.elseBody.lines,
                                 new ContextTrace(Context.ELSE, token, cTrace), vfs, config);
                         if (out instanceof ThrowIfGlobalContext g) {
-                            ThrowIfGlobalContext checker = throwIfGlobalContext(cTrace, out, g.lineNumber);
-                            return checker;
+                            return throwIfGlobalContext(cTrace, out, g.lineNumber);
                         }
                     }
                 }
@@ -442,6 +446,7 @@ public class Interpreter {
             } else if (token instanceof TForLoop tForLoop && !config.importVfs) {
                 // for loop
                 handleVariables(tForLoop.variable, vfs, config, cTrace);
+                assert vfs != null;
                 Object vObject = vfs.get(tForLoop.variable.name).getValue();
                 if (!(vObject instanceof BaseVariable))
                     throw new WtfAreYouDoingException(cTrace, vObject, BaseVariable.class,
@@ -476,37 +481,33 @@ public class Interpreter {
                         Object out = Interpreter.interpret(tForLoop.body.lines,
                                 new ContextTrace(Context.FOR, token, cTrace), vfs, config);
                         if (out instanceof ThrowIfGlobalContext g) {
-                            if (g.c instanceof Keywords.LoopControl
-                                    && g.c == Keywords.LoopControl.BREAK)
+                            if (g.c == Keywords.LoopControl.BREAK)
                                 break;
-                            if (g.c instanceof Keywords.LoopControl
-                                    && g.c == Keywords.LoopControl.CONTINUE)
+                            if (g.c == Keywords.LoopControl.CONTINUE)
                                 continue;
-                            ThrowIfGlobalContext checker = throwIfGlobalContext(cTrace, out, g.lineNumber);
-                            return checker;
+                            return throwIfGlobalContext(cTrace, out, g.lineNumber);
                         }
                     }
                 } else {
                     // normal for loop.
+                    assert tForLoop.increment != null;
                     char increment = tForLoop.increment.charAt(0);
                     Object cond = Primitives.setCondition(tForLoop, vfs, config, cTrace);
-                    while (((Boolean) cond).booleanValue()) {
+                    while ((Boolean) cond) {
 
                         Object out = Interpreter.interpret(tForLoop.body.lines,
                                 new ContextTrace(Context.FOR, token, cTrace), vfs, config);
                         if (out instanceof ThrowIfGlobalContext g) {
-                            if (g.c instanceof Keywords.LoopControl && g.c == Keywords.LoopControl.BREAK)
+                            if (g.c == Keywords.LoopControl.BREAK)
                                 break;
-                            if (g.c instanceof Keywords.LoopControl
-                                    && g.c == Keywords.LoopControl.CONTINUE) {
-                                v.s_set(((Integer) v.s_get()).intValue() + (increment == '+' ? 1 : -1), cTrace);
+                            if (g.c == Keywords.LoopControl.CONTINUE) {
+                                v.s_set((Integer) v.s_get() + (increment == '+' ? 1 : -1), cTrace);
                                 cond = Primitives.setCondition(tForLoop, vfs, config, cTrace);
                                 continue;
                             }
-                            ThrowIfGlobalContext checker = throwIfGlobalContext(cTrace, out, g.lineNumber);
-                            return checker;
+                            return throwIfGlobalContext(cTrace, out, g.lineNumber);
                         }
-                        v.s_set(((Integer) v.s_get()).intValue() + (increment == '+' ? 1 : -1), cTrace);
+                        v.s_set((Integer) v.s_get() + (increment == '+' ? 1 : -1), cTrace);
                         cond = Primitives.setCondition(tForLoop, vfs, config, cTrace);
                     }
                 }
@@ -518,26 +519,25 @@ public class Interpreter {
                 HashMap<String, MapValue> errorVfs = ((HashMap<String, MapValue>) vfs.clone());
                 errorVfs.entrySet().removeIf(vf -> !vf.getKey().contains("error"));
 
-                String varName = "error" + (errorVfs.size() > 0 ? errorVfs.size() : "");
+                String varName = "error" + (!errorVfs.isEmpty() ? errorVfs.size() : "");
 
                 try {
                     Object out = Interpreter.interpret(throwError.tryBlock.lines,
                             new ContextTrace(Context.TRY, token, cTrace), vfs, config);
                     if (out instanceof ThrowIfGlobalContext g) {
-                        if (((ThrowIfGlobalContext) out).c instanceof Keywords
-                                || isVariableToken(((ThrowIfGlobalContext) out).c)) {
-                            ThrowIfGlobalContext checker = throwIfGlobalContext(cTrace, out, g.lineNumber);
-                            return checker;
-                        } else if (((ThrowIfGlobalContext) out).c instanceof TThrowError) {
+                        if (g.c instanceof Keywords
+                                || isVariableToken(g.c)) {
+                            return throwIfGlobalContext(cTrace, out, g.lineNumber);
+                        } else if (g.c instanceof TThrowError) {
                             Token<?> tContainer = new Token<>(null);
-                            TThrowError err = (TThrowError) ((ThrowIfGlobalContext) out).c;
+                            TThrowError err = (TThrowError) g.c;
                             vfs.put(varName,
                                     new MapValue(BaseVariable.create(
                                             varName,
                                             tContainer.new TStringVar(
                                                     varName, err.errorMessage,
                                                     err.lineNumber),
-                                            new ArrayList<>(Arrays.asList(
+                                            new ArrayList<>(Collections.singletonList(
                                                     err.errorMessage)),
                                             false)));
                             Object out2 = Interpreter.interpret(throwError.catchBlock.lines,
@@ -545,8 +545,7 @@ public class Interpreter {
                                     config);
                             vfs.remove(varName);
                             if (out2 instanceof ThrowIfGlobalContext g2) {
-                                ThrowIfGlobalContext checker2 = throwIfGlobalContext(cTrace, out2, g2.lineNumber);
-                                return checker2;
+                                return throwIfGlobalContext(cTrace, out2, g2.lineNumber);
                             }
 
                             // return void.class;
@@ -570,8 +569,7 @@ public class Interpreter {
                     // 542
                     vfs.remove(varName);
                     if (out2 instanceof ThrowIfGlobalContext g2) {
-                        ThrowIfGlobalContext checker2 = throwIfGlobalContext(cTrace, out2, g2.lineNumber);
-                        return checker2;
+                        return throwIfGlobalContext(cTrace, out2, g2.lineNumber);
                     }
 
                     // return void.class;

@@ -55,7 +55,6 @@ public class Types extends BaseGlobals {
      * 
      * t_num(string, radix?) -> number
      *
-     * @throws WtfAreYouDoingException if the input cannot be converted to a number
      */
     class FNum extends BaseFunction {
         FNum(Token<?> tContainer) {
@@ -69,11 +68,11 @@ public class Types extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             this.checkParams(tFuncCall, cTrace);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
                     cTrace);
 
             if (!(val instanceof String value))
-                throw new WtfAreYouDoingException(cTrace, params.get(0) + " cannot become a number kau",
+                throw new WtfAreYouDoingException(cTrace, params.getFirst() + " cannot become a number kau",
                         tFuncCall.lineNumber);
 
             int type = value.startsWith("0b") ? 2 : value.startsWith("0x") ? 16 : value.startsWith("0c") ? 8 : -1;
@@ -94,7 +93,7 @@ public class Types extends BaseGlobals {
                     return Integer.parseInt(value, type != -1 ? type : radix != -1 ? radix : 10);
                 }
             } catch (NumberFormatException e) {
-                throw new WtfAreYouDoingException(cTrace, params.get(0) + " cannot become a number kau",
+                throw new WtfAreYouDoingException(cTrace, params.getFirst() + " cannot become a number kau",
                         tFuncCall.lineNumber);
             }
         }
@@ -125,7 +124,7 @@ public class Types extends BaseGlobals {
             } else if (val instanceof Boolean b)
                 // makes it such that, true and false even though they are valid keywords, we
                 // return Jaiva's true and false all the time.
-                return b.booleanValue() ? Keywords.TRUE : Keywords.FALSE;
+                return b ? Keywords.TRUE : Keywords.FALSE;
             else if (val instanceof Integer integer) {
                 if (params.size() == 1)
                     return val.toString();
@@ -134,16 +133,12 @@ public class Types extends BaseGlobals {
                 if (!(r instanceof TVoidValue) && !(r instanceof Integer))
                     throw new FunctionParametersException(cTrace, this, "2", tFuncCall.lineNumber);
                 int radix = r instanceof TVoidValue ? null : (int) r;
-                switch (radix) {
-                    case 2:
-                        return "0b" + Integer.toBinaryString(integer);
-                    case 16:
-                        return "0x" + Integer.toHexString(integer).toUpperCase();
-                    case 8:
-                        return "0c" + Integer.toOctalString(integer);
-                    default:
-                        return Integer.toString(integer, radix);
-                }
+                return switch (radix) {
+                    case 2 -> "0b" + Integer.toBinaryString(integer);
+                    case 16 -> "0x" + Integer.toHexString(integer).toUpperCase();
+                    case 8 -> "0c" + Integer.toOctalString(integer);
+                    default -> Integer.toString(integer, radix);
+                };
             } else if (val instanceof TVoidValue v) {
                 return v.toString();
             } else {
@@ -166,23 +161,21 @@ public class Types extends BaseGlobals {
                 throws Exception {
 
             this.checkParams(tFuncCall, cTrace);
-            if (params.size() == 0)
+            if (params.isEmpty())
                 return Token.voidValue(tFuncCall.lineNumber);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
                     cTrace);
 
-            if (val instanceof ArrayList)
-                return "array";
-            else if (val instanceof Boolean)
-                return "boolean";
-            else if (val instanceof Number)
-                return "number";
-            else if (val instanceof BaseFunction)
-                return "function";
-            else if (val instanceof String)
-                return "string";
-            else // there is no other type to possibly check for.
-                return Token.voidValue(tFuncCall.lineNumber);
+            return switch (val) {
+                case ArrayList arrayList -> "array";
+                case Boolean b -> "boolean";
+                case Number number -> "number";
+                case BaseFunction baseFunction -> "function";
+                case String s -> "string";
+                case null, default ->
+// there is no other type to possibly check for.
+                        Token.voidValue(tFuncCall.lineNumber);
+            };
         }
     }
 

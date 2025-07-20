@@ -95,19 +95,20 @@ public class DebugController {
      *                   if any.
      * @param t          The token associated with the current execution context, if
      *                   any.
-     * @param vfs        The virtual file system containing the variables and their
+     * @param vf        The virtual file system containing the variables and their
      *                   values at the current execution context.
+     * @param cTrace Context Trace.
      */
     public void print(int lineNumber, Symbol s, Token<?> t, HashMap<String, MapValue> vf, ContextTrace cTrace) {
         if (active) {
             currentLineNumber = lineNumber;
-            if (stepOver.first == true && stepOver.second == false) {
-                stepOver = new Tuple2(false, true);
+            if (!stepOver.second && stepOver.first) {
+                stepOver = new Tuple2<>(false, true);
                 vfs = vf;
                 this.cTrace = cTrace;
             } else {
-                if (stepOver.first == false && stepOver.second == true) {
-                    stepOver = new Tuple2(false, false);
+                if (!stepOver.first && stepOver.second) {
+                    stepOver = new Tuple2<>(false, false);
                     System.out.print("On line: " + lineNumber);
                 } else {
                     System.out.print("breakpoint hit on line: " + lineNumber);
@@ -119,7 +120,7 @@ public class DebugController {
                     }
                 }
                 vfs = vf;
-                System.out.println("");
+                System.out.println();
                 System.out.print(Debugger.PROMPT);
                 state = State.PAUSED;
                 this.cTrace = cTrace;
@@ -134,7 +135,7 @@ public class DebugController {
      * to exit.
      * <p>
      * This method is called by
-     * {@link Interpreter#interpret(java.util.ArrayList, com.jaiva.interpreter.Context, HashMap, IConfig)}
+     * {@link Interpreter#interpret(java.util.ArrayList, com.jaiva.interpreter.ContextTrace, HashMap, IConfig)}
      * when the end of the file is reached, indicating that
      * there are no more lines to interpret.
      * 
@@ -148,7 +149,7 @@ public class DebugController {
             active = false;
             state = State.STOPPED;
             vfs = vf;
-            cTrace = new ContextTrace(Context.EOL, null, new ContextTrace()); // Resetting cTrace to EOL context
+            cTrace = new ContextTrace(Context.EOF, null, new ContextTrace()); // Resetting cTrace to EOL context
             pauseSem.release(); // Release the semaphore to allow the debugger to exit
         }
     }

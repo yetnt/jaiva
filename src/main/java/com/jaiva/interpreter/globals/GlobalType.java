@@ -1,15 +1,16 @@
 package com.jaiva.interpreter.globals;
 
+import com.jaiva.interpreter.globals.math.Math;
 import com.jaiva.tokenizer.Token.TImport;
 import com.jaiva.interpreter.globals.math.*;
 
 /**
- * Global type describes the {@link BaseGlobals} instance where {@link GLOBAL}
- * means it's given to you everywhere, however {@link LIB}
+ * Global type describes the {@link BaseGlobals} instance where {@link GlobalType#GLOBAL}
+ * means it's given to you everywhere, however {@link GlobalType#LIB}
  * requires you to
- * import it via {@link TImport}. If {@link MAIN} then it is the {@link Globals}
+ * import it via {@link TImport}. If {@link GlobalType#MAIN} then it is the {@link Globals}
  * class which is the main input.
- * If {@link CONTAINER} then it is a class which will it's vfs will be taken and
+ * If {@link GlobalType#CONTAINER} then it is a class which will it's vfs will be taken and
  * used in another class. This is how the {@link Constants} class relates to the
  * {@link Math} class.
  */

@@ -29,7 +29,7 @@ import com.jaiva.utils.*;
  * interpreter. It handles command-line arguments, initializes the REPL
  * (Read-Eval-Print Loop),
  * and manages the parsing and interpretation of Jaiva source files.
- * 
+ * <p>
  * The class contains methods for parsing tokens from source files, displaying
  * help information, and executing the interpreter.
  */
@@ -50,7 +50,7 @@ public class Main {
      */
     public static ArrayList<String> tokenArgs = new ArrayList<>(
             Arrays.asList("-s", "-j", "--string", "-json", "-jg", "--json-with-globals", "-d", "--debug", "-is",
-                    "--incude-stacks"));
+                    "--include-stacks"));
     /**
      * Version of the Jaiva programming language interpreter. This is a string
      * variable that holds the version number in the format
@@ -116,14 +116,6 @@ public class Main {
                         """;
 
     @SuppressWarnings("unchecked")
-    /**
-     * The main method of the Jaiva programming language interpreter. It serves as
-     * the entry point for the program.
-     * 
-     * @param args Command-line arguments passed to the program. These arguments
-     *             can be used to specify options and configurations for the
-     *             interpreter.
-     */
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
             new REPL(0);
@@ -179,7 +171,7 @@ public class Main {
                     System.exit(0);
                 }
                 case "--update", "-u" -> {
-                    System.out.println("");
+                    System.out.println();
                     System.out.println(
                             "Because i'm far too lazy to implement an auto upater, you'll have to just reinstall the jaiva folder into your existing one every time you want to update.");
                     System.out.println("I'm not making it easier, you can make a PR on the github though.");
@@ -280,26 +272,31 @@ public class Main {
             if (debug)
                 throw e; // throw the error as uncaught when debug mode is enabled so that we get the
                          // entire error along with the stack trace.
-            if (e instanceof InterpreterException) {
-                System.out.println("Error while interpreting code: ");
-                System.out.println(e.getMessage());
-                System.exit(1);
-            } else if (e instanceof TokenizerException) {
-                System.out.println("Error while parsing code: ");
-                System.out.println(e.getMessage());
-                System.exit(-1);
-            } else if (e instanceof JaivaException) {
-                // TokenizerException and InterpreterException extend off of JaivaException, so
-                // if we dont catch those, cagtch this one with generic message.
-                System.out.println("Error: ");
-                System.out.println(e.getMessage());
-                System.exit(-1);
-            } else {
-                // Some other thing, this genrally shouldnt happen as all eror cases we need to
-                // account for where ever it is and not here in the Main class.
-                System.out.println("\"Something\" went wrong, and it's proabaly not your fault.");
-                System.out.println(e.getMessage());
-                System.exit(-1);
+            switch (e) {
+                case InterpreterException interpreterException -> {
+                    System.out.println("Error while interpreting code: ");
+                    System.out.println(e.getMessage());
+                    System.exit(1);
+                }
+                case TokenizerException tokenizerException -> {
+                    System.out.println("Error while parsing code: ");
+                    System.out.println(e.getMessage());
+                    System.exit(-1);
+                }
+                case JaivaException jaivaException -> {
+                    // TokenizerException and InterpreterException extend off of JaivaException, so
+                    // if we dont catch those, cagtch this one with generic message.
+                    System.out.println("Error: ");
+                    System.out.println(e.getMessage());
+                    System.exit(-1);
+                }
+                default -> {
+                    // Some other thing, this genrally shouldnt happen as all eror cases we need to
+                    // account for where ever it is and not here in the Main class.
+                    System.out.println("\"Something\" went wrong, and it's proabaly not your fault.");
+                    System.out.println(e.getMessage());
+                    System.exit(-1);
+                }
             }
         }
     }
@@ -317,7 +314,7 @@ public class Main {
      * @return An ArrayList of Token objects parsed from the file. If the file is
      *         not found or an error occurs during parsing, an empty list is
      *         returned.
-     * 
+     * <p>
      *         The method processes the file line by line, identifying and handling
      *         various token types
      *         such as comments, variables, functions, and block chains. It also
@@ -325,7 +322,7 @@ public class Main {
      *         with certain token types when applicable. If the file cannot be
      *         found, an error message
      *         is printed to the console.
-     * 
+     * <p>
      *         Exceptions:
      *         - Prints an error message if the file is not found.
      *         - Prints the exception message if any other error occurs during
@@ -354,66 +351,69 @@ public class Main {
         while (scanner.hasNextLine()) {
             String line = (b != null ? b.getCurrentLine() : scanner.nextLine());
             Object something = Tokenizer.readLine(line, (b != null ? "" : previousLine), m, b, lineNum, config);
-            if (something instanceof MultipleLinesOutput multipleLinesOutput) {
-                m = multipleLinesOutput;
-                b = null;
-            } else if (something instanceof ArrayList<?>) {
-                m = null;
-                b = null;
-                ArrayList tks = (ArrayList<Token<?>>) ((ArrayList<Token<?>>) something).clone();
-                if (((ArrayList<Token<?>>) tks).size() == 1) {
-                    for (Token<?> t : ((ArrayList<Token<?>>) something)) {
-                        TokenDefault l = t.getValue();
-                        if (returnVfs && !l.exportSymbol) {
-                            // clean.
-                            ((ArrayList) tks).remove(t);
-                            continue;
+            switch (something) {
+                case MultipleLinesOutput multipleLinesOutput -> {
+                    m = multipleLinesOutput;
+                    b = null;
+                }
+                case ArrayList<?> objects -> {
+                    m = null;
+                    b = null;
+                    ArrayList<Token<?>> tks = (ArrayList<Token<?>>) ((ArrayList<Token<?>>) something).clone();
+                    if (((ArrayList<Token<?>>) tks).size() == 1) {
+                        for (Token<?> t : ((ArrayList<Token<?>>) something)) {
+                            TokenDefault l = t.getValue();
+                            if (returnVfs && !l.exportSymbol) {
+                                // clean.
+                                ((ArrayList<?>) tks).remove(t);
+                                continue;
+                            }
+                            if (comment == null || (!(l instanceof TArrayVar) && !(l instanceof TUnknownVar)
+                                    && !(l instanceof TFunction)))
+                                continue;
+                            l.tooltip = comment;
+                            l.json.removeKey("toolTip");
+                            l.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
                         }
-                        if (comment == null || (!(l instanceof TArrayVar) && !(l instanceof TNumberVar)
-                                && !(l instanceof TStringVar)
-                                && !(l instanceof TBooleanVar) && !(l instanceof TUnknownVar)
-                                && !(l instanceof TFunction)))
-                            continue;
-                        l.tooltip = comment;
-                        l.json.removeKey("toolTip");
-                        l.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
                     }
+                    comment = null;
+                    tokens.addAll((ArrayList<Token<?>>) tks);
                 }
-                comment = null;
-                tokens.addAll((ArrayList<Token<?>>) tks);
-            } else if (something instanceof BlockChain blockChain) {
-                m = null;
-                comment = null;
-                b = blockChain;
-            } else if (something instanceof Token<?>
-                    && ((Token<?>) something).getValue().name.equals("TDocsComment")) {
-                b = null;
-                m = null;
-                comment = (comment == null ? "" : comment)
-                        + ((TDocsComment) ((Token<?>) something).getValue()).comment;
-            } else if (something instanceof Token<?> token) {
-                TokenDefault t = ((TokenDefault) token.getValue());
-                if (returnVfs && !t.exportSymbol) {
-                    // dont do anythin.
-                } else if (comment != null
-                        && ((t instanceof TArrayVar) || (t instanceof TNumberVar) || (t instanceof TStringVar)
-                                || (t instanceof TBooleanVar) || (t instanceof TUnknownVar)
-                                || (t instanceof TFunction))) {
+                case BlockChain blockChain -> {
+                    m = null;
+                    comment = null;
+                    b = blockChain;
+                }
+                case Token<?> token1 when token1.getValue().name.equals("TDocsComment") -> {
+                    b = null;
+                    m = null;
+                    comment = (comment == null ? "" : comment)
+                            + ((TDocsComment) token1.getValue()).comment;
+                }
+                case Token<?> token -> {
+                    TokenDefault t = ((TokenDefault) token.getValue());
+                    if (returnVfs && !t.exportSymbol) {
+                        // dont do anythin.
+                    } else if (comment != null
+                            && ((t instanceof TArrayVar) || (t instanceof TUnknownVar)
+                            || (t instanceof TFunction))) {
 
-                    t.tooltip = comment;
-                    t.json.removeKey("toolTip");
-                    t.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
-                    tokens.add(token);
-                } else {
-                    tokens.add(token);
+                        t.tooltip = comment;
+                        t.json.removeKey("toolTip");
+                        t.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
+                        tokens.add(token);
+                    } else {
+                        tokens.add(token);
+                    }
+                    b = null;
+                    m = null;
+                    comment = null;
                 }
-                b = null;
-                m = null;
-                comment = null;
-            } else {
-                b = null;
-                m = null;
-                comment = null;
+                case null, default -> {
+                    b = null;
+                    m = null;
+                    comment = null;
+                }
             }
             previousLine = line;
             if (b == null)
@@ -433,10 +433,6 @@ public class Main {
      *
      * @return A trimmed string containing the output of the "jaiva-src" process.
      *         If the process produces no output, an empty string is returned.
-     * @throws IOException          If an I/O error occurs while starting or reading
-     *                              from the process.
-     * @throws InterruptedException If the current thread is interrupted while
-     *                              waiting for the process to finish.
      */
     public static String callJaivaSrc() {
         StringBuilder output = new StringBuilder();
@@ -461,7 +457,8 @@ public class Main {
                 System.err.println("jaiva-src exited with code: " + exitCode);
             }
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
         return output.toString().trim();
     }

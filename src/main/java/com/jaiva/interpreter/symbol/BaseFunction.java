@@ -1,9 +1,6 @@
 package com.jaiva.interpreter.symbol;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.Context;
@@ -96,20 +93,19 @@ public class BaseFunction extends Symbol {
 
         // this if sanitizes tFuncCall, as if it has 1 singular entry and that entry is
         // null, we remove it so we have clear args.
-        if (tFuncCall.args.size() == 1 && tFuncCall.args.get(0) == null) {
+        if (tFuncCall.args.size() == 1 && tFuncCall.args.getFirst() == null) {
             tFuncCall.args.clear();
         }
 
         // Check if this case
-        if (tFunc.args.length == 1 && tFunc.args[0].equals("")) {
+        if (tFunc.args.length == 1 && tFunc.args[0].isEmpty()) {
             return;
         }
 
         // first check if we jsut dont have args.
         if (Collections.frequency(tFunc.isArgOptional, true) == tFunc.isArgOptional.size() && tFuncCall.args.isEmpty())
             return;
-        if (tFuncCall.args.isEmpty() && (tFunc.isArgOptional.size() > 0 ||
-                tFunc.isArgOptional.isEmpty())) {
+        if (tFuncCall.args.isEmpty()) {
             throw new InterpreterException.FunctionParametersException(cTrace, this,
                     Integer.toString(1),
                     tFuncCall.lineNumber);
@@ -119,7 +115,7 @@ public class BaseFunction extends Symbol {
             // check if the current param was given an input of TVoidValue
             // if so, error as we dont want them to pass in idk to a paramter thats not
             // optional
-            if ((!tFuncCall.args.isEmpty() && tFuncCall.args.size() != i)) {
+            if (tFuncCall.args.size() != i) {
                 if (tFuncCall.args.get(i) instanceof TVoidValue && !isOptional)
                     throw new InterpreterException.FunctionParametersException(cTrace, this, Integer.toString(i + 1),
                             tFuncCall.lineNumber);
@@ -127,7 +123,7 @@ public class BaseFunction extends Symbol {
                 // the function call has less arguments than required by the function.
                 // check if all the remaining arguments are defined as optional.
                 for (int j = i; j < tFunc.isArgOptional.size(); j++) {
-                    if (!(boolean) tFunc.isArgOptional.get(j) && j != 0) {
+                    if (!(boolean) tFunc.isArgOptional.get(j)) {
                         throw new InterpreterException.FunctionParametersException(cTrace, this,
                                 Integer.toString(j + 1),
                                 tFuncCall.lineNumber);
@@ -146,7 +142,7 @@ public class BaseFunction extends Symbol {
      * 
      * @param name  Function name
      * @param token Function token
-     * @return
+     * @return A User Defined Function.
      */
     public static DefinedFunction create(String name, TFunction token) {
         return new DefinedFunction(name, token);
@@ -161,21 +157,6 @@ public class BaseFunction extends Symbol {
         }
 
         @Override
-        /**
-         * Calls the function with the given parameters and variable functions store.
-         * <p>
-         * This method is called by the interpreter when the function is called.
-         * Other functions should override this method to implement their own logic.
-         * 
-         * @param tFuncCall The function call token.
-         * @param params    The parameters passed to the function. (taken from the
-         *                  parameters in tFuncCall)
-         * @param vfs       The variable functions store.
-         * @param config    The Interpreter configuration.
-         * @return The return value of the function, if not overriden it will return
-         *         void.class
-         * @throws Exception If an error occurs during the function call.
-         */
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
                 IConfig config, ContextTrace cTrace)
                 throws Exception {
@@ -186,7 +167,7 @@ public class BaseFunction extends Symbol {
             // this DefinedFunction, contains a TFunction where qwe need to check the params
             // so we can make name value pairs.
             String[] paramNames = ((TFunction) this.token).args;
-            HashMap<String, MapValue> newVfs = (HashMap) vfs.clone();
+            HashMap<String, MapValue> newVfs = (HashMap<String, MapValue>) vfs.clone();
             checkParams(tFuncCall, cTrace);
             for (int i = 0; i < paramNames.length; i++) {
                 String name = paramNames[i];
@@ -202,12 +183,11 @@ public class BaseFunction extends Symbol {
                 Object wrappedValue = Token.voidValue(tFuncCall.lineNumber);
 
                 if (name.startsWith("F~")
-                        && (value instanceof Token<?> && ((Token<?>) value).getValue() instanceof TVarRef)) {
+                        && (value instanceof Token<?> && ((Token<?>) value).getValue() instanceof TVarRef tVarRef)) {
                     // value is definitely a TVarRef, so look for the function in vfs, if not found
                     // throw an error
                     // if found, create aq copy of that MapValue, and name it to instead this new
                     // name and add to the vfs.
-                    TVarRef tVarRef = (TVarRef) ((Token<?>) value).getValue();
                     MapValue v = vfs.get(tVarRef.varName);
                     if (v == null)
                         throw new InterpreterException.UnknownVariableException(cTrace, tVarRef);
@@ -228,20 +208,20 @@ public class BaseFunction extends Symbol {
                     wrappedValue = BaseVariable.create(name,
                             o instanceof ArrayList ? tContainer.new TArrayVar(name, (ArrayList) o, tFuncCall.lineNumber)
                                     : tContainer.new TUnknownVar<Object>(name, o, tFuncCall.lineNumber),
-                            o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Arrays.asList(o)),
+                            o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Collections.singletonList(o)),
                             o instanceof ArrayList);
                 } else if (Primitives.isPrimitive(value)) {
                     // primitivers ong
                     wrappedValue = BaseVariable.create(name,
                             tContainer.new TUnknownVar<Object>(name, value, tFuncCall.lineNumber),
-                            new ArrayList<>(Arrays.asList(value)), false);
+                            new ArrayList<>(List.of(value)), false);
 
                 } else {
                     // cacthes nested calls, operations and others
                     Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), vfs, false, config, cTrace);
                     wrappedValue = BaseVariable.create(name,
                             tContainer.new TUnknownVar<Object>(name, o, tFuncCall.lineNumber),
-                            o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Arrays.asList(o)), false);
+                            o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Collections.singletonList(o)), false);
                 }
                 newVfs.put(name.replace("F~", "").replace("V~", ""), new MapValue(wrappedValue));
             }

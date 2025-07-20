@@ -52,7 +52,6 @@ public class ContextTrace {
      * @param newC       The current context in which the variable is defined or
      *                   used.
      * @param token      The token associated with the current context, if any.
-     * @param lineNumber The line number where the variable is defined or used.
      * @param parent     The parent context trace, if any.
      */
     public ContextTrace(Context newC, TokenDefault token, ContextTrace parent) {
@@ -80,7 +79,7 @@ public class ContextTrace {
                 current = null; // end the loop
             } else {
                 sb.append(
-                        current.current == Context.EOL ? "end of file <- "
+                        current.current == Context.EOF ? "end of file <- "
                                 : (current.token.name.equals(current.token.getClass().getSimpleName())
                                         ? ("[" + current.token.getClass().getSimpleName() + " "
                                                 + current.token.lineNumber

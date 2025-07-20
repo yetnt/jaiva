@@ -60,7 +60,7 @@ public class IOFunctions extends BaseGlobals {
                 throws Exception {
             checkParams(tFuncCall, cTrace);
             String output;
-            Object o = params.size() > 0 ? params.get(0) : null;
+            Object o = !params.isEmpty() ? params.getFirst() : null;
             Object newO = o;
             if (o == null || o instanceof TVoidValue) {
                 System.out.println();
@@ -70,6 +70,7 @@ public class IOFunctions extends BaseGlobals {
                     ? Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config, cTrace)
                     : null;
             if (o instanceof Token<?> || (o instanceof TokenDefault && Interpreter.isVariableToken(o))) {
+                assert o instanceof Token<?>;
                 TokenDefault token = ((Token<?>) o).getValue();
                 // Only TokenDefault classes have the .toToken() method, but TokenDefualt itself
                 // doesnt, so we kinda need to check for every possible case unfortunately.
@@ -78,6 +79,7 @@ public class IOFunctions extends BaseGlobals {
                         : token;
                 Object value = Interpreter.handleVariables(input, vfs, config, cTrace);
                 // System.out.println(value);
+                assert value != null;
                 output = value.toString();
                 newO = value;
             } else if (o instanceof ThrowIfGlobalContext) {
@@ -93,12 +95,12 @@ public class IOFunctions extends BaseGlobals {
 
             String isJustStr = newO instanceof String && config.printStacks ? "\"" : "";
 
-            if (v instanceof Boolean && (Boolean) v == true) {
+            if (v instanceof Boolean && (Boolean) v) {
                 System.out.print(
-                        isJustStr + EscapeSequence.fromEscape(output.toString(), tFuncCall.lineNumber) + isJustStr);
+                        isJustStr + EscapeSequence.fromEscape(output, tFuncCall.lineNumber) + isJustStr);
             } else {
                 System.out.println(
-                        isJustStr + EscapeSequence.fromEscape(output.toString(), tFuncCall.lineNumber) + isJustStr);
+                        isJustStr + EscapeSequence.fromEscape(output, tFuncCall.lineNumber) + isJustStr);
             }
             return Token.voidValue(tFuncCall.lineNumber);
         }
@@ -120,9 +122,7 @@ public class IOFunctions extends BaseGlobals {
                 IConfig config, ContextTrace cTrace)
                 throws Exception {
 
-            String output = config.resources.consoleIn.nextLine();
-
-            return output;
+            return config.resources.consoleIn.nextLine();
         }
     }
 
@@ -153,7 +153,7 @@ public class IOFunctions extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            return JOptionPane.showInputDialog(params.get(0));
+            return JOptionPane.showInputDialog(params.getFirst());
         }
     }
 
@@ -204,9 +204,9 @@ public class IOFunctions extends BaseGlobals {
      */
     class VArgs extends BaseVariable {
         VArgs(Token<?> container, IConfig config) {
-            super("args", container.new TArrayVar("args", new ArrayList(Arrays.asList(config.args)), -1,
+            super("args", container.new TArrayVar("args", new ArrayList<>(Arrays.asList(config.args)), -1,
                     "The command-line arguments passed to the jaiva command"),
-                    new ArrayList(Arrays.asList(config.args)));
+                    new ArrayList<>(Arrays.asList(config.args)));
             this.freeze();
         }
     }

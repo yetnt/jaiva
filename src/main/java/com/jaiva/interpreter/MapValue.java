@@ -27,8 +27,7 @@ public class MapValue {
      * Constructs a MapValue instance without a specified value.
      * <p>
      * This constructor is used to create an empty MapValue.
-     * 
-     * @param v
+     *
      */
     public MapValue() {
         value = void.class;

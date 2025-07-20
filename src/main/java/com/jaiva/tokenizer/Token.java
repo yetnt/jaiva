@@ -1149,7 +1149,7 @@ public class Token<T extends TokenDefault> {
          * @param name  The name of the variable being referenced.
          * @param index The index of the variable reference.
          * @param ln    The line number.
-         * @param getL  Indicates whether the variable reference is a length call.
+         * @param getLength  Indicates whether the variable reference is a length call.
          */
         TVarRef(Object name, Object index, int ln, boolean getLength) {
             super("TVarRef", ln);

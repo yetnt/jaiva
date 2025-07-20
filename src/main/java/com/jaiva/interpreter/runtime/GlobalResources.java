@@ -47,7 +47,7 @@ import java.util.Scanner;
  * <p>
  * Constructor:
  * <ul>
- * <li>{@link #GlobalResources(String)} - Initializes the global resources with
+ * <li>{@link #GlobalResources()} - Initializes the global resources with
  * the specified file path.</li>
  * </ul>
  * 

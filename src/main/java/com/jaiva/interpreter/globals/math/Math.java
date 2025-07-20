@@ -57,7 +57,7 @@ public class Math extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
                     cTrace);
 
             if (value instanceof Integer i)
@@ -85,9 +85,11 @@ public class Math extends BaseGlobals {
     class FRandom extends BaseFunction {
         FRandom(Token<?> container) {
             super("m_random", container.new TFunction("m_random", new String[] { "lower", "upper" }, null, -1,
-                    "Returns a random number (integer) in the range of `lower` and `upper`\\\n" +
-                            " > ***lower***:lower bound (inclusive)\\\n" +
-                            " > ***upper***:upper bound (inclusive)\n"));
+                    """
+                            Returns a random number (integer) in the range of `lower` and `upper`\\
+                             > ***lower***:lower bound (inclusive)\\
+                             > ***upper***:upper bound (inclusive)
+                            """));
             this.freeze();
         }
 
@@ -143,7 +145,7 @@ public class Math extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
                     cTrace);
 
             if (value instanceof Integer)
@@ -179,7 +181,7 @@ public class Math extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
                     cTrace);
 
             if (value instanceof Integer i)
@@ -254,7 +256,7 @@ public class Math extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
                     cTrace);
 
             if (value instanceof Integer i)
@@ -289,7 +291,7 @@ public class Math extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
                     cTrace);
 
             if (value instanceof Integer i)

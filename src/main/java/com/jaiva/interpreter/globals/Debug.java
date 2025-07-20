@@ -35,8 +35,8 @@ public class Debug extends BaseGlobals {
                 checkParams(tFuncCall, cTrace); // throws if params aren't correct. So naturally we loose having
                                                 // varargs, so its
                 // fine.
-                if (params.size() > 0) {
-                    Object param = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false,
+                if (!params.isEmpty()) {
+                    Object param = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false,
                             config, cTrace);
                     if (param instanceof ArrayList<?> arr) {
                         components.addAll(arr);

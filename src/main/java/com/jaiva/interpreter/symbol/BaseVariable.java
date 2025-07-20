@@ -102,8 +102,9 @@ public class BaseVariable extends Symbol {
     /**
      * Sets the array value of the variable.
      * 
-     * @param t
-     * @throws InterpreterException.FrozenSymbolException
+     * @param t The array to set this variable to.
+     * @param cTrace Context Trace
+     * @throws InterpreterException.FrozenSymbolException When trying to modify the variable while it's frozen.
      */
     public void a_set(ArrayList<Object> t, ContextTrace cTrace) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
@@ -114,8 +115,9 @@ public class BaseVariable extends Symbol {
     /**
      * Adds an array to the array (addAll())
      * 
-     * @param a
-     * @throws InterpreterException.FrozenSymbolException
+     * @param a The array to add onto.
+     * @param cTrace Context Trace
+     * @throws InterpreterException.FrozenSymbolException When trying to modify the variable while it's frozen.
      */
     public void a_addAll(List<String> a, ContextTrace cTrace) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
@@ -126,8 +128,8 @@ public class BaseVariable extends Symbol {
     /**
      * Appends an element to the array.
      * 
-     * @param a
-     * @throws InterpreterException.FrozenSymbolException
+     * @param a The object to add to the array.
+     * @throws InterpreterException.FrozenSymbolException When trying to modify the variable while it's frozen.
      */
     public void a_add(Object a, ContextTrace cTrace) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
@@ -138,7 +140,7 @@ public class BaseVariable extends Symbol {
     /**
      * Gets the array value of the variable.
      * 
-     * @return
+     * @return The array this variable holds.
      */
     public ArrayList<Object> a_getAll() {
         return array;
@@ -147,8 +149,8 @@ public class BaseVariable extends Symbol {
     /**
      * Gets an element from the array.
      * 
-     * @param i
-     * @return
+     * @param i Index
+     * @return Element at the given index
      */
     public Object a_get(int i) {
         return array.get(i);
@@ -157,7 +159,7 @@ public class BaseVariable extends Symbol {
     /**
      * Get array size
      * 
-     * @return
+     * @return The size of the array.
      */
     public int a_size() {
         return array.size();
@@ -166,8 +168,8 @@ public class BaseVariable extends Symbol {
     /**
      * Set scalar value
      * 
-     * @param value
-     * @throws InterpreterException.FrozenSymbolException
+     * @param value The new scalar value
+     * @throws InterpreterException.FrozenSymbolException When trying to modify the variable while it's frozen.
      */
     public void s_set(Object value, ContextTrace cTrace) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
@@ -178,7 +180,7 @@ public class BaseVariable extends Symbol {
     /**
      * get scalar value
      * 
-     * @return
+     * @return The scalar value.
      */
     public Object s_get() {
         return scalar;
@@ -193,7 +195,7 @@ public class BaseVariable extends Symbol {
      * @param name Name of the variable.
      * @param t    The TVarRef token.
      * @param arr  The arraylist.
-     * @return
+     * @return A User Defined Variable.
      */
     public static DefinedVariable create(String name, TokenDefault t, ArrayList<Object> arr, boolean setArray) {
         if (arr.size() == 1 && !setArray)
@@ -281,9 +283,7 @@ public class BaseVariable extends Symbol {
                 return false;
         } else if (!array.equals(other.array))
             return false;
-        if (variableType != other.variableType)
-            return false;
-        return true;
+        return variableType == other.variableType;
     }
 
 }

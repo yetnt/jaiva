@@ -35,11 +35,6 @@ public class IOFile extends BaseGlobals {
      * obtained from the provided {@link IConfig} object's file path. The variable
      * is named "f_name"
      * and is frozen upon creation to prevent further modification.
-     * </p>
-     *
-     * @param container The {@link Token} container associated with this variable.
-     * @param config    The {@link IConfig} instance containing the file path
-     *                  information.
      */
     public class VFileName extends BaseVariable {
         public VFileName(Token<?> container, IConfig config) {
@@ -63,8 +58,6 @@ public class IOFile extends BaseGlobals {
      * making it immutable.
      * </p>
      *
-     * @param container The token container used to create the directory variable.
-     * @param config    The configuration object containing the file directory path.
      */
     public class VDirectory extends BaseVariable {
         public VDirectory(Token<?> container, IConfig config) {
@@ -88,10 +81,6 @@ public class IOFile extends BaseGlobals {
      * The variable is named "f_bin" and is intended to be immutable after
      * construction.
      * </p>
-     *
-     * @param container The token container used for variable creation.
-     * @param config    The configuration object providing the Jaiva source
-     *                  directory path.
      */
     public class VBinaryDirectory extends BaseVariable {
         public VBinaryDirectory(Token<?> container, IConfig config) {
@@ -225,7 +214,7 @@ public class IOFile extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+            Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
                     cTrace);
             if (!(path instanceof String))
                 throw new WtfAreYouDoingException(cTrace, "Da path must be a string.",
@@ -316,11 +305,11 @@ public class IOFile extends BaseGlobals {
                 throw new FunctionParametersException(cTrace, this, "2", params.get(1), String.class,
                         tFuncCall.lineNumber);
             if (content instanceof ArrayList list) {
-                if (list.size() == 0)
+                if (list.isEmpty())
                     output = "";
                 // if the list has only one element, we can just use that as the content
                 else if (list.size() == 1)
-                    output = list.get(0).toString();
+                    output = list.getFirst().toString();
                 else {
                     list.stream()
                             .filter(Objects::nonNull)

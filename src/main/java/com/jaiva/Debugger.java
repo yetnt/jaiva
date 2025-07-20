@@ -177,7 +177,7 @@ public class Debugger {
                     }
                     case "step", "s" -> {
                         if (config.dc.active) {
-                            config.dc.stepOver = new Tuple2<Boolean, Boolean>(true, false); // Set step over flag
+                            config.dc.stepOver = new Tuple2<Boolean, Boolean>(Boolean.TRUE, Boolean.FALSE); // Set step over flag
                             config.dc.currentLineNumber++; // Increment the line number
                             if (CLI)
                                 System.out.println("Stepping over the next line.");

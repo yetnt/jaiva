@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import com.jaiva.errors.InterpreterException;
@@ -43,7 +44,7 @@ enum REPLMode {
     /**
      * The integer value representing the mode.
      */
-    private int mode;
+    private final int mode;
 
     /**
      * Constructor for REPLMode.
@@ -149,8 +150,7 @@ class ReadOuput {
 /**
  * REPL (Read-Eval-Print Loop) is a class that represents the REPL for the Jaiva
  * programming language.
- * It allows users to interactively enter and evaluate Jaiva code.
- * 
+ * It allows users to interactively enter and evaluate Jaiva code
  * TODO: It's a bit buggy, come back to this.
  * 
  */
@@ -164,11 +164,11 @@ public class REPL {
      * The state of the REPL.
      * It can be either ACTIVE, INACTIVE, ERROR, or EXIT.
      */
-    public State state = State.INACTIVE;
+    private State state = State.INACTIVE;
     /**
      * The BufferedReader used to read input from the user.
      */
-    private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     /**
      * The variable functions store (vfs).
      */
@@ -177,12 +177,12 @@ public class REPL {
      * Interpreter configuration object.
      * It contains the resources and configuration for the interpreter.
      */
-    private IConfig iConfig = new IConfig(Main.callJaivaSrc());
+    private final IConfig iConfig = new IConfig(Main.callJaivaSrc());
     /**
      * Tokenizer configuration object.
      * It contains the configuration for the tokenizer.
      */
-    private TConfig tConfig = new TConfig(Main.callJaivaSrc());
+    private final TConfig tConfig = new TConfig(Main.callJaivaSrc());
     // private Token<?> tokenContainer = new Token<>(null);
 
     /**
@@ -196,7 +196,7 @@ public class REPL {
      *             For example, STANDARD mode processes and evaluates input, while
      *             PRINT_TOKEN
      *             mode outputs tokens.
-     * @throws InterpreterException
+     * @throws InterpreterException when it encounters one.
      */
     public REPL(int mode) throws InterpreterException {
         this.iConfig.REPL = true;
@@ -221,24 +221,28 @@ public class REPL {
                     break;
                 }
                 Object something = read(line, (b != null ? "" : previousLine), m, b);
-                if (something instanceof ReadOuput) {
-                    m = null;
-                    b = null;
-                    ReadOuput ro = (ReadOuput) something;
-                    if (this.state == State.ERROR) {
-                        System.out.println("Chaai an error: " + ro.getOutput());
-                    } else if (!ro.isCleanExit()) {
-                        System.out.println(ro.getOutput());
+                switch (something) {
+                    case ReadOuput ro -> {
+                        m = null;
+                        b = null;
+                        if (this.state == State.ERROR) {
+                            System.out.println("Chaai an error: " + ro.getOutput());
+                        } else if (!ro.isCleanExit()) {
+                            System.out.println(ro.getOutput());
+                        }
                     }
-                } else if (something instanceof MultipleLinesOutput) {
-                    m = (MultipleLinesOutput) something;
-                    b = null;
-                } else if (something instanceof BlockChain) {
-                    m = null;
-                    b = (BlockChain) something;
-                } else {
-                    b = null;
-                    m = null;
+                    case MultipleLinesOutput multipleLinesOutput -> {
+                        m = multipleLinesOutput;
+                        b = null;
+                    }
+                    case BlockChain blockChain -> {
+                        m = null;
+                        b = blockChain;
+                    }
+                    case null, default -> {
+                        b = null;
+                        m = null;
+                    }
                 }
                 previousLine = line;
             } catch (Exception e) {
@@ -252,9 +256,7 @@ public class REPL {
     /**
      * Closes the REPL resources, including the reader and any associated resources.
      * Ensures proper cleanup by releasing resources and handling potential I/O
-     * exceptions.
-     * 
-     * @throws IOException if an I/O error occurs while closing the reader.
+     * exceptions
      */
     public void close() {
         try {
@@ -291,6 +293,7 @@ public class REPL {
                         Object value = Interpreter.handleVariables(Primitives.parseNonPrimitive(token), this.vfs,
                                 iConfig, new ContextTrace());
                         // TODO: This assumes the global context, which might not be correct.
+                        assert value != null;
                         return new ReadOuput(value.toString());
                     } else {
                         Object h = Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) something)),
@@ -313,15 +316,19 @@ public class REPL {
                             boolean isReturnTokenClass = token instanceof TStatement || token instanceof TVarRef
                                     || token instanceof TFuncCall;
                             Object input = isReturnTokenClass
-                                    ? ((Token<?>) tokens.get(0))
+                                    ? ((Token<?>) tokens.getFirst())
                                     : token;
                             // TODO: This assumes the global context, which might not be correct.
                             Object value = Interpreter.handleVariables(input, this.vfs, iConfig, new ContextTrace());
-                            return isReturnTokenClass ? new ReadOuput(value.toString())
-                                    : new ReadOuput();
+                            if (isReturnTokenClass) {
+                                assert value != null;
+                                return new ReadOuput(value.toString());
+                            } else {
+                                return new ReadOuput();
+                            }
                         } else {
-                            Object h = Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) tokens.get(
-                                    0))),
+                            Object h = Interpreter.interpret(new ArrayList<>(Collections.singletonList((Token<?>) tokens.getFirst(
+                                    ))),
                                     new ContextTrace(),
                                     this.vfs, iConfig);
                             if (h instanceof HashMap)

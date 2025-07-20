@@ -53,132 +53,66 @@ public class Primitives {
      * @param lhs        The left-hand side operand (Integer or Double).
      * @param rhs        The right-hand side operand (Integer or Double).
      * @param lineNumber The line number for error reporting.
+     * @param cTrace Context Trace
      * @return The result of the arithmetic operation, or a void value if operands
      *         are not numeric.
-     * @throws If an invalid operator is provided or another
+     * @throws InterpreterException If an invalid operator is provided or another
      *            interpreter error occurs.
      */
     private static Object handleNumOperations(String op, Object lhs, Object rhs, int lineNumber, ContextTrace cTrace)
             throws InterpreterException {
-        Object result;
-        if (lhs instanceof Integer iLhs && rhs instanceof Integer iRhs) {
-            // Because the ^ returns a double, we use 2 variables, so that if yopu dont use
-            // the ^ operator you dont receive a double output.
-            switch (op) {
-                case "+":
-                    result = iLhs + iRhs;
-                    break;
-                case "-":
-                    result = iLhs - iRhs;
-                    break;
-                case "*":
-                    result = iLhs * iRhs;
-                    break;
-                case "/":
-                    result = iLhs / iRhs;
-                    break;
-                case "%":
-                    result = iLhs % iRhs;
-                    break;
-                case "^":
-                    result = Math.pow(iLhs, iRhs);
-                    break;
-                case "&":
-                    result = iLhs & iRhs;
-                    break;
-                case "|":
-                    result = iLhs | iRhs;
-                    break;
-                case "<<": // bitshift left
-                    result = iLhs << iRhs;
-                    break;
-                case ">>": // bitshift right
-                    result = iLhs >> iRhs;
-                    break;
-                case "<x": // hexshift left
-                    result = iLhs << (iRhs * 4);
-                    break;
-                case ">x": // hexshift right
-                    result = iLhs >> (iRhs * 4);
-                    break;
-                default:
-                    throw new CatchAllException(cTrace, "Invalid operator given", lineNumber);
-            }
-        } else if (lhs instanceof Double iLhs && rhs instanceof Double iRhs) {
-            switch (op) {
-                case "+":
-                    result = iLhs + iRhs;
-                    break;
-                case "-":
-                    result = iLhs - iRhs;
-                    break;
-                case "*":
-                    result = iLhs * iRhs;
-                    break;
-                case "/":
-                    result = iLhs / iRhs;
-                    break;
-                case "%":
-                    result = iLhs % iRhs;
-                    break;
-                case "^":
-                    result = Math.pow(iLhs, iRhs);
-                    break;
-                default:
-                    throw new CatchAllException(cTrace, "Invalid operator given", lineNumber);
-
-            }
-        } else if (lhs instanceof Double iLhs && rhs instanceof Integer iRhs) {
-            switch (op) {
-                case "+":
-                    result = iLhs + iRhs;
-                    break;
-                case "-":
-                    result = iLhs - iRhs;
-                    break;
-                case "*":
-                    result = iLhs * iRhs;
-                    break;
-                case "/":
-                    result = iLhs / iRhs;
-                    break;
-                case "%":
-                    result = iLhs % iRhs;
-                    break;
-                case "^":
-                    result = Math.pow(iLhs, iRhs);
-                    break;
-                default:
-                    throw new CatchAllException(cTrace, "Invalid operator given", lineNumber);
-
-            }
-        } else if (lhs instanceof Integer iLhs && rhs instanceof Double iRhs) {
-            switch (op) {
-                case "+":
-                    result = iLhs + iRhs;
-                    break;
-                case "-":
-                    result = iLhs - iRhs;
-                    break;
-                case "*":
-                    result = iLhs * iRhs;
-                    break;
-                case "/":
-                    result = iLhs / iRhs;
-                    break;
-                case "%":
-                    result = iLhs % iRhs;
-                    break;
-                case "^":
-                    result = Math.pow(iLhs, iRhs);
-                    break;
-                default:
-                    throw new CatchAllException(cTrace, "Invalid operator given", lineNumber);
-
-            }
-        } else {
-            result = Token.voidValue(lineNumber);
-        }
+        Object result = switch (lhs) {
+            case Integer iLhs when rhs instanceof Integer iRhs ->
+                // Because the ^ returns a double, we use 2 variables, so that if yopu dont use
+                // the ^ operator you dont receive a double output.
+                    switch (op) {
+                        case "+" -> iLhs + iRhs;
+                        case "-" -> iLhs - iRhs;
+                        case "*" -> iLhs * iRhs;
+                        case "/" -> iLhs / iRhs;
+                        case "%" -> iLhs % iRhs;
+                        case "^" -> Math.pow(iLhs, iRhs);
+                        case "&" -> iLhs & iRhs;
+                        case "|" -> iLhs | iRhs;
+                        case "<<" -> // bitshift left
+                                iLhs << iRhs;
+                        case ">>" -> // bitshift right
+                                iLhs >> iRhs;
+                        case "<x" -> // hexshift left
+                                iLhs << (iRhs * 4);
+                        case ">x" -> // hexshift right
+                                iLhs >> (iRhs * 4);
+                        default -> throw new CatchAllException(cTrace, "Invalid operator given", lineNumber);
+                    };
+            case Double iLhs when rhs instanceof Double iRhs -> switch (op) {
+                case "+" -> iLhs + iRhs;
+                case "-" -> iLhs - iRhs;
+                case "*" -> iLhs * iRhs;
+                case "/" -> iLhs / iRhs;
+                case "%" -> iLhs % iRhs;
+                case "^" -> Math.pow(iLhs, iRhs);
+                default -> throw new CatchAllException(cTrace, "Invalid operator given", lineNumber);
+            };
+            case Double iLhs when rhs instanceof Integer iRhs -> switch (op) {
+                case "+" -> iLhs + iRhs;
+                case "-" -> iLhs - iRhs;
+                case "*" -> iLhs * iRhs;
+                case "/" -> iLhs / iRhs;
+                case "%" -> iLhs % iRhs;
+                case "^" -> Math.pow(iLhs, iRhs);
+                default -> throw new CatchAllException(cTrace, "Invalid operator given", lineNumber);
+            };
+            case Integer iLhs when rhs instanceof Double iRhs -> switch (op) {
+                case "+" -> iLhs + iRhs;
+                case "-" -> iLhs - iRhs;
+                case "*" -> iLhs * iRhs;
+                case "/" -> iLhs / iRhs;
+                case "%" -> iLhs % iRhs;
+                case "^" -> Math.pow(iLhs, iRhs);
+                default -> throw new CatchAllException(cTrace, "Invalid operator given", lineNumber);
+            };
+            case null, default -> Token.voidValue(lineNumber);
+        };
 
         // Return int if the double is whole.
         if (result instanceof Double res) {
@@ -202,6 +136,7 @@ public class Primitives {
      * @param rhs The right-hand side operand.
      * @param op  The operator to be applied.
      * @param ts  The TStatement object associated with the operation.
+     * @param cTrace Context Trace.
      * @return The result of the string operation.
      * @throws JaivaException If an error occurs during
      *                        string calculation.
@@ -305,7 +240,10 @@ public class Primitives {
      * 
      * @param token the token or primitive in question
      * @param vfs   The variable functions store
-     * @return
+     * @param returnName Boolean flag which tells this method to only return the name of whatever you're trying to parse.
+     * @param config Interpreter config
+     * @param cTrace Context Trace
+     * @return A primitive, which can be either a number, string, boolean, array, function reference or idk.
      * @throws UnknownVariableException      when the
      *                                       TVarRef cannot be
      *                                       found.
@@ -335,9 +273,8 @@ public class Primitives {
             IConfig config, ContextTrace cTrace)
             throws Exception {
 
-        if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TStatement) {
+        if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TStatement tStatement) {
             // If the input is a TStatement, resolve the lhs and rhs.
-            TStatement tStatement = (TStatement) ((Token<?>) token).getValue();
             Object lhs = toPrimitive(tStatement.lHandSide, vfs, false, config, cTrace);
             String op = tStatement.op;
             Object rhs = toPrimitive(tStatement.rHandSide, vfs, false, config, cTrace);
@@ -366,102 +303,106 @@ public class Primitives {
                 }
             } else {
                 // In this else branch, the type is boolean logic
-                if (op.equals("&&") || op.equals("||") || op.equals("'")) {
-                    // if the logic operator is one of these naturally, the input has to be boolean
-                    // check input first of all
-                    if (!(lhs instanceof Boolean))
-                        throw new TStatementResolutionException(cTrace,
-                                tStatement, "left hand side",
-                                lhs.toString());
-                    if (!op.equals("'") && !(rhs instanceof Boolean))
-                        throw new TStatementResolutionException(cTrace,
-                                tStatement, "right hand side",
-                                rhs.toString());
+                switch (op) {
+                    case "&&", "||", "'" -> {
+                        // if the logic operator is one of these naturally, the input has to be boolean
+                        // check input first of all
+                        if (!(lhs instanceof Boolean))
+                            throw new TStatementResolutionException(cTrace,
+                                    tStatement, "left hand side",
+                                    lhs.toString());
+                        if (!op.equals("'") && !(rhs instanceof Boolean))
+                            throw new TStatementResolutionException(cTrace,
+                                    tStatement, "right hand side",
+                                    rhs.toString());
 
-                    switch (op) {
-                        case "&&":
-                            return ((Boolean) lhs) && ((Boolean) rhs);
-                        case "||":
-                            return ((Boolean) lhs) || ((Boolean) rhs);
-                        case "'":
-                            return !((Boolean) lhs);
-                    }
-                } else if (op.equals(">=") || op.equals("<=") || op.equals("<") || op.equals(">")) {
-                    // however if its these the input is a number or a double
-                    // check input first of all
-                    if (!(lhs instanceof Integer) && !(lhs instanceof Double))
-                        throw new TStatementResolutionException(cTrace,
-                                tStatement, "left hand side",
-                                lhs.toString());
-                    if (!(rhs instanceof Integer) && !(rhs instanceof Double))
-                        throw new TStatementResolutionException(cTrace,
-                                tStatement, "right hand side",
-                                rhs.toString());
-
-                    if (lhs instanceof Integer) {
-                        // handle ints
                         switch (op) {
-                            case ">=":
-                                return ((Integer) lhs) >= ((Integer) rhs);
-                            case "<=":
-                                return ((Integer) lhs) <= ((Integer) rhs);
-                            case "<":
-                                return ((Integer) lhs) < ((Integer) rhs);
-                            case ">":
-                                return ((Integer) lhs) > ((Integer) rhs);
-                        }
-                    } else {
-                        // handle doubles
-                        switch (op) {
-                            case ">=":
-                                return ((Double) lhs) >= ((Double) rhs);
-                            case "<=":
-                                return ((Double) lhs) <= ((Double) rhs);
-                            case "<":
-                                return ((Double) lhs) < ((Double) rhs);
-                            case ">":
-                                return ((Double) lhs) > ((Double) rhs);
+                            case "&&":
+                                return ((Boolean) lhs) && ((Boolean) rhs);
+                            case "||":
+                                return ((Boolean) lhs) || ((Boolean) rhs);
+                            case "'":
+                                return !((Boolean) lhs);
                         }
                     }
+                    case ">=", "<=", "<", ">" -> {
+                        // however if its these the input is a number or a double
+                        // check input first of all
+                        if (!(lhs instanceof Integer) && !(lhs instanceof Double))
+                            throw new TStatementResolutionException(cTrace,
+                                    tStatement, "left hand side",
+                                    lhs.toString());
+                        if (!(rhs instanceof Integer) && !(rhs instanceof Double))
+                            throw new TStatementResolutionException(cTrace,
+                                    tStatement, "right hand side",
+                                    rhs.toString());
 
-                } else if (op.equals("=") || op.equals("!=")) {
-                    // here, the inputs can be either a
-                    // int, double, boolean or string.
-                    // check input first of all
-                    // TODO: This is literally just anything that can be input. Fix
-                    if (!(lhs instanceof Integer) && !(lhs instanceof Double) && !(lhs instanceof Boolean)
-                            && !(lhs instanceof String) && !(lhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
-                            && !(lhs instanceof BaseFunction))
-                        throw new TStatementResolutionException(cTrace,
-                                tStatement, "left hand side",
-                                lhs.toString());
-                    if (!(rhs instanceof Integer) && !(rhs instanceof Double) && !(rhs instanceof Boolean)
-                            && !(rhs instanceof String) && !(rhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
-                            && !(lhs instanceof BaseFunction))
-                        throw new TStatementResolutionException(cTrace,
-                                tStatement, "right hand side",
-                                rhs.toString());
+                        if (lhs instanceof Integer) {
+                            // handle ints
+                            assert rhs instanceof Integer;
+                            switch (op) {
+                                case ">=":
+                                    return ((Integer) lhs) >= ((Integer) rhs);
+                                case "<=":
+                                    return ((Integer) lhs) <= ((Integer) rhs);
+                                case "<":
+                                    return ((Integer) lhs) < ((Integer) rhs);
+                                case ">":
+                                    return ((Integer) lhs) > ((Integer) rhs);
+                            }
+                        } else {
+                            // handle doubles
+                            assert rhs instanceof Double;
+                            switch (op) {
+                                case ">=":
+                                    return ((Double) lhs) >= ((Double) rhs);
+                                case "<=":
+                                    return ((Double) lhs) <= ((Double) rhs);
+                                case "<":
+                                    return ((Double) lhs) < ((Double) rhs);
+                                case ">":
+                                    return ((Double) lhs) > ((Double) rhs);
+                            }
+                        }
+                    }
+                    case "=", "!=" -> {
+                        // here, the inputs can be either a
+                        // int, double, boolean or string.
+                        // check input first of all
+                        // TODO: This is literally just anything that can be input. Fix
+                        if (!(lhs instanceof Integer) && !(lhs instanceof Double) && !(lhs instanceof Boolean)
+                                && !(lhs instanceof String) && !(lhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
+                                && !(lhs instanceof BaseFunction))
+                            throw new TStatementResolutionException(cTrace,
+                                    tStatement, "left hand side",
+                                    lhs.toString());
+                        if (!(rhs instanceof Integer) && !(rhs instanceof Double) && !(rhs instanceof Boolean)
+                                && !(rhs instanceof String) && !(rhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
+                                && !(lhs instanceof BaseFunction))
+                            throw new TStatementResolutionException(cTrace,
+                                    tStatement, "right hand side",
+                                    rhs.toString());
 
-                    // for TVoidValue, set to void.class
-                    if (rhs instanceof TVoidValue)
-                        rhs = void.class;
-                    if (lhs instanceof TVoidValue)
-                        lhs = void.class;
+                        // for TVoidValue, set to void.class
+                        if (rhs instanceof TVoidValue)
+                            rhs = void.class;
+                        if (lhs instanceof TVoidValue)
+                            lhs = void.class;
 
-                    // handle ALL types.
-                    switch (op) {
-                        case "=":
-                            return lhs.equals(rhs);
-                        case "!=":
-                            return !lhs.equals(rhs);
+                        // handle ALL types.
+                        switch (op) {
+                            case "=":
+                                return lhs.equals(rhs);
+                            case "!=":
+                                return !lhs.equals(rhs);
+                        }
                     }
                 }
 
             }
 
-        } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TVarRef) {
+        } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TVarRef tVarRef) {
             // just find the reference in the table and return whatever it is
-            TVarRef tVarRef = (TVarRef) ((Token<?>) token).getValue();
             if (returnName) {
                 Object t = Primitives.toPrimitive(tVarRef.varName, vfs, returnName, config, cTrace);
                 if (t instanceof String) {
@@ -479,9 +420,9 @@ public class Primitives {
                         tVarRef.lineNumber);
             if (v == null)
                 throw new UnknownVariableException(cTrace, tVarRef);
-            if (!(v.getValue() instanceof BaseVariable)) {
+            if (!(v.getValue() instanceof BaseVariable variable)) {
                 if (v.getValue() instanceof BaseFunction) {
-                    if (index == null || !(index instanceof Integer))
+                    if (index == null)
                         return v.getValue();
                     // in this case, index is something so we need to call the function and it
                     // SHOULD return an array.
@@ -492,25 +433,24 @@ public class Primitives {
                         throw new WtfAreYouDoingException(cTrace,
                                 "The function you used there did not return an array, and you expect to be able to index into that?",
                                 tVarRef.lineNumber);
-                    return ((ArrayList) ret).get((Integer) index) instanceof ArrayList && tVarRef.getLength
-                            ? ((ArrayList) ((ArrayList) ret).get((Integer) index)).size()
-                            : ((ArrayList) ret)
+                    return ((ArrayList<?>) ret).get((Integer) index) instanceof ArrayList && tVarRef.getLength
+                            ? ((ArrayList<?>) ((ArrayList<?>) ret).get((Integer) index)).size()
+                            : ((ArrayList<?>) ret)
                                     .get((Integer) index);
                 } else {
                     throw new WtfAreYouDoingException(cTrace, v.getValue(), BaseVariable.class,
                             tVarRef.lineNumber);
                 }
             }
-            BaseVariable variable = (BaseVariable) v.getValue();
             if (index != null && (variable.variableType == VariableType.ARRAY
                     || variable.variableType == VariableType.A_FUCKING_AMALGAMATION
                     || tVarRef.varName instanceof TVarRef)) {
                 // it's an array ref, where we have an index
                 ArrayList<Object> arr = variable.a_getAll();
-                if (!(index instanceof Integer) && index != null)
-                    throw new WtfAreYouDoingException(cTrace,
-                            tVarRef, Integer.valueOf(0).getClass(),
-                            tVarRef.lineNumber);
+//                if (!(index instanceof Integer) && index != null)
+//                    throw new WtfAreYouDoingException(cTrace,
+//                            tVarRef, Integer.valueOf(0).getClass(),
+//                            tVarRef.lineNumber);
                 if (tVarRef.varName instanceof Token) {
                     Object t = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarRef.varName), vfs, returnName,
                             config, cTrace);
@@ -524,12 +464,12 @@ public class Primitives {
                     return new WtfAreYouDoingException(cTrace,
                             "Bro you're tryna access more data than there is in " + variable.name, tVarRef.lineNumber);
                 return arr.get((Integer) index) instanceof ArrayList && tVarRef.getLength
-                        ? ((ArrayList) arr.get((Integer) index)).size()
+                        ? ((ArrayList<?>) arr.get((Integer) index)).size()
                         : arr
                                 .get((Integer) index);
             } else if (index == null && (variable.variableType == VariableType.ARRAY
                     || variable.variableType == VariableType.A_FUCKING_AMALGAMATION)) {
-                // return the arraylist of variables. and hjope something up the chain catches
+                // return the arraylist of variables. and hope something up the chain catches
                 // the array list.
                 // thats what we assume to happen since they just like passed a reference yknow.
                 return tVarRef.getLength ? variable.a_size() : variable.a_getAll();
@@ -550,8 +490,7 @@ public class Primitives {
                 }
             }
 
-        } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TFuncCall) {
-            TFuncCall tFuncCall = (TFuncCall) ((Token<?>) token).getValue();
+        } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TFuncCall tFuncCall) {
             if (returnName) {
                 Object t = toPrimitive(parseNonPrimitive(tFuncCall.functionName), vfs, returnName, config, cTrace);
                 if (t instanceof String) {
@@ -563,9 +502,8 @@ public class Primitives {
                             cTrace)
                     : tFuncCall.functionName, vfs, false, config, cTrace);
 
-            if (!(funcName instanceof String))
+            if (!(funcName instanceof String name))
                 throw new WeirdAhhFunctionException(cTrace, tFuncCall);
-            String name = (String) funcName;
             BaseFunction f = null;
             if (!(tFuncCall.functionName instanceof String)) {
                 Object j = toPrimitive(tFuncCall.functionName, vfs, false, config, cTrace);
@@ -602,13 +540,13 @@ public class Primitives {
             Object returnValue = function.call(tFuncCall, tFuncCall.args, vfs, config, cTrace);
             return returnValue instanceof String && tFuncCall.getLength
                     ? EscapeSequence.fromEscape((String) returnValue, tFuncCall.lineNumber).length()
-                    : returnValue instanceof ArrayList && tFuncCall.getLength ? ((ArrayList) returnValue).size()
+                    : returnValue instanceof ArrayList && tFuncCall.getLength ? ((ArrayList<?>) returnValue).size()
                             : returnValue;
         } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TTernary ternary) {
             // parse the condition.
             Object condition = setCondition(ternary, vfs, config, cTrace);
 
-            if (((Boolean) condition).booleanValue())
+            if ((Boolean) condition)
                 return Primitives.toPrimitive(ternary.trueExpr, vfs, false, config, cTrace);
             else
                 return Primitives.toPrimitive(ternary.falseExpr, vfs, false, config, cTrace);
@@ -670,7 +608,7 @@ public class Primitives {
                 ? ((TStatement) t).toToken()
                 : t instanceof TVarRef ? ((TVarRef) t).toToken()
                         : t instanceof TFuncCall ? ((TFuncCall) t).toToken()
-                                : t instanceof TTernary ? ((TFuncCall) t).toToken() : t;
+                                : t instanceof TTernary ? ((TTernary) t).toToken() : t;
     }
 
     /**
@@ -695,10 +633,13 @@ public class Primitives {
                                 : t instanceof TTernary ? ((TTernary) t).condition : null;
         Object condition = Interpreter.handleVariables(
                 parseNonPrimitive(c), vfs, config, cTrace);
-        if (!(condition instanceof Boolean))
+        if (!(condition instanceof Boolean)) {
+            assert condition != null;
+            assert c != null;
             throw new TStatementResolutionException(cTrace,
                     t, ((TStatement) c),
                     "boolean", condition.getClass().getName());
+        }
 
         return condition;
     }

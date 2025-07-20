@@ -57,9 +57,8 @@ public class Globals extends BaseGlobals {
      * 
      * @param removeTrailingComma Remove the trailing comma
      * @return string with the JSON representation of the global tokens.
-     * @throws JaivaException TODO
      */
-    public String returnGlobalsJSON(boolean removeTrailingComma) throws JaivaException {
+    public String returnGlobalsJSON(boolean removeTrailingComma) {
         StringBuilder string = new StringBuilder();
         vfs.forEach((name, vf) -> {
             Symbol symbol = (Symbol) ((MapValue) vf).getValue();
@@ -70,7 +69,7 @@ public class Globals extends BaseGlobals {
             }
             string.append(",");
         });
-        return string.toString().substring(0, string.length() - (removeTrailingComma ? 1 : 0));
+        return string.substring(0, string.length() - (removeTrailingComma ? 1 : 0));
     }
 
     /**
@@ -89,10 +88,10 @@ public class Globals extends BaseGlobals {
                 IConfig config, ContextTrace cTrace)
                 throws Exception {
             String name;
-            if (params.get(0) instanceof String) {
-                name = (String) params.get(0);
-            } else if (params.get(0) instanceof Token && ((Token) params.get(0)).getValue() instanceof TVarRef) {
-                name = ((TVarRef) ((Token) params.get(0)).getValue()).varName.toString();
+            if (params.getFirst() instanceof String) {
+                name = (String) params.getFirst();
+            } else if (params.getFirst() instanceof Token && ((Token<?>) params.getFirst()).getValue() instanceof TVarRef) {
+                name = ((TVarRef) ((Token<?>) params.getFirst()).getValue()).varName.toString();
             } else {
                 throw new InterpreterException.WtfAreYouDoingException(cTrace,
                         "getVarClass() only accepts a variable reference or a string, whatever you sent is disgusting.",
@@ -102,12 +101,11 @@ public class Globals extends BaseGlobals {
             if (var == null) {
                 throw new InterpreterException.UnknownVariableException(cTrace, name, tFuncCall.lineNumber);
             }
-            if (!(var.getValue() instanceof Symbol)) {
+            if (!(var.getValue() instanceof Symbol symbol)) {
                 throw new InterpreterException.WtfAreYouDoingException(cTrace,
                         name + " is not a variable nor a function, wtf. this error shouldnt happen.",
                         tFuncCall.lineNumber);
             }
-            Symbol symbol = (Symbol) var.getValue();
             // We need to convert the named token to a raw token so we can call .toString()
             // on it.
             return symbol.token.getClass().getSimpleName();
@@ -216,7 +214,7 @@ public class Globals extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
                     cTrace);
             if (!(val instanceof Integer integer))
                 throw new WtfAreYouDoingException(cTrace, "Bruv, you can't just like, pls put number",

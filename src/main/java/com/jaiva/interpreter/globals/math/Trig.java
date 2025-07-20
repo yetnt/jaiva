@@ -50,7 +50,7 @@ public class Trig extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config, cTrace);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config, cTrace);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(cTrace, this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -83,7 +83,7 @@ public class Trig extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config, cTrace);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config, cTrace);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(cTrace, this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -116,7 +116,7 @@ public class Trig extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config, cTrace);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config, cTrace);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(cTrace, this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -149,7 +149,7 @@ public class Trig extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config, cTrace);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config, cTrace);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(cTrace, this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -182,7 +182,7 @@ public class Trig extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config, cTrace);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config, cTrace);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(cTrace, this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -215,7 +215,7 @@ public class Trig extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config, cTrace);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config, cTrace);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(cTrace, this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -247,7 +247,7 @@ public class Trig extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
                     cTrace);
             // Ensure the first parameter is a number
             if (!(value instanceof Number)) {
@@ -280,7 +280,7 @@ public class Trig extends BaseGlobals {
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
                     cTrace);
             // Ensure the first parameter is a number
             if (!(value instanceof Number)) {

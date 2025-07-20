@@ -72,6 +72,6 @@ public class BaseGlobals {
             str.append(",");
         });
         // Remove trailing comma and space if needed
-        return "[" + str.toString().substring(0, str.toString().length() - 1) + "]";
+        return "[" + str.substring(0, str.toString().length() - 1) + "]";
     }
 }

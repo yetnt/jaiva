@@ -75,5 +75,5 @@ public enum Context {
      * and there are no more lines to interpret.
      * It is used only in {@link DebugController#endOfFile(java.util.HashMap)}
      */
-    EOL
+    EOF
 }
