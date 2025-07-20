@@ -17,10 +17,7 @@ import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.TFuncCall;
-import com.jaiva.tokenizer.Token.TStatement;
-import com.jaiva.tokenizer.Token.TVarRef;
-import com.jaiva.tokenizer.Token.TVoidValue;
+import com.jaiva.tokenizer.Token.*;
 import com.jaiva.tokenizer.TokenDefault;
 
 /**
@@ -34,12 +31,12 @@ public class IOFunctions extends BaseGlobals {
      */
     public IOFunctions(IConfig config) {
         super(GlobalType.GLOBAL);
-        vfs.put("khuluma", new MapValue(new FKhuluma(container)));
-        vfs.put("mamela", new MapValue(new FMamela(container)));
-        vfs.put("ask", new MapValue(new FAsk(container)));
-        vfs.put("clear", new MapValue(new FClear(container)));
-        vfs.put("args", new MapValue(new VArgs(container, config)));
-        vfs.put("uargs", new MapValue(new VUArgs(container, config)));
+        vfs.put("khuluma", new MapValue(new FKhuluma()));
+        vfs.put("mamela", new MapValue(new FMamela()));
+        vfs.put("ask", new MapValue(new FAsk()));
+        vfs.put("clear", new MapValue(new FClear()));
+        vfs.put("args", new MapValue(new VArgs(config)));
+        vfs.put("uargs", new MapValue(new VUArgs(config)));
     }
 
     /**
@@ -48,8 +45,8 @@ public class IOFunctions extends BaseGlobals {
      */
     class FKhuluma extends BaseFunction {
 
-        FKhuluma(Token<?> container) {
-            super("khuluma", container.new TFunction("khuluma", new String[] { "msg?", "removeNewLn?" }, null, -1,
+        FKhuluma() {
+            super("khuluma", new TFunction("khuluma", new String[] { "msg?", "removeNewLn?" }, null, -1,
                     "Prints any given input to the console with a newline afterwards. \\n(It just uses System.out.println() lol) This function returns no value."));
             this.freeze();
         }
@@ -71,7 +68,7 @@ public class IOFunctions extends BaseGlobals {
                     : null;
             if (o instanceof Token<?> || (o instanceof TokenDefault && Interpreter.isVariableToken(o))) {
                 assert o instanceof Token<?>;
-                TokenDefault token = ((Token<?>) o).getValue();
+                TokenDefault token = ((Token<?>) o).value();
                 // Only TokenDefault classes have the .toToken() method, but TokenDefualt itself
                 // doesnt, so we kinda need to check for every possible case unfortunately.
                 Object input = token instanceof TStatement || token instanceof TVarRef || token instanceof TFuncCall
@@ -111,8 +108,8 @@ public class IOFunctions extends BaseGlobals {
      * Listens for input form the console and returns a string.
      */
     class FMamela extends BaseFunction {
-        FMamela(Token<?> container) {
-            super("mamela", container.new TFunction("mamela", new String[] {}, null, -1,
+        FMamela() {
+            super("mamela", new TFunction("mamela", new String[] {}, null, -1,
                     "Listens for input from the console. Warning this will pause all execution until input is given."));
             this.freeze();
         }
@@ -142,8 +139,8 @@ public class IOFunctions extends BaseGlobals {
      * @see javax.swing.JOptionPane#showInputDialog(Object)
      */
     class FAsk extends BaseFunction {
-        FAsk(Token<?> container) {
-            super("ask", container.new TFunction("ask", new String[] { "message" }, null, -1,
+        FAsk() {
+            super("ask", new TFunction("ask", new String[] { "message" }, null, -1,
                     "Prompts the user for input via a UI."));
             this.freeze();
         }
@@ -176,10 +173,10 @@ public class IOFunctions extends BaseGlobals {
      */
     class FClear extends BaseFunction {
 
-        FClear(Token<?> container) {
+        FClear() {
             // Define the function without any parameters.
             super("clear",
-                    container.new TFunction("clear", new String[] {}, null, -1, "Clears the console."));
+                    new TFunction("clear", new String[] {}, null, -1, "Clears the console."));
             freeze();
         }
 
@@ -203,8 +200,8 @@ public class IOFunctions extends BaseGlobals {
      * </p>
      */
     class VArgs extends BaseVariable {
-        VArgs(Token<?> container, IConfig config) {
-            super("args", container.new TArrayVar("args", new ArrayList<>(Arrays.asList(config.args)), -1,
+        VArgs( IConfig config) {
+            super("args", new TArrayVar("args", new ArrayList<>(Arrays.asList(config.args)), -1,
                     "The command-line arguments passed to the jaiva command"),
                     new ArrayList<>(Arrays.asList(config.args)));
             this.freeze();
@@ -212,8 +209,8 @@ public class IOFunctions extends BaseGlobals {
     }
 
     class VUArgs extends BaseVariable {
-        VUArgs(Token<?> container, IConfig config) {
-            super("uArgs", container.new TArrayVar("uargs", (ArrayList) config.sanitisedArgs, -1,
+        VUArgs( IConfig config) {
+            super("uArgs", new TArrayVar("uargs", (ArrayList) config.sanitisedArgs, -1,
                     "The command-line arguments without jaiva specific arguments. "),
                     config.sanitisedArgs);
             this.freeze();

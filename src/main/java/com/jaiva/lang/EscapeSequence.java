@@ -19,10 +19,10 @@ import com.jaiva.utils.Tuple2;
  * their escaped equivalents and vice versa.
  */
 public class EscapeSequence {
-    private static ArrayList<Character> unescapeChars = new ArrayList<>(
+    private static final ArrayList<Character> unescapeChars = new ArrayList<>(
             Arrays.asList('=', ',', '!', '@', '\n', '\t', '\r', '\b', '\f', '\"', '$'));
 
-    private static ArrayList<Character> escapeChars = new ArrayList<>(
+    private static final ArrayList<Character> escapeChars = new ArrayList<>(
             Arrays.asList('=', ',', '!', '@', 'n', 't', 'r', 'b', 'f', '"', '$'));
 
     /**
@@ -240,7 +240,7 @@ public class EscapeSequence {
      * Escape a string for JSON.
      *
      * @param str The string to escape.
-     * @return
+     * @return JSON with escape codes escaped.
      */
     public static String escapeJson(String str) {
         return str
@@ -259,8 +259,8 @@ public class EscapeSequence {
      * @deprecated Use {@link EscapeSequence#escapeAll(String)}. This only exists if
      *             code which relied on this breaks and i need to use this again. (I
      *             preferably would not like to)
-     * @param line
-     * @return
+     * @param line Line to escape
+     * @return The line with everything Jaiva-esque escaoed.
      */
     public static String oldEscapeAll(String line) {
         // maak a <- "heelo"!
@@ -292,8 +292,8 @@ public class EscapeSequence {
      * This uses the {@link Find#quotationPairs(String)} which if there is an
      * unclosed string, does not consider as a pir.
      * 
-     * @param line
-     * @return
+     * @param line Line to escape
+     * @return Line with all jaiva special stuff escaped.
      */
     public static String escapeAll(String line) {
         ArrayList<Tuple2<Integer, Integer>> pairs = Find.quotationPairs(line);
@@ -301,7 +301,7 @@ public class EscapeSequence {
             return line;
         StringBuilder b = new StringBuilder();
         // put the substring before the first pair
-        b.append(line.substring(0, pairs.get(0).first + 1)); // include the first "
+        b.append(line.substring(0, pairs.getFirst().first + 1)); // include the first "
         for (int i = 0; i < pairs.size(); i++) {
             Tuple2<Integer, Integer> pair = pairs.get(i);
             String sub = line.substring(pair.first + 1, pair.second);

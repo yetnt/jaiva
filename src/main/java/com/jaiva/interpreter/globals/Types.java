@@ -12,8 +12,7 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.TFuncCall;
-import com.jaiva.tokenizer.Token.TVoidValue;
+import com.jaiva.tokenizer.Token.*;
 
 /**
  * The {@code Conversions} class provides global conversion functions for the
@@ -46,9 +45,9 @@ public class Types extends BaseGlobals {
     public Types() {
         // the import will be "jaiva/types.jiv"
         super(GlobalType.LIB, "types");
-        vfs.put("t_num", new MapValue(new FNum(container)));
-        vfs.put("t_str", new MapValue(new FStr(container)));
-        vfs.put("t_of", new MapValue(new FOf(container)));
+        vfs.put("t_num", new MapValue(new FNum()));
+        vfs.put("t_str", new MapValue(new FStr()));
+        vfs.put("t_of", new MapValue(new FOf()));
     }
 
     /**
@@ -57,8 +56,8 @@ public class Types extends BaseGlobals {
      *
      */
     class FNum extends BaseFunction {
-        FNum(Token<?> tContainer) {
-            super("t_num", tContainer.new TFunction("t_num", new String[] { "string", "radix?" }, null, -1,
+        FNum() {
+            super("t_num", new TFunction("t_num", new String[] { "string", "radix?" }, null, -1,
                     "converts a given **string** to a number with an optional **radix**. (Jaiva integer prefixes [such as _0x_ or _0b_], are checked for first before the radix)"));
             this.freeze();
         }
@@ -105,8 +104,8 @@ public class Types extends BaseGlobals {
      * Input is marked as optional to allow passing of {@link TVoidValue} into it.
      */
     class FStr extends BaseFunction {
-        FStr(Token<?> tContainer) {
-            super("t_str", tContainer.new TFunction("t_str", new String[] { "input?", "radix?" }, null, -1,
+        FStr() {
+            super("t_str", new TFunction("t_str", new String[] { "input?", "radix?" }, null, -1,
                     "converts any **input** of any given type to a string. With an optional **radix** input for converting integers."));
             this.freeze();
         }
@@ -149,8 +148,8 @@ public class Types extends BaseGlobals {
     }
 
     class FOf extends BaseFunction {
-        FOf(Token<?> tContainer) {
-            super("t_of", tContainer.new TFunction("t_of", new String[] { "input?" }, null, -1,
+        FOf() {
+            super("t_of", new TFunction("t_of", new String[] { "input?" }, null, -1,
                     "Returns the type of any given input. Which could be \"array\", \"string\", \"boolean\", \"number\", \"function\", or the primitive idk."));
             this.freeze();
         }

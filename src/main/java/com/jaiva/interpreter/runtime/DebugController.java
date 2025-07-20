@@ -116,7 +116,7 @@ public class DebugController {
                         System.out.print(" | Symbol: " + s.toString());
                     }
                     if (t != null) {
-                        System.out.print(" | Token: " + t.getValue());
+                        System.out.print(" | Token: " + t.value());
                     }
                 }
                 vfs = vf;

@@ -43,8 +43,8 @@ public class TokenDefault {
     /**
      * Constructor for a basic token
      * 
-     * @param name
-     * @param line
+     * @param name Token name
+     * @param line Line number where token appears
      */
     public TokenDefault(String name, int line) {
         this.name = name;
@@ -54,9 +54,10 @@ public class TokenDefault {
 
     /**
      * Constructor for a symbol token that can be exported
-     * 
-     * @param name
-     * @param line
+     *
+     * @param exportSymbol Boolean to mark this symbol as exportable.
+     * @param name Token name
+     * @param line Line number where token appears
      */
     public TokenDefault(boolean exportSymbol, String name, int line) {
         this.name = name;
@@ -68,9 +69,9 @@ public class TokenDefault {
     /**
      * Constructor for a globals.
      * 
-     * @param name
-     * @param line
-     * @param tt
+     * @param name Token name
+     * @param line Token line number
+     * @param tt Token tooltip
      */
     public TokenDefault(String name, int line, String tt) {
         this.name = name;
@@ -82,7 +83,7 @@ public class TokenDefault {
     /**
      * Returns the JSON representation of the object as a string.
      * 
-     * @return
+     * @return the final JSON representation.
      * @throws JaivaException For any errors
      */
     public String toJson() throws JaivaException {
@@ -93,7 +94,7 @@ public class TokenDefault {
      * Returns the JSON (ToJson object) representation of the object as a string
      * such that it can be nested in other constructs.
      * 
-     * @return
+     * @return the final JSON representation, but it returns the ToJson object for further editing
      * @throws JaivaException For any errors
      */
     public ToJson toJsonInNest() throws JaivaException {

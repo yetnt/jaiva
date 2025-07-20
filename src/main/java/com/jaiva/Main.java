@@ -15,11 +15,8 @@ import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.TokenDefault;
 import com.jaiva.tokenizer.Tokenizer;
 import com.jaiva.tokenizer.Token.TArrayVar;
-import com.jaiva.tokenizer.Token.TBooleanVar;
 import com.jaiva.tokenizer.Token.TDocsComment;
 import com.jaiva.tokenizer.Token.TFunction;
-import com.jaiva.tokenizer.Token.TNumberVar;
-import com.jaiva.tokenizer.Token.TStringVar;
 import com.jaiva.tokenizer.Token.TUnknownVar;
 import com.jaiva.utils.*;
 
@@ -229,7 +226,7 @@ public class Main {
                         System.out.print("[");
                         for (int i = 0; i < tokens.size(); i++) {
                             Token<?> token = tokens.get(i);
-                            System.out.print(token.getValue().toJson());
+                            System.out.print(token.value().toJson());
                             if (i != tokens.size() - 1) {
                                 System.out.print(",");
                             }
@@ -244,7 +241,7 @@ public class Main {
                         System.out.print(new Globals(iconfig).returnGlobalsJSON(false));
                         for (int i = 0; i < tokens.size(); i++) {
                             Token<?> token = tokens.get(i);
-                            System.out.print(token.getValue().toJson());
+                            System.out.print(token.value().toJson());
                             if (i != tokens.size() - 1) {
                                 System.out.print(",");
                             }
@@ -362,7 +359,7 @@ public class Main {
                     ArrayList<Token<?>> tks = (ArrayList<Token<?>>) ((ArrayList<Token<?>>) something).clone();
                     if (((ArrayList<Token<?>>) tks).size() == 1) {
                         for (Token<?> t : ((ArrayList<Token<?>>) something)) {
-                            TokenDefault l = t.getValue();
+                            TokenDefault l = t.value();
                             if (returnVfs && !l.exportSymbol) {
                                 // clean.
                                 ((ArrayList<?>) tks).remove(t);
@@ -384,14 +381,14 @@ public class Main {
                     comment = null;
                     b = blockChain;
                 }
-                case Token<?> token1 when token1.getValue().name.equals("TDocsComment") -> {
+                case Token<?> token1 when token1.value().name.equals("TDocsComment") -> {
                     b = null;
                     m = null;
                     comment = (comment == null ? "" : comment)
-                            + ((TDocsComment) token1.getValue()).comment;
+                            + ((TDocsComment) token1.value()).comment;
                 }
                 case Token<?> token -> {
-                    TokenDefault t = ((TokenDefault) token.getValue());
+                    TokenDefault t = ((TokenDefault) token.value());
                     if (returnVfs && !t.exportSymbol) {
                         // dont do anythin.
                     } else if (comment != null

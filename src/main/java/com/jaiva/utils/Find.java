@@ -47,6 +47,8 @@ public class Find {
         boolean isStart = true;
 
         for (int i = 0; i < line.length(); i++) {
+//            boolean char1equals = line.charAt(i) == end.charAt(0);
+//            boolean char2Equals = i + 1 < line.length() && line.charAt(i + 1) == end.charAt(1);
             if (!start.equals(end)) {
                 if (line.charAt(i) == start.charAt(0)) {
                     startCount += (i + 1 < line.length() && line.charAt(i + 1) == start.charAt(1)) ? 1 : 0;
@@ -81,7 +83,7 @@ public class Find {
      *                   object
      * @param endCount   The end count from another {@link MultipleLinesOutput}
      *                   object
-     * @return
+     * @return A MultipleLinesOutput Object indicating that either this line needs continuation or its complete.
      */
     public static MultipleLinesOutput closingCharIndexML(String line, char start, char end,
             int startCount,
@@ -102,7 +104,7 @@ public class Find {
                     if (!isStart) {
                         return new MultipleLinesOutput(i, i, true);
                     }
-                    isStart = !isStart;
+                    isStart = false;
                 }
             }
         }
@@ -115,7 +117,7 @@ public class Find {
      * @param line  The string to search in.
      * @param start The starting character.
      * @param end   The ending character.
-     * @return
+     * @return The index of the closing char. -1 if none found.
      */
     public static int closingCharIndex(String line, char start, char end) {
         int startCount = 0;
@@ -136,7 +138,7 @@ public class Find {
                     if (!isStart) {
                         return i;
                     }
-                    isStart = !isStart;
+                    isStart = false;
                 }
             }
         }
@@ -160,7 +162,6 @@ public class Find {
      * 
      * @param line Input.
      * @return the index where the outermost brace pair starts
-     * @returns int
      */
     public static int lastOutermostBracePair(String line) {
         ArrayList<Integer> indexes = new ArrayList<>();
@@ -178,7 +179,7 @@ public class Find {
         }
         List<Integer> rIndexes = indexes.reversed();
         for (Integer i : rIndexes) {
-            String sString = line.substring(i, line.length());
+            String sString = line.substring(i);
             char openingChar = line.charAt(i);
             int closingCharI = closingCharIndex(sString, openingChar, openingChar == '(' ? ')' : ']');
             if (closingCharI == sString.length() - 1 || closingCharI == sString.length() - 2)
@@ -271,9 +272,7 @@ public class Find {
                 return false;
             if (index != other.index)
                 return false;
-            if (tStatementType != other.tStatementType)
-                return false;
-            return true;
+            return tStatementType == other.tStatementType;
         }
     }
 
@@ -285,7 +284,7 @@ public class Find {
      * categorizes them by precedence, and identifies the least important operator
      * based on
      * its type and position.
-     * 
+     * <p>
      * This is for the TStatement class to use.
      *
      * @param statement The input string representing a mathematical or logical
@@ -347,10 +346,7 @@ public class Find {
             char first = 0;
             for (int opIndex : indexes1) {
                 String op = statement.substring(opIndex, opIndex + 1);
-                boolean isMulti = first != 0 ? true
-                        : opIndex + 1 != statement.length()
-                                ? multiOpChars.contains(statement.charAt(opIndex + 1))
-                                : false;
+                boolean isMulti = first != 0 || (opIndex + 1 != statement.length() && multiOpChars.contains(statement.charAt(opIndex + 1)));
                 char prevChar = opIndex > 0 ? statement.charAt(opIndex - 1) : 0;
                 op = statement.substring(
                         opIndex,
@@ -408,9 +404,8 @@ public class Find {
      */
     public static ArrayList<Integer> sanitizeStatement(String statement, ArrayList<Integer> opIndexes) {
         ArrayList<Integer> remInt = removeUNARY(statement, opIndexes);
-        ArrayList<Integer> remNOT = removeNOT(statement, remInt);
 
-        return remNOT;
+        return removeNOT(statement, remInt);
     }
 
     public static ArrayList<Integer> removeUNARY(String statement, ArrayList<Integer> opIndexes) {
@@ -456,8 +451,8 @@ public class Find {
     /**
      * Get the index of the operator in the given character array.
      * 
-     * @param string
-     * @return
+     * @param string String to find an operator index.
+     * @return An int corresponding to the operator index. Note since it takes in a character array it only finds single operators and not multi
      */
     public static int operatorIndex(char[] string) {
         for (int i = 0; i < string.length; i++) {
@@ -537,7 +532,7 @@ public class Find {
             }
         }
 
-        return new Tuple2(finalArr, stack);
+        return new Tuple2<>(finalArr, stack);
     }
 
     /**
@@ -551,7 +546,7 @@ public class Find {
      * 
      * @param statement The statement to check within
      * @param input     The input to check for
-     * @returns the integer corresponding to the index of the first character of the
+     * @return the integer corresponding to the index of the first character of the
      *          found input in the statement
      *          Else: -1 if no valid index is found.
      */
@@ -563,7 +558,7 @@ public class Find {
             int i = statement.indexOf(input);
 
             if (i == -1) {
-                containsIndex = !containsIndex;
+                containsIndex = false;
                 continue;
             }
             if (Validate.isOpInQuotePair(statement, i) == -1

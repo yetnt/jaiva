@@ -11,10 +11,7 @@ import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.TFuncCall;
-import com.jaiva.tokenizer.Token.TFunction;
-import com.jaiva.tokenizer.Token.TVarRef;
-import com.jaiva.tokenizer.Token.TVoidValue;
+import com.jaiva.tokenizer.Token.*;
 
 /**
  * BaseFunction class is a base class for all functions in Jaiva.
@@ -183,7 +180,7 @@ public class BaseFunction extends Symbol {
                 Object wrappedValue = Token.voidValue(tFuncCall.lineNumber);
 
                 if (name.startsWith("F~")
-                        && (value instanceof Token<?> && ((Token<?>) value).getValue() instanceof TVarRef tVarRef)) {
+                        && (value instanceof Token<?> && ((Token<?>) value).value() instanceof TVarRef tVarRef)) {
                     // value is definitely a TVarRef, so look for the function in vfs, if not found
                     // throw an error
                     // if found, create aq copy of that MapValue, and name it to instead this new
@@ -198,7 +195,7 @@ public class BaseFunction extends Symbol {
                     wrappedValue = v.getValue();
 
                 } else if (name.startsWith("V~")
-                        || (value instanceof Token<?> && ((Token<?>) value).getValue() instanceof TVarRef)) {
+                        || (value instanceof Token<?> && ((Token<?>) value).value() instanceof TVarRef)) {
                     // value is definitely a TVarRef, so look for the variable in vfs, if not found
                     // throw an error
                     // if found, create aq copy of that MapValue, and name it to instead this new
@@ -206,21 +203,21 @@ public class BaseFunction extends Symbol {
                     Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), vfs, false, config, cTrace);
                     // wrappedValue = new BaseVariable(name, tFuncCall, o);
                     wrappedValue = BaseVariable.create(name,
-                            o instanceof ArrayList ? tContainer.new TArrayVar(name, (ArrayList) o, tFuncCall.lineNumber)
-                                    : tContainer.new TUnknownVar<Object>(name, o, tFuncCall.lineNumber),
+                            o instanceof ArrayList ? new TArrayVar(name, (ArrayList) o, tFuncCall.lineNumber)
+                                    : new TUnknownVar<Object>(name, o, tFuncCall.lineNumber),
                             o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Collections.singletonList(o)),
                             o instanceof ArrayList);
                 } else if (Primitives.isPrimitive(value)) {
                     // primitivers ong
                     wrappedValue = BaseVariable.create(name,
-                            tContainer.new TUnknownVar<Object>(name, value, tFuncCall.lineNumber),
+                            new TUnknownVar<Object>(name, value, tFuncCall.lineNumber),
                             new ArrayList<>(List.of(value)), false);
 
                 } else {
                     // cacthes nested calls, operations and others
                     Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), vfs, false, config, cTrace);
                     wrappedValue = BaseVariable.create(name,
-                            tContainer.new TUnknownVar<Object>(name, o, tFuncCall.lineNumber),
+                            new TUnknownVar<Object>(name, o, tFuncCall.lineNumber),
                             o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Collections.singletonList(o)), false);
                 }
                 newVfs.put(name.replace("F~", "").replace("V~", ""), new MapValue(wrappedValue));

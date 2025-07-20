@@ -10,22 +10,21 @@ import com.jaiva.interpreter.globals.BaseGlobals;
 import com.jaiva.interpreter.globals.GlobalType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
-import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.TFuncCall;
+import com.jaiva.tokenizer.Token.*;
 import com.jaiva.errors.InterpreterException.FunctionParametersException;
 
 public class Trig extends BaseGlobals {
     public Trig() {
         super(GlobalType.CONTAINER);
         // This is a container class for the Math class, so prefix everything with "m_"
-        vfs.put("m_sin", new MapValue(new FSin(container)));
-        vfs.put("m_cos", new MapValue(new FCos(container)));
-        vfs.put("m_tan", new MapValue(new FTan(container)));
-        vfs.put("m_asin", new MapValue(new FAsin(container)));
-        vfs.put("m_acos", new MapValue(new FAcos(container)));
-        vfs.put("m_atan", new MapValue(new FAtan(container)));
-        vfs.put("m_toRad", new MapValue(new FToRad(container)));
-        vfs.put("m_toDeg", new MapValue(new FToDeg(container)));
+        vfs.put("m_sin", new MapValue(new FSin()));
+        vfs.put("m_cos", new MapValue(new FCos()));
+        vfs.put("m_tan", new MapValue(new FTan()));
+        vfs.put("m_asin", new MapValue(new FAsin()));
+        vfs.put("m_acos", new MapValue(new FAcos()));
+        vfs.put("m_atan", new MapValue(new FAtan()));
+        vfs.put("m_toRad", new MapValue(new FToRad()));
+        vfs.put("m_toDeg", new MapValue(new FToDeg()));
     }
 
     /**
@@ -39,8 +38,8 @@ public class Trig extends BaseGlobals {
      * </p>
      */
     class FSin extends BaseFunction {
-        FSin(Token<?> container) {
-            super("m_sin", container.new TFunction("m_sin", new String[] { "value" }, null, -1,
+        FSin() {
+            super("m_sin", new TFunction("m_sin", new String[] { "value" }, null, -1,
                     "Returns the sine of a number in radians."));
             this.freeze();
         }
@@ -72,8 +71,8 @@ public class Trig extends BaseGlobals {
      * </p>
      */
     class FCos extends BaseFunction {
-        FCos(Token<?> container) {
-            super("m_cos", container.new TFunction("m_cos", new String[] { "value" }, null, -1,
+        FCos() {
+            super("m_cos", new TFunction("m_cos", new String[] { "value" }, null, -1,
                     "Returns the cosine of a number in radians."));
             this.freeze();
         }
@@ -105,8 +104,8 @@ public class Trig extends BaseGlobals {
      * </p>
      */
     class FTan extends BaseFunction {
-        FTan(Token<?> container) {
-            super("m_tan", container.new TFunction("m_tan", new String[] { "value" }, null, -1,
+        FTan() {
+            super("m_tan", new TFunction("m_tan", new String[] { "value" }, null, -1,
                     "Returns the tangent of a number in radians."));
             this.freeze();
         }
@@ -138,8 +137,8 @@ public class Trig extends BaseGlobals {
      * </p>
      */
     class FAsin extends BaseFunction {
-        FAsin(Token<?> container) {
-            super("m_asin", container.new TFunction("m_asin", new String[] { "value" }, null, -1,
+        FAsin() {
+            super("m_asin", new TFunction("m_asin", new String[] { "value" }, null, -1,
                     "Returns the arcsine of a number in radians."));
             this.freeze();
         }
@@ -171,8 +170,8 @@ public class Trig extends BaseGlobals {
      * </p>
      */
     class FAcos extends BaseFunction {
-        FAcos(Token<?> container) {
-            super("m_acos", container.new TFunction("m_acos", new String[] { "value" }, null, -1,
+        FAcos() {
+            super("m_acos", new TFunction("m_acos", new String[] { "value" }, null, -1,
                     "Returns the arccosine of a number in radians."));
             this.freeze();
         }
@@ -204,8 +203,8 @@ public class Trig extends BaseGlobals {
      * </p>
      */
     class FAtan extends BaseFunction {
-        FAtan(Token<?> container) {
-            super("m_atan", container.new TFunction("m_atan", new String[] { "value" }, null, -1,
+        FAtan() {
+            super("m_atan", new TFunction("m_atan", new String[] { "value" }, null, -1,
                     "Returns the arctangent of a number in radians."));
             this.freeze();
         }
@@ -236,8 +235,8 @@ public class Trig extends BaseGlobals {
      * </p>
      */
     class FToRad extends BaseFunction {
-        FToRad(Token<?> container) {
-            super("m_toRad", container.new TFunction("m_toRad", new String[] { "degrees" }, null, -1,
+        FToRad() {
+            super("m_toRad", new TFunction("m_toRad", new String[] { "degrees" }, null, -1,
                     "Converts degrees to radians."));
             this.freeze();
         }
@@ -269,8 +268,8 @@ public class Trig extends BaseGlobals {
      * </p>
      */
     class FToDeg extends BaseFunction {
-        FToDeg(Token<?> container) {
-            super("m_toDeg", container.new TFunction("m_toDeg", new String[] { "radians" }, null, -1,
+        FToDeg() {
+            super("m_toDeg", new TFunction("m_toDeg", new String[] { "radians" }, null, -1,
                     "Converts radians to degrees."));
             this.freeze();
         }

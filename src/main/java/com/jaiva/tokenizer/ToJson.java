@@ -72,7 +72,7 @@ public class ToJson {
      *               including
      *               primitive types, complex objects, and arrays.
      * @param isLast Indicates whether this is the last key-value pair to be added.
-     * @throws JaivaException
+     * @throws JaivaException when siome goes wrong. ill doc later trust
      */
     public void append(String key, Object value, boolean isLast) throws JaivaException {
         // Object can be one of these types :
@@ -82,29 +82,20 @@ public class ToJson {
         if (value instanceof String && !((String) value).startsWith("{")) {
             json.append("\"").append(key).append("\": \"").append(value).append("\",");
         } else if (value instanceof TokenDefault || value instanceof Token<?>) {
-            TokenDefault t = value instanceof TokenDefault ? (TokenDefault) value : ((Token<?>) value).getValue();
+            TokenDefault t = value instanceof TokenDefault ? (TokenDefault) value : ((Token<?>) value).value();
             json.append("\"").append(key).append("\": ").append(t.toJson()).append(",");
-        } else if (value instanceof ToJson) {
-            ToJson v = (ToJson) value;
+        } else if (value instanceof ToJson v) {
             json.append("\"").append(key).append("\": ").append(v.json.toString()).append(",");
-        } else if (value instanceof ArrayList) {
-            ArrayList<?> v = (ArrayList<?>) value;
+        } else if (value instanceof ArrayList<?> v) {
             json.append("\"").append(key).append("\": [");
-            for (int i = 0; i < v.size(); i++) {
-                Object obj = v.get(i);
-                if (obj instanceof ToJson) {
-                    ToJson j = (ToJson) obj;
-                    json.append(j.json.toString()).append(",");
-                } else if (obj instanceof Token<?>) {
-                    Token<?> t = (Token<?>) obj;
-                    json.append(t.getValue().toJson()).append(",");
-                } else if (obj instanceof TokenDefault) {
-                    TokenDefault t = (TokenDefault) obj;
-                    json.append(t.toJson()).append(",");
-                } else if (obj instanceof String && !(((String) obj).startsWith("{") && ((String) obj).endsWith("}"))) {
-                    json.append("\"").append(obj).append("\",");
-                } else {
-                    json.append(obj).append(",");
+            for (Object obj : v) {
+                switch (obj) {
+                    case ToJson j -> json.append(j.json.toString()).append(",");
+                    case Token<?> t -> json.append(t.value().toJson()).append(",");
+                    case TokenDefault t -> json.append(t.toJson()).append(",");
+                    case String s when !(s.startsWith("{") && s.endsWith("}")) ->
+                            json.append("\"").append(obj).append("\",");
+                    case null, default -> json.append(obj).append(",");
                 }
             }
             // remove the last comma

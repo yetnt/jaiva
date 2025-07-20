@@ -13,25 +13,7 @@ import com.jaiva.interpreter.symbol.*;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.TArrayVar;
-import com.jaiva.tokenizer.Token.TBooleanVar;
-import com.jaiva.tokenizer.Token.TForLoop;
-import com.jaiva.tokenizer.Token.TFuncCall;
-import com.jaiva.tokenizer.Token.TFuncReturn;
-import com.jaiva.tokenizer.Token.TFunction;
-import com.jaiva.tokenizer.Token.TIfStatement;
-import com.jaiva.tokenizer.Token.TImport;
-import com.jaiva.tokenizer.Token.TLoopControl;
-import com.jaiva.tokenizer.Token.TNumberVar;
-import com.jaiva.tokenizer.Token.TStatement;
-import com.jaiva.tokenizer.Token.TStringVar;
-import com.jaiva.tokenizer.Token.TThrowError;
-import com.jaiva.tokenizer.Token.TTryCatchStatement;
-import com.jaiva.tokenizer.Token.TUnknownVar;
-import com.jaiva.tokenizer.Token.TVarReassign;
-import com.jaiva.tokenizer.Token.TVarRef;
-import com.jaiva.tokenizer.Token.TVoidValue;
-import com.jaiva.tokenizer.Token.TWhileLoop;
+import com.jaiva.tokenizer.Token.*;
 import com.jaiva.tokenizer.TokenDefault;
 import com.jaiva.utils.Tuple2;
 
@@ -294,7 +276,7 @@ public class Interpreter {
 
         // Step 2: go throguh eahc token
         for (Token<?> t : tokens) {
-            TokenDefault token = t.getValue();
+            TokenDefault token = t.value();
             // first check if we're in a debug environment
             if (config.dc.active) {
                 if (config.dc.getBreakpoints().contains(token.lineNumber)) {
@@ -534,7 +516,7 @@ public class Interpreter {
                             vfs.put(varName,
                                     new MapValue(BaseVariable.create(
                                             varName,
-                                            tContainer.new TStringVar(
+                                            new TStringVar(
                                                     varName, err.errorMessage,
                                                     err.lineNumber),
                                             new ArrayList<>(Collections.singletonList(
@@ -558,7 +540,7 @@ public class Interpreter {
                     vfs.put(varName,
                             new MapValue(BaseVariable.create(
                                     varName,
-                                    tContainer.new TStringVar(
+                                    new TStringVar(
                                             varName, e.getMessage(),
                                             throwError.catchBlock.lineNumber),
                                     new ArrayList<>(Arrays.asList(

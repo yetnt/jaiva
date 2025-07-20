@@ -82,8 +82,7 @@ public class Tuple2<A, B> {
         if (second == null) {
             if (other.second != null)
                 return false;
-        } else if (!second.equals(other.second))
-            return false;
+        } else return second.equals(other.second);
         return true;
     }
 }

@@ -78,9 +78,6 @@ public class ContextDispatcher {
      * <p>
      * This is used to determine if the braces are closed before the operator.
      * <p>
-     * NOTE: This method uses {@link Find#outermostOperatorIndex(String)} to find
-     * the outmost operator index. It seems to work but there is a better method
-     * {@link Find#leastImportantOperator(String)} that is more accurate.
      *
      * @param line The line to check for braces closed before the outermost
      *             operator.
@@ -101,7 +98,7 @@ public class ContextDispatcher {
     /**
      * Constructor for ContextDispatcher.
      * 
-     * @param line
+     * @param line The line to check against.
      */
     public ContextDispatcher(String line) {
         this.line = line;

@@ -22,27 +22,22 @@ import com.jaiva.utils.ContextDispatcher.To;
  * T must extend the {@link TokenDefault} class which is the base class for all
  * tokens.
  * <p>
- * 
+ * <p>
  * All tokens can be represented as a {@link Token} object, where T is the type
  * of
  * the token, and changed back to it's original type when needed.
  *
- * @param <T> the type of the value held by this token
+ * @param <T>   the type of the value held by this token
+ * @param value The value held by this token.
  */
-public class Token<T extends TokenDefault> {
-
-    /**
-     * The value held by this token.
-     */
-    private final T value;
+public record Token<T extends TokenDefault>(T value) {
 
     /**
      * Constructs a new Token with the specified value.
      *
      * @param value the value to be held by this token
      */
-    public Token(T value) {
-        this.value = value;
+    public Token {
     }
 
     /**
@@ -50,14 +45,12 @@ public class Token<T extends TokenDefault> {
      *
      * @return the value held by this token
      */
-    public T getValue() {
+    @Override
+    public T value() {
         return value;
     }
 
     @Override
-    /**
-     * Returns a string representation of this token.
-     */
     public String toString() {
         return "Token { " +
                 "name = " + value.name +
@@ -73,20 +66,20 @@ public class Token<T extends TokenDefault> {
      *                   ignored and set to 0)
      * @return a new {@link TVoidValue} instance
      */
-    public static Token<?>.TVoidValue voidValue(int lineNumber) {
+    public static Token.TVoidValue voidValue(int lineNumber) {
         Token<?> container = new Token<>(null);
-        return container.new TVoidValue(lineNumber);
+        return new TVoidValue(lineNumber);
     }
 
     /**
      * Represents a "null" value such as {@code maak name <- idk!} which is the same
      * as not defining a value at all.
      */
-    public class TVoidValue extends TokenDefault {
+    public static class TVoidValue extends TokenDefault {
 
         /**
          * Constructor for TVoidValue
-         * 
+         *
          * @param ln The line number.
          */
         public TVoidValue(int ln) {
@@ -95,8 +88,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TVoidValue}
+         *
+         * @return {@link Token} with a T value of {@link Token.TVoidValue}
          */
         public Token<TVoidValue> toToken() {
             return new Token<>(this);
@@ -114,7 +107,7 @@ public class Token<T extends TokenDefault> {
      * or
      * {@code tsea "path" <- func1, func2, func3!}
      */
-    public class TImport extends TokenDefault {
+    public static class TImport extends TokenDefault {
         /**
          * Indicates whether this import is a library import.
          * <p>
@@ -137,8 +130,10 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TImport
-         * 
+         *
          * @param file The file path.
+         * @param fileName the file name
+         * @param isLib Whther this is part of a library or not
          * @param ln   The line number.
          */
         public TImport(String file, String fileName, boolean isLib, int ln) {
@@ -150,8 +145,10 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TImport
-         * 
+         *
          * @param file  The file path.
+         * @param fileName File name
+         * @param isLib Whther its a libaray import
          * @param names The imported symbols.
          * @param ln    The line number.
          */
@@ -174,8 +171,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TImport}
+         *
+         * @return {@link Token} with a T value of {@link Token.TImport}
          */
         public Token<TImport> toToken() {
             return new Token<>(this);
@@ -195,7 +192,7 @@ public class Token<T extends TokenDefault> {
      * <p>
      * (This ensures if we collect multiple TDocsComment)
      */
-    public class TDocsComment extends TokenDefault {
+    public static class TDocsComment extends TokenDefault {
         /**
          * The documentation comment.
          */
@@ -203,7 +200,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TDocsComment
-         * 
+         *
          * @param c The comment.
          */
         public TDocsComment(String c) {
@@ -213,8 +210,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TDocsComment}
+         *
+         * @return {@link Token} with a T value of {@link Token.TDocsComment}
          */
         public Token<TDocsComment> toToken() {
             return new Token<>(this);
@@ -226,7 +223,7 @@ public class Token<T extends TokenDefault> {
      * This class usually isn't used directly, but rather as a part of another
      * instance
      */
-    public class TCodeblock extends TokenDefault {
+    public static class TCodeblock extends TokenDefault {
         /**
          * The lines of code in the code block.
          */
@@ -238,7 +235,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TCodeblock
-         * 
+         *
          * @param lines The lines of code in the code block.
          * @param ln    The line number where the code block starts.
          * @param endLn The line number where the code block ends.
@@ -258,8 +255,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TCodeblock}
+         *
+         * @return {@link Token} with a T value of {@link Token.TCodeblock}
          */
         public Token<TCodeblock> toToken() {
             return new Token<>(this);
@@ -270,7 +267,7 @@ public class Token<T extends TokenDefault> {
      * Represents a ternary expression such as
      * {@code condition => expr1 however expr2}
      */
-    public class TTernary extends TokenDefault {
+    public static class TTernary extends TokenDefault {
         /**
          * The condition of the ternary expression.
          */
@@ -310,14 +307,14 @@ public class Token<T extends TokenDefault> {
         /**
          * Converts this token to the default {@link Token}
          *
-         * @returns {@link Token} with a T value of {@link Token.TTernary}
+         * @return {@link Token} with a T value of {@link Token.TTernary}
          */
         public Token<TTernary> toToken() {
             return new Token<>(this);
         }
     }
 
-    public class TVarReassign extends TokenDefault {
+    public static class TVarReassign extends TokenDefault {
         /**
          * The new value of the variable.
          */
@@ -325,7 +322,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TVarReassign
-         * 
+         *
          * @param name  The name of the variable.
          * @param value The new value of the variable.
          * @param ln    The line number.
@@ -337,7 +334,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TVarReassign
-         * 
+         *
          * @param name  The name of the variable.
          * @param value The new value of the variable.
          * @param ln    The line number.
@@ -355,8 +352,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TVarReassign}
+         *
+         * @return {@link Token} with a T value of {@link Token.TVarReassign}
          */
         public Token<TVarReassign> toToken() {
             return new Token<>(this);
@@ -367,10 +364,10 @@ public class Token<T extends TokenDefault> {
      * Represents a variable where it's type can only be resolved by the interpeter
      * such as {@code maak name <- functionCall()!}; or if they made a variable but
      * didnt declare the value.
-     * 
+     *
      * @param <Type> The type of the variable.
      */
-    public class TUnknownVar<Type> extends TokenDefault {
+    public static class TUnknownVar<Type> extends TokenDefault {
         /**
          * The value of the variable.
          */
@@ -378,7 +375,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for basic.
-         * 
+         *
          * @param name  The name of the variable.
          * @param value The value of the variable.
          * @param ln    The line number.
@@ -387,7 +384,7 @@ public class Token<T extends TokenDefault> {
             super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
                     (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
                             ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
-                                    Matcher.quoteReplacement(""))
+                            Matcher.quoteReplacement(""))
                             : name),
                     ln);
             this.value = value;
@@ -395,7 +392,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for exporting globals.
-         * 
+         *
          * @param name  The name of the variable.
          * @param value The value of the variable.
          * @param ln    The line number.
@@ -414,10 +411,10 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TUnknownVar}
+         *
+         * @return {@link Token} with a T value of {@link Token.TUnknownVar}
          */
-        public Token<TUnknownVar> toToken() {
+        public Token<TUnknownVar<?>> toToken() {
             return new Token<>(this);
         }
     }
@@ -425,11 +422,11 @@ public class Token<T extends TokenDefault> {
     /**
      * Represents a string variable such as {@code maak name <- "John"};
      */
-    public class TStringVar extends TUnknownVar<String> {
+    public static class TStringVar extends TUnknownVar<String> {
 
         /**
          * Constructor for TStringVar
-         * 
+         *
          * @param name  The name of the variable.
          * @param value The value of the variable.
          * @param ln    The line number.
@@ -441,7 +438,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TStringVar (for exporting globals.)
-         * 
+         *
          * @param name  The name of the variable.
          * @param value The value of the variable.
          * @param ln    The line number.
@@ -454,15 +451,15 @@ public class Token<T extends TokenDefault> {
         @Override
         public String toJson() throws JaivaException {
             json.append("value",
-                    value instanceof String ? EscapeSequence.fromEscape((String) value, lineNumber) : value,
+                    value != null ? EscapeSequence.fromEscape((String) value, lineNumber) : value,
                     true);
             return super.toJson();
         }
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TStringVar}
+         *
+         * @return {@link Token} with a T value of {@link Token.TStringVar}
          */
         @Override
         public Token toToken() {
@@ -473,10 +470,10 @@ public class Token<T extends TokenDefault> {
     /**
      * Represents a number variable such as {@code maak age <- 20};
      */
-    public class TNumberVar extends TUnknownVar<Object> {
+    public static class TNumberVar extends TUnknownVar<Object> {
         /**
          * Constructor for TNumberVar
-         * 
+         *
          * @param name  The name of the variable.
          * @param value The value of the variable.
          * @param ln    The line number.
@@ -488,7 +485,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TNumberVar (used for exporting globals.)
-         * 
+         *
          * @param name  The name of the variable.
          * @param value The value of the variable.
          * @param ln    The line number.
@@ -506,8 +503,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TNumberVar}
+         *
+         * @return {@link Token} with a T value of {@link Token.TNumberVar}
          */
         @Override
         public Token toToken() {
@@ -518,11 +515,11 @@ public class Token<T extends TokenDefault> {
     /**
      * Represents a boolean variable such as {@code maak isTrue <- true};
      */
-    public class TBooleanVar extends TUnknownVar<Object> {
+    public static class TBooleanVar extends TUnknownVar<Object> {
 
         /**
          * Constructor for TBooleanVar
-         * 
+         *
          * @param name  The name of the variable.
          * @param value The value of the variable.
          * @param ln    The line number.
@@ -534,7 +531,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TBooleanVar
-         * 
+         *
          * @param name  The name of the variable.
          * @param value The value of the variable.
          * @param ln    The line number.
@@ -552,8 +549,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TBooleanVar}
+         *
+         * @return {@link Token} with a T value of {@link Token.TBooleanVar}
          */
         @Override
         public Token toToken() {
@@ -564,7 +561,7 @@ public class Token<T extends TokenDefault> {
     /**
      * Represents an array variable such as {@code maak name <-| 1, 2, 3, 4!};
      */
-    public class TArrayVar extends TokenDefault {
+    public static class TArrayVar extends TokenDefault {
         /**
          * The contents of the array variable.
          */
@@ -572,7 +569,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TArrayVar
-         * 
+         *
          * @param name     The name of the variable.
          * @param contents The contents of the variable.
          * @param ln       The line number.
@@ -581,7 +578,7 @@ public class Token<T extends TokenDefault> {
             super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
                     (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
                             ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
-                                    Matcher.quoteReplacement(""))
+                            Matcher.quoteReplacement(""))
                             : name),
                     ln);
             this.contents = contents;
@@ -589,7 +586,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TArrayVar (for exporting globals.)
-         * 
+         *
          * @param name     The name of the variable.
          * @param contents The contents of the variable.
          * @param ln       The line number.
@@ -607,8 +604,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TArrayVar}
+         *
+         * @return {@link Token} with a T value of {@link Token.TArrayVar}
          */
         public Token<TArrayVar> toToken() {
             return new Token<>(this);
@@ -619,7 +616,7 @@ public class Token<T extends TokenDefault> {
      * Represents a function return which can only be defined in a function (Duh)
      * such as {@code khulta 10!}
      */
-    public class TFuncReturn extends TokenDefault {
+    public static class TFuncReturn extends TokenDefault {
         /**
          * The value which the function should return.
          */
@@ -627,7 +624,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TFuncReturn
-         * 
+         *
          * @param value The value which the function should return.
          * @param ln    The line number.
          */
@@ -644,8 +641,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TFuncReturn}
+         *
+         * @return {@link Token} with a T value of {@link Token.TFuncReturn}
          */
         public Token<TFuncReturn> toToken() {
             return new Token<>(this);
@@ -657,7 +654,7 @@ public class Token<T extends TokenDefault> {
      * {@code kwenza addition(param1, param2) -> khutla (param1 + param2)! <~}
      * This class is
      */
-    public class TFunction extends TokenDefault {
+    public static class TFunction extends TokenDefault {
         /**
          * The arguments of the function.
          */
@@ -669,13 +666,12 @@ public class Token<T extends TokenDefault> {
 
         /**
          * An arraylist of booleans that specify which arguments are optional.
-         * 
          */
         public ArrayList<Boolean> isArgOptional = new ArrayList<>();
 
         /**
          * Constructor for TFunction
-         * 
+         *
          * @param name The name of the function.
          * @param args The arguments of the function.
          * @param body The body of the function.
@@ -700,7 +696,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TFunction (for exporting globals.)
-         * 
+         *
          * @param name          The name of the function.
          * @param args          The arguments of the function.
          * @param body          The body of the function.
@@ -721,7 +717,7 @@ public class Token<T extends TokenDefault> {
 
         @Override
         public String toJson() throws JaivaException {
-            json.append("args", new ArrayList(Arrays.asList(args)), false);
+            json.append("args", new ArrayList<>(Arrays.asList(args)), false);
             json.append("isArgOptional", isArgOptional, false);
             json.append("body", body != null ? body.toJsonInNest() : null, true);
             return super.toJson();
@@ -729,8 +725,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TFunction}
+         *
+         * @return {@link Token} with a T value of {@link Token.TFunction}
          */
         public Token<TFunction> toToken() {
             return new Token<>(this);
@@ -742,7 +738,7 @@ public class Token<T extends TokenDefault> {
      * {@code colonize i <- 0 | i < 10 | + -> ... <~} and a for each loop which
      * iterates over arrays {@code colonize el with array -> ... <~}
      */
-    public class TForLoop extends TokenDefault {
+    public static class TForLoop extends TokenDefault {
         /**
          * The variable used in the for loop.
          */
@@ -766,7 +762,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TForLoop (for iterators)
-         * 
+         *
          * @param variable  The variable used in the for loop.
          * @param condition The condition of the for loop.
          * @param increment The increment of the for loop.
@@ -783,7 +779,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TForLoop (for each loop)
-         * 
+         *
          * @param variable The variable used in the for loop.
          * @param array    The array variable used in the for loop.
          * @param body     The body of the for loop.
@@ -808,8 +804,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TForLoop}
+         *
+         * @return {@link Token} with a T value of {@link Token.TForLoop}
          */
         public Token<TForLoop> toToken() {
             return new Token<>(this);
@@ -819,7 +815,7 @@ public class Token<T extends TokenDefault> {
     /**
      * Represents a while loop such as {@code nikhil (i > 10) -> ... <~}
      */
-    public class TWhileLoop extends TokenDefault {
+    public static class TWhileLoop extends TokenDefault {
         /**
          * The condition of the while loop.
          */
@@ -831,7 +827,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TWhileLoop
-         * 
+         *
          * @param condition The condition of the while loop.
          * @param body      The body of the while loop.
          * @param ln        The line number.
@@ -851,8 +847,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TWhileLoop}
+         *
+         * @return {@link Token} with a T value of {@link Token.TWhileLoop}
          */
         public Token<TWhileLoop> toToken() {
             return new Token<>(this);
@@ -868,7 +864,7 @@ public class Token<T extends TokenDefault> {
      * body nor its own chain of elseIfs. only the original if contaisn all the else
      * ifs and the last else block.
      */
-    public class TIfStatement extends TokenDefault {
+    public static class TIfStatement extends TokenDefault {
         /**
          * The condition of the if statement.
          */
@@ -888,7 +884,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TIfStatement
-         * 
+         *
          * @param condition The condition of the if statement.
          * @param body      The body of the if statement.
          * @param ln        The line number.
@@ -901,7 +897,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Appends the provided else if body to the current token.
-         * 
+         *
          * @param body the TIfStatement representing the else if body to be appended
          */
         public void appendElseIf(TIfStatement body) {
@@ -913,7 +909,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Appends the provided else body to the current token.
-         * 
+         *
          * @param elseBody the TCodeblock representing the else body to be appended
          */
         public void appendElse(TCodeblock elseBody) {
@@ -924,15 +920,15 @@ public class Token<T extends TokenDefault> {
         public String toJson() throws JaivaException {
             json.append("condition", condition, false);
             json.append("body", body.toJsonInNest(), false);
-            json.append("elseIfs", elseIfs != null && elseIfs.size() > 0 ? elseIfs : null, false);
+            json.append("elseIfs", elseIfs != null && !elseIfs.isEmpty() ? elseIfs : null, false);
             json.append("elseBody", elseBody != null ? elseBody.toJsonInNest() : null, false);
             return super.toJson();
         }
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TIfStatement}
+         *
+         * @return {@link Token} with a T value of {@link Token.TIfStatement}
          */
         public Token<TIfStatement> toToken() {
             return new Token<>(this);
@@ -943,7 +939,7 @@ public class Token<T extends TokenDefault> {
      * Represents a try-catch statement such as
      * {@code zama zama -> ... <~ chaai -> ... <~}
      */
-    public class TTryCatchStatement extends TokenDefault {
+    public static class TTryCatchStatement extends TokenDefault {
         /**
          * The try block of the try-catch statement.
          */
@@ -955,7 +951,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TTryCatchStatement
-         * 
+         *
          * @param tryBlock The try block of the try-catch statement.
          * @param ln       The line number.
          */
@@ -966,7 +962,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Appends the provided catch block to the current token.
-         * 
+         *
          * @param catchBlock the TCodeblock representing the catch block to be appended
          */
         public void appendCatchBlock(TCodeblock catchBlock) {
@@ -982,8 +978,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TTryCatchStatement}
+         *
+         * @return {@link Token} with a T value of {@link Token.TTryCatchStatement}
          */
         public Token<TTryCatchStatement> toToken() {
             return new Token<>(this);
@@ -993,7 +989,7 @@ public class Token<T extends TokenDefault> {
     /**
      * Represents a throw error statement such as {@code cima "Error message!"}
      */
-    public class TThrowError extends TokenDefault {
+    public static class TThrowError extends TokenDefault {
         /**
          * The error message to be thrown.
          */
@@ -1001,7 +997,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TThrowError
-         * 
+         *
          * @param errorMessage The error message to be thrown.
          * @param ln           The line number.
          */
@@ -1018,8 +1014,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TThrowError}
+         *
+         * @return {@link Token} with a T value of {@link Token.TThrowError}
          */
         public Token<TThrowError> toToken() {
             return new Token<>(this);
@@ -1031,7 +1027,7 @@ public class Token<T extends TokenDefault> {
      * or {@code func3(10, 20) -> ... <~} or {@code func4(10, 20)!}. Any, if not ALL
      * function calls are possible.
      */
-    public class TFuncCall extends TokenDefault {
+    public static class TFuncCall extends TokenDefault {
         /**
          * The name of the function being called.
          * <p>
@@ -1054,7 +1050,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TFuncCall
-         * 
+         *
          * @param name The name of the function being called.
          * @param args The arguments of the function call.
          * @param ln   The line number.
@@ -1067,7 +1063,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TFuncCall
-         * 
+         *
          * @param name The name of the function being called.
          * @param args The arguments of the function call.
          * @param ln   The line number.
@@ -1090,8 +1086,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TFuncCall}
+         *
+         * @return {@link Token} with a T value of {@link Token.TFuncCall}
          */
         public Token<TFuncCall> toToken() {
             return new Token<>(this);
@@ -1102,7 +1098,7 @@ public class Token<T extends TokenDefault> {
      * Represents a variable reference such as {@code name} or {@code age} or
      * {@code array[index]}.
      */
-    public class TVarRef extends TokenDefault {
+    public static class TVarRef extends TokenDefault {
         /**
          * The type of the variable reference.
          */
@@ -1130,7 +1126,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TVarRef
-         * 
+         *
          * @param name The name of the variable being referenced.
          * @param ln   The line number.
          */
@@ -1145,11 +1141,11 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TVarRef
-         * 
-         * @param name  The name of the variable being referenced.
-         * @param index The index of the variable reference.
-         * @param ln    The line number.
-         * @param getLength  Indicates whether the variable reference is a length call.
+         *
+         * @param name      The name of the variable being referenced.
+         * @param index     The index of the variable reference.
+         * @param ln        The line number.
+         * @param getLength Indicates whether the variable reference is a length call.
          */
         TVarRef(Object name, Object index, int ln, boolean getLength) {
             super("TVarRef", ln);
@@ -1171,8 +1167,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TVarRef}
+         *
+         * @return {@link Token} with a T value of {@link Token.TVarRef}
          */
         public Token<TVarRef> toToken() {
             return new Token<>(this);
@@ -1183,15 +1179,15 @@ public class Token<T extends TokenDefault> {
      * Represents a loop control statement such as {@code voetsek!} or
      * {@code nevermind!}
      */
-    public class TLoopControl extends TokenDefault {
+    public static class TLoopControl extends TokenDefault {
         /**
          * The type of the loop control statement.
          */
-        public Keywords.LoopControl type;
+        public LoopControl type;
 
         /**
          * Constructor for TLoopControl
-         * 
+         *
          * @param type The type of the loop control statement.
          * @param ln   The line number.
          */
@@ -1214,8 +1210,8 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TLoopControl}
+         *
+         * @return {@link Token} with a T value of {@link Token.TLoopControl}
          */
         public Token<TLoopControl> toToken() {
             return new Token<>(this);
@@ -1227,7 +1223,7 @@ public class Token<T extends TokenDefault> {
      * This class usually isn't used directly, but rather as a part of another
      * instance.
      */
-    public class TStatement extends TokenDefault {
+    public static class TStatement extends TokenDefault {
         /**
          * The left hand side of the statement.
          * <p>
@@ -1260,7 +1256,7 @@ public class Token<T extends TokenDefault> {
 
         /**
          * Constructor for TStatement
-         * 
+         *
          * @param ln The line number.
          */
         TStatement(int ln) {
@@ -1281,7 +1277,7 @@ public class Token<T extends TokenDefault> {
         /**
          * Parses a given string. This assumes you've already used braces to
          * indicate the correct order of operations.
-         * 
+         * <p>
          * NOTE : This method will call ContextDispatcher and if needed may switch to
          * using processContext if its instead function call or variable call.
          *
@@ -1327,13 +1323,13 @@ public class Token<T extends TokenDefault> {
             rHandSide = handleNegatives(
                     new TStatement(lineNumber).parse(statement.substring(info.index + info.op.length()).trim()));
             statementType = info.tStatementType;
-            return ((Token<?>.TStatement) handleNegatives(this)).toToken();
+            return ((TStatement) handleNegatives(this)).toToken();
         }
 
         /**
          * Converts this token to the default {@link Token}
-         * 
-         * @returns {@link Token} with a T value of {@link Token.TStatement}
+         *
+         * @return {@link Token} with a T value of {@link Token.TStatement}
          */
         public Token<TStatement> toToken() {
             return new Token<>(this);
@@ -1343,22 +1339,17 @@ public class Token<T extends TokenDefault> {
     /**
      * Helper function that handles negatives in a statement. This is used to handle
      * the case where a negative sign is used as a unary operator.
-     * 
+     *
      * @param s The statement to handle.
      * @return The handled statement.
      */
-    private Object handleNegatives(Object s) {
-        if (s instanceof Token<?>.TStatement) {
-            Token<?>.TStatement statement = (Token<?>.TStatement) s;
+    private static Object handleNegatives(Object s) {
+        if (s instanceof TStatement statement) {
             if (statement.lHandSide == null && statement.op.equals("-")) {
                 statement.lHandSide = -1;
                 statement.op = "*";
             }
             // handled by the interpreter
-            // else if (statement.rHandSide == null && statement.op.equals("'")) {
-            // statement.rHandSide = false;
-            // statement.op = "=";
-            // }
 
             return statement;
         }
@@ -1368,11 +1359,11 @@ public class Token<T extends TokenDefault> {
     /**
      * Splits a string by top-level commas, ignoring commas inside parentheses or
      * brackets.
-     * 
+     *
      * @param argsString The string to split.
      * @return A list of strings split by top-level commas.
      */
-    public List<String> splitByTopLevelComma(String argsString) {
+    public static List<String> splitByTopLevelComma(String argsString) {
         List<String> parts = new ArrayList<>();
         int level = 0;
         int lastSplit = 0;
@@ -1399,15 +1390,15 @@ public class Token<T extends TokenDefault> {
     /**
      * Simplifies an identifier by adding a prefix if it doesn't contain any
      * parentheses or brackets.
-     * 
+     *
      * @param identifier The identifier to simplify.
      * @param prefix     The prefix to add.
      * @return The simplified identifier.
      */
-    private String simplifyIdentifier(String identifier, String prefix) {
+    private static String simplifyIdentifier(String identifier, String prefix) {
         return identifier.contains(")") || identifier.contains("(") || identifier.contains("[")
                 || identifier.contains("]") || Validate.containsOperator(identifier.toCharArray()) != -1 ? identifier
-                        : prefix + identifier;
+                : prefix + identifier;
     }
 
     /**
@@ -1417,19 +1408,19 @@ public class Token<T extends TokenDefault> {
      * or just standrard variable)
      * - Ternary operators
      * - Or Primitives
-     * 
+     * <p>
      * Anything handled by this method means it can be placed as a valid construct
      * in any other construct in Jaiva.
-     * 
-     * 
+     * <p>
+     * <p>
      * NOTE : This function will call ContextDispatcher and if needed will switch to
      * use TStatement and parse as an arithmatioc operation/boolean rather than a
      * plain function call / variable reference
-     * 
-     * @param line
-     * @return
+     *
+     * @param line given line.
+     * @return an atomic token
      */
-    public Object processContext(String line, int lineNumber) {
+    public static Object processContext(String line, int lineNumber) {
         line = line.trim(); // gotta trim da line fr
 
         ContextDispatcher d = new ContextDispatcher(line);
@@ -1457,7 +1448,7 @@ public class Token<T extends TokenDefault> {
             Object condition = new TStatement(lineNumber).parse(c.trim());
             String expr1 = expressions.substring(0, Find.lastIndexOf(expressions, Keywords.TERNARY)).trim();
             String expr2 = expressions.substring(Find.lastIndexOf(
-                    expressions, Keywords.TERNARY) + Keywords.TERNARY.length())
+                            expressions, Keywords.TERNARY) + Keywords.TERNARY.length())
                     .trim();
 
             return new TTernary(condition, processContext(expr1, lineNumber),
@@ -1467,7 +1458,7 @@ public class Token<T extends TokenDefault> {
             String name = line.substring(0, index).trim();
             String params = line.substring(index + 1, line.lastIndexOf(")")).trim();
 
-            ArrayList<String> args = new ArrayList<>(splitByTopLevelComma(params));
+            ArrayList<String> args = new ArrayList<>(Token.splitByTopLevelComma(params));
             ArrayList<Object> parsedArgs = new ArrayList<>();
             args.forEach(arg -> parsedArgs.add(processContext((String) arg, lineNumber)));
             return new TFuncCall(processContext(simplifyIdentifier(name, "F~"), lineNumber), parsedArgs,
@@ -1518,17 +1509,17 @@ public class Token<T extends TokenDefault> {
 
     /**
      * Dispatches the context based on the line and line number.
-     * 
+     *
      * @param line       The line to dispatch.
      * @param lineNumber The line number of the line.
      * @return The dispatched object.
-     * @throws TokenizerException.MalformedSyntaxException If there is a syntax
-     *                                                     critical
-     *                                                     error.
-     * @throws TokenizerException                          If there is a syntax
-     *                                                     error.
+     * @throws MalformedSyntaxException If there is a syntax
+     *                                  critical
+     *                                  error.
+     * @throws TokenizerException       If there is a syntax
+     *                                  error.
      */
-    public Object dispatchContext(String line, int lineNumber)
+    public static Object dispatchContext(String line, int lineNumber)
             throws TokenizerException {
         line = line.trim();
         ContextDispatcher d = new ContextDispatcher(line);
@@ -1570,7 +1561,7 @@ public class Token<T extends TokenDefault> {
         boolean negation = input.charAt(0) == '-';
         input = negation ? input.substring(1) : input; // remove the negation
         String prefix = input.length() > 1 ? input.substring(0, 2) : null;
-        if (new ArrayList(Arrays.asList("0x", "0X", "0b", "0B", "0c", "0C")).contains(prefix)) {
+        if (new ArrayList<>(Arrays.asList("0x", "0X", "0b", "0B", "0c", "0C")).contains(prefix)) {
             String literal = (negation ? "-" : "") + input.substring(2);
             switch (prefix) {
                 case "0x", "0X":

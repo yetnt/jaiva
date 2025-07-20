@@ -5,8 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.TFuncCall;
-import com.jaiva.tokenizer.Token.TVarRef;
+import com.jaiva.tokenizer.Token.*;
 import com.jaiva.Main;
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
@@ -35,11 +34,11 @@ public class Globals extends BaseGlobals {
      */
     public Globals(IConfig config) throws InterpreterException {
         super(GlobalType.MAIN);
-        vfs.put("getVarClass", new MapValue(new FGetVarClass(container)));
-        vfs.put("reservedKeywords", new MapValue(new VReservedKeywords(container)));
-        vfs.put("version", new MapValue(new VJaivaVersion(container)));
-        vfs.put("flat", new MapValue(new FFlat(container)));
-        vfs.put("sleep", new MapValue(new FSleep(container)));
+        vfs.put("getVarClass", new MapValue(new FGetVarClass()));
+        vfs.put("reservedKeywords", new MapValue(new VReservedKeywords()));
+        vfs.put("version", new MapValue(new VJaivaVersion()));
+        vfs.put("flat", new MapValue(new FFlat()));
+        vfs.put("sleep", new MapValue(new FSleep()));
         vfs.putAll(new IOFunctions(config).vfs);
 
         Types c = new Types();
@@ -77,8 +76,8 @@ public class Globals extends BaseGlobals {
      * Returns the .toString() class representation of a variable's token.
      */
     class FGetVarClass extends BaseFunction {
-        FGetVarClass(Token<?> container) {
-            super("getVarClass", container.new TFunction("getVarClass", new String[] { "var" }, null, -1,
+        FGetVarClass() {
+            super("getVarClass", new TFunction("getVarClass", new String[] { "var" }, null, -1,
                     "Attempts to return the symbol's corresponding Java class in string form. If you're using this then you def don't know what you're doing."));
             this.freeze();
         }
@@ -90,8 +89,8 @@ public class Globals extends BaseGlobals {
             String name;
             if (params.getFirst() instanceof String) {
                 name = (String) params.getFirst();
-            } else if (params.getFirst() instanceof Token && ((Token<?>) params.getFirst()).getValue() instanceof TVarRef) {
-                name = ((TVarRef) ((Token<?>) params.getFirst()).getValue()).varName.toString();
+            } else if (params.getFirst() instanceof Token && ((Token<?>) params.getFirst()).value() instanceof TVarRef) {
+                name = ((TVarRef) ((Token<?>) params.getFirst()).value()).varName.toString();
             } else {
                 throw new InterpreterException.WtfAreYouDoingException(cTrace,
                         "getVarClass() only accepts a variable reference or a string, whatever you sent is disgusting.",
@@ -117,9 +116,9 @@ public class Globals extends BaseGlobals {
      * This contains an array of the reserved keywords
      */
     class VReservedKeywords extends BaseVariable {
-        VReservedKeywords(Token<?> container) {
+        VReservedKeywords() {
             super("reservedKeywords",
-                    container.new TArrayVar("reservedKeywords", new ArrayList<>(Arrays.asList(Keywords.all)), -1,
+                    new TArrayVar("reservedKeywords", new ArrayList<>(Arrays.asList(Keywords.all)), -1,
                             "An array containing jaiva's reserved keywords that you cannot use as symbol names."),
                     new ArrayList<>(Arrays.asList(Keywords.all)));
             this.freeze();
@@ -131,8 +130,8 @@ public class Globals extends BaseGlobals {
      * This holds the current version of jaiva in {@link Main#version}
      */
     class VJaivaVersion extends BaseVariable {
-        VJaivaVersion(Token<?> container) {
-            super("version", container.new TStringVar("version", Main.version, -1,
+        VJaivaVersion() {
+            super("version", new TStringVar("version", Main.version, -1,
                     "What do you think this returns."), Main.version);
             this.freeze();
         }
@@ -143,8 +142,8 @@ public class Globals extends BaseGlobals {
      * Takes in 2 arrays and returns and flattens it, then retruns that.
      */
     class FFlat extends BaseFunction {
-        FFlat(Token<?> container) {
-            super("flat", container.new TFunction("flat", new String[] { "array1", "array2" }, null, -1,
+        FFlat() {
+            super("flat", new TFunction("flat", new String[] { "array1", "array2" }, null, -1,
                     "Attempts to flatten (at the top level) the given arrays array1 and array2 into 1 single array. \\n**Note:** If there are any type mismatches in array1, it will be ignored and the same check is done to array2. Therefore this function will **always** return an array, whether or not it was successful."));
             this.freeze();
         }
@@ -203,8 +202,8 @@ public class Globals extends BaseGlobals {
      * 
      */
     class FSleep extends BaseFunction {
-        FSleep(Token<?> cont) {
-            super("sleep", cont.new TFunction("sleep", new String[] { "milliseconds" }, null, -1,
+        FSleep() {
+            super("sleep", new TFunction("sleep", new String[] { "milliseconds" }, null, -1,
                     "Sleep for `ms` amount of milliseconds. (Keep in mind this function still has to take your value and turn it into a Java primitive and other things, so the delay might not be exact. If you're looking for accuracy maybe remove x amount of ms till it's accurate.)"));
             this.freeze();
         }

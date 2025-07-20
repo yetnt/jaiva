@@ -175,4 +175,4 @@ tsea "C:/path/to/jaiva/lib/(module name)"!
 > [!NOTE]
 > Unlike built-in symbols where I can link you to implementation, I cannot do that for libraries because they are not part of the Jaiva source code, but rather part of the downloadable zip package. (The bin)
 
-The following are the libraries that are available: [convert](./libs/convert.md), [arrays](./libs/arrays.md), [file](./libs/file.md), [math](./libs/math.md).
+The following are the libraries that are available: [types](./libs/types.md), [arrays](./libs/arrays.md), [file](./libs/file.md), [math](./libs/math.md).

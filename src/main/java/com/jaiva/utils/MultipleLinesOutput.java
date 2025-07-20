@@ -205,8 +205,6 @@ public class MultipleLinesOutput {
                 return false;
         } else if (!specialArg.equals(other.specialArg))
             return false;
-        if (lineNumber != other.lineNumber)
-            return false;
-        return true;
+        return lineNumber == other.lineNumber;
     }
 }

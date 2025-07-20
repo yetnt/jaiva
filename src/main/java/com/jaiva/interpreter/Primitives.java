@@ -273,7 +273,7 @@ public class Primitives {
             IConfig config, ContextTrace cTrace)
             throws Exception {
 
-        if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TStatement tStatement) {
+        if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TStatement tStatement) {
             // If the input is a TStatement, resolve the lhs and rhs.
             Object lhs = toPrimitive(tStatement.lHandSide, vfs, false, config, cTrace);
             String op = tStatement.op;
@@ -401,7 +401,7 @@ public class Primitives {
 
             }
 
-        } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TVarRef tVarRef) {
+        } else if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TVarRef tVarRef) {
             // just find the reference in the table and return whatever it is
             if (returnName) {
                 Object t = Primitives.toPrimitive(tVarRef.varName, vfs, returnName, config, cTrace);
@@ -490,7 +490,7 @@ public class Primitives {
                 }
             }
 
-        } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TFuncCall tFuncCall) {
+        } else if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TFuncCall tFuncCall) {
             if (returnName) {
                 Object t = toPrimitive(parseNonPrimitive(tFuncCall.functionName), vfs, returnName, config, cTrace);
                 if (t instanceof String) {
@@ -542,7 +542,7 @@ public class Primitives {
                     ? EscapeSequence.fromEscape((String) returnValue, tFuncCall.lineNumber).length()
                     : returnValue instanceof ArrayList && tFuncCall.getLength ? ((ArrayList<?>) returnValue).size()
                             : returnValue;
-        } else if (token instanceof Token<?> && ((Token<?>) token).getValue() instanceof TTernary ternary) {
+        } else if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TTernary ternary) {
             // parse the condition.
             Object condition = setCondition(ternary, vfs, config, cTrace);
 

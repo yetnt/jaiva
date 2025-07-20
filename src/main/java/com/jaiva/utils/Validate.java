@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.jaiva.lang.Chars;
 import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.Token.*;
 
 /**
  * Validate class is a utils class where methods which "validate" the
@@ -19,11 +20,11 @@ public class Validate {
      * It has to be TFuncCall, TVarRef, TStatement or a primitive boolean.
      * 
      * @param t The objecgt to check.
-     * @return
+     * @return boolean indicating the given token is valid input.
      */
     public static boolean isValidBoolInput(Object t) {
-        return t instanceof Token<?>.TFuncCall || t instanceof Token<?>.TVarRef || t instanceof Token<?>.TIfStatement
-                || t instanceof Token<?> || t instanceof Token<?>.TTernary || t instanceof Boolean;
+        return t instanceof TFuncCall || t instanceof TVarRef || t instanceof TIfStatement
+                || t instanceof Token<?> || t instanceof TTernary || t instanceof Boolean;
     }
 
     /**
@@ -47,8 +48,8 @@ public class Validate {
      * Returns 1 if an arithmetic operator is found, 0 if a boolean operator is
      * found, and -1 if no operators are found.
      *
-     * @param string
-     * @return
+     * @param string Input
+     * @return Index of operator
      */
     public static int containsOperator(char[] string) {
         for (char c : string) {
@@ -64,7 +65,7 @@ public class Validate {
     /**
      * Determines if a '-' character at a specified index in the input string
      * is a unary minus (as opposed to a subtraction operator).
-     *
+     * <p>
      * A '-' is considered a unary minus if the substring between the operator
      * before it and the '-' itself is empty or contains only whitespace.
      *
@@ -85,21 +86,21 @@ public class Validate {
     }
 
     /**
-     * Determines if a '{@code'}' character at a specified index in the input string
+     * Determines if a '{@code '}' character at a specified index in the input string
      * is a logical NOT.
-     *
-     * A '{@code'}' is considered a logical NOT if the substring between the
+     * <p>
+     * A '{@code '}' is considered a logical NOT if the substring between the
      * operator
-     * after it and the '{@code'}' itself is empty or contains only whitespace.
+     * after it and the '{@code '}' itself is empty or contains only whitespace.
      *
-     * @param logicalNotIndex        The index of the '{@code'}' character in the
+     * @param logicalNotIndex        The index of the '{@code '}' character in the
      *                               input
      *                               string.
      * @param opAfterLogicalNotIndex The index of the operator after the
-     *                               '{@code'}'
+     *                               '{@code '}'
      *                               character.
      * @param inputString            The input string to analyze.
-     * @return {@code true} if the '{@code'}' is a logical NOT; {@code false}
+     * @return {@code true} if the '{@code '}' is a logical NOT; {@code false}
      *         otherwise.
      * @throws StringIndexOutOfBoundsException if the indices are out of bounds
      *                                         for the given input string.
@@ -129,7 +130,7 @@ public class Validate {
      *              Generally you can make this list by calling either
      *              {@link Find#quotationPairs(String)} or
      *              {@link Find#bracePairs(String)}
-     * @returns The index of the list in which the `index` was found to be in range.
+     * @return The index of the list in which the `index` was found to be in range.
      *          Otherwise `-1`
      */
     public static int isOpInPair(int index, ArrayList<Tuple2<Integer, Integer>> list) {
@@ -186,9 +187,7 @@ public class Validate {
                     return false;
             } else if (!op.equals(other.op))
                 return false;
-            if (isValid != other.isValid)
-                return false;
-            return true;
+            return isValid == other.isValid;
         }
 
         /**
@@ -222,7 +221,7 @@ public class Validate {
 
     /**
      * Validates whether a given string is a valid symbol name.
-     *
+     * <p>
      * This method checks each character in the input string against a set of
      * disallowed characters for symbol names. If any character in the string
      * is found in the disallowed set, the method returns an instance of

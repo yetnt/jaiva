@@ -130,11 +130,11 @@ public class Chars {
     /**
      * The Operators class defines a set of arithmetic and boolean operators.
      */
-    public class Operators {
+    public static class Operators {
         /**
          * List of exponentiation operators. (Well only one.)
          */
-        public static final List<String> Exponentiation = Arrays.asList("^");
+        public static final List<String> Exponentiation = List.of("^");
         /**
          * List of division, multiplication, and modulus operators.
          */
@@ -189,7 +189,7 @@ public class Chars {
 
         /**
          * List of all arithmetic operators.
-         *
+         * <p>
          * This method aggregates elements from the following lists:
          * - Exponentiation
          * - DivMult
@@ -208,7 +208,7 @@ public class Chars {
         /**
          * List of all boolean (Catch all term for anything returning a boolean)
          * operators.
-         *
+         * <p>
          * This method aggregates elements from the following lists:
          * - Comparison
          * - Logical
@@ -231,7 +231,7 @@ public class Chars {
 
         /**
          * Retrieves a combined list of all elements from various predefined categories.
-         *
+         * <p>
          * This method aggregates elements from the following lists:
          * - Exponentiation
          * - DivMult
@@ -257,7 +257,7 @@ public class Chars {
 
         /**
          * Retrieves a combined list of all elements from various predefined categories.
-         *
+         * <p>
          * This method uses {@link Chars.Operators#getAll()} to get all the operators.
          *
          * @return A list containing all the operators as characters
@@ -271,7 +271,7 @@ public class Chars {
 
         /**
          * Retrieves a list of all predefined lists of strings.
-         * 
+         * <p>
          * This method aggregates several predefined lists, such as Exponentiation,
          * DivMult, AddSub, Shift, Bitwise, Comparison and Logical, into a single list
          * of lists.
@@ -348,29 +348,28 @@ public class Chars {
      * @return An arraylist of characters that cannot be used randomly.
      */
     public static ArrayList<String> dissalowedChars() {
-        StringBuilder all = new StringBuilder();
-        all.append(Operators.getAll().toString().replaceAll(",", "").replaceAll(" ", "").replace("[", "").replace("]",
-                ""));
-        all.append(Character.toString(ESCAPE));
-        all.append(Character.toString(OPTIONAL_ARG));
-        all.append(Character.toString(END_LINE));
-        all.append(Character.toString(COMMENT));
-        all.append(Character.toString(COMMENT_OPEN));
-        all.append(Character.toString(COMMENT_CLOSE));
-        all.append(Character.toString(STATEMENT_OPEN));
-        all.append(Character.toString(STATEMENT_CLOSE));
-        all.append(BLOCK_OPEN);
-        all.append(BLOCK_CLOSE);
-        all.append(COMMENT_DOC);
-        all.append(ASSIGNMENT);
-        all.append(THROW_ERROR);
-        all.append(ARRAY_ASSIGNMENT);
-        all.append(Character.toString(LENGTH_CHAR));
-        all.append(Character.toString(ARRAY_OPEN));
-        all.append(Character.toString(ARRAY_CLOSE));
-        all.append(Character.toString(ARGS_SEPARATOR));
-        all.append(Character.toString(FOR_SEPARATOR));
-        all.append(Character.toString(STRING));
-        return new ArrayList<>(new HashSet<>(Arrays.asList(all.toString().split(""))));
+        String all = Operators.getAll().toString().replaceAll(",", "").replaceAll(" ", "").replace("[", "").replace("]",
+                "") +
+                Character.toString(ESCAPE) +
+                Character.toString(OPTIONAL_ARG) +
+                Character.toString(END_LINE) +
+                Character.toString(COMMENT) +
+                Character.toString(COMMENT_OPEN) +
+                Character.toString(COMMENT_CLOSE) +
+                Character.toString(STATEMENT_OPEN) +
+                Character.toString(STATEMENT_CLOSE) +
+                BLOCK_OPEN +
+                BLOCK_CLOSE +
+                COMMENT_DOC +
+                ASSIGNMENT +
+                THROW_ERROR +
+                ARRAY_ASSIGNMENT +
+                Character.toString(LENGTH_CHAR) +
+                Character.toString(ARRAY_OPEN) +
+                Character.toString(ARRAY_CLOSE) +
+                Character.toString(ARGS_SEPARATOR) +
+                Character.toString(FOR_SEPARATOR) +
+                Character.toString(STRING);
+        return new ArrayList<>(new HashSet<>(Arrays.asList(all.split(""))));
     }
 }

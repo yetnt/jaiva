@@ -9,7 +9,7 @@ import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
-import com.jaiva.tokenizer.Token.TFuncCall;
+import com.jaiva.tokenizer.Token.*;
 
 public class Debug extends BaseGlobals {
     Debug(IConfig config) {
@@ -19,7 +19,7 @@ public class Debug extends BaseGlobals {
 
     public class FEmit extends BaseFunction {
         FEmit(IConfig config) {
-            super("d_emit", container.new TFunction("d_emit", new String[] { "arr?" }, null, -1,
+            super("d_emit", new TFunction("d_emit", new String[] { "arr?" }, null, -1,
                     "Throws an error which is expected to be caught by a debugger of some sorts."));
             this.freeze();
         }

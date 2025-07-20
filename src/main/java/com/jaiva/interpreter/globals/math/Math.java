@@ -12,8 +12,7 @@ import com.jaiva.interpreter.globals.BaseGlobals;
 import com.jaiva.interpreter.globals.GlobalType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
-import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.TFuncCall;
+import com.jaiva.tokenizer.Token.*;
 
 /**
  * Math functions ofc
@@ -24,13 +23,13 @@ public class Math extends BaseGlobals {
      */
     public Math() {
         super(GlobalType.LIB, "math");
-        vfs.put("m_random", new MapValue(new FRandom(container)));
-        vfs.put("m_round", new MapValue(new FRound(container)));
-        vfs.put("m_abs", new MapValue(new FAbs(container)));
-        vfs.put("m_sqrt", new MapValue(new FSqrt(container)));
-        vfs.put("m_pow", new MapValue(new FPow(container)));
-        vfs.put("m_floor", new MapValue(new FFloor(container)));
-        vfs.put("m_ceil", new MapValue(new FCeil(container)));
+        vfs.put("m_random", new MapValue(new FRandom()));
+        vfs.put("m_round", new MapValue(new FRound()));
+        vfs.put("m_abs", new MapValue(new FAbs()));
+        vfs.put("m_sqrt", new MapValue(new FSqrt()));
+        vfs.put("m_pow", new MapValue(new FPow()));
+        vfs.put("m_floor", new MapValue(new FFloor()));
+        vfs.put("m_ceil", new MapValue(new FCeil()));
         vfs.putAll(new Constants().vfs); // Add constants like m_pi, m_e, etc.
         vfs.putAll(new Trig().vfs); // Add trigonometric functions like m_sin, m_cos, etc.
     }
@@ -46,8 +45,8 @@ public class Math extends BaseGlobals {
      * </p>
      */
     class FAbs extends BaseFunction {
-        FAbs(Token<?> container) {
-            super("m_abs", container.new TFunction("m_abs", new String[] { "value" }, null, -1,
+        FAbs() {
+            super("m_abs", new TFunction("m_abs", new String[] { "value" }, null, -1,
                     "Returns the absolute value of a number"));
             this.freeze();
         }
@@ -83,8 +82,8 @@ public class Math extends BaseGlobals {
      * </p>
      */
     class FRandom extends BaseFunction {
-        FRandom(Token<?> container) {
-            super("m_random", container.new TFunction("m_random", new String[] { "lower", "upper" }, null, -1,
+        FRandom() {
+            super("m_random", new TFunction("m_random", new String[] { "lower", "upper" }, null, -1,
                     """
                             Returns a random number (integer) in the range of `lower` and `upper`\\
                              > ***lower***:lower bound (inclusive)\\
@@ -134,8 +133,8 @@ public class Math extends BaseGlobals {
      *
      */
     class FRound extends BaseFunction {
-        FRound(Token<?> container) {
-            super("m_round", container.new TFunction("m_round", new String[] { "value" }, null, -1,
+        FRound() {
+            super("m_round", new TFunction("m_round", new String[] { "value" }, null, -1,
                     "Rounds the given real nmber to an integer. This is for the real ones who hate working with precision."));
             this.freeze();
         }
@@ -170,8 +169,8 @@ public class Math extends BaseGlobals {
      * </p>
      */
     class FSqrt extends BaseFunction {
-        FSqrt(Token<?> container) {
-            super("m_sqrt", container.new TFunction("m_sqrt", new String[] { "value" }, null, -1,
+        FSqrt() {
+            super("m_sqrt", new TFunction("m_sqrt", new String[] { "value" }, null, -1,
                     "Returns the (positive) square root of the number provided"));
             this.freeze();
         }
@@ -207,8 +206,8 @@ public class Math extends BaseGlobals {
      * </p>
      */
     class FPow extends BaseFunction {
-        FPow(Token<?> container) {
-            super("m_pow", container.new TFunction("m_pow", new String[] { "base", "exponent" }, null, -1,
+        FPow() {
+            super("m_pow", new TFunction("m_pow", new String[] { "base", "exponent" }, null, -1,
                     "Returns the result of raising the base to the power of the exponent"));
             this.freeze();
         }
@@ -245,8 +244,8 @@ public class Math extends BaseGlobals {
      * </p>
      */
     class FFloor extends BaseFunction {
-        FFloor(Token<?> container) {
-            super("m_floor", container.new TFunction("m_floor", new String[] { "value" }, null, -1,
+        FFloor() {
+            super("m_floor", new TFunction("m_floor", new String[] { "value" }, null, -1,
                     "Returns the largest integer less than or equal to the given value"));
             this.freeze();
         }
@@ -280,8 +279,8 @@ public class Math extends BaseGlobals {
      * </p>
      */
     class FCeil extends BaseFunction {
-        FCeil(Token<?> container) {
-            super("m_ceil", container.new TFunction("m_ceil", new String[] { "value" }, null, -1,
+        FCeil() {
+            super("m_ceil", new TFunction("m_ceil", new String[] { "value" }, null, -1,
                     "Returns the smallest integer greater than or equal to the given value"));
             this.freeze();
         }

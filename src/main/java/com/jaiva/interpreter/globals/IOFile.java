@@ -13,18 +13,17 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.TArrayVar;
-import com.jaiva.tokenizer.Token.TFuncCall;
+import com.jaiva.tokenizer.Token.*;
 
 public class IOFile extends BaseGlobals {
     IOFile(IConfig config) throws InterpreterException {
         super(GlobalType.LIB, "file");
-        vfs.put("f_name", new MapValue(new VFileName(container, config)));
-        vfs.put("f_dir", new MapValue(new VDirectory(container, config)));
-        vfs.put("f_bin", new MapValue(new VBinaryDirectory(container, config)));
-        vfs.put("f_this", new MapValue(new VThis(container, config)));
-        vfs.put("f_file", new MapValue(new FFile(container, config)));
-        vfs.put("f_new", new MapValue(new FNew(container, config)));
+        vfs.put("f_name", new MapValue(new VFileName(config)));
+        vfs.put("f_dir", new MapValue(new VDirectory(config)));
+        vfs.put("f_bin", new MapValue(new VBinaryDirectory(config)));
+        vfs.put("f_this", new MapValue(new VThis(config)));
+        vfs.put("f_file", new MapValue(new FFile(config)));
+        vfs.put("f_new", new MapValue(new FNew(config)));
     }
 
     /**
@@ -37,9 +36,9 @@ public class IOFile extends BaseGlobals {
      * and is frozen upon creation to prevent further modification.
      */
     public class VFileName extends BaseVariable {
-        public VFileName(Token<?> container, IConfig config) {
+        public VFileName(IConfig config) {
             super("f_name",
-                    container.new TStringVar("f_name",
+                    new TStringVar("f_name",
                             config.filePath == null ? "REPL" : config.filePath.getFileName().toString(), -1,
                             "Variable that holds the current file's name"),
                     config.filePath == null ? "REPL" : config.filePath.getFileName().toString());
@@ -60,9 +59,9 @@ public class IOFile extends BaseGlobals {
      *
      */
     public class VDirectory extends BaseVariable {
-        public VDirectory(Token<?> container, IConfig config) {
+        public VDirectory(IConfig config) {
             super("f_dir",
-                    container.new TStringVar("f_dir", config.fileDirectory == null ? "REPL"
+                    new TStringVar("f_dir", config.fileDirectory == null ? "REPL"
                             : config.fileDirectory.toAbsolutePath().toString(), -1,
                             "Variable that holds the current file's directory."),
                     config.fileDirectory == null ? "REPL" : config.fileDirectory.toAbsolutePath().toString());
@@ -83,8 +82,8 @@ public class IOFile extends BaseGlobals {
      * </p>
      */
     public class VBinaryDirectory extends BaseVariable {
-        public VBinaryDirectory(Token<?> container, IConfig config) {
-            super("f_bin", container.new TStringVar("f_bin", config.JAIVA_SRC_PATH.toAbsolutePath().toString(), 0,
+        public VBinaryDirectory(IConfig config) {
+            super("f_bin", new TStringVar("f_bin", config.JAIVA_SRC_PATH.toAbsolutePath().toString(), 0,
                     "Variable that holds the directory where you can find jaiva.jar"),
 
                     config.JAIVA_SRC_PATH.toAbsolutePath().toString());
@@ -133,13 +132,12 @@ public class IOFile extends BaseGlobals {
          * Otherwise, the file's name, directory, contents, and permissions are
          * extracted and stored.
          *
-         * @param container The token container for this variable.
          * @param config    The interpreter configuration, including file path and
          *                  directory.
          * @throws InterpreterException If the file does not exist or cannot be read.
          */
-        public VThis(Token<?> container, IConfig config) throws InterpreterException {
-            super("f_this", container.new TArrayVar("f_this", new ArrayList<>(), -1,
+        public VThis(IConfig config) throws InterpreterException {
+            super("f_this", new TArrayVar("f_this", new ArrayList<>(), -1,
                     "Returns an array containing the current file's properties \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]"),
                     new ArrayList<>());
             // create the array containign this current file's structure
@@ -203,8 +201,8 @@ public class IOFile extends BaseGlobals {
      */
     public class FFile extends BaseFunction {
         // function looks for the file and returns its properties in the structure.
-        public FFile(Token<?> container, IConfig config) {
-            super("f_file", container.new TFunction("f_file", new String[] { "path" }, null, -1,
+        public FFile(IConfig config) {
+            super("f_file", new TFunction("f_file", new String[] { "path" }, null, -1,
                     "Returns an array containing the properties of the file at the given `path` \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]"));
             freeze();
         }
@@ -271,7 +269,7 @@ public class IOFile extends BaseGlobals {
      * </ul>
      */
     public class FNew extends BaseFunction {
-        public FNew(Token<?> container, IConfig config) {
+        public FNew(IConfig config) {
             /*
              * [
              * "fileName",
@@ -280,7 +278,7 @@ public class IOFile extends BaseGlobals {
              * [canRead?, canWrite?, canExecute?]
              * ]
              */
-            super("f_new", container.new TFunction("f_new",
+            super("f_new", new TFunction("f_new",
                     new String[] { "path", "content", "canRead?", "canWrite?", "canExecute?" }, null, -1,
                     "Creates a new file at the given `path` with the specified `content` and permissions. \\n Returns boolean indicating success."));
         }

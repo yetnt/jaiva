@@ -288,7 +288,7 @@ public class REPL {
                 return something;
             } else if (something instanceof Token<?>) {
                 if (mode == REPLMode.STANDARD) {
-                    TokenDefault token = ((Token<?>) something).getValue();
+                    TokenDefault token = ((Token<?>) something).value();
                     if (Interpreter.isVariableToken(token)) {
                         Object value = Interpreter.handleVariables(Primitives.parseNonPrimitive(token), this.vfs,
                                 iConfig, new ContextTrace());
@@ -311,7 +311,7 @@ public class REPL {
                 ArrayList<Token<?>> tokens = (ArrayList<Token<?>>) something;
                 if (mode == REPLMode.STANDARD) {
                     if (tokens.size() == 1) {
-                        TokenDefault token = ((Token<?>) tokens.get(0)).getValue();
+                        TokenDefault token = ((Token<?>) tokens.get(0)).value();
                         if (Interpreter.isVariableToken(token)) {
                             boolean isReturnTokenClass = token instanceof TStatement || token instanceof TVarRef
                                     || token instanceof TFuncCall;

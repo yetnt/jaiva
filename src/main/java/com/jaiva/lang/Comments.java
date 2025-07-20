@@ -34,8 +34,8 @@ public class Comments {
         if (lines.length < 2)
             return lines;
         List<String> newLines = new ArrayList<>();
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i];
+        for (String s : lines) {
+            String line = s;
 
             // if the line does not contain a newline,
             // call a helper function or process it accordingly
@@ -45,7 +45,7 @@ public class Comments {
                 line = Comments.decimate(line.trim()).trim();
             }
 
-            if (line != null && !line.isBlank()) {
+            if (!line.isBlank()) {
                 newLines.add(line);
             }
         }
@@ -56,7 +56,7 @@ public class Comments {
      * Remove single line comments. Call this function when appropriate.
      * 
      * @param line The line to make sure there isnt a single line comment
-     * @return
+     * @return The line without single line comments.
      */
     public static String decimate(String line) {
         if (line.indexOf(Chars.COMMENT) == -1)
@@ -81,7 +81,7 @@ public class Comments {
         if (o.indexOf(Chars.COMMENT_DOC) != 0)
             return decimate(o);
 
-        return new Token<>(null).new TDocsComment(o.substring(o.indexOf(Chars.COMMENT_DOC) + 2, o.length()))
+        return new Token.TDocsComment(o.substring(o.indexOf(Chars.COMMENT_DOC) + 2))
                 .toToken();
 
     }
@@ -89,12 +89,12 @@ public class Comments {
     /**
      * Check if the array is only comments. This is used to check if the line
      * contains only comments or not.
-     * 
+     * <p>
      * This is a helper method where a ! may be splitting inside a comment which had
      * a double @ symbol.
      * 
-     * @param arr
-     * @return
+     * @param arr Array to check against
+     * @return boolean indicating whether the array of lines only has comments.
      */
     public static boolean arrayIsOnlyComments(String[] arr) {
         if (arr.length > 2) {
@@ -114,15 +114,11 @@ public class Comments {
                 return true;
             } else if (arr[0].trim().startsWith(Character.toString(Chars.COMMENT)) && arr[1].trim().isEmpty()) {
                 return true;
-            } else if (arr[0].trim().startsWith(Character.toString(Chars.COMMENT))
+            } else return arr[0].trim().startsWith(Character.toString(Chars.COMMENT))
                     && !arr[1].trim().startsWith(Character.toString(Chars.COMMENT))
                     || !arr[0].trim()
-                            .startsWith(Character.toString(Chars.COMMENT))
-                            && arr[1].trim().startsWith(Character.toString(Chars.COMMENT))) {
-                return true;
-            } else {
-                return false;
-            }
+                    .startsWith(Character.toString(Chars.COMMENT))
+                    && arr[1].trim().startsWith(Character.toString(Chars.COMMENT));
 
         }
     }
