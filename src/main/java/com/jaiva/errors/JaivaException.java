@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.jaiva.interpreter.MapValue;
+import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.runtime.IConfig;
 
 /**
@@ -83,7 +84,7 @@ public class JaivaException extends Exception {
          * Snapshot of the variable functions store where the dbeug call, also capturing
          * the scope of the debug call and any other variables that were created.
          */
-        public HashMap<String, MapValue> vfs = new HashMap<>();
+        public Vfs vfs = new Vfs();
         /**
          * The interpreter configuration used for the debug call.
          */
@@ -104,8 +105,8 @@ public class JaivaException extends Exception {
          * @param config     The configuration used for the debug call.
          * @param lineNumber The line number where the exception was thrown.
          */
-        public DebugException(ArrayList<Object> comp, HashMap<String, MapValue> vfs, IConfig config,
-                int lineNumber) {
+        public DebugException(ArrayList<Object> comp, Vfs vfs, IConfig config,
+                              int lineNumber) {
             super("A debug error with the following components has been used: " + comp.toString());
             this.lineNumber = lineNumber;
             this.components = comp;

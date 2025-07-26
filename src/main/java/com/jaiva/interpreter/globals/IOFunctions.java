@@ -15,6 +15,7 @@ import com.jaiva.interpreter.Interpreter.ThrowIfGlobalContext;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
+import com.jaiva.interpreter.Vfs;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
@@ -31,12 +32,12 @@ public class IOFunctions extends BaseGlobals {
      */
     public IOFunctions(IConfig config) {
         super(GlobalType.GLOBAL);
-        vfs.put("khuluma", new MapValue(new FKhuluma()));
-        vfs.put("mamela", new MapValue(new FMamela()));
-        vfs.put("ask", new MapValue(new FAsk()));
-        vfs.put("clear", new MapValue(new FClear()));
-        vfs.put("args", new MapValue(new VArgs(config)));
-        vfs.put("uargs", new MapValue(new VUArgs(config)));
+        vfs.put("khuluma", new FKhuluma());
+        vfs.put("mamela", new FMamela());
+        vfs.put("ask", new FAsk());
+        vfs.put("clear", new FClear());
+        vfs.put("args", new VArgs(config));
+        vfs.put("uargs", new VUArgs(config));
     }
 
     /**
@@ -52,7 +53,7 @@ public class IOFunctions extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs,
                 IConfig config, ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
@@ -115,7 +116,7 @@ public class IOFunctions extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs,
                 IConfig config, ContextTrace cTrace)
                 throws Exception {
 
@@ -146,7 +147,7 @@ public class IOFunctions extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
@@ -181,7 +182,7 @@ public class IOFunctions extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
                 ContextTrace cTrace)
                 throws InterpreterException {
             // Clear the console using ANSI escape codes.

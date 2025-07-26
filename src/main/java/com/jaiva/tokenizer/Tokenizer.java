@@ -720,10 +720,6 @@ public class Tokenizer {
                 }
             }
             return tokens;
-        } else {
-            //            if ((lines.length == 2 && !lines[1].isEmpty())) {
-//                Comments.arrayIsOnlyComments(lines);
-//            }
         }
         String tokenizerLine = previousLine.trim() + line; // The entire line to the tokenizer.
 

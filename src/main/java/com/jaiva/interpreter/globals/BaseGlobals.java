@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import com.jaiva.errors.JaivaException;
 import com.jaiva.interpreter.MapValue;
+import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.tokenizer.Token;
 
@@ -27,7 +28,7 @@ public class BaseGlobals {
     /**
      * Variable functions store
      */
-    public HashMap<String, MapValue> vfs = new HashMap<String, MapValue>();
+    public Vfs vfs = new Vfs();
 
     /**
      * Default Constructor.

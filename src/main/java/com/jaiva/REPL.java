@@ -11,7 +11,7 @@ import java.util.HashMap;
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.ContextTrace;
 import com.jaiva.interpreter.Interpreter;
-import com.jaiva.interpreter.MapValue;
+import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -172,7 +172,7 @@ public class REPL {
     /**
      * The variable functions store (vfs).
      */
-    private HashMap<String, MapValue> vfs;
+    private Vfs vfs;
     /**
      * Interpreter configuration object.
      * It contains the resources and configuration for the interpreter.
@@ -300,7 +300,7 @@ public class REPL {
                                 new ContextTrace(),
                                 this.vfs, iConfig);
                         if (h instanceof HashMap)
-                            vfs = (HashMap<String, MapValue>) h;
+                            vfs = (Vfs) h;
 
                         return new ReadOuput();
                     }
@@ -332,14 +332,14 @@ public class REPL {
                                     new ContextTrace(),
                                     this.vfs, iConfig);
                             if (h instanceof HashMap)
-                                vfs = (HashMap<String, MapValue>) h;
+                                vfs = (Vfs) h;
 
                             return new ReadOuput();
                         }
                     } else {
                         Object h = Interpreter.interpret(tokens, new ContextTrace(), this.vfs, iConfig);
                         if (h instanceof HashMap)
-                            vfs = (HashMap<String, MapValue>) h;
+                            vfs = (Vfs) h;
                         return new ReadOuput();
                     }
                 } else if (mode == REPLMode.PRINT_TOKEN) {

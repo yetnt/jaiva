@@ -153,26 +153,26 @@ public class Interpreter {
      *                   variable, or
      *                   performing an invalid operation.
      */
-    public static Object handleVariables(Object t, HashMap<String, MapValue> vfs, IConfig config, ContextTrace cTrace)
+    public static Object handleVariables(Object t, Vfs vfs, IConfig config, ContextTrace cTrace)
             throws Exception {
         switch (t) {
             case TNumberVar tNumberVar -> {
                 Object number = Primitives.toPrimitive(tNumberVar.value, vfs, false, config, cTrace);
                 BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                         new ArrayList<>(Collections.singletonList(number)), false);
-                vfs.put(tNumberVar.name, new MapValue(var));
+                vfs.put(tNumberVar.name, var);
             }
             case TBooleanVar tBooleanVar -> {
                 Object bool = Primitives.toPrimitive(tBooleanVar.value, vfs, false, config, cTrace);
                 BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                         new ArrayList<>(Collections.singletonList(bool)), false);
-                vfs.put(tBooleanVar.name, new MapValue(var));
+                vfs.put(tBooleanVar.name, var);
             }
             case TStringVar tStringVar -> {
                 Object string = Primitives.toPrimitive(tStringVar.value, vfs, false, config, cTrace);
                 BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                         new ArrayList<>(Collections.singletonList(string)), false);
-                vfs.put(tStringVar.name, new MapValue(var));
+                vfs.put(tStringVar.name, var);
             }
             case TUnknownVar tUnknownVar -> {
                 Object something = Primitives.toPrimitive(tUnknownVar.value, vfs, false, config, cTrace);
@@ -185,7 +185,7 @@ public class Interpreter {
                             something instanceof ArrayList ? (ArrayList) something
                                     : new ArrayList<>(Collections.singletonList(something)),
                             false);
-                vfs.put(tUnknownVar.name, new MapValue(var));
+                vfs.put(tUnknownVar.name, var);
             }
             case TArrayVar tArrayVar -> {
                 ArrayList<Object> arr = new ArrayList<>();
@@ -201,12 +201,12 @@ public class Interpreter {
                     }
                 });
                 BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t, arr, true);
-                vfs.put(tArrayVar.name, new MapValue(var));
+                vfs.put(tArrayVar.name, var);
             }
             case TFunction function -> {
                 String name = function.name.replace("F~", "");
                 BaseFunction func = BaseFunction.create(name, function);
-                vfs.put(name, new MapValue(func));
+                vfs.put(name, func);
             }
             case TVarReassign tVarReassign -> {
                 MapValue mapValue = vfs.get(tVarReassign.name);
@@ -222,8 +222,8 @@ public class Interpreter {
                 Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarReassign.newValue), vfs, false,
                         config, cTrace);
 
-                if (o instanceof BaseFunction) {
-                    mapValue.setValue(o);
+                if (o instanceof BaseFunction func) {
+                    mapValue.setValue(func);
                 } else if (var instanceof BaseVariable v) {
                     if (o instanceof ArrayList a) {
                         v.a_set(a, cTrace);
@@ -266,13 +266,13 @@ public class Interpreter {
      *                   unknown
      *                   variable or an invalid operation.
      */
-    public static Object interpret(ArrayList<Token<?>> tokens, ContextTrace cTrace, HashMap<String, MapValue> vfs,
+    public static Object interpret(ArrayList<Token<?>> tokens, ContextTrace cTrace, Vfs vfs,
             IConfig config)
             throws Exception {
         // prepare a new vfs.
-        vfs = config.importVfs && cTrace.current == Context.GLOBAL ? new HashMap<>() : vfs;
+        vfs = config.importVfs && cTrace.current == Context.GLOBAL ? new Vfs() : vfs;
 
-        vfs = vfs != null ? ((HashMap<String, MapValue>) vfs.clone()) : vfs;
+        vfs = vfs != null ? vfs.clone() : vfs;
 
         // Step 2: go throguh eahc token
         for (Token<?> t : tokens) {
@@ -297,10 +297,10 @@ public class Interpreter {
                 Globals g = new Globals(config);
                 Path importPath = Path.of(tImport.filePath);
 
-                HashMap<String, MapValue> vfsFromFile;
+                Vfs vfsFromFile;
 
                 if (g.builtInGlobals.containsKey(tImport.fileName))
-                    vfsFromFile = (HashMap<String, MapValue>) g.builtInGlobals.get(tImport.fileName);
+                    vfsFromFile = (Vfs) g.builtInGlobals.get(tImport.fileName);
                 else {
 
                     // Check if the path is not absolute
@@ -323,7 +323,7 @@ public class Interpreter {
                     newConfig.importVfs = true; // This tells the interpreter to only parse exported symbols. (Functions
                                                 // and variables)
 
-                    vfsFromFile = (HashMap<String, MapValue>) Interpreter.interpret(tks, cTrace,
+                    vfsFromFile = (Vfs) Interpreter.interpret(tks, cTrace,
                             vfs, newConfig);
 
                     if ((vfsFromFile == null)) {
@@ -349,15 +349,12 @@ public class Interpreter {
                 // basically called a function that returned soemthing but dont use that value.
             } else if (token instanceof TFuncReturn tFuncReturn && !config.importVfs) {
                 Object c = handleVariables(tFuncReturn.value, vfs, config, cTrace);
-                ThrowIfGlobalContext g = throwIfGlobalContext(cTrace, c, token.lineNumber);
-                return g;
+                return throwIfGlobalContext(cTrace, c, token.lineNumber);
             } else if (token instanceof TLoopControl loopControl && !config.importVfs) {
                 Object lc = loopControl.type;
-                ThrowIfGlobalContext g = throwIfGlobalContext(cTrace, lc, loopControl.lineNumber);
-                return g;
+                return throwIfGlobalContext(cTrace, lc, loopControl.lineNumber);
             } else if (token instanceof TThrowError lc && !config.importVfs) {
-                ThrowIfGlobalContext g = throwIfGlobalContext(cTrace, lc, lc.lineNumber);
-                return g;
+                return throwIfGlobalContext(cTrace, lc, lc.lineNumber);
             } else if (token instanceof TWhileLoop whileLoop && !config.importVfs) {
                 // while loop
                 Object cond = Primitives.setCondition(whileLoop, vfs, config, cTrace);
@@ -498,7 +495,7 @@ public class Interpreter {
                 // for loop
             } else if (token instanceof TTryCatchStatement throwError && !config.importVfs) {
 
-                HashMap<String, MapValue> errorVfs = ((HashMap<String, MapValue>) vfs.clone());
+                Vfs errorVfs = ((Vfs) vfs.clone());
                 errorVfs.entrySet().removeIf(vf -> !vf.getKey().contains("error"));
 
                 String varName = "error" + (!errorVfs.isEmpty() ? errorVfs.size() : "");
@@ -514,14 +511,14 @@ public class Interpreter {
                             Token<?> tContainer = new Token<>(null);
                             TThrowError err = (TThrowError) g.c;
                             vfs.put(varName,
-                                    new MapValue(BaseVariable.create(
+                                    BaseVariable.create(
                                             varName,
                                             new TStringVar(
                                                     varName, err.errorMessage,
                                                     err.lineNumber),
                                             new ArrayList<>(Collections.singletonList(
                                                     err.errorMessage)),
-                                            false)));
+                                            false));
                             Object out2 = Interpreter.interpret(throwError.catchBlock.lines,
                                     new ContextTrace(Context.CATCH, token, cTrace), vfs,
                                     config);
@@ -538,14 +535,14 @@ public class Interpreter {
                     Token<?> tContainer = new Token<>(null);
 
                     vfs.put(varName,
-                            new MapValue(BaseVariable.create(
+                            BaseVariable.create(
                                     varName,
                                     new TStringVar(
                                             varName, e.getMessage(),
                                             throwError.catchBlock.lineNumber),
                                     new ArrayList<>(Arrays.asList(
                                             e.getMessage())),
-                                    false)));
+                                    false));
                     Object out2 = Interpreter.interpret(throwError.catchBlock.lines,
                             new ContextTrace(Context.CATCH, token, cTrace), vfs, config); // line
                     // 542

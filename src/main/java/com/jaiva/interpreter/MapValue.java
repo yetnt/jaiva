@@ -1,5 +1,8 @@
 package com.jaiva.interpreter;
 
+import com.jaiva.interpreter.symbol.Symbol;
+import com.jaiva.interpreter.symbol.SymbolType;
+
 /**
  * Represents a Map Value instance.
  * This is so that when we're ina scope and variables get copied over,
@@ -12,14 +15,14 @@ public class MapValue {
      * If the value is null, it will be set to {@code void.class} to indicate that
      * it is empty.
      */
-    private Object value;
+    private Symbol value;
 
     /**
      * Constructs a new MapValue instance with the specified value.
      *
      * @param v the value to be assigned to this object
      */
-    public MapValue(Object v) {
+    public MapValue(Symbol v) {
         value = v;
     }
 
@@ -30,7 +33,7 @@ public class MapValue {
      *
      */
     public MapValue() {
-        value = void.class;
+        value = new Symbol();
     }
 
     /**
@@ -38,11 +41,11 @@ public class MapValue {
      *
      * @param m the MapValue instance to check
      * @return {@code true} if the value of the MapValue is of type
-     *         {@code void.class},
+     *         {@link SymbolType#NULL},
      *         indicating it is empty; {@code false} otherwise
      */
     public static boolean isEmpty(MapValue m) {
-        return m.value == void.class;
+        return m != null && m.value.symbolType == SymbolType.NULL;
     }
 
     /**
@@ -50,7 +53,7 @@ public class MapValue {
      *
      * @return the value of this object
      */
-    public Object getValue() {
+    public Symbol getValue() {
         return value;
     }
 
@@ -59,7 +62,14 @@ public class MapValue {
      *
      * @param value the new value to be assigned
      */
-    public void setValue(Object value) {
+    public void setValue(Symbol value) {
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "MapValue{" +
+                "value=" + value +
+                '}';
     }
 }

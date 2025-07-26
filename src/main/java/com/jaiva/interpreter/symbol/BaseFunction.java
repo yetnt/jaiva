@@ -3,11 +3,7 @@ package com.jaiva.interpreter.symbol;
 import java.util.*;
 
 import com.jaiva.errors.InterpreterException;
-import com.jaiva.interpreter.Context;
-import com.jaiva.interpreter.ContextTrace;
-import com.jaiva.interpreter.Interpreter;
-import com.jaiva.interpreter.MapValue;
-import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.*;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.Token;
@@ -71,10 +67,10 @@ public class BaseFunction extends Symbol {
      * @param vfs       The variable functions store.
      * @param config    The Interpreter configuration.
      * @return The return value of the function, if not overriden it will return
-     *         void.class
+     *         {@code void.class}
      * @throws Exception If an error occurs during the function call.
      */
-    public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
+    public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs,
             IConfig config, ContextTrace cTrace) throws Exception {
         return Token.voidValue(tFuncCall.lineNumber);
     }
@@ -134,6 +130,12 @@ public class BaseFunction extends Symbol {
         }
     }
 
+
+    @Override
+    public Symbol clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
     /**
      * Creates a new user-defined function with the specified name and token.
      * 
@@ -154,7 +156,7 @@ public class BaseFunction extends Symbol {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs,
                 IConfig config, ContextTrace cTrace)
                 throws Exception {
             Token<?> tContainer = new Token<>(null);
@@ -164,7 +166,7 @@ public class BaseFunction extends Symbol {
             // this DefinedFunction, contains a TFunction where qwe need to check the params
             // so we can make name value pairs.
             String[] paramNames = ((TFunction) this.token).args;
-            HashMap<String, MapValue> newVfs = (HashMap<String, MapValue>) vfs.clone();
+            Vfs newVfs = vfs.clone();
             checkParams(tFuncCall, cTrace);
             for (int i = 0; i < paramNames.length; i++) {
                 String name = paramNames[i];
@@ -220,7 +222,7 @@ public class BaseFunction extends Symbol {
                             new TUnknownVar<Object>(name, o, tFuncCall.lineNumber),
                             o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Collections.singletonList(o)), false);
                 }
-                newVfs.put(name.replace("F~", "").replace("V~", ""), new MapValue(wrappedValue));
+                newVfs.put(name.replace("F~", "").replace("V~", ""), (Symbol) wrappedValue);
             }
             Object t = Interpreter.interpret((ArrayList<Token<?>>) ((TFunction) this.token).body.lines,
                     new ContextTrace(Context.FUNCTION, token, cTrace),

@@ -16,5 +16,9 @@ public enum SymbolType {
      * <p>
      * This type is used for functions that can be called and executed.
      */
-    FUNCTION
+    FUNCTION,
+    /**
+     * No symbol type.
+     */
+    NULL
 }

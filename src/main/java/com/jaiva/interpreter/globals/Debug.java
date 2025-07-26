@@ -1,12 +1,11 @@
 package com.jaiva.interpreter.globals;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.jaiva.errors.JaivaException.DebugException;
 import com.jaiva.interpreter.ContextTrace;
-import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.Token.*;
@@ -14,7 +13,7 @@ import com.jaiva.tokenizer.Token.*;
 public class Debug extends BaseGlobals {
     Debug(IConfig config) {
         super(GlobalType.LIB, "debug");
-        vfs.put("d_emit", new MapValue(new FEmit(config)));
+        vfs.put("d_emit", new FEmit(config));
     }
 
     public class FEmit extends BaseFunction {
@@ -25,8 +24,8 @@ public class Debug extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
+                           ContextTrace cTrace)
                 throws DebugException {
             // Any implementation of normal interpreter functions which could throw such an
             // exception should be in the catch.

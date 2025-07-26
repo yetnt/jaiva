@@ -286,4 +286,12 @@ public class BaseVariable extends Symbol {
         return variableType == other.variableType;
     }
 
+    @Override
+    public String toString() {
+        return "BaseVariable{" +
+                "scalar=" + scalar +
+                ", array=" + array +
+                ", variableType=" + variableType +
+                '}';
+    }
 }

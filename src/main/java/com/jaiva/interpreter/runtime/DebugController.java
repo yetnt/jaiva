@@ -6,10 +6,7 @@ import java.util.Set;
 import java.util.concurrent.Semaphore;
 
 import com.jaiva.Debugger;
-import com.jaiva.interpreter.Context;
-import com.jaiva.interpreter.ContextTrace;
-import com.jaiva.interpreter.Interpreter;
-import com.jaiva.interpreter.MapValue;
+import com.jaiva.interpreter.*;
 import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.utils.Tuple2;
@@ -17,7 +14,7 @@ import com.jaiva.utils.Tuple2;
 /**
  * The DebugController class is responsible for actually controllig the
  * debugging stuff.
- * 
+ * <p>
  * It comes as part of {@link IConfig} and is expected to be used by
  * {@link Debugger} to manage the debugging environment.
  */
@@ -64,7 +61,7 @@ public class DebugController {
     /**
      * The vfs at the current execution context and time.
      */
-    public HashMap<String, MapValue> vfs = new HashMap<>();
+    public Vfs vfs = new Vfs();
 
     /**
      * The context trace for the current execution.
@@ -99,7 +96,7 @@ public class DebugController {
      *                   values at the current execution context.
      * @param cTrace Context Trace.
      */
-    public void print(int lineNumber, Symbol s, Token<?> t, HashMap<String, MapValue> vf, ContextTrace cTrace) {
+    public void print(int lineNumber, Symbol s, Token<?> t, Vfs vf, ContextTrace cTrace) {
         if (active) {
             currentLineNumber = lineNumber;
             if (!stepOver.second && stepOver.first) {
@@ -135,14 +132,14 @@ public class DebugController {
      * to exit.
      * <p>
      * This method is called by
-     * {@link Interpreter#interpret(java.util.ArrayList, com.jaiva.interpreter.ContextTrace, HashMap, IConfig)}
+     * {@link Interpreter#interpret(java.util.ArrayList, com.jaiva.interpreter.ContextTrace, Vfs, IConfig)}
      * when the end of the file is reached, indicating that
      * there are no more lines to interpret.
      * 
      * @param vf The virtual file system containing the variables and their values
      *           at the end of the file.
      */
-    public void endOfFile(HashMap<String, MapValue> vf) {
+    public void endOfFile(Vfs vf) {
         if (active) {
             System.out.println("END OF FILE");
             System.out.println(Debugger.PROMPT);

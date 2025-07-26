@@ -7,23 +7,23 @@ import java.util.*;
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.interpreter.ContextTrace;
-import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
+import com.jaiva.interpreter.Vfs;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
 
 public class IOFile extends BaseGlobals {
     IOFile(IConfig config) throws InterpreterException {
         super(GlobalType.LIB, "file");
-        vfs.put("f_name", new MapValue(new VFileName(config)));
-        vfs.put("f_dir", new MapValue(new VDirectory(config)));
-        vfs.put("f_bin", new MapValue(new VBinaryDirectory(config)));
-        vfs.put("f_this", new MapValue(new VThis(config)));
-        vfs.put("f_file", new MapValue(new FFile(config)));
-        vfs.put("f_new", new MapValue(new FNew(config)));
+        vfs.put("f_name", new VFileName(config));
+        vfs.put("f_dir", new VDirectory(config));
+        vfs.put("f_bin", new VBinaryDirectory(config));
+        vfs.put("f_this", new VThis(config));
+        vfs.put("f_file", new FFile(config));
+        vfs.put("f_new", new FNew(config));
     }
 
     /**
@@ -208,7 +208,7 @@ public class IOFile extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
@@ -284,7 +284,7 @@ public class IOFile extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
             // TODO Auto-generated method stub

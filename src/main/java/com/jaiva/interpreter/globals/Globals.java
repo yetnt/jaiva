@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import com.jaiva.interpreter.Vfs;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
 import com.jaiva.Main;
@@ -23,9 +24,9 @@ import com.jaiva.lang.Keywords;
  * variable functions store.
  */
 public class Globals extends BaseGlobals {
-    // public HashMap<String, MapValue> vfs = new HashMap<>();
+    // public Vfs vfs = new HashMap<>();
 
-    public HashMap<String, HashMap<String, MapValue>> builtInGlobals = new HashMap<>();
+    public HashMap<String, Vfs> builtInGlobals = new HashMap<>();
 
     /**
      * Constructor to create and get the globals.
@@ -34,11 +35,11 @@ public class Globals extends BaseGlobals {
      */
     public Globals(IConfig config) throws InterpreterException {
         super(GlobalType.MAIN);
-        vfs.put("getVarClass", new MapValue(new FGetVarClass()));
-        vfs.put("reservedKeywords", new MapValue(new VReservedKeywords()));
-        vfs.put("version", new MapValue(new VJaivaVersion()));
-        vfs.put("flat", new MapValue(new FFlat()));
-        vfs.put("sleep", new MapValue(new FSleep()));
+        vfs.put("getVarClass", new FGetVarClass());
+        vfs.put("reservedKeywords", new VReservedKeywords());
+        vfs.put("version", new VJaivaVersion());
+        vfs.put("flat", new FFlat());
+        vfs.put("sleep", new FSleep());
         vfs.putAll(new IOFunctions(config).vfs);
 
         Types c = new Types();
@@ -83,7 +84,7 @@ public class Globals extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs,
                 IConfig config, ContextTrace cTrace)
                 throws Exception {
             String name;
@@ -149,7 +150,7 @@ public class Globals extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs,
                 IConfig config, ContextTrace cTrace)
                 throws Exception {
             if (tFuncCall.args.size() != params.size())
@@ -209,7 +210,7 @@ public class Globals extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);

@@ -10,7 +10,7 @@ import com.jaiva.tokenizer.TokenDefault;
  * don't need to document this. Your fault if you're trying to understand MY
  * shit.
  */
-public class Symbol {
+public class Symbol implements Cloneable {
     /**
      * The name of the symbol
      */
@@ -28,6 +28,13 @@ public class Symbol {
      * The token associated with the symbol.
      */
     public TokenDefault token;
+
+    /**
+     * Default Constructor which sets this symbol to null.
+     */
+    public Symbol() {
+        this.symbolType = SymbolType.NULL;
+    }
 
     /**
      * Define a symbol without the token
@@ -126,5 +133,14 @@ public class Symbol {
     public String toString() {
         return "Symbol [name=" + name + ", symbolType=" + symbolType + ", isFrozen=" + isFrozen + ", token=" + token
                 + "]";
+    }
+
+    /**
+     * Overrides {@link Object#clone()} to provide a clone interface
+     * @return A clone of this symbol.
+     * @throws CloneNotSupportedException When the instance cannot be cloned.
+     */
+    public Symbol clone() throws CloneNotSupportedException {
+        return (Symbol) super.clone();
     }
 }

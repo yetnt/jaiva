@@ -10,6 +10,7 @@ import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
+import com.jaiva.interpreter.Vfs;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
@@ -39,15 +40,13 @@ import com.jaiva.tokenizer.Token.*;
  * @see BaseGlobals
  * @see WtfAreYouDoingException
  */
-@SuppressWarnings("rawtypes")
 public class Types extends BaseGlobals {
-    @SuppressWarnings("unchecked")
     public Types() {
         // the import will be "jaiva/types.jiv"
         super(GlobalType.LIB, "types");
-        vfs.put("t_num", new MapValue(new FNum()));
-        vfs.put("t_str", new MapValue(new FStr()));
-        vfs.put("t_of", new MapValue(new FOf()));
+        vfs.put("t_num", new FNum());
+        vfs.put("t_str", new FStr());
+        vfs.put("t_of", new FOf());
     }
 
     /**
@@ -63,7 +62,7 @@ public class Types extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
             this.checkParams(tFuncCall, cTrace);
@@ -111,7 +110,7 @@ public class Types extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
             this.checkParams(tFuncCall, cTrace);
@@ -155,7 +154,7 @@ public class Types extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
 

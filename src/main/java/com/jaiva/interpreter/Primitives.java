@@ -269,7 +269,7 @@ public class Primitives {
      *                                       into a proper ting
      *                                       yknow
      */
-    public static Object toPrimitive(Object token, HashMap<String, MapValue> vfs, boolean returnName,
+    public static Object toPrimitive(Object token, Vfs vfs, boolean returnName,
             IConfig config, ContextTrace cTrace)
             throws Exception {
 
@@ -517,8 +517,7 @@ public class Primitives {
             if (v == null)
                 throw new UnknownVariableException(cTrace, tFuncCall);
 
-            if (!(v.getValue() instanceof BaseFunction)
-                    && !(v.getValue() instanceof String)) {
+            if (!(v.getValue() instanceof BaseFunction)) {
                 throw new WtfAreYouDoingException(cTrace, v.getValue(), BaseFunction.class, tFuncCall.lineNumber);
             }
             BaseFunction function = f == null ? (BaseFunction) v.getValue() : f; /*
@@ -624,7 +623,7 @@ public class Primitives {
      * @throws Exception If the condition cannot be resolved to a `Boolean` or if
      *                   there is an error during variable handling or parsing.
      */
-    public static Object setCondition(TokenDefault t, HashMap<String, MapValue> vfs, IConfig config,
+    public static Object setCondition(TokenDefault t, Vfs vfs, IConfig config,
             ContextTrace cTrace)
             throws Exception {
         Object c = t instanceof TForLoop ? ((TForLoop) t).condition

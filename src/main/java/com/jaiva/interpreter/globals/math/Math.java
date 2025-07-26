@@ -1,17 +1,16 @@
 package com.jaiva.interpreter.globals.math;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.interpreter.ContextTrace;
-import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.globals.BaseGlobals;
 import com.jaiva.interpreter.globals.GlobalType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
+import com.jaiva.interpreter.Vfs;
 import com.jaiva.tokenizer.Token.*;
 
 /**
@@ -23,13 +22,13 @@ public class Math extends BaseGlobals {
      */
     public Math() {
         super(GlobalType.LIB, "math");
-        vfs.put("m_random", new MapValue(new FRandom()));
-        vfs.put("m_round", new MapValue(new FRound()));
-        vfs.put("m_abs", new MapValue(new FAbs()));
-        vfs.put("m_sqrt", new MapValue(new FSqrt()));
-        vfs.put("m_pow", new MapValue(new FPow()));
-        vfs.put("m_floor", new MapValue(new FFloor()));
-        vfs.put("m_ceil", new MapValue(new FCeil()));
+        vfs.put("m_random", new FRandom());
+        vfs.put("m_round", new FRound());
+        vfs.put("m_abs", new FAbs());
+        vfs.put("m_sqrt", new FSqrt());
+        vfs.put("m_pow",new FPow());
+        vfs.put("m_floor", new FFloor());
+        vfs.put("m_ceil", new FCeil());
         vfs.putAll(new Constants().vfs); // Add constants like m_pi, m_e, etc.
         vfs.putAll(new Trig().vfs); // Add trigonometric functions like m_sin, m_cos, etc.
     }
@@ -52,7 +51,7 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
@@ -93,7 +92,7 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
@@ -140,7 +139,7 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
@@ -176,7 +175,7 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
@@ -213,7 +212,7 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
@@ -251,7 +250,7 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
@@ -286,7 +285,7 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, HashMap<String, MapValue> vfs, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
                 ContextTrace cTrace)
                 throws Exception {
             checkParams(tFuncCall, cTrace);
