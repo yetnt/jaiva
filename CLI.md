@@ -162,9 +162,9 @@ _Subcommands:_
 > h
 ```
 
-9. Context Trace (Or stack trace)
-
+9. Print stack trace
 ```sh
-- context trace
-- ct
+- stack trace
+- st
+- scope
 ```

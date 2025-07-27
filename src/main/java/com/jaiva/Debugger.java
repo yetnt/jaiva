@@ -51,6 +51,7 @@ public class Debugger {
                 - vfs dump [all] : Dump the current variable functions hashmap (vfs).
                     - If 'all' is specified, it will show all symbols, otherwise only show user defined symbols
             - exit/quit : Exit the debugger.
+            - stack trace/st/scope : Prints a human-readable linked list representing the current scope and parent scopes.
 
             """;
     /**
@@ -60,12 +61,12 @@ public class Debugger {
     /**
      * The reader used to read input from the user in the debugging environment.
      */
-    private BufferedReader reader;
+    private final BufferedReader reader;
     /**
      * The list of tokens representing the current program being debugged.
      * This is used to interpret the program and manage breakpoints.
      */
-    private ArrayList<Token<?>> tokens;
+    private final ArrayList<Token<?>> tokens;
     /**
      * The configuration for the interpreter runtime, including the debug
      * controller.
@@ -112,7 +113,7 @@ public class Debugger {
                     config.dc.active = false; // Deactivate the debug controller
                     break; // Exit the debugger
                 }
-                if (input.equals("context trace") || input.equals("ct")) {
+                if (input.equals("scope") || input.equals("st") || input.equals("stack trace")) {
                     System.out.println(config.dc.scope.toString());
                 }
                 String[] parts = input.split(" ");

@@ -1,4 +1,4 @@
-<h1> <center> <img src="images/jaiva-full-logo.png" width="50"> Jaiva!</h1>
+<h1> <img src="images/jaiva-full-logo.png" width="50"> Jaiva!</h1>
 
 (Current) Version : **_2.0.1_**
 
