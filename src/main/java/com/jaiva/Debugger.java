@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import com.jaiva.interpreter.ContextTrace;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.globals.Globals;
@@ -113,7 +113,7 @@ public class Debugger {
                     break; // Exit the debugger
                 }
                 if (input.equals("context trace") || input.equals("ct")) {
-                    System.out.println(config.dc.cTrace.toString());
+                    System.out.println(config.dc.scope.toString());
                 }
                 String[] parts = input.split(" ");
                 String command = parts[0].toLowerCase();
@@ -198,7 +198,7 @@ public class Debugger {
                             config.dc.state = DebugController.State.RUNNING;
                             new Thread(() -> {
                                 try {
-                                    Interpreter.interpret(tokens, new ContextTrace(), new Globals(config).vfs, config);
+                                    Interpreter.interpret(tokens, new Scope(config), config);
                                 } catch (Exception e) {
                                     System.err.println("Error during interpretation: " + e.getMessage());
                                     e.printStackTrace();
@@ -227,7 +227,7 @@ public class Debugger {
                         switch (sub) {
                             case "dump" -> {
                                 boolean showAll = "all".equals(arg);
-                                config.dc.vfs.forEach((name, value) -> {
+                                config.dc.scope.vfs.forEach((name, value) -> {
                                     Symbol s = (Symbol) value.getValue();
                                     if (showAll || value.getValue() instanceof DefinedFunction
                                             || value.getValue() instanceof DefinedVariable) {
@@ -236,11 +236,11 @@ public class Debugger {
                                 });
                             }
                             case "get" -> {
-                                if (config.dc.vfs.isEmpty()) {
+                                if (config.dc.scope.vfs.isEmpty()) {
                                     if (CLI)
                                         System.out.println("No symbols in the current context.");
                                 } else if (arg != null) {
-                                    MapValue mv = config.dc.vfs.get(arg);
+                                    MapValue mv = config.dc.scope.vfs.get(arg);
                                     if (mv == null) {
                                         System.out.println("Symbol '" + arg + "' not found in the current context.");
                                     } else {

@@ -5,6 +5,26 @@ import com.jaiva.interpreter.symbol.Symbol;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * "vfs" stands for Variable FunctionS. It's a class that extends HashMap and in term inherits all it's properties.
+ * <p>
+ *     A vfs instance, holds all the symbols defined in the specific context that the user can use.
+ * </p>
+ * <p>
+ *     The {@link String} is the identifier of a specific symbol in the given scope. Like a nickname, it is not
+ *     the symbol's actual name, but what the user has to refer to in order to call the function/use the variable.
+ *     e.g.: The symbol named {@code "function"} could have the identifier {@code "foo"}. Calling {@code foo()} will call
+ *     the said {@code "function"}. However many times (unless frozen, see {@link Symbol#isFrozen}) the identifier is changed,
+ *     it still references the exact same function that it was defined as.
+ * </p>
+ * <p>
+ *     A vfs instance, is usually created only by {@link Scope} as all symbols are scoped constructs.
+ *     The only "exceptions" (haha get it), would be {@link com.jaiva.interpreter.globals.BaseGlobals} which creates
+ *     a vfs instance to put all the globals into.
+ * </p>
+ * <p>
+ * So much documentation, might as well call this an accumulation. HMM, bars.
+ */
 public class Vfs extends HashMap<String, MapValue> {
     /**
      * This is used to keep track of every Vfs instance created and copied. Why? idk.

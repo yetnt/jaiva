@@ -3,7 +3,7 @@ package com.jaiva.interpreter.globals;
 import java.util.ArrayList;
 
 import com.jaiva.errors.JaivaException.DebugException;
-import com.jaiva.interpreter.ContextTrace;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -24,19 +24,19 @@ public class Debug extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                           ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                           Scope scope)
                 throws DebugException {
             // Any implementation of normal interpreter functions which could throw such an
             // exception should be in the catch.
             ArrayList<Object> components = new ArrayList<>();
             try {
-                checkParams(tFuncCall, cTrace); // throws if params aren't correct. So naturally we loose having
+                checkParams(tFuncCall, scope); // throws if params aren't correct. So naturally we loose having
                                                 // varargs, so its
                 // fine.
                 if (!params.isEmpty()) {
-                    Object param = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false,
-                            config, cTrace);
+                    Object param = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false,
+                            config, scope);
                     if (param instanceof ArrayList<?> arr) {
                         components.addAll(arr);
                     } else {
@@ -46,7 +46,7 @@ public class Debug extends BaseGlobals {
             } catch (Exception e) {
                 throw new DebugException(e);
             }
-            throw new DebugException(components, vfs, config, tFuncCall.lineNumber);
+            throw new DebugException(components, scope, config, tFuncCall.lineNumber);
         }
     }
 }

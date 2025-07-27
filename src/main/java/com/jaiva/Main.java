@@ -55,7 +55,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "2.0.1";
+    public static String version = "2.0.2";
     /**
      * Author, it's just me.
      */
@@ -258,7 +258,7 @@ public class Main {
                 }
             }
 
-            Interpreter.interpret(tokens, new ContextTrace(), new Globals(iconfig).vfs, iconfig);
+            Interpreter.interpret(tokens, new Scope(iconfig), iconfig);
 
             // if we reached here, everythign went well!
 

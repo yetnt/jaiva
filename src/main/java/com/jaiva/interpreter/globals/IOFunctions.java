@@ -2,14 +2,12 @@ package com.jaiva.interpreter.globals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
 import com.jaiva.errors.InterpreterException;
-import com.jaiva.interpreter.ContextTrace;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Interpreter;
-import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Interpreter.ThrowIfGlobalContext;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -53,10 +51,10 @@ public class IOFunctions extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs,
-                IConfig config, ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, 
+                IConfig config, Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
+            checkParams(tFuncCall, scope);
             String output;
             Object o = !params.isEmpty() ? params.getFirst() : null;
             Object newO = o;
@@ -65,7 +63,7 @@ public class IOFunctions extends BaseGlobals {
                 return Token.voidValue(tFuncCall.lineNumber);
             }
             Object v = params.size() > 1
-                    ? Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config, cTrace)
+                    ? Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), false, config, scope)
                     : null;
             if (o instanceof Token<?> || (o instanceof TokenDefault && Interpreter.isVariableToken(o))) {
                 assert o instanceof Token<?>;
@@ -75,7 +73,7 @@ public class IOFunctions extends BaseGlobals {
                 Object input = token instanceof TStatement || token instanceof TVarRef || token instanceof TFuncCall
                         ? o
                         : token;
-                Object value = Interpreter.handleVariables(input, vfs, config, cTrace);
+                Object value = Interpreter.handleVariables(input, config, scope);
                 // System.out.println(value);
                 assert value != null;
                 output = value.toString();
@@ -84,7 +82,7 @@ public class IOFunctions extends BaseGlobals {
                 // we dont have context, so just alert the user.
                 // that either, they tried using the "voetsek" or "nevermind" outside of a for
                 // loop context or cima was called with a custom error.
-                throw new InterpreterException.WtfAreYouDoingException(cTrace,
+                throw new InterpreterException.WtfAreYouDoingException(scope,
                         "Cannot use 'voetsek' or 'nevermind' outside of a loop context, or 'cima' was called with a custom error.",
                         tFuncCall.lineNumber);
             } else {
@@ -116,8 +114,8 @@ public class IOFunctions extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs,
-                IConfig config, ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, 
+                IConfig config, Scope scope)
                 throws Exception {
 
             return config.resources.consoleIn.nextLine();
@@ -147,10 +145,10 @@ public class IOFunctions extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,  IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
+            checkParams(tFuncCall, scope);
             return JOptionPane.showInputDialog(params.getFirst());
         }
     }
@@ -182,8 +180,8 @@ public class IOFunctions extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,  IConfig config,
+                Scope scope)
                 throws InterpreterException {
             // Clear the console using ANSI escape codes.
             System.out.print("\033[H\033[2J");
@@ -201,7 +199,7 @@ public class IOFunctions extends BaseGlobals {
      * </p>
      */
     class VArgs extends BaseVariable {
-        VArgs( IConfig config) {
+        VArgs(IConfig config) {
             super("args", new TArrayVar("args", new ArrayList<>(Arrays.asList(config.args)), -1,
                     "The command-line arguments passed to the jaiva command"),
                     new ArrayList<>(Arrays.asList(config.args)));
@@ -210,7 +208,7 @@ public class IOFunctions extends BaseGlobals {
     }
 
     class VUArgs extends BaseVariable {
-        VUArgs( IConfig config) {
+        VUArgs(IConfig config) {
             super("uArgs", new TArrayVar("uargs", (ArrayList) config.sanitisedArgs, -1,
                     "The command-line arguments without jaiva specific arguments. "),
                     config.sanitisedArgs);

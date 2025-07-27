@@ -8,7 +8,7 @@ import com.jaiva.interpreter.runtime.DebugController;
  * <p>
  * This is the smallest class in the entire jaiva project.
  * <p>
- * Used in conjunction with {@link ContextTrace} to keep track of the context in
+ * Used in conjunction with {@link Scope} to keep track of the context in
  * which a variable is defined or used.
  */
 public enum Context {
@@ -73,7 +73,7 @@ public enum Context {
      * <p>
      * This context is used to indicate that the end of a file has been reached
      * and there are no more lines to interpret.
-     * It is used only in {@link DebugController#endOfFile(java.util.HashMap)}
+     * It is used only in {@link DebugController#endOfFile(Scope)}
      */
     EOF
 }

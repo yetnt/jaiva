@@ -1,12 +1,10 @@
 package com.jaiva.interpreter.globals;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.jaiva.errors.InterpreterException.FunctionParametersException;
 import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
-import com.jaiva.interpreter.ContextTrace;
-import com.jaiva.interpreter.MapValue;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
@@ -62,15 +60,15 @@ public class Types extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            this.checkParams(tFuncCall, cTrace);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
-                    cTrace);
+            this.checkParams(tFuncCall, scope);
+            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+                    scope);
 
             if (!(val instanceof String value))
-                throw new WtfAreYouDoingException(cTrace, params.getFirst() + " cannot become a number kau",
+                throw new WtfAreYouDoingException(scope, params.getFirst() + " cannot become a number kau",
                         tFuncCall.lineNumber);
 
             int type = value.startsWith("0b") ? 2 : value.startsWith("0x") ? 16 : value.startsWith("0c") ? 8 : -1;
@@ -82,16 +80,16 @@ public class Types extends BaseGlobals {
                     if (params.size() == 1)
                         return Integer.parseInt(value, type != -1 ? type : 10);
 
-                    Object r = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config,
-                            cTrace);
+                    Object r = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), false, config,
+                            scope);
                     if (!(r instanceof TVoidValue) && !(r instanceof Integer))
-                        throw new FunctionParametersException(cTrace, this, "2", tFuncCall.lineNumber);
+                        throw new FunctionParametersException(scope, this, "2", tFuncCall.lineNumber);
                     int radix = r instanceof TVoidValue ? -1 : (int) r;
 
                     return Integer.parseInt(value, type != -1 ? type : radix != -1 ? radix : 10);
                 }
             } catch (NumberFormatException e) {
-                throw new WtfAreYouDoingException(cTrace, params.getFirst() + " cannot become a number kau",
+                throw new WtfAreYouDoingException(scope, params.getFirst() + " cannot become a number kau",
                         tFuncCall.lineNumber);
             }
         }
@@ -110,12 +108,12 @@ public class Types extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            this.checkParams(tFuncCall, cTrace);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
-                    cTrace);
+            this.checkParams(tFuncCall, scope);
+            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), false, config,
+                    scope);
 
             if (val instanceof Double || val instanceof BaseFunction) {
                 return val.toString();
@@ -126,10 +124,10 @@ public class Types extends BaseGlobals {
             else if (val instanceof Integer integer) {
                 if (params.size() == 1)
                     return val.toString();
-                Object r = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config,
-                        cTrace);
+                Object r = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), false, config,
+                        scope);
                 if (!(r instanceof TVoidValue) && !(r instanceof Integer))
-                    throw new FunctionParametersException(cTrace, this, "2", tFuncCall.lineNumber);
+                    throw new FunctionParametersException(scope, this, "2", tFuncCall.lineNumber);
                 int radix = r instanceof TVoidValue ? null : (int) r;
                 return switch (radix) {
                     case 2 -> "0b" + Integer.toBinaryString(integer);
@@ -140,7 +138,7 @@ public class Types extends BaseGlobals {
             } else if (val instanceof TVoidValue v) {
                 return v.toString();
             } else {
-                throw new WtfAreYouDoingException(cTrace, params.get(0) + " cannot become a string kau",
+                throw new WtfAreYouDoingException(scope, params.get(0) + " cannot become a string kau",
                         tFuncCall.lineNumber);
             }
         }
@@ -154,15 +152,15 @@ public class Types extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
 
-            this.checkParams(tFuncCall, cTrace);
+            this.checkParams(tFuncCall, scope);
             if (params.isEmpty())
                 return Token.voidValue(tFuncCall.lineNumber);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
-                    cTrace);
+            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+                    scope);
 
             return switch (val) {
                 case ArrayList arrayList -> "array";

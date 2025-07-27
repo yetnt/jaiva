@@ -1,6 +1,5 @@
 package com.jaiva.interpreter.runtime;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
@@ -59,17 +58,12 @@ public class DebugController {
     public Tuple2<Boolean, Boolean> stepOver = new Tuple2<>(false, false);
 
     /**
-     * The vfs at the current execution context and time.
-     */
-    public Vfs vfs = new Vfs();
-
-    /**
      * The context trace for the current execution.
      * This is used to keep track of the execution context, including the current
      * function call stack and variable values.
      * It is updated by the interpreter as it processes each line of code.
      */
-    public ContextTrace cTrace = new ContextTrace();
+    public Scope scope;
 
     /**
      * Activates the debugger.
@@ -92,17 +86,14 @@ public class DebugController {
      *                   if any.
      * @param t          The token associated with the current execution context, if
      *                   any.
-     * @param vf        The virtual file system containing the variables and their
-     *                   values at the current execution context.
-     * @param cTrace Context Trace.
+     * @param scope Context Trace.
      */
-    public void print(int lineNumber, Symbol s, Token<?> t, Vfs vf, ContextTrace cTrace) {
+    public void print(int lineNumber, Symbol s, Token<?> t, Scope scope) {
         if (active) {
             currentLineNumber = lineNumber;
             if (!stepOver.second && stepOver.first) {
                 stepOver = new Tuple2<>(false, true);
-                vfs = vf;
-                this.cTrace = cTrace;
+                this.scope = scope;
             } else {
                 if (!stepOver.first && stepOver.second) {
                     stepOver = new Tuple2<>(false, false);
@@ -116,11 +107,10 @@ public class DebugController {
                         System.out.print(" | Token: " + t.value());
                     }
                 }
-                vfs = vf;
                 System.out.println();
                 System.out.print(Debugger.PROMPT);
                 state = State.PAUSED;
-                this.cTrace = cTrace;
+                this.scope = scope;
                 pause();
             }
             // removeBreakpoint(lineNumber); <- Removed to support recursive functions.
@@ -132,21 +122,20 @@ public class DebugController {
      * to exit.
      * <p>
      * This method is called by
-     * {@link Interpreter#interpret(java.util.ArrayList, com.jaiva.interpreter.ContextTrace, Vfs, IConfig)}
+     * {@link Interpreter#interpret(java.util.ArrayList, Scope, IConfig)}
      * when the end of the file is reached, indicating that
      * there are no more lines to interpret.
      * 
-     * @param vf The virtual file system containing the variables and their values
+     * @param scope The current scope holding the virtual file system containing the variables and their values
      *           at the end of the file.
      */
-    public void endOfFile(Vfs vf) {
+    public void endOfFile(Scope scope) {
         if (active) {
             System.out.println("END OF FILE");
             System.out.println(Debugger.PROMPT);
             active = false;
             state = State.STOPPED;
-            vfs = vf;
-            cTrace = new ContextTrace(Context.EOF, null, new ContextTrace()); // Resetting cTrace to EOL context
+            this.scope = new Scope(Context.EOF, null, scope); // Resetting cTrace to EOL context
             pauseSem.release(); // Release the semaphore to allow the debugger to exit
         }
     }

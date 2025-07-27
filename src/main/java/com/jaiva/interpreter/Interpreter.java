@@ -71,7 +71,7 @@ public class Interpreter {
      * This is used to handle the case where a function return or a loop control is
      * used in the global context.
      *
-     * @param cTrace     The context of the code being interpreted.
+     * @param scope     The context of the code being interpreted.
      * @param lc         The object which caused the interuption.
      * @param lineNumber The line number of the token which caused the interuption.
      * @return Returns a new instance of the ThrowIfGlobalContext class with the
@@ -84,7 +84,7 @@ public class Interpreter {
      *                                 and the object is an
      *                                 error.
      */
-    public static ThrowIfGlobalContext throwIfGlobalContext(ContextTrace cTrace, Object lc, int lineNumber)
+    public static ThrowIfGlobalContext throwIfGlobalContext(Scope scope, Object lc, int lineNumber)
             throws JaivaException {
         if (lc instanceof ThrowIfGlobalContext) {
             lc = ((ThrowIfGlobalContext) lc).c;
@@ -92,19 +92,19 @@ public class Interpreter {
         if (lc instanceof DebugException dlc)
             throw dlc; // user shouldnt catch it anywhere fr.
         else if (lc instanceof Keywords.LoopControl) {
-            if (cTrace.current == Context.GLOBAL)
-                throw new WtfAreYouDoingException(cTrace, "So. You tried using "
+            if (scope.current == Context.GLOBAL)
+                throw new WtfAreYouDoingException(scope, "So. You tried using "
                         + (lc.toString().equals("BREAK") ? Keywords.LC_BREAK : Keywords.LC_CONTINUE)
                         + ". But like, we're not in a loop yknow? ", lineNumber);
         } else if (Primitives.isPrimitive(lc)) {
             // a function return thing then
-            if (cTrace.current == Context.GLOBAL)
-                throw new WtfAreYouDoingException(cTrace,
+            if (scope.current == Context.GLOBAL)
+                throw new WtfAreYouDoingException(scope,
                         "What are you trying to return out of if we're not in a function??", lineNumber);
 
         } else if (lc instanceof TThrowError) {
-            if (cTrace.current == Context.GLOBAL)
-                throw new CimaException(cTrace, ((TThrowError) lc).errorMessage, lineNumber);
+            if (scope.current == Context.GLOBAL)
+                throw new CimaException(scope, ((TThrowError) lc).errorMessage, lineNumber);
         }
         return new ThrowIfGlobalContext(lc, lineNumber);
     }
@@ -136,10 +136,6 @@ public class Interpreter {
      *               one of several types, including TNumberVar, TBooleanVar,
      *               TStringVar,
      *               TUnknownVar, TArrayVar, or TVarReassign.
-     * @param vfs    A map storing variable names as keys and their corresponding
-     *               MapValue
-     *               objects as values. This map is updated based on the operation
-     *               performed.
      * @param config The configuration object containing settings for the
      *               interpreter,
      *               including the file directory and import settings.
@@ -153,29 +149,29 @@ public class Interpreter {
      *                   variable, or
      *                   performing an invalid operation.
      */
-    public static Object handleVariables(Object t, Vfs vfs, IConfig config, ContextTrace cTrace)
+    public static Object handleVariables(Object t, IConfig config, Scope scope)
             throws Exception {
         switch (t) {
             case TNumberVar tNumberVar -> {
-                Object number = Primitives.toPrimitive(tNumberVar.value, vfs, false, config, cTrace);
+                Object number = Primitives.toPrimitive(tNumberVar.value, false, config, scope);
                 BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                         new ArrayList<>(Collections.singletonList(number)), false);
-                vfs.put(tNumberVar.name, var);
+                scope.vfs.put(tNumberVar.name, var);
             }
             case TBooleanVar tBooleanVar -> {
-                Object bool = Primitives.toPrimitive(tBooleanVar.value, vfs, false, config, cTrace);
+                Object bool = Primitives.toPrimitive(tBooleanVar.value, false, config, scope);
                 BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                         new ArrayList<>(Collections.singletonList(bool)), false);
-                vfs.put(tBooleanVar.name, var);
+                scope.vfs.put(tBooleanVar.name, var);
             }
             case TStringVar tStringVar -> {
-                Object string = Primitives.toPrimitive(tStringVar.value, vfs, false, config, cTrace);
+                Object string = Primitives.toPrimitive(tStringVar.value, false, config, scope);
                 BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                         new ArrayList<>(Collections.singletonList(string)), false);
-                vfs.put(tStringVar.name, var);
+                scope.vfs.put(tStringVar.name, var);
             }
             case TUnknownVar tUnknownVar -> {
-                Object something = Primitives.toPrimitive(tUnknownVar.value, vfs, false, config, cTrace);
+                Object something = Primitives.toPrimitive(tUnknownVar.value, false, config, scope);
                 Symbol var;
                 if (something instanceof BaseFunction)
                     // this assigns
@@ -185,7 +181,7 @@ public class Interpreter {
                             something instanceof ArrayList ? (ArrayList) something
                                     : new ArrayList<>(Collections.singletonList(something)),
                             false);
-                vfs.put(tUnknownVar.name, var);
+                scope.vfs.put(tUnknownVar.name, var);
             }
             case TArrayVar tArrayVar -> {
                 ArrayList<Object> arr = new ArrayList<>();
@@ -194,41 +190,41 @@ public class Interpreter {
                         if (obj instanceof ArrayList) {
                             arr.add(obj);
                         } else {
-                            arr.add(Primitives.toPrimitive(Primitives.parseNonPrimitive(obj), vfs, false, config, cTrace));
+                            arr.add(Primitives.toPrimitive(Primitives.parseNonPrimitive(obj), false, config, scope));
                         }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 });
                 BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t, arr, true);
-                vfs.put(tArrayVar.name, var);
+                scope.vfs.put(tArrayVar.name, var);
             }
             case TFunction function -> {
                 String name = function.name.replace("F~", "");
                 BaseFunction func = BaseFunction.create(name, function);
-                vfs.put(name, func);
+                scope.vfs.put(name, func);
             }
             case TVarReassign tVarReassign -> {
-                MapValue mapValue = vfs.get(tVarReassign.name);
+                MapValue mapValue = scope.vfs.get(tVarReassign.name);
                 if (MapValue.isEmpty(mapValue)
                         || (mapValue.getValue() == null || !(mapValue.getValue() instanceof BaseVariable
                         || mapValue.getValue() instanceof BaseFunction)))
-                    throw new UnknownVariableException(cTrace, tVarReassign);
+                    throw new UnknownVariableException(scope, tVarReassign);
 
                 Symbol var = (Symbol) mapValue.getValue();
                 if (var.isFrozen)
-                    throw new FrozenSymbolException(cTrace, var, tVarReassign.lineNumber);
+                    throw new FrozenSymbolException(scope, var, tVarReassign.lineNumber);
 
-                Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarReassign.newValue), vfs, false,
-                        config, cTrace);
+                Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarReassign.newValue), false,
+                        config, scope);
 
                 if (o instanceof BaseFunction func) {
                     mapValue.setValue(func);
                 } else if (var instanceof BaseVariable v) {
                     if (o instanceof ArrayList a) {
-                        v.a_set(a, cTrace);
+                        v.a_set(a, scope);
                     } else {
-                        v.s_set(o, cTrace);
+                        v.s_set(o, scope);
                     }
                 }
 
@@ -237,7 +233,7 @@ public class Interpreter {
             case null, default -> {
                 // here its a primitive being parsed or recursively called
                 // or TVarRef or TFuncCall or TStatement
-                return Primitives.toPrimitive(t, vfs, false, config, cTrace);
+                return Primitives.toPrimitive(t, false, config, scope);
             }
         }
 
@@ -251,11 +247,7 @@ public class Interpreter {
      * It takes a list of tokens and a context and interprets the code accordingly.
      *
      * @param tokens The list of tokens to interpret.
-     * @param cTrace The context of the code being interpreted.
-     * @param vfs    A map storing variable names as keys and their corresponding
-     *               MapValue
-     *               objects as values. This map is updated based on the operation
-     *               performed.
+     * @param scope The current scope of the array list of tokens being interpreted
      * @param config The configuration object containing settings for the
      *               interpreter,
      *               including the file directory and import settings.
@@ -266,13 +258,12 @@ public class Interpreter {
      *                   unknown
      *                   variable or an invalid operation.
      */
-    public static Object interpret(ArrayList<Token<?>> tokens, ContextTrace cTrace, Vfs vfs,
-            IConfig config)
+    public static Object interpret(ArrayList<Token<?>> tokens, Scope scope, IConfig config)
             throws Exception {
         // prepare a new vfs.
-        vfs = config.importVfs && cTrace.current == Context.GLOBAL ? new Vfs() : vfs;
+        scope.vfs = config.importVfs && scope.current == Context.GLOBAL ? new Vfs() : scope.vfs;
 
-        vfs = vfs != null ? vfs.clone() : vfs;
+//        vfs = vfs != null ? vfs.clone() : vfs;
 
         // Step 2: go throguh eahc token
         for (Token<?> t : tokens) {
@@ -281,13 +272,13 @@ public class Interpreter {
             if (config.dc.active) {
                 if (config.dc.getBreakpoints().contains(token.lineNumber)) {
                     // if we are, then we pause the execution and wait for the user to continue.
-                    config.dc.print(token.lineNumber, null, t, vfs, cTrace);
+                    config.dc.print(token.lineNumber, null, t,  scope);
                 }
                 if (config.dc.stepOver.equals(new Tuple2<>(true, false))) {
-                    config.dc.print(token.lineNumber, null, t, vfs, cTrace);
+                    config.dc.print(token.lineNumber, null, t, scope);
                     continue;
                 } else if (config.dc.stepOver.equals(new Tuple2<>(false, true))) {
-                    config.dc.print(token.lineNumber, null, t, vfs, cTrace);
+                    config.dc.print(token.lineNumber, null, t, scope);
                 }
             }
             if (token instanceof TVoidValue) {
@@ -323,12 +314,11 @@ public class Interpreter {
                     newConfig.importVfs = true; // This tells the interpreter to only parse exported symbols. (Functions
                                                 // and variables)
 
-                    vfsFromFile = (Vfs) Interpreter.interpret(tks, cTrace,
-                            vfs, newConfig);
+                    vfsFromFile = (Vfs) Interpreter.interpret(tks, scope, newConfig);
 
                     if ((vfsFromFile == null)) {
                         // error? maybe not yet but throw.
-                        throw new CatchAllException(cTrace,
+                        throw new CatchAllException(scope,
                                 importPath.toString()
                                         + " either had nothing to export or somethign wqent horribly wrong.",
                                 tImport.lineNumber);
@@ -338,59 +328,58 @@ public class Interpreter {
                 if (!tImport.symbols.isEmpty()) {
                     vfsFromFile.entrySet().removeIf(e -> !tImport.symbols.contains(e.getKey()));
                 }
-                assert vfs != null;
-                vfs.putAll(vfsFromFile);
+                scope.vfs.putAll(vfsFromFile);
             } else if (isVariableToken(token)) {
                 if (token instanceof TFuncCall || token instanceof TVarRef)
-                    handleVariables(t, vfs, config, cTrace);
+                    handleVariables(t, config, scope);
                 else
-                    handleVariables(token, vfs, config, cTrace);
+                    handleVariables(token, config, scope);
                 // If it returns a meaningful value, then oh well, because in this case they
                 // basically called a function that returned soemthing but dont use that value.
             } else if (token instanceof TFuncReturn tFuncReturn && !config.importVfs) {
-                Object c = handleVariables(tFuncReturn.value, vfs, config, cTrace);
-                return throwIfGlobalContext(cTrace, c, token.lineNumber);
+                Object c = handleVariables(tFuncReturn.value, config, scope);
+                return throwIfGlobalContext(scope, c, token.lineNumber);
             } else if (token instanceof TLoopControl loopControl && !config.importVfs) {
                 Object lc = loopControl.type;
-                return throwIfGlobalContext(cTrace, lc, loopControl.lineNumber);
+                return throwIfGlobalContext(scope, lc, loopControl.lineNumber);
             } else if (token instanceof TThrowError lc && !config.importVfs) {
-                return throwIfGlobalContext(cTrace, lc, lc.lineNumber);
+                return throwIfGlobalContext(scope, lc, lc.lineNumber);
             } else if (token instanceof TWhileLoop whileLoop && !config.importVfs) {
                 // while loop
-                Object cond = Primitives.setCondition(whileLoop, vfs, config, cTrace);
+                Object cond = Primitives.setCondition(whileLoop, config, scope);
 
                 boolean terminate = false;
 
                 while ((Boolean) cond && !terminate) {
                     Object out = Interpreter.interpret(whileLoop.body.lines,
-                            new ContextTrace(Context.WHILE, token, cTrace), vfs, config);
+                            new Scope(Context.WHILE, token, scope), config);
                     if (out instanceof ThrowIfGlobalContext old) {
                         if (old.c == Keywords.LoopControl.BREAK)
                             break;
-                        ThrowIfGlobalContext checker = throwIfGlobalContext(cTrace, out, old.lineNumber);
+                        ThrowIfGlobalContext checker = throwIfGlobalContext(scope, out, old.lineNumber);
                         if (checker.c == Keywords.LoopControl.BREAK)
                             break;
                         return checker;
                     }
 
-                    cond = Primitives.setCondition(whileLoop, vfs, config, cTrace);
+                    cond = Primitives.setCondition(whileLoop, config, scope);
                 }
                 // while loop
             } else if (token instanceof TIfStatement ifStatement && !config.importVfs) {
                 // if statement handling below
                 if (!(ifStatement.condition instanceof TStatement))
-                    throw new WtfAreYouDoingException(cTrace,
+                    throw new WtfAreYouDoingException(scope,
                             "Okay well idk how i will check for true in " + ifStatement,
                             token.lineNumber);
-                Object cond = Primitives.setCondition(ifStatement, vfs, config, cTrace);
+                Object cond = Primitives.setCondition(ifStatement, config, scope);
 
                 // if if, lol i love coding
                 if ((Boolean) cond) {
                     // run if code.
                     Object out = Interpreter.interpret(ifStatement.body.lines,
-                            new ContextTrace(Context.IF, token, cTrace), vfs, config);
+                            new Scope(Context.IF, token, scope), config);
                     if (out instanceof ThrowIfGlobalContext g) {
-                        return throwIfGlobalContext(cTrace, out, g.lineNumber);
+                        return throwIfGlobalContext(scope, out, g.lineNumber);
                     }
                 } else {
                     // check for else branches first
@@ -398,15 +387,15 @@ public class Interpreter {
                     for (Object e : ifStatement.elseIfs) {
                         TIfStatement elseIf = (TIfStatement) e;
                         if (!(elseIf.condition instanceof TStatement))
-                            throw new WtfAreYouDoingException(cTrace,
+                            throw new WtfAreYouDoingException(scope,
                                     "Okay well idk how i will check for true in " + elseIf, token.lineNumber);
-                        Object cond2 = Primitives.setCondition(elseIf, vfs, config, cTrace);
+                        Object cond2 = Primitives.setCondition(elseIf, config, scope);
                         if ((Boolean) cond2) {
                             // run else if code.
                             Object out = Interpreter.interpret(elseIf.body.lines,
-                                    new ContextTrace(Context.ELSE, token, cTrace), vfs, config);
+                                    new Scope(Context.ELSE, token, scope), config);
                             if (out instanceof ThrowIfGlobalContext g) {
-                                return throwIfGlobalContext(cTrace, out, g.lineNumber);
+                                return throwIfGlobalContext(scope, out, g.lineNumber);
                             }
                             runElseBlock = false;
                             break;
@@ -415,35 +404,34 @@ public class Interpreter {
                     if (runElseBlock && ifStatement.elseBody != null) {
                         // run else block.
                         Object out = Interpreter.interpret(ifStatement.elseBody.lines,
-                                new ContextTrace(Context.ELSE, token, cTrace), vfs, config);
+                                new Scope(Context.ELSE, token, scope), config);
                         if (out instanceof ThrowIfGlobalContext g) {
-                            return throwIfGlobalContext(cTrace, out, g.lineNumber);
+                            return throwIfGlobalContext(scope, out, g.lineNumber);
                         }
                     }
                 }
                 // if statement handling above
             } else if (token instanceof TForLoop tForLoop && !config.importVfs) {
                 // for loop
-                handleVariables(tForLoop.variable, vfs, config, cTrace);
-                assert vfs != null;
-                Object vObject = vfs.get(tForLoop.variable.name).getValue();
+                handleVariables(tForLoop.variable, config, scope);
+                Object vObject = scope.vfs.get(tForLoop.variable.name).getValue();
                 if (!(vObject instanceof BaseVariable))
-                    throw new WtfAreYouDoingException(cTrace, vObject, BaseVariable.class,
+                    throw new WtfAreYouDoingException(scope, vObject, BaseVariable.class,
                             tForLoop.lineNumber);
                 BaseVariable v = (BaseVariable) vObject;
                 // if (!(v.s_get() instanceof Integer))
                 // throw new WtfAreYouDoingException("");
                 if (tForLoop.array != null && tForLoop.increment == null && tForLoop.condition == null) {
                     // for each
-                    MapValue mapValue = vfs.get(tForLoop.array.varName);
+                    MapValue mapValue = scope.vfs.get(tForLoop.array.varName);
                     if (mapValue == null || !((mapValue.getValue()) instanceof BaseVariable))
-                        throw new UnknownVariableException(cTrace, tForLoop.array);
+                        throw new UnknownVariableException(scope, tForLoop.array);
                     BaseVariable arr = (BaseVariable) mapValue.getValue();
 
                     if (arr.variableType != VariableType.ARRAY
                             && arr.variableType != VariableType.A_FUCKING_AMALGAMATION
                             && !(arr.s_get() instanceof String))
-                        throw new WtfAreYouDoingException(cTrace,
+                        throw new WtfAreYouDoingException(scope,
                                 "Ayo that variable argument on " + tForLoop.lineNumber + " gotta be an array.",
                                 token.lineNumber);
 
@@ -456,61 +444,61 @@ public class Interpreter {
                             : arr.a_getAll();
 
                     for (Object o : list) {
-                        v.s_set(o, cTrace);
+                        v.s_set(o, scope);
                         Object out = Interpreter.interpret(tForLoop.body.lines,
-                                new ContextTrace(Context.FOR, token, cTrace), vfs, config);
+                                new Scope(Context.FOR, token, scope), config);
                         if (out instanceof ThrowIfGlobalContext g) {
                             if (g.c == Keywords.LoopControl.BREAK)
                                 break;
                             if (g.c == Keywords.LoopControl.CONTINUE)
                                 continue;
-                            return throwIfGlobalContext(cTrace, out, g.lineNumber);
+                            return throwIfGlobalContext(scope, out, g.lineNumber);
                         }
                     }
                 } else {
                     // normal for loop.
                     assert tForLoop.increment != null;
                     char increment = tForLoop.increment.charAt(0);
-                    Object cond = Primitives.setCondition(tForLoop, vfs, config, cTrace);
+                    Object cond = Primitives.setCondition(tForLoop, config, scope);
                     while ((Boolean) cond) {
 
                         Object out = Interpreter.interpret(tForLoop.body.lines,
-                                new ContextTrace(Context.FOR, token, cTrace), vfs, config);
+                                new Scope(Context.FOR, token, scope), config);
                         if (out instanceof ThrowIfGlobalContext g) {
                             if (g.c == Keywords.LoopControl.BREAK)
                                 break;
                             if (g.c == Keywords.LoopControl.CONTINUE) {
-                                v.s_set((Integer) v.s_get() + (increment == '+' ? 1 : -1), cTrace);
-                                cond = Primitives.setCondition(tForLoop, vfs, config, cTrace);
+                                v.s_set((Integer) v.s_get() + (increment == '+' ? 1 : -1), scope);
+                                cond = Primitives.setCondition(tForLoop, config, scope);
                                 continue;
                             }
-                            return throwIfGlobalContext(cTrace, out, g.lineNumber);
+                            return throwIfGlobalContext(scope, out, g.lineNumber);
                         }
-                        v.s_set((Integer) v.s_get() + (increment == '+' ? 1 : -1), cTrace);
-                        cond = Primitives.setCondition(tForLoop, vfs, config, cTrace);
+                        v.s_set((Integer) v.s_get() + (increment == '+' ? 1 : -1), scope);
+                        cond = Primitives.setCondition(tForLoop, config, scope);
                     }
                 }
 
-                vfs.remove(v.name);
+                scope.vfs.remove(v.name);
                 // for loop
             } else if (token instanceof TTryCatchStatement throwError && !config.importVfs) {
 
-                Vfs errorVfs = ((Vfs) vfs.clone());
+                Vfs errorVfs = ((Vfs) scope.vfs.clone());
                 errorVfs.entrySet().removeIf(vf -> !vf.getKey().contains("error"));
 
                 String varName = "error" + (!errorVfs.isEmpty() ? errorVfs.size() : "");
 
                 try {
                     Object out = Interpreter.interpret(throwError.tryBlock.lines,
-                            new ContextTrace(Context.TRY, token, cTrace), vfs, config);
+                            new Scope(Context.TRY, token, scope), config);
                     if (out instanceof ThrowIfGlobalContext g) {
                         if (g.c instanceof Keywords
                                 || isVariableToken(g.c)) {
-                            return throwIfGlobalContext(cTrace, out, g.lineNumber);
+                            return throwIfGlobalContext(scope, out, g.lineNumber);
                         } else if (g.c instanceof TThrowError) {
                             Token<?> tContainer = new Token<>(null);
                             TThrowError err = (TThrowError) g.c;
-                            vfs.put(varName,
+                            scope.vfs.put(varName,
                                     BaseVariable.create(
                                             varName,
                                             new TStringVar(
@@ -520,11 +508,11 @@ public class Interpreter {
                                                     err.errorMessage)),
                                             false));
                             Object out2 = Interpreter.interpret(throwError.catchBlock.lines,
-                                    new ContextTrace(Context.CATCH, token, cTrace), vfs,
+                                    new Scope(Context.CATCH, token, scope),
                                     config);
-                            vfs.remove(varName);
+                            scope.vfs.remove(varName);
                             if (out2 instanceof ThrowIfGlobalContext g2) {
-                                return throwIfGlobalContext(cTrace, out2, g2.lineNumber);
+                                return throwIfGlobalContext(scope, out2, g2.lineNumber);
                             }
 
                             // return void.class;
@@ -534,7 +522,7 @@ public class Interpreter {
                     // catch any exception, and call the catch block with the error.
                     Token<?> tContainer = new Token<>(null);
 
-                    vfs.put(varName,
+                    scope.vfs.put(varName,
                             BaseVariable.create(
                                     varName,
                                     new TStringVar(
@@ -544,11 +532,11 @@ public class Interpreter {
                                             e.getMessage())),
                                     false));
                     Object out2 = Interpreter.interpret(throwError.catchBlock.lines,
-                            new ContextTrace(Context.CATCH, token, cTrace), vfs, config); // line
+                            new Scope(Context.CATCH, token, scope), config); // line
                     // 542
-                    vfs.remove(varName);
+                    scope.vfs.remove(varName);
                     if (out2 instanceof ThrowIfGlobalContext g2) {
-                        return throwIfGlobalContext(cTrace, out2, g2.lineNumber);
+                        return throwIfGlobalContext(scope, out2, g2.lineNumber);
                     }
 
                     // return void.class;
@@ -558,10 +546,10 @@ public class Interpreter {
         }
         // System.out.println("heyy");
 
-        if (config.dc.active && cTrace.current == Context.GLOBAL) {
+        if (config.dc.active && scope.current == Context.GLOBAL) {
             // if we're in the global context, then we end the debugging session.
-            config.dc.endOfFile(vfs);
+            config.dc.endOfFile(scope);
         }
-        return config.importVfs || config.REPL ? vfs : void.class;
+        return config.importVfs || config.REPL ? scope.vfs : void.class;
     }
 }

@@ -6,7 +6,7 @@ import java.util.*;
 
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.InterpreterException.*;
-import com.jaiva.interpreter.ContextTrace;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
@@ -165,7 +165,7 @@ public class IOFile extends BaseGlobals {
             try {
                 fs = new Scanner(f);
             } catch (FileNotFoundException e) {
-                throw new InterpreterException.CatchAllException(new ContextTrace(),
+                throw new InterpreterException.CatchAllException(new Scope(config),
                         "Well, the current file doesnt exist??...", -1);
             }
             ArrayList<String> contents = new ArrayList<>();
@@ -179,7 +179,7 @@ public class IOFile extends BaseGlobals {
             file.add(new ArrayList<>(Arrays.asList(f.canRead(), f.canWrite(), f.canExecute())));
 
             ((TArrayVar) this.token).contents = file; // set the token.
-            a_set(file, new ContextTrace()); // set the interpreter variable.
+            a_unsafeSet(file); // set the interpreter variable.
 
             freeze(); // freeze this variable.
         }
@@ -208,14 +208,14 @@ public class IOFile extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
-                    cTrace);
+            checkParams(tFuncCall, scope);
+            Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+                    scope);
             if (!(path instanceof String))
-                throw new WtfAreYouDoingException(cTrace, "Da path must be a string.",
+                throw new WtfAreYouDoingException(scope, "Da path must be a string.",
                         tFuncCall.lineNumber);
 
             Path baseDir = (config.filePath != null) ? config.filePath.getParent() : null;
@@ -231,7 +231,7 @@ public class IOFile extends BaseGlobals {
 
             File file = filePath.toFile();
             if (!file.exists())
-                throw new WtfAreYouDoingException(new ContextTrace(), "File does not exist: " + filePath,
+                throw new WtfAreYouDoingException(new Scope(config), "File does not exist: " + filePath,
                         tFuncCall.lineNumber);
 
             ArrayList<String> contents = new ArrayList<>();
@@ -240,7 +240,7 @@ public class IOFile extends BaseGlobals {
                     contents.add(scanner.nextLine());
                 }
             } catch (FileNotFoundException e) {
-                throw new CatchAllException(new ContextTrace(),
+                throw new CatchAllException(new Scope(config),
                         "Cannot read file but we found it... " + filePath, tFuncCall.lineNumber);
             }
 
@@ -284,23 +284,23 @@ public class IOFile extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
             // TODO Auto-generated method stub
-            checkParams(tFuncCall, cTrace);
-            Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
-                    cTrace);
+            checkParams(tFuncCall, scope);
+            Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), false, config,
+                    scope);
             if (!(path instanceof String))
-                throw new FunctionParametersException(cTrace, this, "1", params.get(0), String.class,
+                throw new FunctionParametersException(scope, this, "1", params.get(0), String.class,
                         tFuncCall.lineNumber);
 
-            Object content = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false, config,
-                    cTrace);
+            Object content = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), false, config,
+                    scope);
             StringBuilder outBuilder = new StringBuilder();
             String output = content instanceof String ? (String) content : "";
             if (!(content instanceof String) && !(content instanceof ArrayList))
-                throw new FunctionParametersException(cTrace, this, "2", params.get(1), String.class,
+                throw new FunctionParametersException(scope, this, "2", params.get(1), String.class,
                         tFuncCall.lineNumber);
             if (content instanceof ArrayList list) {
                 if (list.isEmpty())
@@ -319,26 +319,26 @@ public class IOFile extends BaseGlobals {
 
             boolean canRead = true, canWrite = true, canExecute = true;
             if (params.size() > 2) {
-                Object cr = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(2)), vfs, false, config,
-                        cTrace);
+                Object cr = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(2)), false, config,
+                        scope);
                 if (!(cr instanceof Boolean))
-                    throw new FunctionParametersException(cTrace, this, "3", params.get(2), boolean.class,
+                    throw new FunctionParametersException(scope, this, "3", params.get(2), boolean.class,
                             tFuncCall.lineNumber);
                 canRead = cr.equals(Boolean.TRUE);
             }
             if (params.size() > 3) {
-                Object cw = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(3)), vfs, false, config,
-                        cTrace);
+                Object cw = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(3)), false, config,
+                        scope);
                 if (!(cw instanceof Boolean))
-                    throw new FunctionParametersException(cTrace, this, "4", params.get(3), boolean.class,
+                    throw new FunctionParametersException(scope, this, "4", params.get(3), boolean.class,
                             tFuncCall.lineNumber);
                 canWrite = cw.equals(Boolean.TRUE);
             }
             if (params.size() > 4) {
-                Object ce = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(4)), vfs, false, config,
-                        cTrace);
+                Object ce = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(4)), false, config,
+                        scope);
                 if (!(ce instanceof Boolean))
-                    throw new FunctionParametersException(cTrace, this, "5", params.get(4), boolean.class,
+                    throw new FunctionParametersException(scope, this, "5", params.get(4), boolean.class,
                             tFuncCall.lineNumber);
                 canExecute = ce.equals(Boolean.TRUE);
             }
@@ -362,7 +362,7 @@ public class IOFile extends BaseGlobals {
                 return false; // failed to create file
             }
             return true; // file created successfully
-            // return super.call(tFuncCall, params, vfs, config);
+            // return super.call(tFuncCall, params, config);
         }
     }
 }

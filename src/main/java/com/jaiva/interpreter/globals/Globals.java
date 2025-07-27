@@ -11,7 +11,7 @@ import com.jaiva.Main;
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
 import com.jaiva.errors.JaivaException;
-import com.jaiva.interpreter.ContextTrace;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.globals.math.Math;
@@ -84,8 +84,8 @@ public class Globals extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs,
-                IConfig config, ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, 
+                IConfig config, Scope scope)
                 throws Exception {
             String name;
             if (params.getFirst() instanceof String) {
@@ -93,16 +93,16 @@ public class Globals extends BaseGlobals {
             } else if (params.getFirst() instanceof Token && ((Token<?>) params.getFirst()).value() instanceof TVarRef) {
                 name = ((TVarRef) ((Token<?>) params.getFirst()).value()).varName.toString();
             } else {
-                throw new InterpreterException.WtfAreYouDoingException(cTrace,
+                throw new InterpreterException.WtfAreYouDoingException(scope,
                         "getVarClass() only accepts a variable reference or a string, whatever you sent is disgusting.",
                         tFuncCall.lineNumber);
             }
-            MapValue var = vfs.get(name);
+            MapValue var = scope.vfs.get(name);
             if (var == null) {
-                throw new InterpreterException.UnknownVariableException(cTrace, name, tFuncCall.lineNumber);
+                throw new InterpreterException.UnknownVariableException(scope, name, tFuncCall.lineNumber);
             }
             if (!(var.getValue() instanceof Symbol symbol)) {
-                throw new InterpreterException.WtfAreYouDoingException(cTrace,
+                throw new InterpreterException.WtfAreYouDoingException(scope,
                         name + " is not a variable nor a function, wtf. this error shouldnt happen.",
                         tFuncCall.lineNumber);
             }
@@ -150,17 +150,17 @@ public class Globals extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs,
-                IConfig config, ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, 
+                IConfig config, Scope scope)
                 throws Exception {
             if (tFuncCall.args.size() != params.size())
-                throw new InterpreterException.FunctionParametersException(cTrace, this, params.size());
+                throw new InterpreterException.FunctionParametersException(scope, this, params.size());
 
             ArrayList<Object> returned = new ArrayList<>();
             tFuncCall.args.forEach(arg -> {
                 if (arg instanceof TVarRef && ((TVarRef) arg).index == null) {
                     String name = ((TVarRef) arg).name;
-                    MapValue v = vfs.get(name);
+                    MapValue v = scope.vfs.get(name);
                     if (v == null)
                         return;
                     if (!(v.getValue() instanceof BaseVariable))
@@ -173,7 +173,7 @@ public class Globals extends BaseGlobals {
                     // stuff that need be parsed, parse and pray arraylist is returned.
                     Object parsed = null;
                     try {
-                        parsed = Primitives.toPrimitive(Primitives.parseNonPrimitive(arg), vfs, false, config, cTrace);
+                        parsed = Primitives.toPrimitive(Primitives.parseNonPrimitive(arg),  false, config, scope);
                     } catch (Exception e) {
                         // do nothing.
                     }
@@ -210,14 +210,14 @@ public class Globals extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,  IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
-                    cTrace);
+            checkParams(tFuncCall, scope);
+            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()),  false, config,
+                    scope);
             if (!(val instanceof Integer integer))
-                throw new WtfAreYouDoingException(cTrace, "Bruv, you can't just like, pls put number",
+                throw new WtfAreYouDoingException(scope, "Bruv, you can't just like, pls put number",
                         tFuncCall.lineNumber);
 
             Thread.sleep(integer);

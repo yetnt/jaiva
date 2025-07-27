@@ -1,9 +1,8 @@
 package com.jaiva.errors;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import com.jaiva.interpreter.MapValue;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.runtime.IConfig;
 
@@ -84,7 +83,7 @@ public class JaivaException extends Exception {
          * Snapshot of the variable functions store where the dbeug call, also capturing
          * the scope of the debug call and any other variables that were created.
          */
-        public Vfs vfs = new Vfs();
+        public Scope scope;
         /**
          * The interpreter configuration used for the debug call.
          */
@@ -100,17 +99,16 @@ public class JaivaException extends Exception {
          * Constructor for the DebugException.
          * 
          * @param comp       The components that were passed to the debug call.
-         * @param vfs        Snapshot of the variable functions store where the debug
-         *                   call was made.
+         * @param scope        Snapshot of the scope at the current time
          * @param config     The configuration used for the debug call.
          * @param lineNumber The line number where the exception was thrown.
          */
-        public DebugException(ArrayList<Object> comp, Vfs vfs, IConfig config,
+        public DebugException(ArrayList<Object> comp, Scope scope, IConfig config,
                               int lineNumber) {
             super("A debug error with the following components has been used: " + comp.toString());
             this.lineNumber = lineNumber;
             this.components = comp;
-            this.vfs = vfs;
+            this.scope = scope;
             this.config = config;
             // close();
         }
@@ -137,7 +135,7 @@ public class JaivaException extends Exception {
 
         @Override
         public String toString() {
-            return "DebugException [lineNumber=" + lineNumber + ", components=" + components + ", vfs=" + vfs
+            return "DebugException [lineNumber=" + lineNumber + ", components=" + components + ", scope=" + scope
                     + ", config=" + config + ", error=" + error + "]";
         }
     }

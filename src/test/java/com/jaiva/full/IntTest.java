@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import com.jaiva.Main;
 import com.jaiva.errors.InterpreterException.TStatementResolutionException;
 import com.jaiva.errors.JaivaException.DebugException;
-import com.jaiva.interpreter.ContextTrace;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -61,7 +61,7 @@ public class IntTest {
                     FILE_JIV.toString())),
                     FILE_JIV.toString(),
                     Main.callJaivaSrc());
-            Interpreter.interpret(tokens, new ContextTrace(), new Globals(c).vfs, c);
+            Interpreter.interpret(tokens, new Scope(c), c);
 
             // DebugException was not thrown. Test failure.
             Assertions.fail("Expected DebugException, but no exception was thrown.");
@@ -70,7 +70,7 @@ public class IntTest {
             Assertions.assertNull(e.error, "An error ocurred and was saved into DebugException.error");
 
             // Then check if the interpreter has the string.
-            Assertions.assertEquals("Hello World!", e.components.get(0),
+            Assertions.assertEquals("Hello World!", e.components.getFirst(),
                     "d_emit did not get \"Hello World\" as a component");
         } catch (Exception e) {
             // catch any other exception that we realistically don't want to catch
@@ -91,7 +91,7 @@ public class IntTest {
                     FILE2_JIV.toString())),
                     FILE2_JIV.toString(),
                     Main.callJaivaSrc());
-            Interpreter.interpret(tokens, new ContextTrace(), new Globals(c).vfs, c);
+            Interpreter.interpret(tokens, new Scope(c), c);
 
             // DebugException was not thrown. Test failure.
             Assertions.fail("Expected DebugException, but no exception was thrown.");
@@ -126,7 +126,7 @@ public class IntTest {
                     IMPORT_JIV.toString())),
                     IMPORT_JIV.toString(),
                     Main.callJaivaSrc());
-            Interpreter.interpret(tokens, new ContextTrace(), new Globals(c).vfs, c);
+            Interpreter.interpret(tokens, new Scope(c), c);
 
             // DebugException was not thrown. Test failure.
             Assertions.fail("Expected DebugException, but no exception was thrown.");

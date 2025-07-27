@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jaiva.errors.InterpreterException;
-import com.jaiva.interpreter.ContextTrace;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.tokenizer.TokenDefault;
 
 /**
@@ -103,12 +103,26 @@ public class BaseVariable extends Symbol {
      * Sets the array value of the variable.
      * 
      * @param t The array to set this variable to.
-     * @param cTrace Context Trace
+     * @param scope Context Trace
      * @throws InterpreterException.FrozenSymbolException When trying to modify the variable while it's frozen.
      */
-    public void a_set(ArrayList<Object> t, ContextTrace cTrace) throws InterpreterException.FrozenSymbolException {
+    public void a_set(ArrayList<Object> t, Scope scope) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
-            throw new InterpreterException.FrozenSymbolException(cTrace, this);
+            throw new InterpreterException.FrozenSymbolException(scope, this);
+        array = t;
+    }
+
+
+    /**
+     * Sets the array value of the variable.
+     * <p>
+     *     Warning: This is intended for {@link com.jaiva.interpreter.globals.IOFile.VThis} which doesn't have access to the current scope.
+     *     Use the other override or else anything can just be edited.
+     * </p>
+     *
+     * @param t The array to set this variable to.
+     */
+    public void a_unsafeSet(ArrayList<Object> t) {
         array = t;
     }
 
@@ -116,12 +130,12 @@ public class BaseVariable extends Symbol {
      * Adds an array to the array (addAll())
      * 
      * @param a The array to add onto.
-     * @param cTrace Context Trace
+     * @param scope Context Trace
      * @throws InterpreterException.FrozenSymbolException When trying to modify the variable while it's frozen.
      */
-    public void a_addAll(List<String> a, ContextTrace cTrace) throws InterpreterException.FrozenSymbolException {
+    public void a_addAll(List<String> a, Scope scope) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
-            throw new InterpreterException.FrozenSymbolException(cTrace, this);
+            throw new InterpreterException.FrozenSymbolException(scope, this);
         array.addAll(a);
     }
 
@@ -131,9 +145,9 @@ public class BaseVariable extends Symbol {
      * @param a The object to add to the array.
      * @throws InterpreterException.FrozenSymbolException When trying to modify the variable while it's frozen.
      */
-    public void a_add(Object a, ContextTrace cTrace) throws InterpreterException.FrozenSymbolException {
+    public void a_add(Object a, Scope scope) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
-            throw new InterpreterException.FrozenSymbolException(cTrace, this);
+            throw new InterpreterException.FrozenSymbolException(scope, this);
         array.add(a);
     }
 
@@ -171,9 +185,9 @@ public class BaseVariable extends Symbol {
      * @param value The new scalar value
      * @throws InterpreterException.FrozenSymbolException When trying to modify the variable while it's frozen.
      */
-    public void s_set(Object value, ContextTrace cTrace) throws InterpreterException.FrozenSymbolException {
+    public void s_set(Object value, Scope scope) throws InterpreterException.FrozenSymbolException {
         if (isFrozen)
-            throw new InterpreterException.FrozenSymbolException(cTrace, this);
+            throw new InterpreterException.FrozenSymbolException(scope, this);
         this.scalar = value;
     }
 

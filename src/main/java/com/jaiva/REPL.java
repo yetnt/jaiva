@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import com.jaiva.errors.InterpreterException;
-import com.jaiva.interpreter.ContextTrace;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.Primitives;
@@ -169,10 +169,11 @@ public class REPL {
      * The BufferedReader used to read input from the user.
      */
     private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
     /**
-     * The variable functions store (vfs).
+     * The scope object.
      */
-    private Vfs vfs;
+    public final Scope scope;
     /**
      * Interpreter configuration object.
      * It contains the resources and configuration for the interpreter.
@@ -200,7 +201,7 @@ public class REPL {
      */
     public REPL(int mode) throws InterpreterException {
         this.iConfig.REPL = true;
-        this.vfs = new Globals(this.iConfig).vfs;
+        this.scope = new Scope(iConfig);
         this.state = State.ACTIVE;
         this.mode = REPLMode.STANDARD.toEnum(mode);
 
@@ -290,17 +291,16 @@ public class REPL {
                 if (mode == REPLMode.STANDARD) {
                     TokenDefault token = ((Token<?>) something).value();
                     if (Interpreter.isVariableToken(token)) {
-                        Object value = Interpreter.handleVariables(Primitives.parseNonPrimitive(token), this.vfs,
-                                iConfig, new ContextTrace());
+                        Object value = Interpreter.handleVariables(Primitives.parseNonPrimitive(token),
+                                iConfig, scope);
                         // TODO: This assumes the global context, which might not be correct.
                         assert value != null;
                         return new ReadOuput(value.toString());
                     } else {
                         Object h = Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) something)),
-                                new ContextTrace(),
-                                this.vfs, iConfig);
+                                scope, iConfig);
                         if (h instanceof HashMap)
-                            vfs = (Vfs) h;
+                            scope.vfs = (Vfs) h;
 
                         return new ReadOuput();
                     }
@@ -319,7 +319,7 @@ public class REPL {
                                     ? ((Token<?>) tokens.getFirst())
                                     : token;
                             // TODO: This assumes the global context, which might not be correct.
-                            Object value = Interpreter.handleVariables(input, this.vfs, iConfig, new ContextTrace());
+                            Object value = Interpreter.handleVariables(input, iConfig, scope);
                             if (isReturnTokenClass) {
                                 assert value != null;
                                 return new ReadOuput(value.toString());
@@ -329,17 +329,16 @@ public class REPL {
                         } else {
                             Object h = Interpreter.interpret(new ArrayList<>(Collections.singletonList((Token<?>) tokens.getFirst(
                                     ))),
-                                    new ContextTrace(),
-                                    this.vfs, iConfig);
+                                    scope, iConfig);
                             if (h instanceof HashMap)
-                                vfs = (Vfs) h;
+                                scope.vfs = (Vfs) h;
 
                             return new ReadOuput();
                         }
                     } else {
-                        Object h = Interpreter.interpret(tokens, new ContextTrace(), this.vfs, iConfig);
+                        Object h = Interpreter.interpret(tokens, scope, iConfig);
                         if (h instanceof HashMap)
-                            vfs = (Vfs) h;
+                            scope.vfs = (Vfs) h;
                         return new ReadOuput();
                     }
                 } else if (mode == REPLMode.PRINT_TOKEN) {

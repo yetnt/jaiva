@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.jaiva.errors.InterpreterException.*;
-import com.jaiva.interpreter.ContextTrace;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.globals.BaseGlobals;
 import com.jaiva.interpreter.globals.GlobalType;
@@ -51,19 +51,19 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
-                    cTrace);
+            checkParams(tFuncCall, scope);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+                    scope);
 
             if (value instanceof Integer i)
                 return java.lang.Math.abs(i);
             else if (value instanceof Double d)
                 return java.lang.Math.abs(d);
             else
-                throw new FunctionParametersException(cTrace, this, "1", value, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(scope, this, "1", value, Number.class, tFuncCall.lineNumber);
 
         }
     }
@@ -92,25 +92,25 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object lowerObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false,
-                    config, cTrace);
-            Object upperObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false,
-                    config, cTrace);
+            checkParams(tFuncCall, scope);
+            Object lowerObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), false,
+                    config, scope);
+            Object upperObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), false,
+                    config, scope);
 
             if (!(lowerObject instanceof Integer lower))
-                throw new FunctionParametersException(cTrace, this, "1", lowerObject, Integer.class,
+                throw new FunctionParametersException(scope, this, "1", lowerObject, Integer.class,
                         tFuncCall.lineNumber);
 
             if (!(upperObject instanceof Integer upper))
-                throw new FunctionParametersException(cTrace, this, "2", upperObject, Integer.class,
+                throw new FunctionParametersException(scope, this, "2", upperObject, Integer.class,
                         tFuncCall.lineNumber);
 
             if (lower > upper)
-                throw new WtfAreYouDoingException(cTrace, "The lower bound cannot be bigger than the upper bound.",
+                throw new WtfAreYouDoingException(scope, "The lower bound cannot be bigger than the upper bound.",
                         tFuncCall.lineNumber);
             return ThreadLocalRandom.current().nextInt(lower, upper + 1);
         }
@@ -139,19 +139,19 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
-                    cTrace);
+            checkParams(tFuncCall, scope);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+                    scope);
 
             if (value instanceof Integer)
                 return value;
             else if (value instanceof Double d)
                 return (int) java.lang.Math.round(d);
             else
-                throw new FunctionParametersException(cTrace, this, "1", value, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(scope, this, "1", value, Number.class, tFuncCall.lineNumber);
 
         }
     }
@@ -175,19 +175,19 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
-                    cTrace);
+            checkParams(tFuncCall, scope);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+                    scope);
 
             if (value instanceof Integer i)
                 return java.lang.Math.sqrt(i);
             else if (value instanceof Double d)
                 return java.lang.Math.sqrt(d);
             else
-                throw new FunctionParametersException(cTrace, this, "1", value, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(scope, this, "1", value, Number.class, tFuncCall.lineNumber);
 
         }
     }
@@ -212,19 +212,19 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object base = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), vfs, false, config,
-                    cTrace);
-            Object exponent = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), vfs, false,
-                    config, cTrace);
+            checkParams(tFuncCall, scope);
+            Object base = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), false, config,
+                    scope);
+            Object exponent = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), false,
+                    config, scope);
 
             if (!(base instanceof Number))
-                throw new FunctionParametersException(cTrace, this, "1", base, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(scope, this, "1", base, Number.class, tFuncCall.lineNumber);
             if (!(exponent instanceof Number))
-                throw new FunctionParametersException(cTrace, this, "2", exponent, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(scope, this, "2", exponent, Number.class, tFuncCall.lineNumber);
 
             return java.lang.Math.pow(((Number) base).doubleValue(), ((Number) exponent).doubleValue());
 
@@ -250,19 +250,19 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
-                    cTrace);
+            checkParams(tFuncCall, scope);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+                    scope);
 
             if (value instanceof Integer i)
                 return i;
             else if (value instanceof Double d)
                 return (int) java.lang.Math.floor(d);
             else
-                throw new FunctionParametersException(cTrace, this, "1", value, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(scope, this, "1", value, Number.class, tFuncCall.lineNumber);
         }
     }
 
@@ -285,19 +285,19 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
-                    cTrace);
+            checkParams(tFuncCall, scope);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+                    scope);
 
             if (value instanceof Integer i)
                 return i;
             else if (value instanceof Double d)
                 return (int) java.lang.Math.ceil(d);
             else
-                throw new FunctionParametersException(cTrace, this, "1", value, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(scope, this, "1", value, Number.class, tFuncCall.lineNumber);
         }
     }
 }

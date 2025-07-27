@@ -2,7 +2,7 @@ package com.jaiva.interpreter.globals.math;
 
 import java.util.ArrayList;
 
-import com.jaiva.interpreter.ContextTrace;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.globals.BaseGlobals;
 import com.jaiva.interpreter.globals.GlobalType;
@@ -44,14 +44,14 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config, cTrace);
+            checkParams(tFuncCall, scope);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config, scope);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
-                throw new FunctionParametersException(cTrace, this, "1", v, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(scope, this, "1", v, Number.class, tFuncCall.lineNumber);
             }
             // Calculate the arctangent of the number
             double value = ((Number) v).doubleValue();
@@ -77,14 +77,14 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config, cTrace);
+            checkParams(tFuncCall, scope);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config, scope);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
-                throw new FunctionParametersException(cTrace, this, "1", v, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(scope, this, "1", v, Number.class, tFuncCall.lineNumber);
             }
             // Calculate the arctangent of the number
             double value = ((Number) v).doubleValue();
@@ -110,14 +110,14 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config, cTrace);
+            checkParams(tFuncCall, scope);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config, scope);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
-                throw new FunctionParametersException(cTrace, this, "1", v, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(scope, this, "1", v, Number.class, tFuncCall.lineNumber);
             }
             // Calculate the arctangent of the number
             double value = ((Number) v).doubleValue();
@@ -143,14 +143,14 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config, cTrace);
+            checkParams(tFuncCall, scope);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config, scope);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
-                throw new FunctionParametersException(cTrace, this, "1", v, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(scope, this, "1", v, Number.class, tFuncCall.lineNumber);
             }
             // Calculate the arctangent of the number
             double value = ((Number) v).doubleValue();
@@ -176,14 +176,14 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config, cTrace);
+            checkParams(tFuncCall, scope);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config, scope);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
-                throw new FunctionParametersException(cTrace, this, "1", v, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(scope, this, "1", v, Number.class, tFuncCall.lineNumber);
             }
             // Calculate the arctangent of the number
             double value = ((Number) v).doubleValue();
@@ -209,14 +209,14 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config, cTrace);
+            checkParams(tFuncCall, scope);
+            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config, scope);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
-                throw new FunctionParametersException(cTrace, this, "1", v, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(scope, this, "1", v, Number.class, tFuncCall.lineNumber);
             }
             // Calculate the arctangent of the number
             double value = ((Number) v).doubleValue();
@@ -241,15 +241,15 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
-                    cTrace);
+            checkParams(tFuncCall, scope);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+                    scope);
             // Ensure the first parameter is a number
             if (!(value instanceof Number)) {
-                throw new FunctionParametersException(cTrace, this, "1", value, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(scope, this, "1", value, Number.class, tFuncCall.lineNumber);
             }
             // Convert degrees to radians
             double degrees = ((Number) value).doubleValue();
@@ -274,15 +274,15 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, Vfs vfs, IConfig config,
-                ContextTrace cTrace)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+                Scope scope)
                 throws Exception {
-            checkParams(tFuncCall, cTrace);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), vfs, false, config,
-                    cTrace);
+            checkParams(tFuncCall, scope);
+            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+                    scope);
             // Ensure the first parameter is a number
             if (!(value instanceof Number)) {
-                throw new FunctionParametersException(cTrace, this, "1", value, Number.class, tFuncCall.lineNumber);
+                throw new FunctionParametersException(scope, this, "1", value, Number.class, tFuncCall.lineNumber);
             }
             // Convert radians to degrees
             double radians = ((Number) value).doubleValue();
