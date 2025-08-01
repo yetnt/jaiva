@@ -677,7 +677,7 @@ public class Tokenizer {
                                     continue;
                                 g.tooltip = comment;
                                 g.json.removeKey("toolTip");
-                                g.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
+                                g.json.append("toolTip", (new JDoc(comment.trim()).toString().startsWith("{\"tags\":[],\"description\":") ? EscapeSequence.escapeJson(comment).trim() : new JDoc(comment.trim())), true);
                             }
 
                         }
@@ -705,7 +705,7 @@ public class Tokenizer {
 
                             t.tooltip = comment;
                             t.json.removeKey("toolTip");
-                            t.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
+                            t.json.append("toolTip", (new JDoc(comment.trim()).toString().startsWith("{\"tags\":[],\"description\":") ? EscapeSequence.escapeJson(comment).trim() : new JDoc(comment.trim())), true);
                         }
                         tokens.add(token);
                         m = null;

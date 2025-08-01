@@ -10,10 +10,7 @@ import com.jaiva.interpreter.globals.Types;
 import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.lang.EscapeSequence;
-import com.jaiva.tokenizer.TConfig;
-import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.TokenDefault;
-import com.jaiva.tokenizer.Tokenizer;
+import com.jaiva.tokenizer.*;
 import com.jaiva.tokenizer.Token.TArrayVar;
 import com.jaiva.tokenizer.Token.TDocsComment;
 import com.jaiva.tokenizer.Token.TFunction;
@@ -46,7 +43,7 @@ public class Main {
      * JSON format, JSON format with globals, and enabling debug mode.
      */
     public static ArrayList<String> tokenArgs = new ArrayList<>(
-            Arrays.asList("-s", "-j", "--string", "-json", "-jg", "--json-with-globals", "-d", "--debug", "-is",
+            Arrays.asList("-s", "-j", "--string", "--json", "-jg", "--json-with-globals", "-d", "--debug", "-is",
                     "--include-stacks"));
     /**
      * Version of the Jaiva programming language interpreter. This is a string
@@ -55,7 +52,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "2.0.2";
+    public static String version = "2.1.0-beta.0";
     /**
      * Author, it's just me.
      */
@@ -370,7 +367,7 @@ public class Main {
                                 continue;
                             l.tooltip = comment;
                             l.json.removeKey("toolTip");
-                            l.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
+                            l.json.append("toolTip", (new JDoc(comment.trim()).toString().startsWith("{\"tags\":[],\"description\":") ? EscapeSequence.escapeJson(comment).trim() : new JDoc(comment.trim())), true);
                         }
                     }
                     comment = null;
@@ -397,7 +394,7 @@ public class Main {
 
                         t.tooltip = comment;
                         t.json.removeKey("toolTip");
-                        t.json.append("toolTip", EscapeSequence.escapeJson(comment).trim(), true);
+                        t.json.append("toolTip", (new JDoc(comment.trim()).toString().startsWith("{\"tags\":[],\"description\":") ? EscapeSequence.escapeJson(comment).trim() : new JDoc(comment.trim())), true);
                         tokens.add(token);
                     } else {
                         tokens.add(token);

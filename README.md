@@ -2,6 +2,8 @@
 
 (Current) Version : **_2.0.2_**
 
+(Beta) Version : **_2.1.0-beta.0_**
+
 ![isTen](./images/isTen.png)
 
 ![screenshot of the testType.jiv program](./images/testType.png)

@@ -186,7 +186,7 @@ public record Token<T extends TokenDefault>(T value) {
      * handling the reading of a list of tokens, Should handle this specific token
      * case before the generic {@link Token}, by setting an outside variable or
      * another
-     * way to do such. Then when we do not receive the TDocsComment and that outside
+     * way to do such. Then, when we do not receive the TDocsComment and that outside
      * variable is set, we set the "tooltip" property of the new token to that
      * outside variable, therefore adding the documentation.
      * <p>

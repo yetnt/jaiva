@@ -79,7 +79,9 @@ public class ToJson {
         // String, int, double, boolean. - primitives
         // another object, array - complex types.
 
-        if (value instanceof String && !((String) value).startsWith("{")) {
+        if (value instanceof JDoc) {
+            json.append("\"").append(key).append("\":").append(value.toString()).append(",");
+        } else if (value instanceof String && !((String) value).startsWith("{")) {
             json.append("\"").append(key).append("\": \"").append(value).append("\",");
         } else if (value instanceof TokenDefault || value instanceof Token<?>) {
             TokenDefault t = value instanceof TokenDefault ? (TokenDefault) value : ((Token<?>) value).value();
@@ -91,6 +93,7 @@ public class ToJson {
             for (Object obj : v) {
                 switch (obj) {
                     case ToJson j -> json.append(j.json.toString()).append(",");
+//                    case Comments.JDoc doc -> json.append().append(",")
                     case Token<?> t -> json.append(t.value().toJson()).append(",");
                     case TokenDefault t -> json.append(t.toJson()).append(",");
                     case String s when !(s.startsWith("{") && s.endsWith("}")) ->

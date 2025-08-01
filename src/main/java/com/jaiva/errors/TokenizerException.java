@@ -54,7 +54,7 @@ public class TokenizerException extends JaivaException {
          * @param lineNumber The line number where the error occurred.
          */
         public CatchAllException(String message, int lineNumber) {
-            super(lineNumber, "This error shouldnt happen... (" + message + ")");
+            super(lineNumber, "This error shouldn't happen... (" + message + ")");
         }
     }
 
@@ -78,6 +78,23 @@ public class TokenizerException extends JaivaException {
          */
         public TypeMismatchException(String message, int lineNumber) {
             super(lineNumber, message);
+        }
+    }
+
+    /**
+     * Exception to throw when invalid Jaiva Documentation is written for a given symbol.
+     * It will throw the line number of the symbol with the malformed JDoc as we can never
+     * know the line number of a comment.
+     */
+    public static class MalformedJDocException extends  TokenizerException {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Exception thrown to indicate a symbol's malformed JDoc
+         * @param lineNumber the Line number
+         */
+        public MalformedJDocException(int lineNumber) {
+            super(lineNumber, "This symbol contains invalid JDoc code");
         }
     }
 

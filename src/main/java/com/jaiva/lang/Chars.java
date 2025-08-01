@@ -126,6 +126,10 @@ public class Chars {
      * Represents the ternary operator symbol used in the language.
      */
     public static String TERNARY = "=>";
+    /**
+     * Represents the separator needed to separate a tag in a JDoc string.
+     */
+    public static String DOC_TAG = "$>";
 
     /**
      * The Operators class defines a set of arithmetic and boolean operators.
