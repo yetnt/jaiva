@@ -3,8 +3,6 @@ package com.jaiva.tokenizer.jdoc;
 import com.jaiva.errors.TokenizerException;
 import com.jaiva.errors.TokenizerException.*;
 import com.jaiva.lang.Chars;
-import com.jaiva.tokenizer.jdoc.tags.Tag;
-import com.jaiva.tokenizer.jdoc.tags.TagType;
 
 import java.util.ArrayList;
 import java.util.Scanner;

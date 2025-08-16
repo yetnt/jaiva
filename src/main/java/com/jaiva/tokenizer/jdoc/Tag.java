@@ -1,4 +1,4 @@
-package com.jaiva.tokenizer.jdoc.tags;
+package com.jaiva.tokenizer.jdoc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
