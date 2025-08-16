@@ -164,6 +164,7 @@ public class Main {
                 }
                 case "--test", "-t" -> {
                     System.out.println(new Types().toJson());
+
                     System.exit(0);
                 }
                 case "--update", "-u" -> {
