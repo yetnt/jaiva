@@ -19,6 +19,7 @@ import com.jaiva.tokenizer.Token.TStringVar;
 import com.jaiva.tokenizer.Token.TTryCatchStatement;
 import com.jaiva.tokenizer.Token.TUnknownVar;
 import com.jaiva.tokenizer.Token.TVarRef;
+import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.utils.*;
 import com.jaiva.utils.Validate.IsValidSymbolName;
 
@@ -675,9 +676,10 @@ public class Tokenizer {
                                 if (comment == null || (!(g instanceof TArrayVar) && !(g instanceof TUnknownVar)
                                         && !(g instanceof TFunction)))
                                     continue;
-                                g.tooltip = comment;
+                                JDoc doc = new JDoc(lineNumber, comment.trim());
+                                g.tooltip = doc;
                                 g.json.removeKey("toolTip");
-                                g.json.append("toolTip", (new JDoc(comment.trim()).toString().startsWith("{\"tags\":[],\"description\":") ? EscapeSequence.escapeJson(comment).trim() : new JDoc(comment.trim())), true);
+                                g.json.append("toolTip", doc.toString(), true);
                             }
 
                         }
@@ -703,9 +705,10 @@ public class Tokenizer {
                                 && ((t instanceof TArrayVar) || (t instanceof TUnknownVar)
                                 || (t instanceof TFunction))) {
 
-                            t.tooltip = comment;
+                            JDoc doc = new JDoc(lineNumber, comment.trim());
+                            t.tooltip = doc;
                             t.json.removeKey("toolTip");
-                            t.json.append("toolTip", (new JDoc(comment.trim()).toString().startsWith("{\"tags\":[],\"description\":") ? EscapeSequence.escapeJson(comment).trim() : new JDoc(comment.trim())), true);
+                            t.json.append("toolTip", doc.toString(), true);
                         }
                         tokens.add(token);
                         m = null;

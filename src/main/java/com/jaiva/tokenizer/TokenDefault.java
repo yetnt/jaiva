@@ -26,7 +26,7 @@ public class TokenDefault {
     /**
      * The tooltip or description of the token.
      */
-    public String tooltip = "Jaiva Construct";
+    public Object tooltip = "Jaiva Construct";
     /**
      * The line number associated with the token.
      */

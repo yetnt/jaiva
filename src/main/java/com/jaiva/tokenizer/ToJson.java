@@ -3,6 +3,7 @@ package com.jaiva.tokenizer;
 import java.util.ArrayList;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.jdoc.JDoc;
 
 /**
  * The ToJson class is a utility for constructing JSON-like string
@@ -26,12 +27,12 @@ public class ToJson {
      * @param ln           The line number associated with the object.
      * @param tooltip      The tooltip or description of the object.
      */
-    public ToJson(boolean exportSymbol, String name, String type, int ln, String tooltip) {
+    public ToJson(boolean exportSymbol, String name, String type, int ln, Object tooltip) {
         json.append("{");
         json.append("\"type\": \"").append(type).append("\",");
         json.append("\"name\": \"").append(name).append("\",");
         json.append("\"exportSymbol\": \"").append(exportSymbol).append("\",");
-        json.append("\"toolTip\": \"").append(tooltip).append("\",");
+        json.append("\"toolTip\": \"").append(tooltip.toString()).append("\",");
         json.append("\"lineNumber\": ").append(ln).append(",");
     }
 

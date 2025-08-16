@@ -96,6 +96,10 @@ public class TokenizerException extends JaivaException {
         public MalformedJDocException(int lineNumber) {
             super(lineNumber, "This symbol contains invalid JDoc code");
         }
+
+        public MalformedJDocException(int lineNumber, String message) {
+            super(lineNumber, message);
+        }
     }
 
     /**
@@ -115,4 +119,5 @@ public class TokenizerException extends JaivaException {
             super(lineNumber, message);
         }
     }
+
 }
