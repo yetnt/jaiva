@@ -2,7 +2,7 @@
 
 (Current) Version : **_2.0.2_**
 
-(Beta) Version : **_2.1.0-beta.1_**
+(Beta) Version : **_2.1.0-beta.0.fscb.1_**
 
 ![isTen](./images/isTen.png)
 
