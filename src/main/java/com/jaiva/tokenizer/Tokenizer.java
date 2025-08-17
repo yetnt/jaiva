@@ -198,7 +198,8 @@ public class Tokenizer {
         type = multipleLinesOutput == null ? type : multipleLinesOutput.b_type;
         args = multipleLinesOutput == null ? args : multipleLinesOutput.b_args;
         int newLineNumber = multipleLinesOutput == null ? lineNumber : multipleLinesOutput.lineNumber;
-        Object output = handleBlocks(isComment, Comments.decimate(line) + "\n",
+        Object output = handleBlocks(isComment, line + "\n",
+//        Object output = handleBlocks(isComment, Comments.decimate(line) + "\n",
                 (MultipleLinesOutput) multipleLinesOutput,
                 tokenizerLine, type, args, multipleLinesOutput != null ? multipleLinesOutput.specialArg : blockChain,
                 newLineNumber);
@@ -225,8 +226,10 @@ public class Tokenizer {
         preLine = preLine.substring(preLine.indexOf(Chars.BLOCK_OPEN) + 2);
         preLine = preLine.substring(0, preLine.lastIndexOf(Chars.BLOCK_CLOSE));
         ArrayList<Token<?>> nestedTokens = new ArrayList<>();
+        // every other call to readLine has previousLine (the second parameter) as an empty string.
+        // Instead, here we put null so that we can alert to the readLine call that it's receiving a block.
         Object stuff = readLine(preLine, "", null, null, finalMOutput.lineNumber + 1, config);
-        line = Comments.decimate(line);
+//        line = Comments.decimate(line);
         try {
             if (stuff instanceof ArrayList) {
                 nestedTokens.addAll((ArrayList<Token<?>>) stuff);
@@ -641,16 +644,17 @@ public class Tokenizer {
         boolean containsNewln = line.contains("\n");
         String[] ls = containsNewln ? line.split("\n")
                 : line.split("(?<!\\$)!(?!\\=)");
-        String[] lines = Comments.decimate(ls);
+        Tuple2<String[], Integer> decimated = Comments.decimate(ls);
+        String[] lines = decimated.first;
 
 //        if (lines.length > 1) {
         /*&& !Comments.arrayIsOnlyComments(lines)*/
-        if (lines.length > 1) {
+        if (lines.length > 1 || (lines.length == 1 && !line.equals(lines[0]+ (line.endsWith("!") ? "!" : "")))) {
 //            // multiple lines.
             MultipleLinesOutput m = null;
             BlockChain b = null;
             String comment = null;
-            int ln = lineNumber + 1;
+            int ln = lineNumber + 1 + decimated.second;
             for (int i = 0; i != ls.length; i++) {
                 ln = lineNumber + i;
                 String l = "";

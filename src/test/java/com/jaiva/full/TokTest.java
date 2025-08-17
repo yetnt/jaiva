@@ -11,19 +11,13 @@ import org.junit.jupiter.api.Test;
 
 import com.jaiva.Main;
 import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.TArrayVar;
-import com.jaiva.tokenizer.Token.TFuncCall;
-import com.jaiva.tokenizer.Token.TFuncReturn;
-import com.jaiva.tokenizer.Token.TFunction;
-import com.jaiva.tokenizer.Token.TImport;
-import com.jaiva.tokenizer.Token.TStatement;
-import com.jaiva.tokenizer.Token.TVarRef;
-import com.jaiva.tokenizer.Token.TVoidValue;
+import com.jaiva.tokenizer.Token.*;
 
 public class TokTest {
     private static final Path FILE_JIV;
     private static final Path FILE2_JIV;
     private static final Path IMPORT_JIV;
+    private static final Path COMMENTS_JIV;
 
     static {
         try {
@@ -44,6 +38,12 @@ public class TokTest {
                     Objects.requireNonNull(
                             TokTest.class.getClassLoader()
                                     .getResource("import.jiv"))
+                            .toURI());
+
+            COMMENTS_JIV = Path.of(
+                    Objects.requireNonNull(
+                                    TokTest.class.getClassLoader()
+                                            .getResource("comments.jiv"))
                             .toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
@@ -403,6 +403,36 @@ public class TokTest {
             Assertions.assertEquals(6, tFuncCall.lineNumber, "TFuncCall is not on line 7");
             Assertions.assertEquals("d_emit", tFuncCall.functionName, "Function call is not d_emit");
 
+        } catch (Exception e) {
+            // catch any other exception that we realistically don't want to catch
+            Assertions.fail("Exception thrown: " + e.getMessage(), e);
+        }
+    }
+
+
+    @Test
+    void commentsJiv() {
+        try {
+
+            // or invoke the required things so we can customize the environment.
+            ArrayList<Token<?>> tokens = Main.parseTokens(COMMENTS_JIV.toString(), false);
+
+            // check that there are exactly 1 outer tokens.
+            Assertions.assertEquals(1, tokens.size(), "Token size is NOT exactly 1.");
+
+            // Assert that it is indeed an If Statement
+            Assertions.assertInstanceOf(TIfStatement.class, tokens.getFirst().value(), "FIrst token is not an if statement.");
+
+            TIfStatement ifStatement = (TIfStatement) tokens.getFirst().value();
+
+            // Assert only 2 lines within the TStatement
+            Assertions.assertEquals(2, ifStatement.body.lines.size(), "If statement contains too many or too little tokens.");
+
+            ArrayList<Token<?>> ifStatementBody = ifStatement.body.lines;
+
+            // In this test we don't care what the tokens exactly are, we care of the line number.
+            Assertions.assertEquals(17, ifStatementBody.getFirst().value().lineNumber, "First token is not on line numebr 17");
+            Assertions.assertEquals(20, ifStatementBody.getLast().value().lineNumber, "Last token is not on line numebr 20");
         } catch (Exception e) {
             // catch any other exception that we realistically don't want to catch
             Assertions.fail("Exception thrown: " + e.getMessage(), e);

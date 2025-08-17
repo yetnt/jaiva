@@ -7,6 +7,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import com.jaiva.tokenizer.Token;
+import com.jaiva.utils.Tuple2;
 
 /**
  * Comments class is a utility class that provides methods for processing and
@@ -33,10 +34,11 @@ public class Comments {
      * @return a new array of strings containing only non-blank, non-null lines
      *         after processing
      */
-    public static String[] decimate(String[] lines) {
+    public static Tuple2<String[], Integer> decimate(String[] lines) {
         if (lines.length < 2)
-            return lines;
+            return new Tuple2<>(lines, 0);
         List<String> newLines = new ArrayList<>();
+        int lineNumOffset = 0;
         for (String s : lines) {
             String line = s;
 
@@ -50,9 +52,13 @@ public class Comments {
 
             if (!line.isBlank()) {
                 newLines.add(line);
+            } else {
+                newLines.add("\n");
             }
+
+            if (!line.startsWith(s) && line.isBlank()) lineNumOffset++;
         }
-        return newLines.toArray(new String[0]);
+        return new Tuple2<>(newLines.toArray(new String[0]), lineNumOffset);
     }
 
     /**
