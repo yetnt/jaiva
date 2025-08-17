@@ -65,7 +65,7 @@ public class Comments {
         if (line.indexOf(Chars.COMMENT) == -1)
             return line;
 
-        line = line.substring(0, line.indexOf(Chars.COMMENT));
+        line = line.indexOf(Chars.COMMENT_DOC) == line.indexOf(Chars.COMMENT) ? line : line.substring(0, line.indexOf(Chars.COMMENT));
 
         return line;
     }

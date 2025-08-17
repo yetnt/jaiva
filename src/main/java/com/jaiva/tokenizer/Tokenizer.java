@@ -644,7 +644,8 @@ public class Tokenizer {
         String[] lines = Comments.decimate(ls);
 
 //        if (lines.length > 1) {
-        if (lines.length > 1 || ((lines.length == 2 && !lines[1].isEmpty()) && !Comments.arrayIsOnlyComments(lines))) {
+        /*&& !Comments.arrayIsOnlyComments(lines)*/
+        if (lines.length > 1) {
 //            // multiple lines.
             MultipleLinesOutput m = null;
             BlockChain b = null;
