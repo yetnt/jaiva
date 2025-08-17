@@ -52,9 +52,10 @@ public class Comments {
 
             if (!line.isBlank()) {
                 newLines.add(line);
-            } else {
-                newLines.add("\n");
             }
+//            else {
+//                newLines.add("\n");
+//            }
 
             if (!line.startsWith(s) && line.isBlank()) lineNumOffset++;
         }

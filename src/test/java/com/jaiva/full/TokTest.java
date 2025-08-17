@@ -86,6 +86,8 @@ public class TokTest {
 
             // Now the pain begins...
 
+            System.out.println(tokens.toString());
+
             // Check for 3 tokens
             Assertions.assertEquals(3, tokens.size(), "More or less than 3 tokens???");
 

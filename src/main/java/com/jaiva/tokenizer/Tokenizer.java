@@ -214,21 +214,10 @@ public class Tokenizer {
         }
         assert output instanceof MultipleLinesOutput;
         MultipleLinesOutput finalMOutput = ((MultipleLinesOutput) output);
-        String preLine = finalMOutput.preLine;
-        preLine = preLine.startsWith(Keywords.D_FUNCTION) ? preLine.replaceFirst(Keywords.D_FUNCTION, "") : preLine;
-        preLine = preLine.startsWith(Keywords.IF) ? preLine.replaceFirst(Keywords.IF, "") : preLine;
-        preLine = preLine.startsWith(Keywords.WHILE) ? preLine.replaceFirst(Keywords.WHILE, "") : preLine;
-        preLine = preLine.startsWith(Keywords.FOR) ? preLine.replaceFirst(Keywords.FOR, "") : preLine;
-        preLine = preLine.startsWith(Keywords.ELSE) ? preLine.replaceFirst(Keywords.ELSE, "") : preLine;
-        preLine = preLine.startsWith(Keywords.CATCH) ? preLine.replaceFirst(Keywords.CATCH, "") : preLine;
-        preLine = preLine.startsWith(Keywords.TRY) ? preLine.replaceFirst(Keywords.TRY, "") : preLine;
-        preLine = preLine.replace("$Nn", "").trim();
-        preLine = preLine.substring(preLine.indexOf(Chars.BLOCK_OPEN) + 2);
-        preLine = preLine.substring(0, preLine.lastIndexOf(Chars.BLOCK_CLOSE));
+        Tuple2<String, Boolean> formattedPreLine = formatPreline(finalMOutput);
+        String preLine = formattedPreLine.first;
         ArrayList<Token<?>> nestedTokens = new ArrayList<>();
-        // every other call to readLine has previousLine (the second parameter) as an empty string.
-        // Instead, here we put null so that we can alert to the readLine call that it's receiving a block.
-        Object stuff = readLine(preLine, "", null, null, finalMOutput.lineNumber + 1, config);
+        Object stuff = readLine(preLine, (formattedPreLine.second == true ? null : ""), null, null, finalMOutput.lineNumber + 1, config);
 //        line = Comments.decimate(line);
         try {
             if (stuff instanceof ArrayList) {
@@ -373,6 +362,24 @@ public class Tokenizer {
         }
         tokens.add(specific);
         return tokens;
+    }
+
+    private static Tuple2<String, Boolean> formatPreline(MultipleLinesOutput finalMOutput) {
+        boolean isInline = false;
+        String preLine = finalMOutput.preLine;
+        preLine = preLine.startsWith(Keywords.D_FUNCTION) ? preLine.replaceFirst(Keywords.D_FUNCTION, "") : preLine;
+        preLine = preLine.startsWith(Keywords.IF) ? preLine.replaceFirst(Keywords.IF, "") : preLine;
+        preLine = preLine.startsWith(Keywords.WHILE) ? preLine.replaceFirst(Keywords.WHILE, "") : preLine;
+        preLine = preLine.startsWith(Keywords.FOR) ? preLine.replaceFirst(Keywords.FOR, "") : preLine;
+        preLine = preLine.startsWith(Keywords.ELSE) ? preLine.replaceFirst(Keywords.ELSE, "") : preLine;
+        preLine = preLine.startsWith(Keywords.CATCH) ? preLine.replaceFirst(Keywords.CATCH, "") : preLine;
+        preLine = preLine.startsWith(Keywords.TRY) ? preLine.replaceFirst(Keywords.TRY, "") : preLine;
+        preLine = preLine.replace("$Nn", "").trim();
+        preLine = preLine.substring(preLine.indexOf(Chars.BLOCK_OPEN) + 2);
+        preLine = preLine.substring(0, preLine.lastIndexOf(Chars.BLOCK_CLOSE));
+        String[] parts = preLine.split("\n");
+        if (parts[0].trim().startsWith(String.valueOf(Chars.COMMENT))) isInline = true;
+        return new Tuple2<>(preLine, isInline);
     }
 
     /**
@@ -654,9 +661,9 @@ public class Tokenizer {
             MultipleLinesOutput m = null;
             BlockChain b = null;
             String comment = null;
-            int ln = lineNumber + 1 + decimated.second;
+            int ln;
             for (int i = 0; i != ls.length; i++) {
-                ln = lineNumber + i;
+                ln = lineNumber + i - (previousLine == null ? decimated.second : 0);
                 String l = "";
                 if (b != null) {
                     l = b.getCurrentLine();
@@ -729,7 +736,7 @@ public class Tokenizer {
             }
             return tokens;
         }
-        String tokenizerLine = previousLine.trim() + line; // The entire line to the tokenizer.
+        String tokenizerLine = (previousLine == null ? "" : previousLine.trim()) + line; // The entire line to the tokenizer.
 
         // System.out.println("sdfsdfd");
         // @comment (single line)
