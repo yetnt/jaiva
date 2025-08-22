@@ -656,7 +656,7 @@ public class Tokenizer {
 
 //        if (lines.length > 1) {
         /*&& !Comments.arrayIsOnlyComments(lines)*/
-        if (lines.length > 1 || (lines.length == 1 && !line.equals(lines[0]+ (line.endsWith("!") ? "!" : "")))) {
+        if (lines.length > 1 || (lines.length == 1 && !line.equals(lines[0]+ (line.endsWith(String.valueOf(Chars.END_LINE)) ? Chars.END_LINE : "")))) {
 //            // multiple lines.
             MultipleLinesOutput m = null;
             BlockChain b = null;
