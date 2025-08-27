@@ -52,7 +52,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "2.1.0-beta.1.fscb.0";
+    public static String version = "2.1.0";
     /**
      * Author, it's just me.
      */
@@ -158,12 +158,11 @@ public class Main {
                     System.out.println(
                             "Jaiva is a programming language that is designed to be easy to use and understand. (I'm speaking out my ass, I made this cuz i was bored on a random january)");
                     System.out.println("Made with love by: " + author);
-                    // TODO: Remove this later.
-                    System.out.println("You are running a development branch called \"fix-single-comment-bug\". Make sure you know what you are doing as things will break.");
                     System.exit(0);
                 }
                 case "--test", "-t" -> {
                     System.out.println(new Types().toJson());
+
                     System.exit(0);
                 }
                 case "--update", "-u" -> {

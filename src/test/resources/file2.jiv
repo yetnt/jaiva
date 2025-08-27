@@ -4,8 +4,8 @@
 tsea "debug"!               @ Import debug ibrary
 
 @* Documentation comment, this should not be in the tokens arraylist
-kwenza infinity() ->        @ Define infinity function
-    khutla infinity!        @ Infinity function returns a reference to itself
+kwenza infinity() ->        @ Define infinity function which returns itself
+    khutla infinity!
 <~
 
 @ Throw error, with chained infinity function call.

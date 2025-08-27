@@ -1,0 +1,8 @@
+tsea "customPath"!
+tsea "debug"!
+
+maak a <- echo(10)!
+
+khuluma(poop)!
+
+d_emit(a, echo, poop)!

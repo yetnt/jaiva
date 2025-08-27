@@ -1,9 +1,12 @@
 package com.jaiva.interpreter;
 
 import com.jaiva.errors.InterpreterException;
+import com.jaiva.interpreter.globals.BaseGlobals;
 import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.TokenDefault;
+
+import java.util.List;
 
 /**
  * The Scope class is used to keep track of the scope in which a
@@ -35,6 +38,8 @@ public class Scope {
 
     public Vfs vfs;
 
+    public Globals globals;
+
     /**
      * Default constructor for Scope.
      * <p>
@@ -47,7 +52,27 @@ public class Scope {
         this.lineNumber = 0;
         this.parent = null;
         try {
-            this.vfs = new Globals(iconfig).vfs;
+            this.globals = new Globals(iconfig);
+            this.vfs = this.globals.vfs;
+        } catch (InterpreterException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Default constructor for Scope with imported Globals.
+     * <p>
+     * This constructor initializes the current scope to the global scope,
+     * token to null, line number to 0, and parent scope to null.
+     */
+    public Scope(IConfig iconfig, List<Class<? extends BaseGlobals>> globals) {
+        this.current = Context.GLOBAL;
+        this.token = null;
+        this.lineNumber = 0;
+        this.parent = null;
+        try {
+            this.globals = new Globals(iconfig, globals);
+            this.vfs = this.globals.vfs;
         } catch (InterpreterException e) {
             throw new RuntimeException(e);
         }
@@ -70,6 +95,7 @@ public class Scope {
         this.lineNumber = token == null ? 0 : token.lineNumber;
         this.parent = parent;
         this.vfs = parent.vfs.clone();
+        this.globals = parent.globals;
     }
 
     /**
@@ -88,6 +114,7 @@ public class Scope {
         this.lineNumber = token == null ? 0 : token.lineNumber;
         this.parent = parent;
         this.vfs = vfs;
+        this.globals = parent.globals;
     }
 
     /**

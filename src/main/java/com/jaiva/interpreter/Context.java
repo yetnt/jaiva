@@ -69,6 +69,10 @@ public enum Context {
      */
     CATCH,
     /**
+     * Represents an import context.
+     */
+    IMPORT,
+    /**
      * Represents the end of a file.
      * <p>
      * This context is used to indicate that the end of a file has been reached

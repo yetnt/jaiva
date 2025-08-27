@@ -285,7 +285,8 @@ public class Interpreter {
                 // Well, the user placed idk by itself, so i also don't know what to do with it.
                 continue;
             } else if (token instanceof TImport tImport) {
-                Globals g = new Globals(config);
+//                Globals g = new Globals(config);
+                Globals g = scope.globals;
                 Path importPath = Path.of(tImport.filePath);
 
                 Vfs vfsFromFile;
@@ -313,8 +314,8 @@ public class Interpreter {
 
                     newConfig.importVfs = true; // This tells the interpreter to only parse exported symbols. (Functions
                                                 // and variables)
-
-                    vfsFromFile = (Vfs) Interpreter.interpret(tks, scope, newConfig);
+// TODO: Vfs from file when adding removes built ins. jsut add a putAll call here from the previous
+                    vfsFromFile = ((Vfs) Interpreter.interpret(tks, new Scope(Context.IMPORT, token, scope), newConfig));
 
                     if ((vfsFromFile == null)) {
                         // error? maybe not yet but throw.

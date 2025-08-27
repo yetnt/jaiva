@@ -1,5 +1,6 @@
-package com.jaiva.tokenizer.jdoc;
+package com.jaiva.tokenizer.jdoc.tags;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 

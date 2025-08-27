@@ -198,7 +198,8 @@ public class Tokenizer {
         type = multipleLinesOutput == null ? type : multipleLinesOutput.b_type;
         args = multipleLinesOutput == null ? args : multipleLinesOutput.b_args;
         int newLineNumber = multipleLinesOutput == null ? lineNumber : multipleLinesOutput.lineNumber;
-        Object output = handleBlocks(isComment, Comments.decimate(line) + "\n",
+        Object output = handleBlocks(isComment, line + "\n",
+//        Object output = handleBlocks(isComment, Comments.decimate(line) + "\n",
                 (MultipleLinesOutput) multipleLinesOutput,
                 tokenizerLine, type, args, multipleLinesOutput != null ? multipleLinesOutput.specialArg : blockChain,
                 newLineNumber);
@@ -213,20 +214,11 @@ public class Tokenizer {
         }
         assert output instanceof MultipleLinesOutput;
         MultipleLinesOutput finalMOutput = ((MultipleLinesOutput) output);
-        String preLine = finalMOutput.preLine;
-        preLine = preLine.startsWith(Keywords.D_FUNCTION) ? preLine.replaceFirst(Keywords.D_FUNCTION, "") : preLine;
-        preLine = preLine.startsWith(Keywords.IF) ? preLine.replaceFirst(Keywords.IF, "") : preLine;
-        preLine = preLine.startsWith(Keywords.WHILE) ? preLine.replaceFirst(Keywords.WHILE, "") : preLine;
-        preLine = preLine.startsWith(Keywords.FOR) ? preLine.replaceFirst(Keywords.FOR, "") : preLine;
-        preLine = preLine.startsWith(Keywords.ELSE) ? preLine.replaceFirst(Keywords.ELSE, "") : preLine;
-        preLine = preLine.startsWith(Keywords.CATCH) ? preLine.replaceFirst(Keywords.CATCH, "") : preLine;
-        preLine = preLine.startsWith(Keywords.TRY) ? preLine.replaceFirst(Keywords.TRY, "") : preLine;
-        preLine = preLine.replace("$Nn", "").trim();
-        preLine = preLine.substring(preLine.indexOf(Chars.BLOCK_OPEN) + 2);
-        preLine = preLine.substring(0, preLine.lastIndexOf(Chars.BLOCK_CLOSE));
+        Tuple2<String, Boolean> formattedPreLine = formatPreline(finalMOutput);
+        String preLine = formattedPreLine.first;
         ArrayList<Token<?>> nestedTokens = new ArrayList<>();
-        Object stuff = readLine(preLine, "", null, null, finalMOutput.lineNumber + 1, config);
-        line = Comments.decimate(line);
+        Object stuff = readLine(preLine, (formattedPreLine.second == true ? null : ""), null, null, finalMOutput.lineNumber + 1, config);
+//        line = Comments.decimate(line);
         try {
             if (stuff instanceof ArrayList) {
                 nestedTokens.addAll((ArrayList<Token<?>>) stuff);
@@ -370,6 +362,24 @@ public class Tokenizer {
         }
         tokens.add(specific);
         return tokens;
+    }
+
+    private static Tuple2<String, Boolean> formatPreline(MultipleLinesOutput finalMOutput) {
+        boolean isInline = false;
+        String preLine = finalMOutput.preLine;
+        preLine = preLine.startsWith(Keywords.D_FUNCTION) ? preLine.replaceFirst(Keywords.D_FUNCTION, "") : preLine;
+        preLine = preLine.startsWith(Keywords.IF) ? preLine.replaceFirst(Keywords.IF, "") : preLine;
+        preLine = preLine.startsWith(Keywords.WHILE) ? preLine.replaceFirst(Keywords.WHILE, "") : preLine;
+        preLine = preLine.startsWith(Keywords.FOR) ? preLine.replaceFirst(Keywords.FOR, "") : preLine;
+        preLine = preLine.startsWith(Keywords.ELSE) ? preLine.replaceFirst(Keywords.ELSE, "") : preLine;
+        preLine = preLine.startsWith(Keywords.CATCH) ? preLine.replaceFirst(Keywords.CATCH, "") : preLine;
+        preLine = preLine.startsWith(Keywords.TRY) ? preLine.replaceFirst(Keywords.TRY, "") : preLine;
+        preLine = preLine.replace("$Nn", "").trim();
+        preLine = preLine.substring(preLine.indexOf(Chars.BLOCK_OPEN) + 2);
+        preLine = preLine.substring(0, preLine.lastIndexOf(Chars.BLOCK_CLOSE));
+        String[] parts = preLine.split("\n");
+        if (parts[0].trim().startsWith(String.valueOf(Chars.COMMENT))) isInline = true;
+        return new Tuple2<>(preLine, isInline);
     }
 
     /**
@@ -641,17 +651,19 @@ public class Tokenizer {
         boolean containsNewln = line.contains("\n");
         String[] ls = containsNewln ? line.split("\n")
                 : line.split("(?<!\\$)!(?!\\=)");
-        String[] lines = Comments.decimate(ls);
+        Tuple2<String[], Integer> decimated = Comments.decimate(ls);
+        String[] lines = decimated.first;
 
 //        if (lines.length > 1) {
-        if (lines.length > 1 || ((lines.length == 2 && !lines[1].isEmpty()) && !Comments.arrayIsOnlyComments(lines))) {
+        /*&& !Comments.arrayIsOnlyComments(lines)*/
+        if (lines.length > 1 || (lines.length == 1 && !line.equals(lines[0]+ (line.endsWith(String.valueOf(Chars.END_LINE)) ? Chars.END_LINE : "")))) {
 //            // multiple lines.
             MultipleLinesOutput m = null;
             BlockChain b = null;
             String comment = null;
-            int ln = lineNumber + 1;
+            int ln;
             for (int i = 0; i != ls.length; i++) {
-                ln = lineNumber + i;
+                ln = lineNumber + i - (previousLine == null ? decimated.second : 0);
                 String l = "";
                 if (b != null) {
                     l = b.getCurrentLine();
@@ -724,7 +736,7 @@ public class Tokenizer {
             }
             return tokens;
         }
-        String tokenizerLine = previousLine.trim() + line; // The entire line to the tokenizer.
+        String tokenizerLine = (previousLine == null ? "" : previousLine.trim()) + line; // The entire line to the tokenizer.
 
         // System.out.println("sdfsdfd");
         // @comment (single line)
