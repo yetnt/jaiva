@@ -1,10 +1,14 @@
 package com.jaiva.interpreter.globals;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import com.jaiva.interpreter.Vfs;
+import com.jaiva.tokenizer.TConfig;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
 import com.jaiva.Main;
@@ -50,6 +54,45 @@ public class Globals extends BaseGlobals {
         builtInGlobals.put(f.path, f.vfs);
         Debug d = new Debug(config);
         builtInGlobals.put(d.path, d.vfs);
+    }
+
+
+    /**
+     * Constructor to create and get the globals with external globals too.
+     *
+     * @throws InterpreterException
+     */
+    public Globals(IConfig config, List<Class<? extends BaseGlobals>> external) throws InterpreterException {
+        super(GlobalType.MAIN);
+        vfs.put("getVarClass", new FGetVarClass());
+        vfs.put("reservedKeywords", new VReservedKeywords());
+        vfs.put("version", new VJaivaVersion());
+        vfs.put("flat", new FFlat());
+        vfs.put("sleep", new FSleep());
+        vfs.put("neg", new FNeg());
+        vfs.putAll(new IOFunctions(config).vfs);
+
+        Types c = new Types();
+        builtInGlobals.put(c.path, c.vfs);
+        Math m = new Math();
+        builtInGlobals.put(m.path, m.vfs);
+        IOFile f = new IOFile(config);
+        builtInGlobals.put(f.path, f.vfs);
+        Debug d = new Debug(config);
+        builtInGlobals.put(d.path, d.vfs);
+
+        for (Class<? extends BaseGlobals> ext : external) {
+            try {
+                Constructor<? extends BaseGlobals> constructor = ext.getDeclaredConstructor(IConfig.class);
+                constructor.setAccessible(true); // 👈 This bypasses Java's access checks
+                BaseGlobals n = constructor.newInstance(config);
+
+                builtInGlobals.put(n.path, n.vfs);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**
@@ -223,6 +266,34 @@ public class Globals extends BaseGlobals {
             Thread.sleep(integer);
 
             return Token.voidValue(tFuncCall.lineNumber);
+        }
+    }
+
+
+    class FNeg extends BaseFunction {
+        FNeg() {
+            super("neg", new TFunction("neg", new String[] { "input" }, null, -1,
+                    "Negates the given number. This is because my unary minus shit isnt working so i had to make this."));
+            this.freeze();
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,  IConfig config,
+                           Scope scope)
+                throws Exception {
+            checkParams(tFuncCall, scope);
+            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()),  false, config,
+                    scope);
+            if (!(val instanceof Number num))
+                throw new WtfAreYouDoingException(scope, "Bruv, you can't just like, pls put number",
+                        tFuncCall.lineNumber);
+
+            return switch (num) {
+                case Integer i -> -i;
+                case Double d -> -d;
+                default -> throw new InterpreterException.CatchAllException(scope, "we checked for number but didnt receive a number?", tFuncCall.lineNumber);
+            };
+
         }
     }
 

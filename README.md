@@ -1,8 +1,6 @@
 <h1> <img src="images/jaiva-full-logo.png" width="50"> Jaiva!</h1>
 
-(Current) Version : **_2.0.2_**
-
-(Beta) Version : **_2.1.0-beta.0.fscb.2_**
+(Current) Version : **_2.1.0_**
 
 ![isTen](./images/isTen.png)
 
