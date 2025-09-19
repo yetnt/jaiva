@@ -217,6 +217,7 @@ public class Tokenizer {
         Tuple2<String, Boolean> formattedPreLine = formatPreline(finalMOutput);
         String preLine = formattedPreLine.first;
         ArrayList<Token<?>> nestedTokens = new ArrayList<>();
+        config.flags.SKIP_READLINE_TRIM = true;
         Object stuff = readLine(preLine, (formattedPreLine.second == true ? null : ""), null, null, finalMOutput.lineNumber + 1, config);
 //        line = Comments.decimate(line);
         try {
@@ -595,8 +596,13 @@ public class Tokenizer {
     public static Object readLine(String line, String previousLine, Object multipleLinesOutput, BlockChain blockChain,
             int lineNumber, TConfig config)
             throws Exception {
-        line = EscapeSequence.escapeAll(line).trim();
-        line = line.trim();
+        line = EscapeSequence.escapeAll(line);
+        if (config.flags.SKIP_READLINE_TRIM) {
+            config.flags.SKIP_READLINE_TRIM = false;
+        } else {
+            line = line.trim();
+        }
+
         boolean cont = multipleLinesOutput instanceof MultipleLinesOutput;
         boolean isComment = (cont && ((MultipleLinesOutput) multipleLinesOutput).isComment)
                 || (multipleLinesOutput == null && (line.startsWith(Character.toString(Chars.COMMENT_OPEN))
@@ -649,21 +655,24 @@ public class Tokenizer {
         ArrayList<Token<?>> tokens = new ArrayList<>();
 //        Token<?> tContainer = new Token<>(null);
         boolean containsNewln = line.contains("\n");
-        String[] ls = containsNewln ? line.split("\n")
-                : line.split("(?<!\\$)!(?!\\=)");
-        Tuple2<String[], Integer> decimated = Comments.decimate(ls);
-        String[] lines = decimated.first;
+        String[] ls = /*containsNewln ?*/ line.split("\n");
+//                : line.split("(?<!\\$)!(?!\\=)");
+        String[] lines = Comments.decimate(ls);
 
 //        if (lines.length > 1) {
         /*&& !Comments.arrayIsOnlyComments(lines)*/
-        if (lines.length > 1 || (lines.length == 1 && !line.equals(lines[0]+ (line.endsWith(String.valueOf(Chars.END_LINE)) ? Chars.END_LINE : "")))) {
+        if (lines.length > 1 || (
+                lines.length == 1 &&
+                        (line.startsWith(Chars.COMMENT_DOC) && !line.startsWith(String.valueOf(Chars.COMMENT))) &&
+                        !line.equals(lines[0] + (line.endsWith(String.valueOf(Chars.END_LINE)) ? Chars.END_LINE : "")))
+        ) {
 //            // multiple lines.
             MultipleLinesOutput m = null;
             BlockChain b = null;
             String comment = null;
             int ln;
             for (int i = 0; i != ls.length; i++) {
-                ln = lineNumber + i - (previousLine == null ? decimated.second : 0);
+                ln = lineNumber + i /* The following code, is a fix to a problem i don't want to solve yet, so just minus 1*/ - 1;
                 String l = "";
                 if (b != null) {
                     l = b.getCurrentLine();
@@ -773,11 +782,9 @@ public class Tokenizer {
         if (line.isEmpty())
             return null;
 
-        // NEW CODE:
         if (!Find.bracePairs(line).second.isEmpty())
             throw new MalformedSyntaxException(
                     "Ayo, you got some unclosed braces in your code. Fix that bro wtf.", lineNumber);
-        // END OF NEW CODE
 
         if (!line.equals(Chars.BLOCK_CLOSE) && !line.endsWith(Chars.BLOCK_OPEN) && !line.endsWith(Character.toString(Chars.END_LINE))) {
             throw new MalformedSyntaxException(
