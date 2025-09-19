@@ -12,12 +12,12 @@
     This file is purely a Tokenizer test, so it won't be within the Interpreter Testing file.
 }
 
-if (a = 10) ->
+if (a = 10) -> @ This line, is testing another bug where comments on the opening delimiter would leak all the inside code into the outside block.
     @ Single line comment. If the bug is present, the following line is line 16 according to the tokenizer
-    maak a <- 10!
+    maak a <- 10! @ Same as line 15 comment.
 
     @ Another comment, Again the following line is on line 18 (as 2 single line comments preceed it.
-    maak b <- 100!
+    maak b <- 100! @ Same as line 15 comment.
 
     @ The correct code is a is on line 17 and b is on line 20.
 <~

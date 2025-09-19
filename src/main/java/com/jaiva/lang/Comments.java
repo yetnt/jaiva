@@ -91,8 +91,9 @@ public class Comments {
         int commentIdx = line.indexOf(Chars.COMMENT);
         if (commentIdx == -1 || line.indexOf(Chars.COMMENT_DOC) == commentIdx)
             return line;
+        String out = line.substring(0, commentIdx);
         // Replace comment with a newline to preserve line structure
-        return line.substring(0, commentIdx) + "\n";
+        return out/* + ' '*/;
     }
 
     /**
