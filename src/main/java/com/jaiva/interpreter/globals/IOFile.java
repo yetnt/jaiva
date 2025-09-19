@@ -11,12 +11,11 @@ import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
-import com.jaiva.interpreter.Vfs;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
 
 public class IOFile extends BaseGlobals {
-    IOFile(IConfig config) throws InterpreterException {
+    IOFile(IConfig<Object> config) throws InterpreterException {
         super(GlobalType.LIB, "file");
         vfs.put("f_name", new VFileName(config));
         vfs.put("f_dir", new VDirectory(config));
@@ -36,7 +35,7 @@ public class IOFile extends BaseGlobals {
      * and is frozen upon creation to prevent further modification.
      */
     public class VFileName extends BaseVariable {
-        public VFileName(IConfig config) {
+        public VFileName(IConfig<Object> config) {
             super("f_name",
                     new TStringVar("f_name",
                             config.filePath == null ? "REPL" : config.filePath.getFileName().toString(), -1,
@@ -59,7 +58,7 @@ public class IOFile extends BaseGlobals {
      *
      */
     public class VDirectory extends BaseVariable {
-        public VDirectory(IConfig config) {
+        public VDirectory(IConfig<Object> config) {
             super("f_dir",
                     new TStringVar("f_dir", config.fileDirectory == null ? "REPL"
                             : config.fileDirectory.toAbsolutePath().toString(), -1,
@@ -82,7 +81,7 @@ public class IOFile extends BaseGlobals {
      * </p>
      */
     public class VBinaryDirectory extends BaseVariable {
-        public VBinaryDirectory(IConfig config) {
+        public VBinaryDirectory(IConfig<Object> config) {
             super("f_bin", new TStringVar("f_bin", config.JAIVA_SRC_PATH.toAbsolutePath().toString(), 0,
                     "Variable that holds the directory where you can find jaiva.jar"),
 
@@ -136,7 +135,7 @@ public class IOFile extends BaseGlobals {
          *                  directory.
          * @throws InterpreterException If the file does not exist or cannot be read.
          */
-        public VThis(IConfig config) throws InterpreterException {
+        public VThis(IConfig<Object> config) throws InterpreterException {
             super("f_this", new TArrayVar("f_this", new ArrayList<>(), -1,
                     "Returns an array containing the current file's properties \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]"),
                     new ArrayList<>());
@@ -201,14 +200,14 @@ public class IOFile extends BaseGlobals {
      */
     public class FFile extends BaseFunction {
         // function looks for the file and returns its properties in the structure.
-        public FFile(IConfig config) {
+        public FFile(IConfig<Object> config) {
             super("f_file", new TFunction("f_file", new String[] { "path" }, null, -1,
                     "Returns an array containing the properties of the file at the given `path` \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]"));
             freeze();
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -269,7 +268,7 @@ public class IOFile extends BaseGlobals {
      * </ul>
      */
     public class FNew extends BaseFunction {
-        public FNew(IConfig config) {
+        public FNew(IConfig<Object> config) {
             /*
              * [
              * "fileName",
@@ -284,7 +283,7 @@ public class IOFile extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             // TODO Auto-generated method stub

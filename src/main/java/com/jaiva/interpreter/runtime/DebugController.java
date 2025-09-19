@@ -122,7 +122,7 @@ public class DebugController {
      * to exit.
      * <p>
      * This method is called by
-     * {@link Interpreter#interpret(java.util.ArrayList, Scope, IConfig)}
+     * {@link Interpreter#interpret(java.util.ArrayList, Scope, IConfig<Object>)}
      * when the end of the file is reached, indicating that
      * there are no more lines to interpret.
      * 

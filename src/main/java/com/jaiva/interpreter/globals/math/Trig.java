@@ -8,7 +8,6 @@ import com.jaiva.interpreter.globals.BaseGlobals;
 import com.jaiva.interpreter.globals.GlobalType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
-import com.jaiva.interpreter.Vfs;
 import com.jaiva.tokenizer.Token.*;
 import com.jaiva.errors.InterpreterException.FunctionParametersException;
 
@@ -44,7 +43,7 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -77,7 +76,7 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -110,7 +109,7 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -143,7 +142,7 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -176,7 +175,7 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -209,7 +208,7 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -241,7 +240,7 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -274,7 +273,7 @@ public class Trig extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);

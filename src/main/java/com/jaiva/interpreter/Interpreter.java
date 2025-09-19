@@ -149,7 +149,7 @@ public class Interpreter {
      *                   variable, or
      *                   performing an invalid operation.
      */
-    public static Object handleVariables(Object t, IConfig config, Scope scope)
+    public static Object handleVariables(Object t, IConfig<Object> config, Scope scope)
             throws Exception {
         switch (t) {
             case TNumberVar tNumberVar -> {
@@ -258,7 +258,7 @@ public class Interpreter {
      *                   unknown
      *                   variable or an invalid operation.
      */
-    public static Object interpret(ArrayList<Token<?>> tokens, Scope scope, IConfig config)
+    public static Object interpret(ArrayList<Token<?>> tokens, Scope scope, IConfig<Object> config)
             throws Exception {
         // prepare a new vfs.
         scope.vfs = config.importVfs && scope.current == Context.GLOBAL ? new Vfs() : scope.vfs;
@@ -309,8 +309,8 @@ public class Interpreter {
                     if (tks.isEmpty())
                         continue; // Nohing to import.
 
-                    IConfig newConfig = new IConfig(config.sanitisedArgs, importPath.toString(),
-                            config.JAIVA_SRC_PATH.toString());
+                    IConfig<Object> newConfig = new IConfig<Object>(config.sanitisedArgs, importPath.toString(),
+                            config.JAIVA_SRC_PATH.toString(), null);
 
                     newConfig.importVfs = true; // This tells the interpreter to only parse exported symbols. (Functions
                                                 // and variables)

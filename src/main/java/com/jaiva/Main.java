@@ -185,7 +185,7 @@ public class Main {
             return;
         }
 
-        IConfig iconfig = new IConfig(args, args[0], callJaivaSrc());
+        IConfig<Object> iconfig = new IConfig<Object>(args, args[0], callJaivaSrc(), null);
         boolean stackTraces = false;
         boolean debug = false;
         try {

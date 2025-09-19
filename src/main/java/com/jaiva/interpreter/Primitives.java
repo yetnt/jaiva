@@ -268,7 +268,7 @@ public class Primitives {
      *                                       yknow
      */
     public static Object toPrimitive(Object token, boolean returnName,
-            IConfig config, Scope scope)
+                                     IConfig<Object> config, Scope scope)
             throws Exception {
 
         if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TStatement tStatement) {
@@ -621,7 +621,7 @@ public class Primitives {
      * @throws Exception If the condition cannot be resolved to a `Boolean` or if
      *                   there is an error during variable handling or parsing.
      */
-    public static Object setCondition(TokenDefault t, IConfig config,
+    public static Object setCondition(TokenDefault t, IConfig<Object> config,
             Scope scope)
             throws Exception {
         Object c = t instanceof TForLoop ? ((TForLoop) t).condition

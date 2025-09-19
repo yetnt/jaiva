@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.MapValue;
-import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.DebugController;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.Symbol;
@@ -71,7 +70,7 @@ public class Debugger {
      * The configuration for the interpreter runtime, including the debug
      * controller.
      */
-    public IConfig config;
+    public IConfig<Object> config;
 
     /**
      * Constructs a new Debugger instance with the specified configuration,
@@ -81,7 +80,7 @@ public class Debugger {
      * @param t   The list of tokens representing the current program.
      * @param cli Whether to run the debugger in CLI mode.
      */
-    public Debugger(IConfig c, ArrayList<Token<?>> t, boolean cli) {
+    public Debugger(IConfig<Object> c, ArrayList<Token<?>> t, boolean cli) {
         // Constructor can be used to initialize any resources needed for debugging
         reader = new BufferedReader(new InputStreamReader(System.in));
         config = c;

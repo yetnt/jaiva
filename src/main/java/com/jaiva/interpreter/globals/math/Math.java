@@ -1,10 +1,7 @@
 package com.jaiva.interpreter.globals.math;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Predicate;
 
 import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.interpreter.Scope;
@@ -13,7 +10,6 @@ import com.jaiva.interpreter.globals.BaseGlobals;
 import com.jaiva.interpreter.globals.GlobalType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
-import com.jaiva.interpreter.Vfs;
 import com.jaiva.tokenizer.Token.*;
 
 /**
@@ -54,7 +50,7 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -95,7 +91,7 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -146,7 +142,7 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -182,7 +178,7 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -219,7 +215,7 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -257,7 +253,7 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -292,7 +288,7 @@ public class Math extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);

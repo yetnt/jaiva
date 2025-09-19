@@ -45,16 +45,16 @@ public class JBundler {
         tokens = Main.parseTokens(filePath, false);
     }
 
-    public void interpret() throws Exception {
-        IConfig config = new IConfig(new ArrayList<>(List.of("jaiva")), filePath, Main.callJaivaSrc());
-        Scope scope = new Scope(config, classes);
+    public <T> void  interpret(T obj) throws Exception {
+        IConfig<T> config = new IConfig<>(new ArrayList<>(List.of("jaiva")), filePath, Main.callJaivaSrc(), obj);
+        Scope scope = new Scope((IConfig<Object>) config, classes);
 
-        Interpreter.interpret(tokens, scope, config);
+        Interpreter.interpret(tokens, scope, (IConfig<Object>) config);
     }
 
-    public void run() throws Exception {
+    public <T> void run(T obj) throws Exception {
         tokenize();
-        interpret();
+        interpret(obj);
     }
 
 }

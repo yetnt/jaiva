@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 class CustomLib extends BaseGlobals {
-    public CustomLib(IConfig config) {
+    public CustomLib(IConfig<Object> config) {
         super(GlobalType.LIB, "customPath");
         vfs.put("echo", new FEcho());
         vfs.put("poop", new VVar());
@@ -31,7 +31,7 @@ class CustomLib extends BaseGlobals {
         }
 
         @Override
-        public Object call(Token.TFuncCall tFuncCall, ArrayList<Object> params, IConfig config, Scope scope) throws Exception {
+        public Object call(Token.TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
             this.checkParams(tFuncCall, scope);
             return params.getFirst();
         }
@@ -64,7 +64,7 @@ public class BundlerTest {
         ArrayList<Token<?>> tokens = new ArrayList<>();
         try {
             JBundler jb = new JBundler(BUNDLER_JIV.toString(), CustomLib.class);
-            jb.run();
+            jb.run(null);
 
             // DebugException was not thrown. Test failure.
             Assertions.fail("Expected DebugException, but no exception was thrown.");

@@ -46,7 +46,7 @@ public class Scope {
      * This constructor initializes the current scope to the global scope,
      * token to null, line number to 0, and parent scope to null.
      */
-    public Scope(IConfig iconfig) {
+    public Scope(IConfig<Object> iconfig) {
         this.current = Context.GLOBAL;
         this.token = null;
         this.lineNumber = 0;
@@ -65,7 +65,7 @@ public class Scope {
      * This constructor initializes the current scope to the global scope,
      * token to null, line number to 0, and parent scope to null.
      */
-    public Scope(IConfig iconfig, List<Class<? extends BaseGlobals>> globals) {
+    public Scope(IConfig<Object> iconfig, List<Class<? extends BaseGlobals>> globals) {
         this.current = Context.GLOBAL;
         this.token = null;
         this.lineNumber = 0;

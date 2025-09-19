@@ -70,7 +70,7 @@ public class BaseFunction extends Symbol {
      * @throws Exception If an error occurs during the function call.
      */
     public Object call(TFuncCall tFuncCall, ArrayList<Object> params,
-            IConfig config, Scope scope) throws Exception {
+                       IConfig<Object> config, Scope scope) throws Exception {
         return Token.voidValue(tFuncCall.lineNumber);
     }
 
@@ -156,7 +156,7 @@ public class BaseFunction extends Symbol {
 
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params,
-                IConfig config, Scope scope)
+                           IConfig<Object> config, Scope scope)
                 throws Exception {
             Token<?> tContainer = new Token<>(null);
             // tFuncCall contains the the token, we pass it for any extra checks we need to

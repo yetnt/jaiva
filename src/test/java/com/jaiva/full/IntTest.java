@@ -14,7 +14,6 @@ import com.jaiva.errors.InterpreterException.TStatementResolutionException;
 import com.jaiva.errors.JaivaException.DebugException;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Interpreter;
-import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.Symbol;
@@ -57,10 +56,10 @@ public class IntTest {
 
             // or invoke the required things so we can customize the environment.
             tokens = Main.parseTokens(FILE_JIV.toString(), false);
-            IConfig c = new IConfig(new ArrayList<>(Arrays.asList(
+            IConfig<Object> c = new IConfig<Object>(new ArrayList<>(Arrays.asList(
                     FILE_JIV.toString())),
                     FILE_JIV.toString(),
-                    Main.callJaivaSrc());
+                    Main.callJaivaSrc(), null);
             Interpreter.interpret(tokens, new Scope(c), c);
 
             // DebugException was not thrown. Test failure.
@@ -87,10 +86,10 @@ public class IntTest {
 
             // or invoke the required things so we can customize the environment.
             tokens = Main.parseTokens(FILE2_JIV.toString(), false);
-            IConfig c = new IConfig(new ArrayList<>(Arrays.asList(
+            IConfig<Object> c = new IConfig<Object>(new ArrayList<>(Arrays.asList(
                     FILE2_JIV.toString())),
                     FILE2_JIV.toString(),
-                    Main.callJaivaSrc());
+                    Main.callJaivaSrc(), null);
             Interpreter.interpret(tokens, new Scope(c), c);
 
             // DebugException was not thrown. Test failure.
@@ -122,10 +121,10 @@ public class IntTest {
 
             // or invoke the required things so we can customize the environment.
             tokens = Main.parseTokens(IMPORT_JIV.toString(), false);
-            IConfig c = new IConfig(new ArrayList<>(Arrays.asList(
+            IConfig<Object> c = new IConfig<Object>(new ArrayList<>(Arrays.asList(
                     IMPORT_JIV.toString())),
                     IMPORT_JIV.toString(),
-                    Main.callJaivaSrc());
+                    Main.callJaivaSrc(), null);
             Interpreter.interpret(tokens, new Scope(c), c);
 
             // DebugException was not thrown. Test failure.

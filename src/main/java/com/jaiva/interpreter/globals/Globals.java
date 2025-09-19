@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.jaiva.interpreter.Vfs;
-import com.jaiva.tokenizer.TConfig;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
 import com.jaiva.Main;
@@ -37,7 +36,7 @@ public class Globals extends BaseGlobals {
      * 
      * @throws InterpreterException
      */
-    public Globals(IConfig config) throws InterpreterException {
+    public Globals(IConfig<Object> config) throws InterpreterException {
         super(GlobalType.MAIN);
         vfs.put("getVarClass", new FGetVarClass());
         vfs.put("reservedKeywords", new VReservedKeywords());
@@ -62,7 +61,7 @@ public class Globals extends BaseGlobals {
      *
      * @throws InterpreterException
      */
-    public Globals(IConfig config, List<Class<? extends BaseGlobals>> external) throws InterpreterException {
+    public Globals(IConfig<Object> config, List<Class<? extends BaseGlobals>> external) throws InterpreterException {
         super(GlobalType.MAIN);
         vfs.put("getVarClass", new FGetVarClass());
         vfs.put("reservedKeywords", new VReservedKeywords());
@@ -127,8 +126,8 @@ public class Globals extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, 
-                IConfig config, Scope scope)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,
+                           IConfig<Object> config, Scope scope)
                 throws Exception {
             String name;
             if (params.getFirst() instanceof String) {
@@ -193,8 +192,8 @@ public class Globals extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, 
-                IConfig config, Scope scope)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,
+                           IConfig<Object> config, Scope scope)
                 throws Exception {
             if (tFuncCall.args.size() != params.size())
                 throw new InterpreterException.FunctionParametersException(scope, this, params.size());
@@ -253,7 +252,7 @@ public class Globals extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,  IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,  IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -278,7 +277,7 @@ public class Globals extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,  IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,  IConfig<Object> config,
                            Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);

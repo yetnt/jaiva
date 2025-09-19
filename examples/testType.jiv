@@ -4,7 +4,7 @@
 kwenza *testType(input) ->
     maak out!
     zama zama ->
-        out <- 1 ^ input! @ If its a number, out will be set.
+        out <- 1 ^ input! 
         khutla "number"!
     <~ chaai ->
         zama zama ->
@@ -14,10 +14,9 @@ kwenza *testType(input) ->
             khutla "boolean"!
         <~ chaai ->
             zama zama ->
-                out <- input * 3! @ if its a string, the sting will be repeated 3 times
+                out <- input * 3!
                 khutla "string"!
             <~ chaai ->
-                @ Return idk type if we dont know
                 khutla idk!
             <~
         <~

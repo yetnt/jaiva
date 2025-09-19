@@ -12,7 +12,9 @@ import com.jaiva.Main;
  * It allows customization of interpreter behavior through various flags and
  * options.
  */
-public class IConfig extends Config {
+public class IConfig<T extends Object> extends Config {
+
+    public final T object;
     /**
      * The debug controller instance used to manage debugging features.
      */
@@ -80,10 +82,12 @@ public class IConfig extends Config {
      *                        command.
      * @param currentFilePath The path of the current file being interpreted.
      * @param jSrc            The path to the Jaiva source directory.
+     * @param customObject A given custom object to sve into IConfig
      * @throws NullPointerException if {@code currentFilePath} or {@code jSrc} is
      */
-    public IConfig(String[] args, String currentFilePath, String jSrc) {
+    public IConfig(String[] args, String currentFilePath, String jSrc, T customObject) {
         super(jSrc);
+        object = customObject;
         this.args = args;
         for (String arg : args) {
             if (arg.equals("-is") || arg.equals("--include-stacks"))
@@ -119,9 +123,10 @@ public class IConfig extends Config {
      *                        command.
      * @param currentFilePath The path of the current file being interpreted.
      * @param jSrc            The path to the Jaiva source directory.
+     * @param customObject The custom object.
      */
-    public IConfig(ArrayList<String> args, String currentFilePath, String jSrc) {
-        this(args.toArray(new String[0]), currentFilePath, jSrc);
+    public IConfig(ArrayList<String> args, String currentFilePath, String jSrc, T customObject) {
+        this(args.toArray(new String[0]), currentFilePath, jSrc, customObject);
     }
 
     /**
@@ -129,12 +134,13 @@ public class IConfig extends Config {
      * <p>
      * This constructor is used when only the Jaiva source directory is provided,
      * typically in a REPL context.
-     * 
-     * 
-     * @param jSrc The path to the Jaiva source directory.
+     *
+     * @param jSrc         The path to the Jaiva source directory.
+     * @param customObject The custom object.
      */
-    public IConfig(String jSrc) {
+    public IConfig(String jSrc, T customObject) {
         super(jSrc);
+        object = customObject;
         JAIVA_SRC_PATH = Path.of(jSrc);
     }
 }

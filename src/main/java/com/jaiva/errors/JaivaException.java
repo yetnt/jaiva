@@ -3,7 +3,6 @@ package com.jaiva.errors;
 import java.util.ArrayList;
 
 import com.jaiva.interpreter.Scope;
-import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.runtime.IConfig;
 
 /**
@@ -87,7 +86,7 @@ public class JaivaException extends Exception {
         /**
          * The interpreter configuration used for the debug call.
          */
-        public IConfig config;
+        public IConfig<Object> config;
         /**
          * The error held if while trying to debug, an error was thrown.
          * This typically only happens if you try parsing malformed input into the
@@ -103,7 +102,7 @@ public class JaivaException extends Exception {
          * @param config     The configuration used for the debug call.
          * @param lineNumber The line number where the exception was thrown.
          */
-        public DebugException(ArrayList<Object> comp, Scope scope, IConfig config,
+        public DebugException(ArrayList<Object> comp, Scope scope, IConfig<Object> config,
                               int lineNumber) {
             super("A debug error with the following components has been used: " + comp.toString());
             this.lineNumber = lineNumber;

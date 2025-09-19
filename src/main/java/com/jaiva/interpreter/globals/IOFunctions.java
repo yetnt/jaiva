@@ -13,7 +13,6 @@ import com.jaiva.interpreter.Interpreter.ThrowIfGlobalContext;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
-import com.jaiva.interpreter.Vfs;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
@@ -28,7 +27,7 @@ public class IOFunctions extends BaseGlobals {
     /**
      * Constructs the IOFunctions with the Input/Output functions.
      */
-    public IOFunctions(IConfig config) {
+    public IOFunctions(IConfig<Object> config) {
         super(GlobalType.GLOBAL);
         vfs.put("khuluma", new FKhuluma());
         vfs.put("mamela", new FMamela());
@@ -51,8 +50,8 @@ public class IOFunctions extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, 
-                IConfig config, Scope scope)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,
+                           IConfig<Object> config, Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
             String output;
@@ -114,8 +113,8 @@ public class IOFunctions extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, 
-                IConfig config, Scope scope)
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,
+                           IConfig<Object> config, Scope scope)
                 throws Exception {
 
             return config.resources.consoleIn.nextLine();
@@ -145,7 +144,7 @@ public class IOFunctions extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,  IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,  IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
@@ -180,7 +179,7 @@ public class IOFunctions extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,  IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,  IConfig<Object> config,
                 Scope scope)
                 throws InterpreterException {
             // Clear the console using ANSI escape codes.
@@ -199,7 +198,7 @@ public class IOFunctions extends BaseGlobals {
      * </p>
      */
     class VArgs extends BaseVariable {
-        VArgs(IConfig config) {
+        VArgs(IConfig<Object> config) {
             super("args", new TArrayVar("args", new ArrayList<>(Arrays.asList(config.args)), -1,
                     "The command-line arguments passed to the jaiva command"),
                     new ArrayList<>(Arrays.asList(config.args)));
@@ -208,7 +207,7 @@ public class IOFunctions extends BaseGlobals {
     }
 
     class VUArgs extends BaseVariable {
-        VUArgs(IConfig config) {
+        VUArgs(IConfig<Object> config) {
             super("uArgs", new TArrayVar("uargs", (ArrayList) config.sanitisedArgs, -1,
                     "The command-line arguments without jaiva specific arguments. "),
                     config.sanitisedArgs);

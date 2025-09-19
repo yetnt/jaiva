@@ -8,7 +8,6 @@ import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
-import com.jaiva.interpreter.Vfs;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
@@ -60,7 +59,7 @@ public class Types extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             this.checkParams(tFuncCall, scope);
@@ -108,7 +107,7 @@ public class Types extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
             this.checkParams(tFuncCall, scope);
@@ -152,7 +151,7 @@ public class Types extends BaseGlobals {
         }
 
         @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig config,
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
 

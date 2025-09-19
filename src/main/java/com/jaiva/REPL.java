@@ -13,7 +13,6 @@ import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.Primitives;
-import com.jaiva.interpreter.globals.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.TConfig;
 import com.jaiva.tokenizer.Token;
@@ -178,7 +177,7 @@ public class REPL {
      * Interpreter configuration object.
      * It contains the resources and configuration for the interpreter.
      */
-    private final IConfig iConfig = new IConfig(Main.callJaivaSrc());
+    private final IConfig<Object> iConfig = new IConfig<Object>(Main.callJaivaSrc(), null);
     /**
      * Tokenizer configuration object.
      * It contains the configuration for the tokenizer.
