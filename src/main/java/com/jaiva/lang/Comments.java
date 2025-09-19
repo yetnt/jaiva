@@ -1,13 +1,9 @@
 package com.jaiva.lang;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Pattern;
 
 import com.jaiva.tokenizer.Token;
-import com.jaiva.utils.Tuple2;
 
 /**
  * Comments class is a utility class that provides methods for processing and
@@ -27,7 +23,7 @@ public class Comments {
      * @param lines an array of strings to be processed
      * @return a new array of strings with comments removed from lines
      */
-    public static String[] decimate2(String[] lines) {
+    public static String[] decimate(String[] lines) {
         List<String> newLines = new ArrayList<>();
         for (String s : lines) {
             String line = s;
@@ -37,49 +33,6 @@ public class Comments {
             newLines.add(line);
         }
         return newLines.toArray(new String[0]);
-    }
-
-    /**
-     * Processes an array of strings, removing blank or null lines and optionally
-     * processing lines that do not contain a newline character.
-     *
-     * <p>
-     * This method iterates through the provided array of strings, trims each line,
-     * and applies additional processing to lines that do not contain a newline
-     * character.
-     * Non-blank and non-null lines are added to a new list, which is then returned
-     * as an array.
-     *
-     * @param lines an array of strings to be processed
-     * @return a new array of strings containing only non-blank, non-null lines
-     *         after processing
-     */
-    public static Tuple2<String[], Integer> decimate(String[] lines) {
-        if (lines.length < 2)
-            return new Tuple2<>(lines, 0);
-        List<String> newLines = new ArrayList<>();
-        int lineNumOffset = 0;
-        for (String s : lines) {
-            String line = s;
-
-            // if the line does not contain a newline,
-            // call a helper function or process it accordingly
-            if (!line.contains("\n")) {
-                // You might need to adjust this if you're calling
-                // a helper method that expects an array...
-                line = Comments.decimate(line.trim()).trim();
-            }
-
-            if (!line.isBlank()) {
-                newLines.add(line);
-            }
-//            else {
-//                newLines.add("\n");
-//            }
-
-            if (!line.startsWith(s) && line.isBlank()) lineNumOffset++;
-        }
-        return new Tuple2<>(newLines.toArray(new String[0]), lineNumOffset);
     }
 
     /**
@@ -95,21 +48,6 @@ public class Comments {
         // Replace comment with a newline to preserve line structure
         return out/* + ' '*/;
     }
-
-    /**
-     * Remove single line comments. Call this function when appropriate.
-     * 
-     * @param line The line to make sure there isnt a single line comment
-     * @return The line without single line comments.
-     */
-//    public static String decimate(String line) {
-//        if (line.indexOf(Chars.COMMENT) == -1)
-//            return line;
-//
-//        line = line.indexOf(Chars.COMMENT_DOC) == line.indexOf(Chars.COMMENT) ? line : line.substring(0, line.indexOf(Chars.COMMENT));
-//
-//        return line;
-//    }
 
     /**
      * Safely decimates a given string by checking if it starts with a specific

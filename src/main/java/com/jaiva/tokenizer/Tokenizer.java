@@ -657,7 +657,7 @@ public class Tokenizer {
         boolean containsNewln = line.contains("\n");
         String[] ls = /*containsNewln ?*/ line.split("\n");
 //                : line.split("(?<!\\$)!(?!\\=)");
-        String[] lines = Comments.decimate2(ls);
+        String[] lines = Comments.decimate(ls);
 
 //        if (lines.length > 1) {
         /*&& !Comments.arrayIsOnlyComments(lines)*/
