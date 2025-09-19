@@ -19,6 +19,26 @@ import com.jaiva.utils.Tuple2;
  */
 public class Comments {
 
+
+    /**
+     * This method is a refactored version of decimate that does not remove blank lines.
+     * It processes an array of strings, removing comments from lines that do not
+     * contain a newline character.
+     * @param lines an array of strings to be processed
+     * @return a new array of strings with comments removed from lines
+     */
+    public static String[] decimate2(String[] lines) {
+        List<String> newLines = new ArrayList<>();
+        for (String s : lines) {
+            String line = s;
+            if (!line.contains("\n")) {
+                line = Comments.decimate(line.trim());
+            }
+            newLines.add(line);
+        }
+        return newLines.toArray(new String[0]);
+    }
+
     /**
      * Processes an array of strings, removing blank or null lines and optionally
      * processing lines that do not contain a newline character.
@@ -63,19 +83,32 @@ public class Comments {
     }
 
     /**
+     * Removes single line comments.
+     * @param line The line
+     * @return The line without the comment.
+     */
+    public static String decimate(String line) {
+        int commentIdx = line.indexOf(Chars.COMMENT);
+        if (commentIdx == -1 || line.indexOf(Chars.COMMENT_DOC) == commentIdx)
+            return line;
+        // Replace comment with a newline to preserve line structure
+        return line.substring(0, commentIdx) + "\n";
+    }
+
+    /**
      * Remove single line comments. Call this function when appropriate.
      * 
      * @param line The line to make sure there isnt a single line comment
      * @return The line without single line comments.
      */
-    public static String decimate(String line) {
-        if (line.indexOf(Chars.COMMENT) == -1)
-            return line;
-
-        line = line.indexOf(Chars.COMMENT_DOC) == line.indexOf(Chars.COMMENT) ? line : line.substring(0, line.indexOf(Chars.COMMENT));
-
-        return line;
-    }
+//    public static String decimate(String line) {
+//        if (line.indexOf(Chars.COMMENT) == -1)
+//            return line;
+//
+//        line = line.indexOf(Chars.COMMENT_DOC) == line.indexOf(Chars.COMMENT) ? line : line.substring(0, line.indexOf(Chars.COMMENT));
+//
+//        return line;
+//    }
 
     /**
      * Safely decimates a given string by checking if it starts with a specific
