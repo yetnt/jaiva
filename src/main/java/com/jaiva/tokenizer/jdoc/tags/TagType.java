@@ -1,16 +1,18 @@
 package com.jaiva.tokenizer.jdoc.tags;
 
+import com.jaiva.lang.Keywords;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public enum TagType {
-    PARAMETER("parameter","par", "p"),
-    RETURNS("returns", "ret",  "rets", "r"),
-    DEPENDS("depends", "deps"),
+    PARAMETER("parameter","par","param", "p", "arg", "argument"),
+    RETURNS("returns", "ret",  "rets", "r", Keywords.RETURN),
+    DEPENDS("depends", "deps", "dependencies", "depend", "requires"),
     DEVNOTE("devnote", "note", "devn", "dn"),
     DEPRECATED("deprecated", "deprec", "depr"),
-    FROM("from", "f"),
+    FROM("from", "f", "version", "since", "ver"),
     UNKNOWN(),
     EMPTY(""),
     GENERIC("GENERIC"); // Generic represents just a plain description. Not a tag specifically but its tested for.
