@@ -34,17 +34,23 @@ public class Tag {
      * @return A specific subclass of `Tag` corresponding to the tag type, or `null` if the tag type is unrecognized.
      */
     public static Tag tagToClass(String tag, String content) {
-        return switch (tag) {
-            case "parameter", "par", "p" -> new DParameter(content);
-            case "returns", "ret",  "rets", "r" -> new DReturns(content);
-            case "devnote", "note", "devn", "dn" -> new DDevNote(content);
-            case "deprecated", "deprec", "depr" -> new DDeprecated(content);
-            case "from", "f" -> new DFrom(content);
-            case "depends", "deps" -> new DDepends(content);
-            case "" -> new DEmpty(content);
-            default -> null;
+        for (TagType t : TagType.values()) {
+            if (t.getTag().contains(tag)) {
+                return switch (t) {
+                    case PARAMETER -> new DParameter(content);
+                    case RETURNS -> new DReturns(content);
+                    case DEVNOTE -> new DDevNote(content);
+                    case DEPRECATED -> new DDeprecated(content);
+                    case FROM -> new DFrom(content);
+                    case DEPENDS -> new DDepends(content);
+                    case EMPTY -> new DEmpty(content);
+                    case GENERIC -> new DGeneric(content);
+                    default -> null;
+                };
+            }
+        }
 
-        };
+        return null;
     }
 
     /**
