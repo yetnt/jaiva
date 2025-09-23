@@ -351,16 +351,16 @@ public class Main {
                     m = multipleLinesOutput;
                     b = null;
                 }
-                case ArrayList<?> objects -> {
+                case ArrayList<?> ignored -> {
                     m = null;
                     b = null;
                     ArrayList<Token<?>> tks = (ArrayList<Token<?>>) ((ArrayList<Token<?>>) something).clone();
-                    if (((ArrayList<Token<?>>) tks).size() == 1) {
+                    if (tks.size() == 1) {
                         for (Token<?> t : ((ArrayList<Token<?>>) something)) {
                             TokenDefault l = t.value();
                             if (returnVfs && !l.exportSymbol) {
                                 // clean.
-                                ((ArrayList<?>) tks).remove(t);
+                                tks.remove(t);
                                 continue;
                             }
                             if (comment == null || (!(l instanceof TArrayVar) && !(l instanceof TUnknownVar)
@@ -369,7 +369,7 @@ public class Main {
                             JDoc doc = new JDoc(lineNum, comment.trim());
                             l.tooltip = doc;
                             l.json.removeKey("toolTip");
-                            l.json.append("toolTip", doc.toString(), true);
+                            l.json.append("toolTip", doc, true);
                         }
                     }
                     comment = null;
@@ -397,7 +397,7 @@ public class Main {
                         JDoc doc = new JDoc(lineNum, comment.trim());
                         t.tooltip = doc;
                         t.json.removeKey("toolTip");
-                        t.json.append("toolTip", doc.toString(), true);
+                        t.json.append("toolTip", doc, true);
                         tokens.add(token);
                     } else {
                         tokens.add(token);
