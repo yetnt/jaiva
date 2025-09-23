@@ -1573,7 +1573,7 @@ public record Token<T extends TokenDefault>(T value) {
                     return Integer.parseInt(literal, 8);
             }
         }
-        return Integer.parseInt(input); // allows this method to throw.
+        return Integer.parseInt(negation ? "-" + input : input); // allows this method to throw.
     }
 
 }
