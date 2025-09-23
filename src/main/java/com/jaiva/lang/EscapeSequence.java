@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import com.jaiva.errors.TokenizerException;
 import com.jaiva.utils.Find;
+import com.jaiva.utils.Pair;
 import com.jaiva.utils.Tuple2;
 
 /**
@@ -296,7 +297,7 @@ public class EscapeSequence {
      * @return Line with all jaiva special stuff escaped.
      */
     public static String escapeAll(String line) {
-        ArrayList<Tuple2<Integer, Integer>> pairs = Find.quotationPairs(line);
+        ArrayList<Pair<Integer>> pairs = Find.quotationPairs(line);
         if (pairs.isEmpty())
             return line;
         StringBuilder b = new StringBuilder();

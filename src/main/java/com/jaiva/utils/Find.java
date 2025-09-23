@@ -476,8 +476,8 @@ public class Find {
      *         marks.
      *         If no pairs are found, an empty list is returned.
      */
-    public static ArrayList<Tuple2<Integer, Integer>> quotationPairs(String line) {
-        ArrayList<Tuple2<Integer, Integer>> arr = new ArrayList<>();
+    public static ArrayList<Pair<Integer>> quotationPairs(String line) {
+        ArrayList<Pair<Integer>> arr = new ArrayList<>();
         int oldCharIndex = -1;
         for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
@@ -487,7 +487,7 @@ public class Find {
                 if (oldCharIndex == -1) {
                     oldCharIndex = i;
                 } else {
-                    arr.add(new Tuple2<>(oldCharIndex, i));
+                    arr.add(new Pair<>(oldCharIndex, i));
                     oldCharIndex = -1;
                 }
             }
@@ -513,20 +513,20 @@ public class Find {
      *         unmatched
      *         braces.
      */
-    public static Tuple2<ArrayList<Tuple2<Integer, Integer>>, ArrayList<Tuple2<Integer, Character>>> bracePairs(
+    public static Tuple2<ArrayList<Pair<Integer>>, ArrayList<Tuple2<Integer, Character>>> bracePairs(
             String line) {
-        ArrayList<Tuple2<Integer, Integer>> finalArr = new ArrayList<>();
+        ArrayList<Pair<Integer>> finalArr = new ArrayList<>();
         ArrayList<Tuple2<Integer, Character>> stack = new ArrayList<>();
 
         for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
             if ((c == '[' || c == '(') && Validate.isOpInQuotePair(line, i) == -1)
-                stack.add(new Tuple2<Integer, Character>(i, c));
+                stack.add(new Tuple2<>(i, c));
 
             if ((c == ']' || c == ')') && Validate.isOpInQuotePair(line, i) == -1) {
                 Tuple2<Integer, Character> t = stack.getLast();
                 if ((t.second == '[' && c == ']') || (t.second == '(' && c == ')')) {
-                    finalArr.add(new Tuple2<Integer, Integer>(t.first, i));
+                    finalArr.add(new Pair<>(t.first, i));
                     stack.removeLast();
                 }
             }

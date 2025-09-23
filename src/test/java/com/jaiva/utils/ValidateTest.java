@@ -42,9 +42,9 @@ public class ValidateTest {
 
     @Test
     void testIsOpInPair() {
-        ArrayList<Tuple2<Integer, Integer>> list = new ArrayList<>(Arrays.asList(
-                new Tuple2<>(0, 2),
-                new Tuple2<>(3, 6)));
+        ArrayList<Pair<Integer>> list = new ArrayList<>(Arrays.asList(
+                new Pair<>(0, 2),
+                new Pair<>(3, 6)));
         Assertions.assertEquals(0, Validate.isOpInPair(1, list));
         Assertions.assertEquals(1, Validate.isOpInPair(4, list));
         Assertions.assertEquals(-1, Validate.isOpInPair(8, list));

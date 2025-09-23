@@ -134,7 +134,7 @@ public class Validate {
      * @return The index of the list in which the `index` was found to be in range.
      *          Otherwise `-1`
      */
-    public static int isOpInPair(int index, ArrayList<Tuple2<Integer, Integer>> list) {
+    public static int isOpInPair(int index, ArrayList<Pair<Integer>> list) {
         for (int i = 0; i < list.size(); i++) {
             Tuple2<Integer, Integer> tuple2 = list.get(i);
             if (index > tuple2.first && index < tuple2.second)
@@ -155,7 +155,7 @@ public class Validate {
      *         or -1 if the operator index is not within any quotation pair.
      */
     public static int isOpInQuotePair(String line, int opIndex) {
-        ArrayList<Tuple2<Integer, Integer>> quotePairs = Find.quotationPairs(line);
+        ArrayList<Pair<Integer>> quotePairs = Find.quotationPairs(line);
         return isOpInPair(opIndex, quotePairs);
     }
 

@@ -10,9 +10,10 @@ import com.jaiva.utils.Find.LeastImportantOperator;
 
 public class FindTest {
 
-    public static
+//    public static
 
-    @Test void testClosingCharIndex() {
+    @Test
+    void testClosingCharIndex() {
         // Test with ()
         String line = "3211232 412 1312(239(()((())))12()3)";
         Assertions.assertEquals(line.lastIndexOf(")"), Find.closingCharIndex(line, '(', ')'));
@@ -92,38 +93,38 @@ public class FindTest {
     void testQuotationPairs() {
         // test to mkae sure $" is escaped.
         String inputStr = "\"dd\" - \"$\"32\"";
-        ArrayList<Tuple2<Integer, Integer>> actual = Find.quotationPairs(inputStr);
-        ArrayList<Tuple2<Integer, Integer>> expected = new ArrayList<>(Arrays.asList(
-                new Tuple2<>(0, 3),
-                new Tuple2<>(7, 12)));
+        ArrayList<Pair<Integer>> actual = Find.quotationPairs(inputStr);
+        ArrayList<Pair<Integer>> expected = new ArrayList<>(Arrays.asList(
+                new Pair<>(0, 3),
+                new Pair<>(7, 12)));
         Assertions.assertEquals(expected, actual);
 
         // test to make sure double $$ doesnt trigger escaping the " character.
         inputStr = "\"dd - $$\"\" $\" \"";
         actual = Find.quotationPairs(inputStr);
         expected = new ArrayList<>(Arrays.asList(
-                new Tuple2<>(inputStr.indexOf('"'), 8),
-                new Tuple2<>(9, inputStr.lastIndexOf('"'))));
+                new Pair<>(inputStr.indexOf('"'), 8),
+                new Pair<>(9, inputStr.lastIndexOf('"'))));
         Assertions.assertEquals(expected, actual);
     }
 
     public static String inputString = "function([function])[2 + 4] - (\"hi hi(\")' + -2-2-2-2";
 
-    public static ArrayList<Tuple2<Integer, Integer>> braces = new ArrayList<>(
+    public static ArrayList<Pair<Integer>> braces = new ArrayList<>(
             Arrays.asList(
-                    new Tuple2<>(9, 18),
-                    new Tuple2<>(8, 19),
-                    new Tuple2<>(20, 26),
-                    new Tuple2<>(30, 39)));
-    public static ArrayList<Tuple2<Integer, Integer>> quotes = new ArrayList<>(
+                    new Pair<>(9, 18),
+                    new Pair<>(8, 19),
+                    new Pair<>(20, 26),
+                    new Pair<>(30, 39)));
+    public static ArrayList<Pair<Integer>> quotes = new ArrayList<>(
             Arrays.asList(
-                    new Tuple2<>(31, 38)));
+                    new Pair<>(31, 38)));
 
     @Test
     void testBracePairs() {
-        ArrayList<Tuple2<Integer, Integer>> actual = Find.bracePairs(inputString).first;
-        for (Tuple2<Integer, Integer> tuple2 : actual) {
-            Assertions.assertNotEquals(-1, braces.indexOf(tuple2), tuple2 + " does not exist in expected array");
+        ArrayList<Pair<Integer>> actual = Find.bracePairs(inputString).first;
+        for (Pair<Integer> pair : actual) {
+            Assertions.assertNotEquals(-1, braces.indexOf(pair), pair + " does not exist in expected array");
         }
     }
 

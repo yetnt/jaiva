@@ -423,7 +423,7 @@ public class Tokenizer {
         }
         int stringStart = line.indexOf(Chars.STRING);
         int stringEnd = Find.closingCharIndex(line, Chars.STRING, Chars.STRING);
-        ArrayList<Tuple2<Integer, Integer>> quotepairs = Find.quotationPairs(line);
+        ArrayList<Pair<Integer>> quotepairs = Find.quotationPairs(line);
         if (stringStart != -1 && stringEnd != -1 && quotepairs.size() == 1
                 && (line.charAt(line.length() - 1) == Chars.STRING
                         && line.split(Chars.ASSIGNMENT)[1].trim().charAt(0) == Chars.STRING)) {
@@ -511,7 +511,7 @@ public class Tokenizer {
         // "path" <- funcz, funca
         String[] parts = line.split(Chars.ASSIGNMENT);
 
-        ArrayList<Tuple2<Integer, Integer>> quotepairs = Find.quotationPairs(line);
+        ArrayList<Pair<Integer>> quotepairs = Find.quotationPairs(line);
         if (quotepairs.isEmpty()) {
             throw new MalformedSyntaxException(
                     "Bro, the file to take from has to be surrounded by qutoes.", lineNumber);
