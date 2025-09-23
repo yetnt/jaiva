@@ -653,14 +653,9 @@ public class Tokenizer {
                     line.split(" ")[0] + " aint a real keyword homie.", lineNumber);
 
         ArrayList<Token<?>> tokens = new ArrayList<>();
-//        Token<?> tContainer = new Token<>(null);
-        boolean containsNewln = line.contains("\n");
-        String[] ls = /*containsNewln ?*/ line.split("\n");
-//                : line.split("(?<!\\$)!(?!\\=)");
+        String[] ls = line.split("\n");
         String[] lines = Comments.decimate(ls);
 
-//        if (lines.length > 1) {
-        /*&& !Comments.arrayIsOnlyComments(lines)*/
         if (lines.length > 1 || (
                 lines.length == 1 &&
                         (line.startsWith(Chars.COMMENT_DOC) && !line.startsWith(String.valueOf(Chars.COMMENT))) &&
@@ -679,7 +674,7 @@ public class Tokenizer {
                     i--;
                     ln--;
                 } else {
-                    l = ls[i] + (!containsNewln ? Character.toString(Chars.END_LINE) : "");
+                    l = ls[i];
                 }
                 String previousLine2 = i == 0 ? previousLine : ls[i - 1];
                 Object something = readLine(l, previousLine2, m, b, ln, config);
