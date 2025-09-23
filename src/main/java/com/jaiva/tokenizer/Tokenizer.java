@@ -670,7 +670,7 @@ public class Tokenizer {
                 ln = lineNumber + i /* The following code, is a fix to a problem i don't want to solve yet, so just minus 1*/ - 1;
                 String l = "";
                 if (b != null) {
-                    l = b.getCurrentLine();
+                    l = b.currentLine();
                     i--;
                     ln--;
                 } else {
@@ -760,7 +760,7 @@ public class Tokenizer {
                             isComment, line, (MultipleLinesOutput) multipleLinesOutput, tokenizerLine,
                             tokens, type,
                             multipleLinesOutput == null ? handleArgs(type, line, lineNumber) : null,
-                            (blockChain != null ? blockChain.getInitialIf() : null),
+                            (blockChain != null ? blockChain.initialIf() : null),
                             lineNumber, config);
         }
 

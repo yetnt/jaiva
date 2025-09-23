@@ -344,7 +344,7 @@ public class Main {
         TConfig config = new TConfig(callJaivaSrc());
         int lineNum = 1;
         while (scanner.hasNextLine()) {
-            String line = (b != null ? b.getCurrentLine() : scanner.nextLine());
+            String line = (b != null ? b.currentLine() : scanner.nextLine());
             Object something = Tokenizer.readLine(line, (b != null ? "" : previousLine), m, b, lineNum, config);
             switch (something) {
                 case MultipleLinesOutput multipleLinesOutput -> {

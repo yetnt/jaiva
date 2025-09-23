@@ -292,7 +292,7 @@ public class Interpreter {
                 Vfs vfsFromFile;
 
                 if (g.builtInGlobals.containsKey(tImport.fileName))
-                    vfsFromFile = (Vfs) g.builtInGlobals.get(tImport.fileName);
+                    vfsFromFile = g.builtInGlobals.get(tImport.fileName);
                 else {
 
                     // Check if the path is not absolute

@@ -215,7 +215,7 @@ public class REPL {
             try {
                 state = State.ACTIVE;
                 System.out.print(m != null || b != null ? ">... " : "Jaiva! > ");
-                String line = b != null ? b.getCurrentLine() : reader.readLine().trim();
+                String line = b != null ? b.currentLine() : reader.readLine().trim();
                 if (line == null || line.equals("exit")) {
                     close();
                     break;

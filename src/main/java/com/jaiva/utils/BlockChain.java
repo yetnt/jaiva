@@ -20,17 +20,11 @@ import com.jaiva.tokenizer.Token;
  * This process continues until the chain ends, at which point the original
  * block with all appended
  * else-if or catch blocks is returned.
+ *
+ * @param initialIf   either TIfStatement or TTryCatchStatement
+ * @param currentLine the current line being processed. (With <~ removed)
  */
-public class BlockChain {
-    /**
-     * either TIfStatement or TTryCatchStatement
-     */
-    private final Token<?> initialIf;
-    /**
-     * the current line being processed. (With <~ removed)
-     */
-    private final String currentLine;
-
+public record BlockChain(Token<?> initialIf, String currentLine) {
     /**
      * Constructor for BlockChain.
      *
@@ -38,9 +32,7 @@ public class BlockChain {
      *                    TTryCatchStatement)
      * @param currentLine the current line being processed (with <~ removed)
      */
-    public BlockChain(Token<?> initialIf, String currentLine) {
-        this.initialIf = initialIf;
-        this.currentLine = currentLine;
+    public BlockChain {
     }
 
     /**
@@ -48,7 +40,8 @@ public class BlockChain {
      *
      * @return the initial block
      */
-    public Token<?> getInitialIf() {
+    @Override
+    public Token<?> initialIf() {
         return initialIf;
     }
 
@@ -57,7 +50,8 @@ public class BlockChain {
      *
      * @return the current line (with <~ removed)
      */
-    public String getCurrentLine() {
+    @Override
+    public String currentLine() {
         return currentLine;
     }
 }

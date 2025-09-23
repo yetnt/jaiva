@@ -8,6 +8,7 @@ import com.jaiva.Debugger;
 import com.jaiva.interpreter.*;
 import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.tokenizer.Token;
+import com.jaiva.utils.Pair;
 import com.jaiva.utils.Tuple2;
 
 /**
@@ -55,7 +56,7 @@ public class DebugController {
      * code.
      * If true, the debugger will skip the current line and move to the next one.
      */
-    public Tuple2<Boolean, Boolean> stepOver = new Tuple2<>(false, false);
+    public Pair<Boolean> stepOver = new Pair<>(false, false);
 
     /**
      * The context trace for the current execution.
@@ -92,11 +93,11 @@ public class DebugController {
         if (active) {
             currentLineNumber = lineNumber;
             if (!stepOver.second && stepOver.first) {
-                stepOver = new Tuple2<>(false, true);
+                stepOver = new Pair<>(false, true);
                 this.scope = scope;
             } else {
                 if (!stepOver.first && stepOver.second) {
-                    stepOver = new Tuple2<>(false, false);
+                    stepOver = new Pair<>(false, false);
                     System.out.print("On line: " + lineNumber);
                 } else {
                     System.out.print("breakpoint hit on line: " + lineNumber);
