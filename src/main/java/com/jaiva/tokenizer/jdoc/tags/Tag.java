@@ -193,7 +193,7 @@ public class Tag {
         @Override
         public String toString() {
             return super.toString()
-                    + "\"version\":" + attributes.get("version") + "}";
+                    + "\"version\":\"" + attributes.get("version") + "\"}";
         }
     }
 
