@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.jaiva.lang.Chars;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
+import com.jaiva.utils.cd.ContextDispatcher;
 
 /**
  * Validate class is a utils class where methods which "validate" the
@@ -19,7 +20,7 @@ public class Validate {
      * that its NOT an integer, string or null.
      * It has to be TFuncCall, TVarRef, TStatement or a primitive boolean.
      * 
-     * @param t The objecgt to check.
+     * @param t The object to check.
      * @return boolean indicating the given token is valid input.
      */
     public static boolean isValidBoolInput(Object t) {

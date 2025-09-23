@@ -3,10 +3,11 @@ package com.jaiva.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.jaiva.utils.cd.ContextDispatcher;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.jaiva.utils.ContextDispatcher.To;
+import com.jaiva.utils.cd.ContextDispatcher.To;
 
 public class ContextDispatcherTest {
     public static final ArrayList<String> inputs = new ArrayList<>(

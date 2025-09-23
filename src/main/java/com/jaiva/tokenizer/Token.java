@@ -11,10 +11,11 @@ import com.jaiva.lang.Chars;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.lang.Keywords;
 import com.jaiva.lang.Keywords.LoopControl;
-import com.jaiva.utils.ContextDispatcher;
+import com.jaiva.utils.cd.ContextDispatcher;
 import com.jaiva.utils.Find;
 import com.jaiva.utils.Validate;
-import com.jaiva.utils.ContextDispatcher.To;
+import com.jaiva.utils.cd.ContextDispatcher.To;
+import com.jaiva.utils.cd.ReservedCases;
 
 /**
  * The Token class represents a generic token that holds a value of type T.
@@ -1436,7 +1437,7 @@ public record Token<T extends TokenDefault>(T value) {
             return new TStatement(lineNumber).parse(line.substring(1, line.length() - 1));
         }
 
-        if (d.bits == 18) {
+        if (d.bits == ReservedCases.TERNARY.code()) {
             // 18 corresponds to the Ternary case from ContextDispatcher. See
             // ../utils/ContextDispatcher.md
             // Ternary expression
