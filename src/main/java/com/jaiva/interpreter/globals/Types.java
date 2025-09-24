@@ -43,7 +43,6 @@ public class Types extends BaseGlobals {
         super(GlobalType.LIB, "types");
         vfs.put("t_num", new FNum());
         vfs.put("t_str", new FStr());
-        vfs.put("t_of", new FOf());
     }
 
     /**
@@ -143,35 +142,5 @@ public class Types extends BaseGlobals {
         }
     }
 
-    class FOf extends BaseFunction {
-        FOf() {
-            super("t_of", new TFunction("t_of", new String[] { "input?" }, null, -1,
-                    "Returns the type of any given input. Which could be \"array\", \"string\", \"boolean\", \"number\", \"function\", or the primitive idk."));
-            this.freeze();
-        }
-
-        @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
-                Scope scope)
-                throws Exception {
-
-            this.checkParams(tFuncCall, scope);
-            if (params.isEmpty())
-                return Token.voidValue(tFuncCall.lineNumber);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
-                    scope);
-
-            return switch (val) {
-                case ArrayList arrayList -> "array";
-                case Boolean b -> "boolean";
-                case Number number -> "number";
-                case BaseFunction baseFunction -> "function";
-                case String s -> "string";
-                case null, default ->
-// there is no other type to possibly check for.
-                        Token.voidValue(tFuncCall.lineNumber);
-            };
-        }
-    }
 
 }

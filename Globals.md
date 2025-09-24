@@ -154,6 +154,26 @@ maak array3 <- flat(array1, array2)! @ Flattens the two arrays into a new one.
 khuluma(array3)! @ Prints [1, 2, 3, 4, 5, 6]
 ```
 
+
+#### `typeOf(input?) -> ` _*`khutla string!`*_
+
+Returns the type of any given input. Which could be "array", "string", "boolean", "number", "function", or the primitive `idk` otherwise.
+
+```jiv
+maak b <- 100!
+
+khuluma(typeOf(b))!                   @ "number"
+khuluma(typeOf(typeOf))!                @ "function"
+khuluma(typeOf())!                    @ idk
+khuluma(typeOf(aowa))!                @ "boolean"
+khuluma(typeOf("what the f"))!        @ "string"
+khuluma(typeOf(reservedKeywords))!    @ "array"
+khuluma(typeOf(idk))!                 @ idk
+```
+
+Keep in mind, it will never return a string form of `idk`, it always returns `idk` as a value if no parameters were passed or the value itself was `idk`
+
+
 ## Libraries
 
 These are symbols that are either available in the `/lib/` folder of the Jaiva bin directory, or have a Java file associated with them.

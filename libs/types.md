@@ -56,25 +56,3 @@ If both a prefixed integer and radix input is given, the `prefix` is used over t
 khuluma(t_num("0b1010"))        @ 10
 khuluma(t_num("0b1010", 12))!   @ Still outputs 10, because it's prefixed with 0b, which is base 2
 ```
-
-## `t_of(input?) -> ` _*`khutla string!`*_
-
-\*_**Independant**_
-
-Returns the type of any given input. Which could be "array", "string", "boolean", "number", "function", or the primitive `idk` otherwise.
-
-```jiv
-tsea "jaiva/types"!
-
-maak b <- 100!
-
-khuluma(t_of(b))!                   @ "number"
-khuluma(t_of(t_of))!                @ "function"
-khuluma(t_of())!                    @ idk
-khuluma(t_of(aowa))!                @ "boolean"
-khuluma(t_of("what the f"))!        @ "string"
-khuluma(t_of(reservedKeywords))!    @ "array"
-khuluma(t_of(idk))!                 @ idk
-```
-
-Keep in mind, it will never return a string form of `idk`, it always returns `idk` as a value if no parameters were passed or the value itself was `idk`

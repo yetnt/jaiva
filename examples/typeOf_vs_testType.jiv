@@ -1,5 +1,5 @@
 tsea "testType.jiv"! @ Imports the testType function and the array variable used in that file.
-tsea "types" <- t_num, t_of! @ Only import these 2 functions
+tsea "types" <- t_num! @ Only import these t_num function
 
 @ Add a function to the array
 maak new <-| t_num!
@@ -10,5 +10,5 @@ khuluma("-------$t$t|$t-----")!
 
 colonize v with arr ->
     maak out <- testType(v)!
-    khuluma(out + ((out != idk => out~ however 6) <= 7 => "$t$t|$t" however "$t|$t") + t_of(v))!
+    khuluma(out + ((out != idk => out~ however 6) <= 7 => "$t$t|$t" however "$t|$t") + typeOf(v))!
 <~

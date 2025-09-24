@@ -43,6 +43,7 @@ public class Globals extends BaseGlobals {
         vfs.put("version", new VJaivaVersion());
         vfs.put("flat", new FFlat());
         vfs.put("sleep", new FSleep());
+        vfs.put("typeOf", new FTypeOf());
         vfs.putAll(new IOFunctions(config).vfs);
 
         Types c = new Types();
@@ -293,6 +294,38 @@ public class Globals extends BaseGlobals {
                 default -> throw new InterpreterException.CatchAllException(scope, "we checked for number but didnt receive a number?", tFuncCall.lineNumber);
             };
 
+        }
+    }
+
+
+    class FTypeOf extends BaseFunction {
+        FTypeOf() {
+            super("typeOf", new TFunction("typeOf", new String[] { "input?" }, null, -1,
+                    "Returns the type of any given input. Which could be \"array\", \"string\", \"boolean\", \"number\", \"function\", or the primitive idk."));
+            this.freeze();
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
+                           Scope scope)
+                throws Exception {
+
+            this.checkParams(tFuncCall, scope);
+            if (params.isEmpty())
+                return Token.voidValue(tFuncCall.lineNumber);
+            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+                    scope);
+
+            return switch (val) {
+                case ArrayList arrayList -> "array";
+                case Boolean b -> "boolean";
+                case Number number -> "number";
+                case BaseFunction baseFunction -> "function";
+                case String s -> "string";
+                case null, default ->
+// there is no other type to possibly check for.
+                        Token.voidValue(tFuncCall.lineNumber);
+            };
         }
     }
 
