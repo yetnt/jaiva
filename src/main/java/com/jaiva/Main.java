@@ -52,7 +52,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "2.1.2";
+    public static String version = "3.0.0";
     /**
      * Author, it's just me.
      */
@@ -206,6 +206,7 @@ public class Main {
                 // return tokens mode.
                 switch (args[1]) {
                     case "-is", "--incude-stacks" -> {
+                        stackTraces = true;
                         break;
                     }
                     case "-d", "--debug" -> {
@@ -264,7 +265,7 @@ public class Main {
 
         } catch (Exception e) {
             iconfig.resources.release();
-            if (debug)
+            if (debug || stackTraces)
                 throw e; // throw the error as uncaught when debug mode is enabled so that we get the
                          // entire error along with the stack trace.
             switch (e) {
@@ -276,6 +277,7 @@ public class Main {
                 case TokenizerException tokenizerException -> {
                     System.out.println("Error while parsing code: ");
                     System.out.println(e.getMessage());
+//                    e.printStackTrace(System.out);
                     System.exit(-1);
                 }
                 case JaivaException jaivaException -> {
@@ -283,6 +285,7 @@ public class Main {
                     // if we dont catch those, cagtch this one with generic message.
                     System.out.println("Error: ");
                     System.out.println(e.getMessage());
+//                    e.printStackTrace(System.out);
                     System.exit(-1);
                 }
                 default -> {
@@ -290,7 +293,7 @@ public class Main {
                     // account for where ever it is and not here in the Main class.
                     System.out.println("\"Something\" went wrong, and it's proabaly not your fault.");
                     System.out.println(e.getMessage());
-                    e.printStackTrace(System.out);
+//                    e.printStackTrace(System.out);
                     System.exit(-1);
                 }
             }
