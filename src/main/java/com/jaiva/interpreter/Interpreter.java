@@ -103,7 +103,7 @@ public class Interpreter {
                         "What are you trying to return out of if we're not in a function??", lineNumber);
 
         } else if (lc instanceof TThrowError) {
-            if (scope.current == Context.GLOBAL)
+//            if (scope.current == Context.GLOBAL)
                 throw new CimaException(scope, ((TThrowError) lc).errorMessage, lineNumber);
         }
         return new ThrowIfGlobalContext(lc, lineNumber);
@@ -154,25 +154,38 @@ public class Interpreter {
         switch (t) {
             case TNumberVar tNumberVar -> {
                 Object number = Primitives.toPrimitive(tNumberVar.value, false, config, scope);
+                if (number instanceof TThrowError) {
+                    throwIfGlobalContext(scope, number, tNumberVar.lineNumber);
+                }
                 BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                         new ArrayList<>(Collections.singletonList(number)), false);
                 scope.vfs.put(tNumberVar.name, var);
             }
             case TBooleanVar tBooleanVar -> {
                 Object bool = Primitives.toPrimitive(tBooleanVar.value, false, config, scope);
+
+                if (bool instanceof TThrowError) {
+                    throwIfGlobalContext(scope, bool, tBooleanVar.lineNumber);
+                }
                 BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                         new ArrayList<>(Collections.singletonList(bool)), false);
                 scope.vfs.put(tBooleanVar.name, var);
             }
             case TStringVar tStringVar -> {
                 Object string = Primitives.toPrimitive(tStringVar.value, false, config, scope);
-                BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
+                if (string instanceof TThrowError) {
+                    throwIfGlobalContext(scope, string, tStringVar.lineNumber);
+                }
+                    BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                         new ArrayList<>(Collections.singletonList(string)), false);
                 scope.vfs.put(tStringVar.name, var);
             }
             case TUnknownVar tUnknownVar -> {
                 Object something = Primitives.toPrimitive(tUnknownVar.value, false, config, scope);
                 Symbol var;
+                if (something instanceof TThrowError) {
+                    throwIfGlobalContext(scope, something, tUnknownVar.lineNumber);
+                }
                 if (something instanceof BaseFunction)
                     // this assigns
                     var = (Symbol) something;
@@ -187,6 +200,9 @@ public class Interpreter {
                 ArrayList<Object> arr = new ArrayList<>();
                 tArrayVar.contents.forEach(obj -> {
                     try {
+                        if (obj instanceof TThrowError) {
+                            throwIfGlobalContext(scope, obj, tArrayVar.lineNumber);
+                        }
                         if (obj instanceof ArrayList) {
                             arr.add(obj);
                         } else {
@@ -217,6 +233,11 @@ public class Interpreter {
 
                 Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarReassign.newValue), false,
                         config, scope);
+
+
+                if (o instanceof TThrowError) {
+                    throwIfGlobalContext(scope, o, tVarReassign.lineNumber);
+                }
 
                 if (o instanceof BaseFunction func) {
                     mapValue.setValue(func);
