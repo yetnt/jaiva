@@ -796,7 +796,7 @@ public class Tokenizer {
         if (line.startsWith(Keywords.THROW)) {
             // Remove keyword 'cima' and operator '<=='
             line = line.trim();
-            String errorMessage = getString(line, lineNumber);
+            Object errorMessage = Token.processContext(getString(line, lineNumber), lineNumber);
 
             tokens.add(new TThrowError(errorMessage, lineNumber).toToken());
             return tokens;
@@ -877,9 +877,6 @@ public class Tokenizer {
             throw new MalformedSyntaxException(
                     "Ehh baba you must use the right syntax if u wanna cima this process.", lineNumber);
 
-        String errorMessage = parts[1].trim();
-        if (errorMessage.startsWith("\"") && errorMessage.endsWith("\"") && errorMessage.length() >= 2)
-            errorMessage = errorMessage.substring(1, errorMessage.length() - 1);
-        return errorMessage;
+        return parts[1].trim();
     }
 }

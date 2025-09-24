@@ -85,7 +85,7 @@ public class Interpreter {
      *                                 error.
      */
     public static ThrowIfGlobalContext throwIfGlobalContext(Scope scope, Object lc, int lineNumber)
-            throws JaivaException {
+            throws Exception {
         if (lc instanceof ThrowIfGlobalContext) {
             lc = ((ThrowIfGlobalContext) lc).c;
         }
@@ -104,7 +104,8 @@ public class Interpreter {
 
         } else if (lc instanceof TThrowError) {
 //            if (scope.current == Context.GLOBAL)
-                throw new CimaException(scope, ((TThrowError) lc).errorMessage, lineNumber);
+            Object message = Primitives.toPrimitive(Primitives.parseNonPrimitive(((TThrowError) lc).errorMessage), false, null, scope);
+                throw new CimaException(scope, message.toString(), lineNumber);
         }
         return new ThrowIfGlobalContext(lc, lineNumber);
     }
@@ -524,7 +525,7 @@ public class Interpreter {
                                     BaseVariable.create(
                                             varName,
                                             new TStringVar(
-                                                    varName, err.errorMessage,
+                                                    varName, err.errorMessage.toString(),
                                                     err.lineNumber),
                                             new ArrayList<>(Collections.singletonList(
                                                     err.errorMessage)),

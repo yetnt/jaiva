@@ -1022,7 +1022,7 @@ public record Token<T extends TokenDefault>(T value) {
         /**
          * The error message to be thrown.
          */
-        public String errorMessage;
+        public Object errorMessage;
 
         /**
          * Constructor for TThrowError
@@ -1030,7 +1030,7 @@ public record Token<T extends TokenDefault>(T value) {
          * @param errorMessage The error message to be thrown.
          * @param ln           The line number.
          */
-        TThrowError(String errorMessage, int ln) {
+        TThrowError(Object errorMessage, int ln) {
             super("TThrowError", ln);
             this.errorMessage = errorMessage;
         }
