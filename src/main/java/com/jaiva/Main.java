@@ -290,6 +290,7 @@ public class Main {
                     // account for where ever it is and not here in the Main class.
                     System.out.println("\"Something\" went wrong, and it's proabaly not your fault.");
                     System.out.println(e.getMessage());
+                    e.printStackTrace(System.out);
                     System.exit(-1);
                 }
             }

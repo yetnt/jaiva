@@ -671,6 +671,11 @@ public record Token<T extends TokenDefault>(T value) {
         public ArrayList<Boolean> isArgOptional = new ArrayList<>();
 
         /**
+         * Indicates whether the function accepts variable arguments (varargs).
+         */
+        public boolean varArgs = false;
+
+        /**
          * Constructor for TFunction
          *
          * @param name The name of the function.
@@ -685,13 +690,24 @@ public record Token<T extends TokenDefault>(T value) {
                                     Matcher.quoteReplacement(""))
                             : name),
                     ln);
-            this.args = args;
+            String[] newArgs = new String[args.length];
             for (int i = 0; i < args.length; i++) {
                 String arg = args[i];
+                if (i == 0 && arg.startsWith(Chars.ASSIGNMENT)) {
+                    String newArg = arg.substring(2);
+                    if (!newArg.isBlank()) {
+                        varArgs = true;
+                        isArgOptional.add(true);
+                        newArgs[i] = newArg;
+                        break;
+                    }
+                }
                 isArgOptional.add(arg.endsWith("?"));
                 if (arg.endsWith("?"))
-                    args[i] = arg.substring(0, arg.length() - 1);
+                    newArgs[i] = arg.substring(0, arg.length() - 1);
+                else newArgs[i] = arg;
             }
+            this.args = newArgs;
             this.body = body;
         }
 
@@ -706,13 +722,24 @@ public record Token<T extends TokenDefault>(T value) {
          */
         public TFunction(String name, String[] args, TCodeblock body, int ln, String customToolTip) {
             super("F~" + name, ln, customToolTip);
-            this.args = args;
+
+            String[] newArgs = new String[args.length];
             for (int i = 0; i < args.length; i++) {
                 String arg = args[i];
+                if (i == 0 && arg.startsWith(Chars.ASSIGNMENT)) {
+                    String newArg = arg.substring(2);
+                    if (!newArg.isBlank()) {
+                        varArgs = true;
+                        isArgOptional.add(true);
+                        newArgs[i] = newArg;
+                        break;
+                    }
+                }
                 isArgOptional.add(arg.endsWith("?"));
                 if (arg.endsWith("?"))
-                    args[i] = arg.substring(0, arg.length() - 1);
+                    newArgs[i] = arg.substring(0, arg.length() - 1);
             }
+            this.args = newArgs;
             this.body = body;
         }
 
@@ -720,6 +747,7 @@ public record Token<T extends TokenDefault>(T value) {
         public String toJson() throws JaivaException {
             json.append("args", new ArrayList<>(Arrays.asList(args)), false);
             json.append("isArgOptional", isArgOptional, false);
+            json.append("varArgs", varArgs, false);
             json.append("body", body != null ? body.toJsonInNest() : null, true);
             return super.toJson();
         }

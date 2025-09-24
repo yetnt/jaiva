@@ -162,66 +162,79 @@ public class BaseFunction extends Symbol {
             // tFuncCall contains the the token, we pass it for any extra checks we need to
             // do later.
             // params contains the input for the function.
-            // this DefinedFunction, contains a TFunction where qwe need to check the params
+            // this DefinedFunction, contains a TFunction where we need to check the params
             // so we can make name value pairs.
             String[] paramNames = ((TFunction) this.token).args;
             Vfs newVfs = scope.vfs.clone();
-            checkParams(tFuncCall, scope);
-            for (int i = 0; i < paramNames.length; i++) {
-                String name = paramNames[i];
-                Object value;
-                try {
-                    value = params.get(i);
-                } catch (IndexOutOfBoundsException e) {
-                    // optional as we checked params above, so set it to TVoidValue
-                    value = Token.voidValue(tFuncCall.lineNumber);
+            if (((TFunction) this.token).varArgs) {
+                ArrayList<Object> varArgsArr = new ArrayList<>();
+                for (Object o : params) {
+                    // Parse each param
+                    if (o instanceof String)
+                        o = EscapeSequence.fromEscape((String) o, tFuncCall.lineNumber);
+                    varArgsArr.add(Primitives.toPrimitive(Primitives.parseNonPrimitive(o), false, config, scope));
                 }
-                if (value instanceof String)
-                    value = EscapeSequence.fromEscape((String) value, tFuncCall.lineNumber);
-                Object wrappedValue = Token.voidValue(tFuncCall.lineNumber);
+                newVfs.put(paramNames[0], new BaseVariable(paramNames[0],
+                        new TArrayVar(paramNames[0], varArgsArr, tFuncCall.lineNumber),
+                        varArgsArr));
+            } else {
+                checkParams(tFuncCall, scope);
+                for (int i = 0; i < paramNames.length; i++) {
+                    String name = paramNames[i];
+                    Object value;
+                    try {
+                        value = params.get(i);
+                    } catch (IndexOutOfBoundsException e) {
+                        // optional as we checked params above, so set it to TVoidValue
+                        value = Token.voidValue(tFuncCall.lineNumber);
+                    }
+                    if (value instanceof String)
+                        value = EscapeSequence.fromEscape((String) value, tFuncCall.lineNumber);
+                    Object wrappedValue = Token.voidValue(tFuncCall.lineNumber);
 
-                if (name.startsWith("F~")
-                        && (value instanceof Token<?> && ((Token<?>) value).value() instanceof TVarRef tVarRef)) {
-                    // value is definitely a TVarRef, so look for the function in vfs, if not found
-                    // throw an error
-                    // if found, create aq copy of that MapValue, and name it to instead this new
-                    // name and add to the vfs.
-                    MapValue v = scope.vfs.get(tVarRef.varName);
-                    if (v == null)
-                        throw new InterpreterException.UnknownVariableException(scope, tVarRef);
-                    if (!(v.getValue() instanceof BaseFunction))
-                        throw new InterpreterException.WtfAreYouDoingException(scope, v.getValue(), BaseFunction.class,
-                                tVarRef.lineNumber);
+                    if (name.startsWith("F~")
+                            && (value instanceof Token<?> && ((Token<?>) value).value() instanceof TVarRef tVarRef)) {
+                        // value is definitely a TVarRef, so look for the function in vfs, if not found
+                        // throw an error
+                        // if found, create aq copy of that MapValue, and name it to instead this new
+                        // name and add to the vfs.
+                        MapValue v = scope.vfs.get(tVarRef.varName);
+                        if (v == null)
+                            throw new InterpreterException.UnknownVariableException(scope, tVarRef);
+                        if (!(v.getValue() instanceof BaseFunction))
+                            throw new InterpreterException.WtfAreYouDoingException(scope, v.getValue(), BaseFunction.class,
+                                    tVarRef.lineNumber);
 
-                    wrappedValue = v.getValue();
+                        wrappedValue = v.getValue();
 
-                } else if (name.startsWith("V~")
-                        || (value instanceof Token<?> && ((Token<?>) value).value() instanceof TVarRef)) {
-                    // value is definitely a TVarRef, so look for the variable in vfs, if not found
-                    // throw an error
-                    // if found, create aq copy of that MapValue, and name it to instead this new
-                    // name and add to the vfs.
-                    Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), false, config, scope);
-                    // wrappedValue = new BaseVariable(name, tFuncCall, o);
-                    wrappedValue = BaseVariable.create(name,
-                            o instanceof ArrayList ? new TArrayVar(name, (ArrayList) o, tFuncCall.lineNumber)
-                                    : new TUnknownVar<Object>(name, o, tFuncCall.lineNumber),
-                            o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Collections.singletonList(o)),
-                            o instanceof ArrayList);
-                } else if (Primitives.isPrimitive(value)) {
-                    // primitivers ong
-                    wrappedValue = BaseVariable.create(name,
-                            new TUnknownVar<Object>(name, value, tFuncCall.lineNumber),
-                            new ArrayList<>(List.of(value)), false);
+                    } else if (name.startsWith("V~")
+                            || (value instanceof Token<?> && ((Token<?>) value).value() instanceof TVarRef)) {
+                        // value is definitely a TVarRef, so look for the variable in vfs, if not found
+                        // throw an error
+                        // if found, create aq copy of that MapValue, and name it to instead this new
+                        // name and add to the vfs.
+                        Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), false, config, scope);
+                        // wrappedValue = new BaseVariable(name, tFuncCall, o);
+                        wrappedValue = BaseVariable.create(name,
+                                o instanceof ArrayList ? new TArrayVar(name, (ArrayList) o, tFuncCall.lineNumber)
+                                        : new TUnknownVar<Object>(name, o, tFuncCall.lineNumber),
+                                o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Collections.singletonList(o)),
+                                o instanceof ArrayList);
+                    } else if (Primitives.isPrimitive(value)) {
+                        // primitivers ong
+                        wrappedValue = BaseVariable.create(name,
+                                new TUnknownVar<Object>(name, value, tFuncCall.lineNumber),
+                                new ArrayList<>(List.of(value)), false);
 
-                } else {
-                    // cacthes nested calls, operations and others
-                    Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), false, config, scope);
-                    wrappedValue = BaseVariable.create(name,
-                            new TUnknownVar<Object>(name, o, tFuncCall.lineNumber),
-                            o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Collections.singletonList(o)), false);
+                    } else {
+                        // cacthes nested calls, operations and others
+                        Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), false, config, scope);
+                        wrappedValue = BaseVariable.create(name,
+                                new TUnknownVar<Object>(name, o, tFuncCall.lineNumber),
+                                o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Collections.singletonList(o)), false);
+                    }
+                    newVfs.put(name.replace("F~", "").replace("V~", ""), (Symbol) wrappedValue);
                 }
-                newVfs.put(name.replace("F~", "").replace("V~", ""), (Symbol) wrappedValue);
             }
             Object t = Interpreter.interpret((ArrayList<Token<?>>) ((TFunction) this.token).body.lines,
                     new Scope(Context.FUNCTION, token, scope, newVfs), config);
