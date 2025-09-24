@@ -64,6 +64,22 @@ khuluma(uargs)! @ Prints all the user arguments passed to the Jaiva program.
 
 ### <center> Functions
 
+#### `arrLit(<-content) -> `_*`khutla (array)!`*_
+
+This function, takes any number of arguments and returns an array containing those arguments.
+Since Jaiva doesn't have square bracket syntax for arrays, and delcaring a new array with `maak` can get tedious, this function is a shorthand for creating arrays without having to assign it to a variable.
+
+See [Globals.java](./src/main/java/com/jaiva/interpreter/globals/Globals.java) where this is defined.
+
+```jiv
+maak array1 <- arrLit(1, 2, 3, "hello", aowa, idk)! @ Creates an array with mixed types.
+maak array2 <-| 1, 2, 3, "hello", aowa, idk! @ Creates an array with mixed types. (Same as above but with maak syntax)
+maak array3 <- arrLit()! @ Creates an empty array.
+khuluma(array1)! @ Prints [1, 2, 3, "hello", aowa, idk]
+khuluma(array3)! @ Prints []
+khuluma(array1 = array2)! @ Prints aowa (false) (I am not implementing array equality via `=` operator anytime soon. It is the exact same array though.)
+```
+
 #### `khuluma(msg, removeNewLn?) -> `_*`khutla (idk)!`*_
 
 Prints any given input to the console with a newline afterwards. (Unless `removeNewLn` is set to true, in which case it doesn't add a newline afterwards. This is useful for printing on the same line.)

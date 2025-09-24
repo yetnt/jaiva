@@ -64,6 +64,7 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
         -   _[Parameters](#parameters)_
             -   [Higher-Order Functions](#higher-order-functions)
             -   [Optional Arguments](#optional-arguments)
+            - [Variadic Arguments](#variadic-arguments)
     -   **[If Statements](#if-statements)**
         -   _[Basic If](#basic-if)_
         -   _[mara (else)](#mara-else)_
@@ -571,6 +572,28 @@ function(10)! @ prints false
 
 > [!WARNING]
 > When a parameter is required, it CANNOT be set to [idk](#idk) or be empty in the parameters list of the function call. That's the whole point of a required parameter, that it is a value.
+
+#### Variadic Arguments
+
+Otherwise, known as rest parameters or varargs in other places, allows you to pass in any amount of arguments to a function, and have them all be stored in an array.
+
+To define a variadic parameter, prefix the parameter name with `<-` (No space in between)
+
+```jiv
+kwenza function(<-param1) ->
+    khuluma(param1)! @ prints the array of all arguments passed in.
+<~
+```
+
+In Jaiva though, you can't have any other parameters before or after the variadic parameter. You either have optional and required parameters or a single variadic parameter.
+
+Since a variadic parameter can take in any amount of arguments, it can also take in 0 arguments too.
+
+```jiv
+function()! @ prints an empty array
+maak a <- 10!
+function(10, 20, "string", aowa, a)! @ prints [10, 20, "string", false, 10]
+```
 
 ## <center>If Statements
 

@@ -44,6 +44,7 @@ public class Globals extends BaseGlobals {
         vfs.put("flat", new FFlat());
         vfs.put("sleep", new FSleep());
         vfs.put("typeOf", new FTypeOf());
+        vfs.put("arrLit", new FArrayLiteral());
         vfs.putAll(new IOFunctions(config).vfs);
 
         Types c = new Types();
@@ -187,7 +188,7 @@ public class Globals extends BaseGlobals {
      */
     class FFlat extends BaseFunction {
         FFlat() {
-            super("flat", new TFunction("flat", new String[] { "array1", "array2" }, null, -1,
+            super("flat", new TFunction("flat", new String[] { "<-arrays" }, null, -1,
                     "Attempts to flatten (at the top level) the given arrays array1 and array2 into 1 single array. \\n**Note:** If there are any type mismatches in array1, it will be ignored and the same check is done to array2. Therefore this function will **always** return an array, whether or not it was successful."));
             this.freeze();
         }
@@ -196,8 +197,6 @@ public class Globals extends BaseGlobals {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params,
                            IConfig<Object> config, Scope scope)
                 throws Exception {
-            if (tFuncCall.args.size() != params.size())
-                throw new InterpreterException.FunctionParametersException(scope, this, params.size());
 
             ArrayList<Object> returned = new ArrayList<>();
             tFuncCall.args.forEach(arg -> {
@@ -326,6 +325,30 @@ public class Globals extends BaseGlobals {
 // there is no other type to possibly check for.
                         Token.voidValue(tFuncCall.lineNumber);
             };
+        }
+    }
+
+    class FArrayLiteral extends BaseFunction {
+        FArrayLiteral() {
+            super("arrLit", new TFunction("arrLit", new String[] { "<-elements" }, null, -1,
+                    "Creates an array literal from the given elements. This is useful if you want to create an array without declaring it to a variable. For example, `arrLit(1, 2, 3)` will return `[1, 2, 3]`. This is needed as Jaiva doesnt have square bracket syntax"));
+            this.freeze();
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,
+                           IConfig<Object> config, Scope scope)
+                throws Exception {
+
+            ArrayList<Object> returned = new ArrayList<>();
+            tFuncCall.args.forEach(arg -> {
+                try {
+                    returned.add(Primitives.toPrimitive(Primitives.parseNonPrimitive(arg), false, config, scope));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            return returned;
         }
     }
 
