@@ -52,7 +52,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "3.0.1";
+    public static String version = "3.1.0-beta.0";
     /**
      * Author, it's just me.
      */

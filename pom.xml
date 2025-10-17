@@ -6,7 +6,7 @@
 
     <groupId>com.jaiva</groupId>
     <artifactId>jaiva</artifactId>
-    <version>3.0.1</version>
+    <version>3.1.0-beta.0</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
