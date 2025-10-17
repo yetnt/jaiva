@@ -1,7 +1,7 @@
 @ Warning, changing this file will break any tests in src/test/java/com/jaiva/full/ITTest.java
 @ Unless you reflect changes in that file, dont change this file.
 
-tsea "debug"!               @ Import debug ibrary
+tsea "jaiva/debug"!               @ Import debug ibrary
 
 @* Documentation comment, this should not be in the tokens arraylist
 kwenza infinity() ->        @ Define infinity function which returns itself

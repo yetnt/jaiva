@@ -1,6 +1,5 @@
 package com.jaiva.interpreter.libs;
 
-import com.jaiva.Main;
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.Context;
 import com.jaiva.interpreter.Interpreter;
@@ -12,7 +11,6 @@ import com.jaiva.tokenizer.TConfig;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Tokenizer;
 
-import java.io.*;
 import java.util.*;
 
 public class LibraryLoader {
@@ -46,10 +44,10 @@ public class LibraryLoader {
         // Your existing library parsing/loading logic here
         System.out.println("Loading " + name + " (" + content.length() + " chars)");
 
-        ArrayList<Token<?>> tks = (ArrayList<Token<?>>) Tokenizer.readLine(content, "", null, null, -1, new TConfig(""));
+        ArrayList<Token<?>> tks = (ArrayList<Token<?>>) Tokenizer.readLine(content, "", null, null, -1, new TConfig());
 
         IConfig<Object> newConfig = new IConfig<Object>(config.sanitisedArgs, path,
-                config.JAIVA_SRC_PATH.toString(), null);
+                null);
 
         newConfig.importVfs = true; // This tells the interpreter to only parse exported symbols. (Functions
         // and variables)

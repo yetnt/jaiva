@@ -70,13 +70,6 @@ public class IConfig<T extends Object> extends Config {
      */
     public Path fileDirectory = null;
 
-    /**
-     * The path to the source directory for Jaiva scripts.
-     * This variable should point to the root directory containing Jaiva source
-     * files.
-     */
-    public Path JAIVA_SRC_PATH;
-
     // ...add more interpreter settings.
 
     /**
@@ -88,12 +81,11 @@ public class IConfig<T extends Object> extends Config {
      * @param args            The command-line arguments passed to the jaiva
      *                        command.
      * @param currentFilePath The path of the current file being interpreted.
-     * @param jSrc            The path to the Jaiva source directory.
-     * @param customObject A given custom object to sve into IConfig
+     * @param customObject    A given custom object to sve into IConfig
      * @throws NullPointerException if {@code currentFilePath} or {@code jSrc} is
      */
-    public IConfig(String[] args, String currentFilePath, String jSrc, T customObject) {
-        super(jSrc);
+    public IConfig(String[] args, String currentFilePath, T customObject) {
+        super();
         object = customObject;
         this.args = args;
         for (String arg : args) {
@@ -110,9 +102,9 @@ public class IConfig<T extends Object> extends Config {
                 sanitisedArgs.add(arg);
             }
         }
-        filePath = Path.of(currentFilePath != null ? currentFilePath : "");
-        fileDirectory = Path.of(currentFilePath != null ? currentFilePath : "").getParent();
-        JAIVA_SRC_PATH = Path.of(jSrc);
+        Path path = Path.of(currentFilePath != null ? currentFilePath : "");
+        filePath = path;
+        fileDirectory = path.getParent();
     }
 
     /**
@@ -129,11 +121,10 @@ public class IConfig<T extends Object> extends Config {
      *                        jaiva
      *                        command.
      * @param currentFilePath The path of the current file being interpreted.
-     * @param jSrc            The path to the Jaiva source directory.
-     * @param customObject The custom object.
+     * @param customObject    The custom object.
      */
-    public IConfig(ArrayList<String> args, String currentFilePath, String jSrc, T customObject) {
-        this(args.toArray(new String[0]), currentFilePath, jSrc, customObject);
+    public IConfig(ArrayList<String> args, String currentFilePath, T customObject) {
+        this(args.toArray(new String[0]), currentFilePath, customObject);
     }
 
     /**
@@ -142,13 +133,11 @@ public class IConfig<T extends Object> extends Config {
      * This constructor is used when only the Jaiva source directory is provided,
      * typically in a REPL context.
      *
-     * @param jSrc         The path to the Jaiva source directory.
      * @param customObject The custom object.
      */
-    public IConfig(String jSrc, T customObject) {
-        super(jSrc);
+    public IConfig(T customObject) {
+        super();
         object = customObject;
-        JAIVA_SRC_PATH = Path.of(jSrc);
     }
 
     /**
@@ -156,9 +145,8 @@ public class IConfig<T extends Object> extends Config {
      * @param destroyLibraryCircularDependancy To destroy library circular dependancy.
      */
     public IConfig(boolean destroyLibraryCircularDependancy,T object) {
-        super("./"); // use of jaiva src, soon to be depreacaeted asffff
+        super();
         this.object = object;
-        JAIVA_SRC_PATH = Path.of("./");
         this.destroyLibraryCircularDependancy = destroyLibraryCircularDependancy;
     }
 }

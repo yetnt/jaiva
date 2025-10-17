@@ -72,20 +72,15 @@ public class IOFile extends BaseGlobals {
      * Represents a variable that holds the directory path where the Jaiva binary
      * (jaiva.jar) can be found.
      * <p>
-     * This class extends {@link BaseVariable} and initializes the variable with the
-     * absolute path
-     * to the Jaiva source directory, as specified in the provided {@link IConfig}
-     * instance.
-     * The variable is named "f_bin" and is intended to be immutable after
-     * construction.
+     *     As of v4.0.0 we cant know where, so this has been deprecated
      * </p>
      */
     public class VBinaryDirectory extends BaseVariable {
         public VBinaryDirectory(IConfig<Object> config) {
-            super("f_bin", new TStringVar("f_bin", config.JAIVA_SRC_PATH.toAbsolutePath().toString(), 0,
+            super("f_bin", new TStringVar("f_bin", "/eish/my/boizin/this/variable/is/deprecated", 0,
                     "Variable that holds the directory where you can find jaiva.jar"),
 
-                    config.JAIVA_SRC_PATH.toAbsolutePath().toString());
+                    "/eish/my/boizin/this/variable/is/deprecated");
             freeze();
         }
     }

@@ -24,7 +24,7 @@ the array will contain the following:
 ```json
 [
     "myfile.js",
-    "C:/Users/Documents/"
+    "C:/Users/Documents/",
     [
         "console.log(\"I love Brotherkupa.\");",
         "console.log(\"Nobody asked.\");"
@@ -53,7 +53,6 @@ khuluma(fileInfo)! @ Prints the array with file name, directory, contents, and p
 
 ### `f_name <- `_*`"string"`*_
 
-\*_**Independent**_
 
 Returns the current file name
 
@@ -64,24 +63,12 @@ khuluma(f_name)! @ file.jiv
 
 ### `f_dir <- `_*`"string"`*_
 
-\*_**Independent**_
 
 Returns the current working directory
 
 ```jiv
 tsea "jaiva/file"!
 khuluma(f_dir)! @ C:\Users\me\file.jiv
-```
-
-### `f_bin <- `_*`"string"`*_
-
-\*_**Independent**_
-
-Returns the directory where you can find the `jaiva.jar` file
-
-```jiv
-tsea "jaiva/file"!
-khuluma(f_bin)! @ C:\Users\jaiva\
 ```
 
 ## Functions
@@ -98,7 +85,6 @@ khuluma(fileInfo)! @ Prints the array with file name, directory, contents, and p
 
 ### `f_new(path, content, canRead?, canWrite?, canExecute?) -> `_*`khutla boolean`*_
 
-\*_**Independent**_
 
 Creates a new file at the given `path` with the given `content`. The `canRead`, `canWrite`, and `canExecute` parameters are optional and default to true if not provided.
 

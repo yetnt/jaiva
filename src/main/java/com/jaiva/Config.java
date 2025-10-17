@@ -8,18 +8,11 @@ import com.jaiva.tokenizer.TConfig;
  * have {@link IConfig} and {@link TConfig}
  */
 public class Config {
-    /**
-     * The path to the Jaiva source code.
-     */
-    public String JAIVA_SRC;
 
     /**
      * Constructs a new {@code Config} instance with the specified JAIVA source
      * path.
-     *
-     * @param jSrc the source path for JAIVA configuration
      */
-    public Config(String jSrc) {
-        JAIVA_SRC = jSrc;
+    public Config() {
     }
 }

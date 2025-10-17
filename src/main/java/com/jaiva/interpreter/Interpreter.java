@@ -331,7 +331,7 @@ public class Interpreter {
                         continue; // Nohing to import.
 
                     IConfig<Object> newConfig = new IConfig<Object>(config.sanitisedArgs, importPath.toString(),
-                            config.JAIVA_SRC_PATH.toString(), null);
+                            null);
 
                     newConfig.importVfs = true; // This tells the interpreter to only parse exported symbols. (Functions
                                                 // and variables)

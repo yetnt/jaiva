@@ -1,5 +1,5 @@
-tsea "math" <- m_pi, m_sqrt! @ Same as above, but we ONLY import the constant m_pi and the fnction m_sqrt
-tsea "debug"!
+tsea "jaiva/math" <- m_pi, m_sqrt! @ Same as above, but we ONLY import the constant m_pi and the fnction m_sqrt
+tsea "jaiva/debug"!
 
 maak arr <-| m_pi, m_sqrt!
 

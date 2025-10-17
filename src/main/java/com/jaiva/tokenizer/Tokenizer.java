@@ -535,13 +535,11 @@ public class Tokenizer {
         boolean isLib = false;
 
         // convert to static import if it contains "jaiva/" or "jaiva\"
-        // set path, to path without the "jaiva/" or "jaiva\" prefix, and
-        // config.JAIVA_SRC + "lib" as a the new prefix
-        // TODO: Use Path to handle the / and \
+        // set path, to path without the "jaiva/" or "jaiva\" prefix.
         if (path.startsWith("jaiva/") || path.startsWith("jaiva\\")) {
             isLib = true;
             path = path.replaceFirst("jaiva[/\\\\]", "");
-            pObj = Path.of(config.JAIVA_SRC).resolve("lib/").resolve(path).normalize().toAbsolutePath();
+            pObj = Path.of("lib/").resolve(path).normalize().toAbsolutePath();
             path = pObj.toString();
         }
         String fileName;

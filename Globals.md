@@ -201,8 +201,6 @@ But it's generally:
 
 ```jiv
 tsea "jaiva/(module name)"!
-@ or if you want an absolute path for some reason
-tsea "C:/path/to/jaiva/lib/(module name)"!
 ```
 
 > [!NOTE]

@@ -6,7 +6,6 @@ See [Types.java](../src/main/java/com/jaiva/interpreter/libs/Types.java) where t
 
 ## `t_str(input?, radix?) -> `_*`khutla "string"!`*_
 
-\*_**Independent**_
 
 Attempts to convert the `input` of any given type into it's string form. With an optional `radix` parameter for integers
 
@@ -35,7 +34,6 @@ khuluma(t_str(4000, 4))     @ "332200"
 
 ## `t_num(string, radix?) -> `_*`khutla number!`*_
 
-\*_**Independent**_
 
 Attempts to convert a given `string` to number, with an optional `radix` input for integers.
 

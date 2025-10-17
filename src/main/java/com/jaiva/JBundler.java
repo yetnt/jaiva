@@ -46,7 +46,7 @@ public class JBundler {
     }
 
     public <T> void  interpret(T obj) throws Exception {
-        IConfig<T> config = new IConfig<>(new ArrayList<>(List.of("jaiva")), filePath, Main.callJaivaSrc(), obj);
+        IConfig<T> config = new IConfig<>(new ArrayList<>(List.of("jaiva")), filePath, obj);
         Scope scope = new Scope((IConfig<Object>) config, classes);
 
         Interpreter.interpret(tokens, scope, (IConfig<Object>) config);
