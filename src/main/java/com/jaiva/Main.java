@@ -6,8 +6,8 @@ import java.util.*;
 import com.jaiva.errors.*;
 import com.jaiva.errors.JaivaException.*;
 import com.jaiva.interpreter.*;
-import com.jaiva.interpreter.globals.Types;
-import com.jaiva.interpreter.globals.Globals;
+import com.jaiva.interpreter.libs.Types;
+import com.jaiva.interpreter.libs.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.*;
 import com.jaiva.tokenizer.Token.TArrayVar;
@@ -52,7 +52,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "3.1.0-beta.0";
+    public static String version = "4.0.0-beta.0";
     /**
      * Author, it's just me.
      */
