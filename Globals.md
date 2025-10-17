@@ -69,7 +69,7 @@ khuluma(uargs)! @ Prints all the user arguments passed to the Jaiva program.
 This function, takes any number of arguments and returns an array containing those arguments.
 Since Jaiva doesn't have square bracket syntax for arrays, and delcaring a new array with `maak` can get tedious, this function is a shorthand for creating arrays without having to assign it to a variable.
 
-See [Globals.java](./src/main/java/com/jaiva/interpreter/globals/Globals.java) where this is defined.
+See [Globals.java](./src/main/java/com/jaiva/interpreter/libs/Globals.java) where this is defined.
 
 ```jiv
 maak array1 <- arrLit(1, 2, 3, "hello", aowa, idk)! @ Creates an array with mixed types.
@@ -86,7 +86,7 @@ Prints any given input to the console with a newline afterwards. (Unless `remove
 
 (It just uses System.out.println() lol) This function returns no value.
 
-See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/globals/IOFunctions.java) where this is defined.
+See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/libs/IOFunctions.java) where this is defined.
 
 ```jiv
 khuluma("Hello, world!")!
@@ -105,7 +105,7 @@ Hello, againOkay
 
 This function is used to read input from the user. (In the console.) It returns a string of the input. This function will block runtime until the user presses enter.
 
-See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/globals/IOFunctions.java) where this is defined.
+See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/libs/IOFunctions.java) where this is defined.
 
 ```jiv
 khuluma("What is your name?")!
@@ -117,7 +117,7 @@ khuluma("Hello, " + name + "!")!
 
 This function is used to read input from the user. (Via UI.) It returns a string of the input. This function will block runtime until the user presses enter.
 
-See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/globals/IOFunctions.java) where this is defined.
+See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/libs/IOFunctions.java) where this is defined.
 
 ```jiv
 maak name <- ask("what's ur name cuh?")! @ Reads input from the user and stores it in the variable name.
@@ -134,20 +134,20 @@ sleep(1000)! @ pause for 1 second.
 khuluma("yo.. again")!
 ```
 
-See [Globals.java](./src/main/java/com/jaiva/interpreter/globals/Globals.java) where this is defined.
+See [Globals.java](./src/main/java/com/jaiva/interpreter/libs/Globals.java) where this is defined.
 
 #### `clear() -> `_*`khutla idk`*_
 
 Clears the console. I can't really showcase code for this one hey.
 
-See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/globals/IOFunctions.java) where this is defined.
+See [IOFunctions.java](./src/main/java/com/jaiva/interpreter/libs/IOFunctions.java) where this is defined.
 
 #### `getVarClass(ref) -> `_*`khutla "string"!`*_
 
 This function returns the Java class `.toString()` of the variable passed to it. This is useful for debugging and checking the type of a variable. (Specifically, the class at parse time. This is not the same as the type of the variable at runtime.)
 What you will use this for? I don't know, but it's there if you need it.
 
-See [Globals.java](./src/main/java/com/jaiva/interpreter/globals/Globals.java) where this is defined.
+See [Globals.java](./src/main/java/com/jaiva/interpreter/libs/Globals.java) where this is defined.
 
 ```jiv
 maak name <- "ayo!"!
@@ -161,7 +161,7 @@ This function takes two arrays and attempts to flatten them into a single array.
 
 If there are any type mismatches in array1, it will be ignored and the same check is done to array2. Therefore this function will **always** return an array, whether or not it was successful.
 
-See [Gloabals.java](./src/main/java/com/jaiva/interpreter/globals/Globals.java) where this is defined.
+See [Gloabals.java](./src/main/java/com/jaiva/interpreter/libs/Globals.java) where this is defined.
 
 ```jiv
 maak array1 <-| 1, 2, 3!

@@ -2,7 +2,7 @@
 
 This library contains functions for.. debugging, what'd ya think??
 
-See [Debug.java](../src/main/java/com/jaiva/interpreter/globals/Debug.java) where this is defined.
+See [Debug.java](../src/main/java/com/jaiva/interpreter/libs/Debug.java) where this is defined.
 
 ## `d_emit(arr) -> `_*`khutla idk!`*_
 

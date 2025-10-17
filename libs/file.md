@@ -35,7 +35,7 @@ the array will contain the following:
 ]
 ```
 
-See [IOFile.java](../src/main/java/com/jaiva/interpreter/globals/IOFile.java) where this is defined.
+See [IOFile.java](../src/main/java/com/jaiva/interpreter/libs/IOFile.java) where this is defined.
 
 For all exmaples, the "current" file is located in C:\Users\me\file.jiv
 

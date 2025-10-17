@@ -2,7 +2,7 @@
 
 This library contains functions for converting stuff to different types.
 
-See [Types.java](../src/main/java/com/jaiva/interpreter/globals/Types.java) where this is defined.
+See [Types.java](../src/main/java/com/jaiva/interpreter/libs/Types.java) where this is defined.
 
 ## `t_str(input?, radix?) -> `_*`khutla "string"!`*_
 

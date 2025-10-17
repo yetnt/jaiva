@@ -3,7 +3,7 @@ package com.jaiva;
 
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.Scope;
-import com.jaiva.interpreter.globals.BaseGlobals;
+import com.jaiva.interpreter.libs.BaseGlobals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.Token;
 

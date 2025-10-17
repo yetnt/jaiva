@@ -1,4 +1,4 @@
-package com.jaiva.interpreter.globals;
+package com.jaiva.interpreter.libs;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -17,7 +17,7 @@ import com.jaiva.errors.JaivaException;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
-import com.jaiva.interpreter.globals.math.Math;
+import com.jaiva.interpreter.libs.math.Math;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.*;
 import com.jaiva.lang.Keywords;
@@ -55,6 +55,7 @@ public class Globals extends BaseGlobals {
         builtInGlobals.put(f.path, f.vfs);
         Debug d = new Debug(config);
         builtInGlobals.put(d.path, d.vfs);
+        builtInGlobals.putAll(new LibraryLoader().loadAllLibraries(config));
     }
 
 
@@ -81,6 +82,8 @@ public class Globals extends BaseGlobals {
         builtInGlobals.put(f.path, f.vfs);
         Debug d = new Debug(config);
         builtInGlobals.put(d.path, d.vfs);
+
+        builtInGlobals.putAll(new LibraryLoader().loadAllLibraries(config));
 
         for (Class<? extends BaseGlobals> ext : external) {
             try {
