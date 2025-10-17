@@ -55,7 +55,9 @@ public class Globals extends BaseGlobals {
         builtInGlobals.put(f.path, f.vfs);
         Debug d = new Debug(config);
         builtInGlobals.put(d.path, d.vfs);
-        builtInGlobals.putAll(new LibraryLoader().loadAllLibraries(config));
+
+        if (!config.destroyLibraryCircularDependancy)
+            builtInGlobals.putAll(new LibraryLoader().loadAllLibraries(new IConfig<Object>(true, null)));
     }
 
 
@@ -74,6 +76,9 @@ public class Globals extends BaseGlobals {
         vfs.put("neg", new FNeg());
         vfs.putAll(new IOFunctions(config).vfs);
 
+        if (!config.destroyLibraryCircularDependancy)
+            builtInGlobals.putAll(new LibraryLoader().loadAllLibraries(new IConfig<Object>(true, null)));
+
         Types c = new Types();
         builtInGlobals.put(c.path, c.vfs);
         Math m = new Math();
@@ -82,8 +87,6 @@ public class Globals extends BaseGlobals {
         builtInGlobals.put(f.path, f.vfs);
         Debug d = new Debug(config);
         builtInGlobals.put(d.path, d.vfs);
-
-        builtInGlobals.putAll(new LibraryLoader().loadAllLibraries(config));
 
         for (Class<? extends BaseGlobals> ext : external) {
             try {

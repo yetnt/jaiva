@@ -45,6 +45,13 @@ public class IConfig<T extends Object> extends Config {
     public boolean importVfs = false;
 
     /**
+     * If this flag is set to true, during start up when an external library is being imported, it wont import
+     * any other external libraries in its own tokenization and interpretation process. This is due to the fact
+     * that it would get itself each time creating a circular dependancy and yeah yu get the gist.
+     */
+    public boolean destroyLibraryCircularDependancy = false;
+
+    /**
      * Boolean flag indicating we're in the REPL.
      */
     public boolean REPL = false;
@@ -142,5 +149,16 @@ public class IConfig<T extends Object> extends Config {
         super(jSrc);
         object = customObject;
         JAIVA_SRC_PATH = Path.of(jSrc);
+    }
+
+    /**
+     * Constructs a new IConfig with a boolean
+     * @param destroyLibraryCircularDependancy To destroy library circular dependancy.
+     */
+    public IConfig(boolean destroyLibraryCircularDependancy,T object) {
+        super("./"); // use of jaiva src, soon to be depreacaeted asffff
+        this.object = object;
+        JAIVA_SRC_PATH = Path.of("./");
+        this.destroyLibraryCircularDependancy = destroyLibraryCircularDependancy;
     }
 }

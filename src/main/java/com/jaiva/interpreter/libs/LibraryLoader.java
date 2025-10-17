@@ -32,7 +32,7 @@ public class LibraryLoader {
                 String content = ResourceLoader.getResourceAsString(fullPath);
                 Vfs vfs = loadLibrary(content, libFile, fullPath, config);
                 imported.put(libFile.substring(0, libFile.indexOf('.')), vfs);
-//                System.out.println("✓ Loaded library: " + libFile);
+                System.out.println("✓ Loaded library: " + libFile);
             } catch (Exception e) {
                 throw new InterpreterException.LibImportException(new Scope(config), libFile);
             }
