@@ -30,7 +30,7 @@ public class LibraryLoader {
                 String content = ResourceLoader.getResourceAsString(fullPath);
                 Vfs vfs = loadLibrary(content, libFile, fullPath, config);
                 imported.put(libFile.substring(0, libFile.indexOf('.')), vfs);
-                System.out.println("✓ Loaded library: " + libFile);
+//                System.out.println("✓ Loaded library: " + libFile);
             } catch (Exception e) {
                 throw new InterpreterException.LibImportException(new Scope(config), libFile);
             }
@@ -41,8 +41,7 @@ public class LibraryLoader {
     }
 
     private Vfs loadLibrary(String content, String name, String path, IConfig<Object> config) throws Exception {
-        // Your existing library parsing/loading logic here
-        System.out.println("Loading " + name + " (" + content.length() + " chars)");
+//        System.out.println("Loading " + name + " (" + content.length() + " chars)");
 
         ArrayList<Token<?>> tks = (ArrayList<Token<?>>) Tokenizer.readLine(content, "", null, null, -1, new TConfig());
 

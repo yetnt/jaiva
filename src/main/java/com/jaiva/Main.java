@@ -52,7 +52,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "4.0.0-beta.0";
+    public static String version = "4.0.0";
     /**
      * Author, it's just me.
      */
@@ -122,10 +122,6 @@ public class Main {
                     System.exit(0);
                 }
                 case "--help", "-h" -> {
-                    System.out.println();
-//                    System.out.println("Usage: jaiva-src");
-//                    System.out.println();
-//                    System.out.println("\tReturns the source folder of the jaiva source stuff");
                     System.out.println();
                     System.out.println("Usage: jaiva [options]");
                     System.out.println();
