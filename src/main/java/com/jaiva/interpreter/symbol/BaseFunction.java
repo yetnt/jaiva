@@ -90,7 +90,7 @@ public class BaseFunction extends Symbol {
         }
 
         // Check if this case
-        if (tFunc.args.length == 1 && tFunc.args[0].isEmpty()) {
+        if (tFunc.args.length == 1 && (tFunc.args[0] == null || tFunc.args[0].isEmpty())) {
             return;
         }
 

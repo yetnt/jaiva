@@ -1,0 +1,243 @@
+
+@* Remove n elements from the end of an array
+@* p        $> arr <- [] The original array
+@* p        $> n <- number Amount of elements to remove
+@* returns  $> Returns an array which contains the original array with n amount of elements removed from the end.
+@* since     $> 1.0.0-beta.3
+@* devn     $> Throws if the first argument is not an array or if the second argument is not a non-negative number.
+@*          $> Not to be confused with a_delete() which removes elements from a specific index in an array.
+kwenza *a_remove(arr, n) ->
+    if (typeOf(arr) != "array") ->
+        cima <== "a_remove() only works on arrays"!
+    <~ mara if (typeOf(n) != "number" || n < 0) ->
+        cima <== "a_remove()'s second argument must be a non-negative number"!
+    <~
+    maak returnValue <-|!
+    colonize i <- 0 | i < arr~ - n | + ->
+        maak el <-| arr[i]!
+        returnValue <- flat(returnValue, el)!
+    <~
+    khutla returnValue!
+<~
+
+
+@* Pops the last element off an array and returns a new array without that element.
+@* p        $> array <- [] The original array
+@* devn     $> This is just a wrapper for the _a_remove()_ function, it doesn't matter which one you use
+@*          $> Throws if the argument is not an array.
+@* deps     $> a_remove
+@* returns  $>Returns a new array without the last element of the original array.
+@* since     $> 1.0.0-beta.3
+kwenza *a_pop(array) ->
+    if (typeOf(array) != "array") ->
+        cima <== "a_pop() only works on arrays"!
+    <~
+    khutla a_remove(array, 1)!
+<~
+
+
+@* Appends an element to the end of an array and returns the new array.
+@* p        $> arr <- [] The original array
+@* p        $> element <- any Element to add
+@* returns  $> Returns a new array with the element appended at the end of the
+@* since     $> 1.0.0-beta.3
+@* devn     $> Throws if the first argument is not an array.
+kwenza *a_push(arr, element) ->
+    if (typeOf(arr) != "array") ->
+        cima <== "a_push() only works on arrays"!
+    <~
+    maak newArr <-| element!
+    khutla flat(arr, newArr)!
+<~
+
+
+@* Appends an element to the start of an array and returns the new array.
+@* p        $> arr <- [] The original array
+@* p        $> element <- any Element to add
+@* returns  $> Returns a new array with the element appended at the start of the
+@* since    $> 1.0.0-beta.3
+@* devn     $> Throws if the first argument is not an array.
+kwenza *a_unshift(arr, element) ->
+    if (typeOf(arr) != "array") ->
+        cima <== "a_unshift() only works on arrays"!
+    <~
+    maak newArr <-| element!
+    khutla flat(newArr, arr)!
+<~
+
+
+@* Removes n elements from the start of an array
+@* p        $> arr <- [] The original array
+@* p        $> n <- number Amount of elements to remove
+@* returns  $> Returns an array which contains the original array with n amount of elements removed from the start.
+@* devn     $> This uses a colonize loop to iterate through the array and skip the first n elements.
+@*          $> It may not be the most efficient way to do this, but it works.
+@*          $> Throws if the first argument is not an array or if the second argument is not a non-negative number.
+@* since    $> 1.0.0-beta.3
+kwenza *a_shift(arr, n) ->
+    if (typeOf(arr) != "array") ->
+        cima <== "a_shift() only works on arrays"!
+    <~ mara if (typeOf(n) != "number" || n < 0) ->
+        cima <== "a_shift()'s second argument must be a non-negative number"!
+    <~
+    maak returnValue <-|!
+    colonize i <- 0 | i < arr~ | + ->
+        if (n > i) ->
+            nevermind!
+        <~
+        maak el <-| arr[i]!
+        returnValue <- flat(returnValue, el)!
+    <~
+    khutla returnValue!
+<~
+
+
+@* Filter an array based on a predicate function
+@* p        $> arr <- [] The original array
+@* p        $> predicate <- F~any A function that takes an element and returns true
+@* returns  $> Returns a new array with elements that satisfy the predicate function.
+@* devn     $> The predicate function must take in 1 parameter, the element and return a boolean.
+@*          $> Throws if the first argument is not an array or if the second argument is not a function.
+@* since    $> 1.0.0-beta.3
+kwenza *a_filter(arr, F~predicate) ->
+    if (typeOf(arr) != "array") ->
+        cima <== "a_filter() only works on arrays"!
+    <~ mara if (typeOf(predicate) != "function") ->
+        cima <== "a_filter()'s second argument must be a function"!
+    <~
+    maak empty <-|!
+    colonize element with arr ->
+        if (predicate(element) = true) ->
+            maak new <-| element!
+            empty <- flat(empty, new)!
+        <~
+    <~
+
+    khutla empty!
+<~
+
+@* Replace an element at a specific index in an array with a new element
+@* p        $> arr <- [] The original array
+@* p        $> i <- number The index to replace
+@* p        $> el <- any The new element to insert
+@* returns  $> Returns a new array with the element at index i replaced with el
+@* devn     $> Throws if the first argument is not an array or if the index is out of bounds.
+@* since    $> 3.0.0
+kwenza *a_replace(arr, i, el) ->
+    if (typeOf(arr) != "array") ->
+        cima <== "a_replace() only works on arrays"!
+    <~ mara if (typeOf(i) != "number" || i < 0 || i >= arr~) ->
+        @ The following constructs a string that explains why the index is invalid
+        @ (e.g., "i < 0", "i >= arr~", or "i != number")
+        maak str <- (typeOf(i) = "number" => ( i >= arr~ => "i >= arr~" however "i < 0" ) however "i != number")!
+        cima <== "a_replace()'s second argument must be a valid index " + str!
+    <~
+    maak newArr <-|!
+    colonize index <- 0 | index < arr~ | + ->
+        if (index = i) ->
+            maak newEl <-| el!
+            newArr <- flat(newArr, newEl)!
+        <~ mara ->
+            maak currentEl <-| arr[index]!
+            newArr <- flat(newArr, currentEl)!
+        <~
+    <~
+    khutla newArr!
+<~
+
+@* Deletes an element at a specific index in an array and shifts the rest of the elements to the left
+@* p        $> arr <- [] The original array
+@* p        $> i <- number The index to delete
+@* returns  $> Returns a new array with the element at index i removed and the
+@*          $> rest of the elements shifted to the left
+@* devn     $> Throws if the first argument is not an array or if the index is out of bounds.
+@*          $> Not to be confused with a_remove() which removes elements from the end of an array
+@* since    $> 3.0.0
+kwenza *a_delete(arr, i) ->
+    if (typeOf(arr) != "array") ->
+        cima <== "a_delete() only works on arrays"!
+    <~ mara if (typeOf(i) != "number" || i < 0 || i >= arr~) ->
+        @ The following constructs a string that explains why the index is invalid
+        @ (e.g., "i < 0", "i >= arr~", or "i != number")
+        maak str <- (typeOf(i) = "number" => ( i >= arr~ => "i >= arr~" however "i < 0" ) however "i != number")!
+        cima <== "a_delete()'s second argument must be a valid index " + str!
+    <~
+    maak newArr <-|!
+    colonize index <- 0 | index < arr~ | + ->
+        if (index = i) ->
+            nevermind!
+        <~ mara ->
+            maak currentEl <-| arr[index]!
+            newArr <- flat(newArr, currentEl)!
+        <~
+    <~
+    khutla newArr!
+<~
+
+@* Finds the first occurrence of an element in an array and returns its index
+@* p        $> arr <- [] The original array
+@* p        $> el <- any The element to find
+@* returns  $> Returns the index of the first occurrence of el in arr, or idk if not found
+@* devn     $> This uses the search first approach, it may not be the most efficient way to do this, but it works.
+@*          $> Throws if the input is not an array.
+@* since    $> 3.0.0
+kwenza *a_indexOf(arr, el) ->
+    if (typeOf(arr) != "array") ->
+        cima <== "a_indexOf() only works on arrays"!
+    <~
+    colonize index <- 0 | index < arr~ | + ->
+        if (arr[index] = el) ->
+            khutla index!
+        <~
+    <~
+    khutla idk!
+<~
+
+@* Reverses the order of elements in an array and returns a new array
+@* p        $> arr <- [] The original array
+@* returns  $> Returns a new array with the elements in reverse order
+@* devn     $> This uses a colonize loop to iterate through the array backwards
+@*          $> and constructs a new array with the elements in reverse order.
+@*          $> Throws if the input is not an array.
+@* since    $> 3.0.0
+kwenza *a_reverse(arr) ->
+    if (typeOf(arr) != "array") ->
+        cima <== "a_reverse() only works on arrays"!
+    <~
+    maak newArr <-|!
+    colonize i <- arr~ - 1 | i >= 0 | - ->
+        maak el <-| arr[i]!
+        newArr <- flat(newArr, el)!
+    <~
+    khutla newArr!
+<~
+
+@* Reduces an array to a single value using a reducer function
+@* p        $> arr <- [] The original array
+@* p        $> reducer <- F~any A function that takes an accumulator and an
+@*          $> element and returns a new accumulator
+@* p        $> initial? <- any An optional initial value for the accumulator
+@* returns  $> Returns the final value of the accumulator after processing all elements
+@* devn     $> The reducer function must take in 2 parameters, the accumulator
+@*          $> and the current element, and return the new value of the accumulator.
+@*          $> If no initial value is provided, the first element of the array
+@*          $> is used as the initial value and the reduction starts from the second element
+@*          $> Throws if the first argument is not an array or if the second argument is not a function.
+@* since    $> 3.0.0
+kwenza *a_reduce(arr, F~reducer, initial?) ->
+    if (typeOf(arr) != "array") ->
+        cima <== "a_reduce() only works on arrays"!
+    <~ mara if (typeOf(reducer) != "function") ->
+        cima <== "a_reduce()'s second argument must be a function"!
+    <~
+    maak accumulator <- initial!
+    colonize element with arr ->
+        if (accumulator = idk) ->
+            accumulator <- element!
+            nevermind!
+        <~ mara ->
+            accumulator <- reducer(accumulator, element)!
+        <~
+    <~
+    khutla accumulator!
+<~
