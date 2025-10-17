@@ -5,9 +5,8 @@ import java.util.*;
 
 import com.jaiva.Main;
 import com.jaiva.errors.InterpreterException.*;
-import com.jaiva.errors.JaivaException;
 import com.jaiva.errors.JaivaException.DebugException;
-import com.jaiva.interpreter.globals.Globals;
+import com.jaiva.interpreter.libs.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.*;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
@@ -313,7 +312,7 @@ public class Interpreter {
 
                 Vfs vfsFromFile;
 
-                if (g.builtInGlobals.containsKey(tImport.fileName))
+                if (g.builtInGlobals.containsKey(tImport.fileName) && tImport.isLib)
                     vfsFromFile = g.builtInGlobals.get(tImport.fileName);
                 else {
 
@@ -332,7 +331,7 @@ public class Interpreter {
                         continue; // Nohing to import.
 
                     IConfig<Object> newConfig = new IConfig<Object>(config.sanitisedArgs, importPath.toString(),
-                            config.JAIVA_SRC_PATH.toString(), null);
+                            null);
 
                     newConfig.importVfs = true; // This tells the interpreter to only parse exported symbols. (Functions
                                                 // and variables)

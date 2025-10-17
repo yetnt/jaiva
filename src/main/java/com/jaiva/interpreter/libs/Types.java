@@ -1,4 +1,4 @@
-package com.jaiva.interpreter.globals;
+package com.jaiva.interpreter.libs;
 
 import java.util.ArrayList;
 
@@ -9,7 +9,6 @@ import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.lang.Keywords;
-import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
 
 /**

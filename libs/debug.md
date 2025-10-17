@@ -2,11 +2,9 @@
 
 This library contains functions for.. debugging, what'd ya think??
 
-See [Debug.java](../src/main/java/com/jaiva/interpreter/globals/Debug.java) where this is defined.
+See [Debug.java](../src/main/java/com/jaiva/interpreter/libs/Debug.java) where this is defined.
 
 ## `d_emit(arr) -> `_*`khutla idk!`*_
-
-\*_**Independent**_
 
 This function, will forcefully throw a Java Error, [DebugException](../src/main/java/com/jaiva/errors/JaivaException.java), such that an outer Java testing suite can catch this error and report it with all the information this gives.
 

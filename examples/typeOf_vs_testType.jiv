@@ -1,5 +1,5 @@
 tsea "testType.jiv"! @ Imports the testType function and the array variable used in that file.
-tsea "types" <- t_num! @ Only import these t_num function
+tsea "jaiva/types" <- t_num! @ Only import these t_num function
 
 @ Add a function to the array
 maak new <-| t_num!

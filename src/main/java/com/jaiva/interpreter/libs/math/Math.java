@@ -1,4 +1,4 @@
-package com.jaiva.interpreter.globals.math;
+package com.jaiva.interpreter.libs.math;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -6,8 +6,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
-import com.jaiva.interpreter.globals.BaseGlobals;
-import com.jaiva.interpreter.globals.GlobalType;
+import com.jaiva.interpreter.libs.BaseGlobals;
+import com.jaiva.interpreter.libs.GlobalType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.Token.*;

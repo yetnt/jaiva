@@ -177,12 +177,12 @@ public class REPL {
      * Interpreter configuration object.
      * It contains the resources and configuration for the interpreter.
      */
-    private final IConfig<Object> iConfig = new IConfig<Object>(Main.callJaivaSrc(), null);
+    private final IConfig<Object> iConfig = new IConfig<Object>(null);
     /**
      * Tokenizer configuration object.
      * It contains the configuration for the tokenizer.
      */
-    private final TConfig tConfig = new TConfig(Main.callJaivaSrc());
+    private final TConfig tConfig = new TConfig();
     // private Token<?> tokenContainer = new Token<>(null);
 
     /**

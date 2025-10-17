@@ -1,8 +1,8 @@
-package com.jaiva.interpreter.globals;
+package com.jaiva.interpreter.libs;
 
-import com.jaiva.interpreter.globals.math.Math;
+import com.jaiva.interpreter.libs.math.Math;
 import com.jaiva.tokenizer.Token.TImport;
-import com.jaiva.interpreter.globals.math.*;
+import com.jaiva.interpreter.libs.math.*;
 
 /**
  * Global type describes the {@link BaseGlobals} instance where {@link GlobalType#GLOBAL}

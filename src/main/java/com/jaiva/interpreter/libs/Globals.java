@@ -1,4 +1,4 @@
-package com.jaiva.interpreter.globals;
+package com.jaiva.interpreter.libs;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -17,7 +17,7 @@ import com.jaiva.errors.JaivaException;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Primitives;
-import com.jaiva.interpreter.globals.math.Math;
+import com.jaiva.interpreter.libs.math.Math;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.*;
 import com.jaiva.lang.Keywords;
@@ -55,6 +55,9 @@ public class Globals extends BaseGlobals {
         builtInGlobals.put(f.path, f.vfs);
         Debug d = new Debug(config);
         builtInGlobals.put(d.path, d.vfs);
+
+        if (!config.destroyLibraryCircularDependancy)
+            builtInGlobals.putAll(new LibraryLoader().loadAllLibraries(new IConfig<Object>(true, null)));
     }
 
 
@@ -72,6 +75,9 @@ public class Globals extends BaseGlobals {
         vfs.put("sleep", new FSleep());
         vfs.put("neg", new FNeg());
         vfs.putAll(new IOFunctions(config).vfs);
+
+        if (!config.destroyLibraryCircularDependancy)
+            builtInGlobals.putAll(new LibraryLoader().loadAllLibraries(new IConfig<Object>(true, null)));
 
         Types c = new Types();
         builtInGlobals.put(c.path, c.vfs);

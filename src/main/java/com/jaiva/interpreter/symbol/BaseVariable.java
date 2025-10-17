@@ -116,7 +116,7 @@ public class BaseVariable extends Symbol {
     /**
      * Sets the array value of the variable.
      * <p>
-     *     Warning: This is intended for {@link com.jaiva.interpreter.globals.IOFile.VThis} which doesn't have access to the current scope.
+     *     Warning: This is intended for {@link com.jaiva.interpreter.libs.IOFile.VThis} which doesn't have access to the current scope.
      *     Use the other override or else anything can just be edited.
      * </p>
      *

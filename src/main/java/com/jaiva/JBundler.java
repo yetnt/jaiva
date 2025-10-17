@@ -3,7 +3,7 @@ package com.jaiva;
 
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.Scope;
-import com.jaiva.interpreter.globals.BaseGlobals;
+import com.jaiva.interpreter.libs.BaseGlobals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.Token;
 
@@ -46,7 +46,7 @@ public class JBundler {
     }
 
     public <T> void  interpret(T obj) throws Exception {
-        IConfig<T> config = new IConfig<>(new ArrayList<>(List.of("jaiva")), filePath, Main.callJaivaSrc(), obj);
+        IConfig<T> config = new IConfig<>(new ArrayList<>(List.of("jaiva")), filePath, obj);
         Scope scope = new Scope((IConfig<Object>) config, classes);
 
         Interpreter.interpret(tokens, scope, (IConfig<Object>) config);

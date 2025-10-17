@@ -1,4 +1,4 @@
-package com.jaiva.interpreter.globals;
+package com.jaiva.interpreter.libs;
 
 import java.util.ArrayList;
 

@@ -59,7 +59,7 @@ public class IntTest {
             IConfig<Object> c = new IConfig<Object>(new ArrayList<>(Arrays.asList(
                     FILE_JIV.toString())),
                     FILE_JIV.toString(),
-                    Main.callJaivaSrc(), null);
+                    null);
             Interpreter.interpret(tokens, new Scope(c), c);
 
             // DebugException was not thrown. Test failure.
@@ -89,7 +89,7 @@ public class IntTest {
             IConfig<Object> c = new IConfig<Object>(new ArrayList<>(Arrays.asList(
                     FILE2_JIV.toString())),
                     FILE2_JIV.toString(),
-                    Main.callJaivaSrc(), null);
+                    null);
             Interpreter.interpret(tokens, new Scope(c), c);
 
             // DebugException was not thrown. Test failure.
@@ -124,7 +124,7 @@ public class IntTest {
             IConfig<Object> c = new IConfig<Object>(new ArrayList<>(Arrays.asList(
                     IMPORT_JIV.toString())),
                     IMPORT_JIV.toString(),
-                    Main.callJaivaSrc(), null);
+                    null);
             Interpreter.interpret(tokens, new Scope(c), c);
 
             // DebugException was not thrown. Test failure.

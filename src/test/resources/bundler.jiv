@@ -1,5 +1,5 @@
-tsea "customPath"!
-tsea "debug"!
+tsea "jaiva/customPath"!
+tsea "jaiva/debug"!
 
 maak a <- echo(10)!
 

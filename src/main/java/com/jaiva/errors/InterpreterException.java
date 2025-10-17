@@ -469,4 +469,16 @@ public class InterpreterException extends JaivaException {
             super(ct, lineNumber, "This error shouldnt happen... (" + message + ")");
         }
     }
+
+    /**
+     * Exception thrown on start up if external libraries could not be loaded.
+     */
+    public static class LibImportException extends InterpreterException {
+
+        private static final long serialVersionUID = 1L;
+
+        public LibImportException(Scope ct, String lib) {
+            super(ct, -1, "The library "+lib+" could not be imported. yeah neh. (prolly aint ur fault)");
+        }
+    }
 }

@@ -1,9 +1,6 @@
-package com.jaiva.interpreter.globals;
-
-import java.util.HashMap;
+package com.jaiva.interpreter.libs;
 
 import com.jaiva.errors.JaivaException;
-import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.tokenizer.Token;

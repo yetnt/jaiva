@@ -6,8 +6,8 @@ import java.util.*;
 import com.jaiva.errors.*;
 import com.jaiva.errors.JaivaException.*;
 import com.jaiva.interpreter.*;
-import com.jaiva.interpreter.globals.Types;
-import com.jaiva.interpreter.globals.Globals;
+import com.jaiva.interpreter.libs.Types;
+import com.jaiva.interpreter.libs.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.*;
 import com.jaiva.tokenizer.Token.TArrayVar;
@@ -52,7 +52,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "3.0.1";
+    public static String version = "4.0.0";
     /**
      * Author, it's just me.
      */
@@ -123,10 +123,6 @@ public class Main {
                 }
                 case "--help", "-h" -> {
                     System.out.println();
-                    System.out.println("Usage: jaiva-src");
-                    System.out.println();
-                    System.out.println("\tReturns the source folder of the jaiva source stuff");
-                    System.out.println();
                     System.out.println("Usage: jaiva [options]");
                     System.out.println();
                     System.out.println("\tOptions:");
@@ -185,7 +181,7 @@ public class Main {
             return;
         }
 
-        IConfig<Object> iconfig = new IConfig<Object>(args, args[0], callJaivaSrc(), null);
+        IConfig<Object> iconfig = new IConfig<Object>(args, args[0], null);
         boolean stackTraces = false;
         boolean debug = false;
         try {
@@ -345,7 +341,7 @@ public class Main {
         }
         String previousLine = "";
         String comment = null;
-        TConfig config = new TConfig(callJaivaSrc());
+        TConfig config = new TConfig();
         int lineNum = 1;
         while (scanner.hasNextLine()) {
             String line = (b != null ? b.currentLine() : scanner.nextLine());
@@ -424,44 +420,6 @@ public class Main {
         scanner.close();
 
         return tokens;
-    }
-
-    /**
-     * Executes the "jaiva-src" command as an external process, captures its output,
-     * and returns it as a string. The method combines the standard output and error
-     * streams of the process and waits for the process to complete before returning
-     * the result.
-     *
-     * @return A trimmed string containing the output of the "jaiva-src" process.
-     *         If the process produces no output, an empty string is returned.
-     */
-    public static String callJaivaSrc() {
-        StringBuilder output = new StringBuilder();
-        try {
-            ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "jaiva-src");
-            builder.redirectErrorStream(true);
-            Process process = builder.start();
-
-            // Read the output of the process
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    output.append(line).append(System.lineSeparator());
-                }
-            }
-
-            // Wait for the process to finish and check its exit code
-            int exitCode = process.waitFor();
-            if (exitCode != 0 && exitCode != 20) {
-                // TODO: idk wtf is up with 20, but in linux it returns 20 and spams the console
-                System.err.println("jaiva-src exited with code: " + exitCode);
-            }
-        } catch (IOException | InterruptedException e) {
-//            e.printStackTrace();
-            System.err.println(e.getMessage());
-        }
-        return output.toString().trim();
     }
 
 }

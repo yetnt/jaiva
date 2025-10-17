@@ -1,8 +1,8 @@
 package com.jaiva.interpreter;
 
 import com.jaiva.errors.InterpreterException;
-import com.jaiva.interpreter.globals.BaseGlobals;
-import com.jaiva.interpreter.globals.Globals;
+import com.jaiva.interpreter.libs.BaseGlobals;
+import com.jaiva.interpreter.libs.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.TokenDefault;
 

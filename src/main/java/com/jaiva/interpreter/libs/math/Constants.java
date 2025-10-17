@@ -1,8 +1,8 @@
-package com.jaiva.interpreter.globals.math;
+package com.jaiva.interpreter.libs.math;
 
 import com.jaiva.interpreter.MapValue;
-import com.jaiva.interpreter.globals.BaseGlobals;
-import com.jaiva.interpreter.globals.GlobalType;
+import com.jaiva.interpreter.libs.BaseGlobals;
+import com.jaiva.interpreter.libs.GlobalType;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.tokenizer.Token.*;
 
