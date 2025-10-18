@@ -4,10 +4,6 @@ After unzipping the distribution, follow these instructions based on your operat
 
 ## On Windows
 
-An `.msi` file is included within the installations (as of v3.0.1) Just click on it and it installs Jaiva for you!
-
-### Manual
-
 1. Extract the ZIP to a folder, e.g., `C:\jaiva`.
 2. Ensure the launcher batch file (`jaiva.cmd`) is in the same folder as `jaiva.jar`.
 3. Add the folder to your PATH:
@@ -35,7 +31,7 @@ And get your desired output.
     ```
 
 > [!WARNING]
-> If you install an update, which means replacing the old foler with the new one, you may want to run the above script again, just to make sure the permissions are ight yknow.
+> If you install an update, which means replacing the old folder/jar file with the new one, you may want to run the above script again, just to make sure the permissions are ight yknow.
 
 4. Add the folder to your PATH by adding this line to your shell configuration file (e.g., `~/.bashrc`):
     ```sh

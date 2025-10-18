@@ -24,16 +24,16 @@
 
 <build>
     <pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.panteleyev</groupId>
-                <artifactId>jpackage-maven-plugin</artifactId>
-                <version>1.6.0</version>
-                <configuration>
-                    <!-- Empty config to make IDE happy -->
-                </configuration>
-            </plugin>
-        </plugins>
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <groupId>org.panteleyev</groupId>-->
+<!--                <artifactId>jpackage-maven-plugin</artifactId>-->
+<!--                <version>1.6.0</version>-->
+<!--                <configuration>-->
+<!--                    &lt;!&ndash; Empty config to make IDE happy &ndash;&gt;-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
     </pluginManagement>
     <plugins>
         <plugin>
@@ -57,43 +57,45 @@
                 <target>21</target>
             </configuration>
         </plugin>
-        <plugin>
-            <groupId>org.panteleyev</groupId>
-            <artifactId>jpackage-maven-plugin</artifactId>
-            <version>1.6.0</version>
-            <executions>
-                <execution>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>jpackage</goal>
-                    </goals>
-                    <configuration>
-                        <name>Jaiva</name>
-                        <appVersion>${project.version}</appVersion>
-                        <icon>src/main/resources/jaiva.ico</icon>
-                        <description>Jaiva! Tokenizer &amp; Interpreter</description>
-                        <vendor>yetnt</vendor>
-                        <mainClass>com.jaiva.Main</mainClass>
-                        <mainJar>${project.build.finalName}.jar</mainJar>
-<!--                        <runtimeImage>${java.home}</runtimeImage>-->
+<!--        <plugin>-->
+<!--            <groupId>org.panteleyev</groupId>-->
+<!--            <artifactId>jpackage-maven-plugin</artifactId>-->
+<!--            <version>1.6.0</version>-->
+<!--            <executions>-->
+<!--                <execution>-->
+<!--                    <phase>package</phase>-->
+<!--                    <goals>-->
+<!--                        <goal>jpackage</goal>-->
+<!--                    </goals>-->
+<!--                    <configuration>-->
+<!--                        <name>Jaiva</name>-->
+<!--                        <appVersion>${project.version}</appVersion>-->
+<!--                        <icon>src/main/resources/jaiva.ico</icon>-->
+<!--                        <description>Jaiva! Tokenizer &amp; Interpreter</description>-->
+<!--                        <vendor>yetnt</vendor>-->
+<!--                        <mainClass>com.jaiva.Main</mainClass>-->
+<!--                        <mainJar>${project.build.finalName}.jar</mainJar>-->
+<!--&lt;!&ndash;                        <runtimeImage>${java.home}</runtimeImage>&ndash;&gt;-->
 
-                        <resourceDir>src/main/resources</resourceDir>
-                        <type>MSI</type>
-                        
+<!--                        <resourceDir>src/main/resources</resourceDir>-->
+<!--                        <type>MSI</type>-->
+<!--                        <winConsole>true</winConsole>-->
+<!--                        <installDir></installDir>-->
+<!--                        -->
 
-                        <input>${project.build.directory}</input>
-                        <destination>${project.build.directory}/jpackage</destination>
-                        <fileAssociations>
-                            <fileAssociation>src/main/resources/file-assoc-jaiva.properties</fileAssociation>
-                            <fileAssociation>src/main/resources/file-assoc-jva.properties</fileAssociation>
-                            <fileAssociation>src/main/resources/file-assoc-jiv.properties</fileAssociation>
-                        </fileAssociations>
-                        <winPerUserInstall>false</winPerUserInstall>
-                        <aboutUrl>https://github.com/yetnt/jaiva</aboutUrl>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
+<!--                        <input>${project.build.directory}</input>-->
+<!--                        <destination>${project.build.directory}/jpackage</destination>-->
+<!--                        <fileAssociations>-->
+<!--                            <fileAssociation>src/main/resources/file-assoc-jaiva.properties</fileAssociation>-->
+<!--                            <fileAssociation>src/main/resources/file-assoc-jva.properties</fileAssociation>-->
+<!--                            <fileAssociation>src/main/resources/file-assoc-jiv.properties</fileAssociation>-->
+<!--                        </fileAssociations>-->
+<!--                        <winPerUserInstall>false</winPerUserInstall>-->
+<!--                        <aboutUrl>https://github.com/yetnt/jaiva</aboutUrl>-->
+<!--                    </configuration>-->
+<!--                </execution>-->
+<!--            </executions>-->
+<!--        </plugin>-->
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-resources-plugin</artifactId>
