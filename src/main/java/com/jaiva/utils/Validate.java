@@ -237,7 +237,7 @@ public class Validate {
      */
     public static IsValidSymbolName isValidSymbolName(String line) {
         for (char c : line.toCharArray()) {
-            if (Chars.dissalowedCharsForSymbolName().contains(Character.toString(c))) {
+            if (Chars.invalidCharsForSymbolName().contains(Character.toString(c))) {
                 return new IsValidSymbolName(Character.toString(c), false);
             }
         }

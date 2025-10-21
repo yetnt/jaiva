@@ -334,13 +334,13 @@ public class Chars {
     /**
      * Returns an arraylist of characters that are not allowed in a symbol name.
      * <p>
-     * This is the exact same as {@link #dissalowedChars()} but without the
+     * This is the exact same as {@link #invalidChars()} but without the
      * {@link Chars#EXPORT_SYMBOL}.
      * 
      * @return An arraylist of characters that are not allowed in a symbol name.
      */
-    public static ArrayList<String> dissalowedCharsForSymbolName() {
-        ArrayList<String> dList = dissalowedChars();
+    public static ArrayList<String> invalidCharsForSymbolName() {
+        ArrayList<String> dList = invalidChars();
         dList.remove(Character.toString(EXPORT_SYMBOL));// remove the * symbol
         dList.remove("x"); // removed the letter x that comes from <x and >x
         return dList;
@@ -351,29 +351,29 @@ public class Chars {
      * 
      * @return An arraylist of characters that cannot be used randomly.
      */
-    public static ArrayList<String> dissalowedChars() {
+    public static ArrayList<String> invalidChars() {
         String all = Operators.getAll().toString().replaceAll(",", "").replaceAll(" ", "").replace("[", "").replace("]",
                 "") +
-                Character.toString(ESCAPE) +
-                Character.toString(OPTIONAL_ARG) +
-                Character.toString(END_LINE) +
-                Character.toString(COMMENT) +
-                Character.toString(COMMENT_OPEN) +
-                Character.toString(COMMENT_CLOSE) +
-                Character.toString(STATEMENT_OPEN) +
-                Character.toString(STATEMENT_CLOSE) +
+                ESCAPE +
+                OPTIONAL_ARG +
+                END_LINE +
+                COMMENT +
+                COMMENT_OPEN +
+                COMMENT_CLOSE +
+                STATEMENT_OPEN +
+                STATEMENT_CLOSE +
                 BLOCK_OPEN +
                 BLOCK_CLOSE +
                 COMMENT_DOC +
                 ASSIGNMENT +
                 THROW_ERROR +
                 ARRAY_ASSIGNMENT +
-                Character.toString(LENGTH_CHAR) +
-                Character.toString(ARRAY_OPEN) +
-                Character.toString(ARRAY_CLOSE) +
-                Character.toString(ARGS_SEPARATOR) +
-                Character.toString(FOR_SEPARATOR) +
-                Character.toString(STRING);
+                LENGTH_CHAR +
+                ARRAY_OPEN +
+                ARRAY_CLOSE +
+                ARGS_SEPARATOR +
+                FOR_SEPARATOR +
+                STRING;
         return new ArrayList<>(new HashSet<>(Arrays.asList(all.split(""))));
     }
 }
