@@ -14,6 +14,14 @@ public class JDoc {
 
     public ArrayList<Tag> tags = new ArrayList<>();
 
+    public JDoc(ArrayList<Tag> input) {
+        tags = input;
+    }
+
+    public static JDocBuilder builder() {
+        return new JDocBuilder();
+    }
+
     public JDoc(int lineNumber, String input) throws TokenizerException {
         Scanner s = new Scanner(input);
         Tag.DGeneric generics = new Tag.DGeneric("");
