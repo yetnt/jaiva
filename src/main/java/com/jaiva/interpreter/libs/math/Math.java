@@ -11,6 +11,8 @@ import com.jaiva.interpreter.libs.GlobalType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.Token.*;
+import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.jdoc.JDocBuilder;
 
 /**
  * Math functions ofc
@@ -45,7 +47,13 @@ public class Math extends BaseGlobals {
     class FAbs extends BaseFunction {
         FAbs() {
             super("m_abs", new TFunction("m_abs", new String[] { "value" }, null, -1,
-                    "Returns the absolute value of a number"));
+                    JDoc.builder()
+                            .addDesc("Returns the absolute value of a number.")
+                            .addParam("value", "number", "The value to return the value of.", false)
+                            .addReturns("A positive value.")
+                            .sinceVersion("1.0.2")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -82,11 +90,14 @@ public class Math extends BaseGlobals {
     class FRandom extends BaseFunction {
         FRandom() {
             super("m_random", new TFunction("m_random", new String[] { "lower", "upper" }, null, -1,
-                    """
-                            Returns a random number (integer) in the range of `lower` and `upper`\\
-                             > ***lower***:lower bound (inclusive)\\
-                             > ***upper***:upper bound (inclusive)
-                            """));
+            JDoc.builder()
+                    .addDesc("Returns a random number (integer) in the range of `lower` and `upper`")
+                    .addParam("lower", "number", "The lowest number possible (inclusive)", false)
+                    .addParam("higher", "number", "The highest number possible (inclusive)", false)
+                    .addReturns("A random number.")
+                    .sinceVersion("1.0.0")
+                    .build()
+            ));
             this.freeze();
         }
 
@@ -120,7 +131,7 @@ public class Math extends BaseGlobals {
     }
 
     /**
-     * {@code m_round(value)} -> rounds an approximatio to the nearest integer.
+     * {@code m_round(value)} -> rounds an approximate to the nearest integer.
      * <p>
      * If the input value is already an integer, it is returned as-is.
      * If the input value is a double, it is rounded to the nearest integer using
@@ -137,7 +148,13 @@ public class Math extends BaseGlobals {
     class FRound extends BaseFunction {
         FRound() {
             super("m_round", new TFunction("m_round", new String[] { "value" }, null, -1,
-                    "Rounds the given real nmber to an integer. This is for the real ones who hate working with precision."));
+                    JDoc.builder()
+                            .addDesc("Rounds the given real number to an integer.")
+                            .addParam("value", "number", "The input to round up/down.", false)
+                            .addReturns("An integer value")
+                            .sinceVersion("1.0.0")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -173,7 +190,13 @@ public class Math extends BaseGlobals {
     class FSqrt extends BaseFunction {
         FSqrt() {
             super("m_sqrt", new TFunction("m_sqrt", new String[] { "value" }, null, -1,
-                    "Returns the (positive) square root of the number provided"));
+                    JDoc.builder()
+                            .addDesc("Calculates the sqaure root of the input value.")
+                            .addParam("value", "number", "The number to find the square root of.", false)
+                            .addReturns("Returns the (positive) square root of the number provided")
+                            .sinceVersion("1.0.2")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -210,7 +233,16 @@ public class Math extends BaseGlobals {
     class FPow extends BaseFunction {
         FPow() {
             super("m_pow", new TFunction("m_pow", new String[] { "base", "exponent" }, null, -1,
-                    "Returns the result of raising the base to the power of the exponent"));
+                    JDoc.builder()
+                            .addDesc("Raises the base to the power of the exponent")
+                            .addParam("base", "number", "The base.", false)
+                            .addParam("exponent", "number", "The exponent.", false)
+                            .addReturns("Returns the result of raising the base to the power of the exponent")
+                            .markDeprecated("Literally just use \"base^exponent\". I have no idea why I even made this function if the operator"
+                            + " part existed in the first place. This will be removed within later versions.")
+                            .sinceVersion("1.0.2")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -248,7 +280,13 @@ public class Math extends BaseGlobals {
     class FFloor extends BaseFunction {
         FFloor() {
             super("m_floor", new TFunction("m_floor", new String[] { "value" }, null, -1,
-                    "Returns the largest integer less than or equal to the given value"));
+                    JDoc.builder()
+                            .addDesc("Returns the largest integer less than or equal to the given value.")
+                            .addParam("value", "number", "The value to floor.", false)
+                            .addReturns("The largest integer less than or equal to the given value.")
+                            .sinceVersion("1.0.2")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -283,7 +321,13 @@ public class Math extends BaseGlobals {
     class FCeil extends BaseFunction {
         FCeil() {
             super("m_ceil", new TFunction("m_ceil", new String[] { "value" }, null, -1,
-                    "Returns the smallest integer greater than or equal to the given value"));
+                    JDoc.builder()
+                            .addDesc("Returns the smallest integer greater than or equal to the given value.")
+                            .addParam("value", "number", "The value to ceil.", false)
+                            .addReturns("The smallest integer greater than or equal to the given value.")
+                            .sinceVersion("1.0.2")
+                            .build()
+            ));
             this.freeze();
         }
 

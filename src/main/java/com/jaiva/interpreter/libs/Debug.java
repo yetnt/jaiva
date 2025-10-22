@@ -8,6 +8,7 @@ import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.Token.*;
+import com.jaiva.tokenizer.jdoc.JDoc;
 
 public class Debug extends BaseGlobals {
     Debug(IConfig<Object> config) {
@@ -18,7 +19,19 @@ public class Debug extends BaseGlobals {
     public class FEmit extends BaseFunction {
         FEmit(IConfig<Object> config) {
             super("d_emit", new TFunction("d_emit", new String[] { "arr?" }, null, -1,
-                    "Throws an error which is expected to be caught by a debugger of some sorts."));
+                    JDoc.builder()
+                            .addDesc("Throws a DebugException to be caught by a Java test class and emits the given variables")
+                            .addParam("arr", "[]", "The array of values to pass to the exception", true)
+                            .addReturns("Physically can't return. As it always throws an error")
+                            .addNote(
+                                    "If you aren't familiar with Java, the language Jaiva is developed in. " +
+                                            "This will essentially forcefully stop the execution of the interpreter, with the intent" +
+                                            " for said error to be caught and dealt with by another Java class. This serves 0 purpose if " +
+                                            " you're just running a Jaiva file."
+                            )
+                            .sinceVersion("1.0.2")
+                            .build()
+            ));
             this.freeze();
         }
 

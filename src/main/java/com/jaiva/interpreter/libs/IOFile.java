@@ -13,6 +13,7 @@ import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
+import com.jaiva.tokenizer.jdoc.JDoc;
 
 public class IOFile extends BaseGlobals {
     IOFile(IConfig<Object> config) throws InterpreterException {
@@ -39,7 +40,12 @@ public class IOFile extends BaseGlobals {
             super("f_name",
                     new TStringVar("f_name",
                             config.filePath == null ? "REPL" : config.filePath.getFileName().toString(), -1,
-                            "Variable that holds the current file's name"),
+                            JDoc.builder()
+                                    .addDesc("Variable that holds the current file's name")
+                                    .addNote("If you call this within the REPL, or somehow the filePath is null, it holds \"REPL\"")
+                                    .sinceVersion("1.0.0")
+                                    .build()
+                    ),
                     config.filePath == null ? "REPL" : config.filePath.getFileName().toString());
             freeze();
 
@@ -62,7 +68,12 @@ public class IOFile extends BaseGlobals {
             super("f_dir",
                     new TStringVar("f_dir", config.fileDirectory == null ? "REPL"
                             : config.fileDirectory.toAbsolutePath().toString(), -1,
-                            "Variable that holds the current file's directory."),
+                            JDoc.builder()
+                                    .addDesc("Variable that holds the current file's directory.")
+                                    .addNote("If you call this within the REPL, or somehow the filePath is null, it holds \"REPL\"")
+                                    .sinceVersion("1.0.0")
+                                    .build()
+                    ),
                     config.fileDirectory == null ? "REPL" : config.fileDirectory.toAbsolutePath().toString());
             freeze();
         }
@@ -78,8 +89,13 @@ public class IOFile extends BaseGlobals {
     public class VBinaryDirectory extends BaseVariable {
         public VBinaryDirectory(IConfig<Object> config) {
             super("f_bin", new TStringVar("f_bin", "/eish/my/boizin/this/variable/is/deprecated", 0,
-                    "Variable that holds the directory where you can find jaiva.jar"),
-
+                    JDoc.builder()
+                            .addDesc("Variable that holds the directory where you can find jaiva.jar")
+                            .markDeprecated("Reframe from using this as I've removed support for finding the"
+                            + " jaiva-cli method. You can't know now. Deep shit.")
+                            .sinceVersion("1.0.0")
+                            .build()
+                    ),
                     "/eish/my/boizin/this/variable/is/deprecated");
             freeze();
         }
@@ -132,9 +148,15 @@ public class IOFile extends BaseGlobals {
          */
         public VThis(IConfig<Object> config) throws InterpreterException {
             super("f_this", new TArrayVar("f_this", new ArrayList<>(), -1,
-                    "Returns an array containing the current file's properties \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]"),
+                    JDoc.builder()
+                            .addDesc("Returns the current file's properties and contents.")
+                            .addNote("Returns an array containing the current file's properties \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]")
+                            .addNote("Once again, if we are inside the REPL, we just return static content. (Does not represent the REPL)")
+                            .sinceVersion("1.0.1")
+                            .build()
+                    ),
                     new ArrayList<>());
-            // create the array containign this current file's structure
+            // create the array containing this current file's structure
             // if we're in the file.
             /*
              * [
@@ -160,7 +182,7 @@ public class IOFile extends BaseGlobals {
                 fs = new Scanner(f);
             } catch (FileNotFoundException e) {
                 throw new InterpreterException.CatchAllException(new Scope(config),
-                        "Well, the current file doesnt exist??...", -1);
+                        "Well, the current file doesn't exist??...", -1);
             }
             ArrayList<String> contents = new ArrayList<>();
             while (fs.hasNextLine())
@@ -197,7 +219,13 @@ public class IOFile extends BaseGlobals {
         // function looks for the file and returns its properties in the structure.
         public FFile(IConfig<Object> config) {
             super("f_file", new TFunction("f_file", new String[] { "path" }, null, -1,
-                    "Returns an array containing the properties of the file at the given `path` \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]"));
+                    JDoc.builder()
+                            .addDesc("Finds the specified file and retrieves it's contents.")
+                            .addParam("path", "string", "The path to the file you want to fetch.", false)
+                            .addReturns("Returns an array containing the properties of the file at the given `path` \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]")
+                            .sinceVersion("1.0.1")
+                            .build()
+            ));
             freeze();
         }
 
@@ -274,14 +302,23 @@ public class IOFile extends BaseGlobals {
              */
             super("f_new", new TFunction("f_new",
                     new String[] { "path", "content", "canRead?", "canWrite?", "canExecute?" }, null, -1,
-                    "Creates a new file at the given `path` with the specified `content` and permissions. \\n Returns boolean indicating success."));
+                    JDoc.builder()
+                            .addDesc("Creates a new file with the given properties at the given file.")
+                            .addParam("path", "string", "The path to the new file to create. Along with the file name and extension", false)
+                            .addParam("content", "idk", "The content the file should hold. Either a string or an array of strings.", false)
+                            .addParam("canRead", "boolean", "Whether or not the file can be read. Defaults to true", true)
+                            .addParam("canWrite", "boolean", "Whether the file can be written to or not. Defaults to true", true)
+                            .addParam("canExecute", "boolean", "Whether the file can be executed or not. Defaults to true.", true)
+                            .addReturns("A boolean `true` if the file could be created. `false` otherwise.")
+                            .sinceVersion("2.0.1")
+                            .build()
+            ));
         }
 
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
                 Scope scope)
                 throws Exception {
-            // TODO Auto-generated method stub
             checkParams(tFuncCall, scope);
             Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), false, config,
                     scope);
@@ -296,7 +333,7 @@ public class IOFile extends BaseGlobals {
             if (!(content instanceof String) && !(content instanceof ArrayList))
                 throw new FunctionParametersException(scope, this, "2", params.get(1), String.class,
                         tFuncCall.lineNumber);
-            if (content instanceof ArrayList list) {
+            if (content instanceof ArrayList<?> list) {
                 if (list.isEmpty())
                     output = "";
                 // if the list has only one element, we can just use that as the content
@@ -349,9 +386,9 @@ public class IOFile extends BaseGlobals {
                 Files.createDirectories(newFilePath.getParent()); // ensure parent directories exist
                 Files.writeString(newFilePath, output, StandardOpenOption.CREATE_NEW);
                 File newFile = newFilePath.toFile();
-                newFile.setReadable(canRead);
-                newFile.setWritable(canWrite);
-                newFile.setExecutable(canExecute);
+                boolean r = newFile.setReadable(canRead);
+                boolean w = newFile.setWritable(canWrite);
+                boolean e = newFile.setExecutable(canExecute);
             } catch (IOException e) {
                 return false; // failed to create file
             }

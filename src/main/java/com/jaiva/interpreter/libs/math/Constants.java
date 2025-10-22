@@ -5,6 +5,8 @@ import com.jaiva.interpreter.libs.BaseGlobals;
 import com.jaiva.interpreter.libs.GlobalType;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.tokenizer.Token.*;
+import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.jdoc.JDocBuilder;
 
 /**
  * Container class for mathematical constants.
@@ -31,7 +33,12 @@ public class Constants extends BaseGlobals {
          *
          */
         VPi() {
-            super("m_pi", new TNumberVar("m_pi", java.lang.Math.PI, -1, "The mathematical constant π (pi)"),
+            super("m_pi", new TNumberVar("m_pi", java.lang.Math.PI, -1,
+                            JDoc.builder()
+                                    .addDesc("The mathematical constant π (pi)")
+                                    .addNote("It's just java.lang.Math.PI")
+                                    .build()
+                    ),
                     java.lang.Math.PI);
             this.freeze();
         }
@@ -48,7 +55,11 @@ public class Constants extends BaseGlobals {
         VE() {
             super("m_e",
                     new TNumberVar("m_e", java.lang.Math.E, -1,
-                            "The mathematical constant e (Euler's number)"),
+                            JDoc.builder()
+                                    .addDesc("The mathematical constant e (Euler's number)")
+                                    .addNote("Just java.lang.Math.E")
+                                    .build()
+                    ),
                     java.lang.Math.E);
             this.freeze();
         }
@@ -64,7 +75,11 @@ public class Constants extends BaseGlobals {
          */
         VTau() {
             super("m_tau", new TNumberVar("m_tau", java.lang.Math.TAU, -1,
-                    "The mathematical constant τ (tau), which is equal to 2π"),
+                            JDoc.builder()
+                                    .addDesc("The mathematical constant τ (tau), which is equal to 2π")
+                                    .addNote("Just java.lang.Math.TAU")
+                                    .build()
+                    ),
                     java.lang.Math.TAU);
             this.freeze();
         }
@@ -81,7 +96,11 @@ public class Constants extends BaseGlobals {
          */
         VPhi() {
             super("m_phi", new TNumberVar("m_phi", (1 + java.lang.Math.sqrt(5)) / 2, -1,
-                    "The golden ratio φ (phi)"), (1 + java.lang.Math.sqrt(5)) / 2);
+                    JDoc.builder()
+                            .addDesc("The golden ratio φ (phi)")
+                            .addNote("No note here.")
+                            .build()
+            ), (1 + java.lang.Math.sqrt(5)) / 2);
             this.freeze();
         }
     }

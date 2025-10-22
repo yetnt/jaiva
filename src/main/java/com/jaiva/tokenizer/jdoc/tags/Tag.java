@@ -107,6 +107,14 @@ public class Tag {
             if (addToDescription(docs)) attributes.put("description", docs);
         }
 
+        public DParameter(String varName, String type, String description, boolean optional) {
+            super(TagType.PARAMETER);
+            attributes.put("var", varName);
+            attributes.put("type", type);
+            attributes.put("optional", optional);
+            attributes.put("description", description);
+        }
+
         @Override
         public String toString() {
             return super.toString() +
@@ -137,6 +145,13 @@ public class Tag {
             for (String symbol : input.split(",")) {
                 arr.add(symbol.trim());
             }
+            attributes.put("symbols", arr);
+        }
+
+        public DDepends(String ...input) {
+            ArrayList<String> arr = new ArrayList<>(
+                    Arrays.asList(input)
+            );
             attributes.put("symbols", arr);
         }
 

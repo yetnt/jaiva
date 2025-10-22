@@ -11,6 +11,7 @@ import com.jaiva.lang.Chars;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.lang.Keywords;
 import com.jaiva.lang.Keywords.LoopControl;
+import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.utils.cd.ContextDispatcher;
 import com.jaiva.utils.Find;
 import com.jaiva.utils.Validate;
@@ -398,7 +399,7 @@ public record Token<T extends TokenDefault>(T value) {
          * @param value The value of the variable.
          * @param ln    The line number.
          */
-        public TUnknownVar(String name, Type value, int ln, String customToolTip) {
+        public TUnknownVar(String name, Type value, int ln, JDoc customToolTip) {
             super(name, ln, customToolTip);
             this.value = value;
         }
@@ -444,7 +445,7 @@ public record Token<T extends TokenDefault>(T value) {
          * @param value The value of the variable.
          * @param ln    The line number.
          */
-        public TStringVar(String name, String value, int ln, String customToolTip) {
+        public TStringVar(String name, String value, int ln, JDoc customToolTip) {
             super(name, value, ln, customToolTip);
             this.value = value;
         }
@@ -491,7 +492,7 @@ public record Token<T extends TokenDefault>(T value) {
          * @param value The value of the variable.
          * @param ln    The line number.
          */
-        public TNumberVar(String name, Object value, int ln, String customTooltip) {
+        public TNumberVar(String name, Object value, int ln, JDoc customTooltip) {
             super(name, value, ln, customTooltip);
             this.value = value;
         }
@@ -592,7 +593,7 @@ public record Token<T extends TokenDefault>(T value) {
          * @param contents The contents of the variable.
          * @param ln       The line number.
          */
-        public TArrayVar(String name, ArrayList<Object> contents, int ln, String customTooltip) {
+        public TArrayVar(String name, ArrayList<Object> contents, int ln, JDoc customTooltip) {
             super(name, ln, customTooltip);
             this.contents = contents;
         }
@@ -720,7 +721,7 @@ public record Token<T extends TokenDefault>(T value) {
          * @param ln            The line number.
          * @param customToolTip The custom tooltip for the function.
          */
-        public TFunction(String name, String[] args, TCodeblock body, int ln, String customToolTip) {
+        public TFunction(String name, String[] args, TCodeblock body, int ln, JDoc customToolTip) {
             super("F~" + name, ln, customToolTip);
 
             String[] newArgs = new String[args.length];

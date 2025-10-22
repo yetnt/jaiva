@@ -7,6 +7,8 @@ import com.jaiva.tokenizer.jdoc.tags.Tag;
 import com.jaiva.tokenizer.jdoc.tags.TagType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -20,6 +22,15 @@ public class JDoc {
 
     public static JDocBuilder builder() {
         return new JDocBuilder();
+    }
+
+    /**
+     * Creates a JDoc object from a single string, treating the entire string as a generic description.
+     * @param str The input string to be wrapped as a generic JDoc.
+     * @return A new JDoc instance containing a single generic tag with the provided string.
+     */
+    public static JDoc fromString(String str) {
+        return new JDoc(new ArrayList<>(List.of(new Tag.DGeneric(str))));
     }
 
     public JDoc(int lineNumber, String input) throws TokenizerException {

@@ -10,6 +10,7 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.Token.*;
+import com.jaiva.tokenizer.jdoc.JDoc;
 
 /**
  * The {@code Conversions} class provides global conversion functions for the
@@ -52,7 +53,15 @@ public class Types extends BaseGlobals {
     class FNum extends BaseFunction {
         FNum() {
             super("t_num", new TFunction("t_num", new String[] { "string", "radix?" }, null, -1,
-                    "converts a given **string** to a number with an optional **radix**. (Jaiva integer prefixes [such as _0x_ or _0b_], are checked for first before the radix)"));
+                    JDoc.builder()
+                            .addDesc("Converts a given **string** to a number with an optional **radix**.")
+                            .addParam("string", "string", "The input to convert to a number", false)
+                            .addParam("radix", "number", "An optional radix to convert to", true)
+                            .addNote("Jaiva integer prefixes [such as _0x_ or _0b_], are checked for first before the radix.")
+                            .addReturns("A number. (Either a double or integer)")
+                            .sinceVersion("2.0.0-beta.3")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -100,7 +109,16 @@ public class Types extends BaseGlobals {
     class FStr extends BaseFunction {
         FStr() {
             super("t_str", new TFunction("t_str", new String[] { "input?", "radix?" }, null, -1,
-                    "converts any **input** of any given type to a string. With an optional **radix** input for converting integers."));
+                    JDoc.builder()
+                            .addDesc("Converts any input of any given type to a string.")
+                            .addParam("input", "idk", "The input to convert", true)
+                            .addParam("radix", "number", "A given radix for integers", true)
+                            .sinceVersion("2.0.0-beta.3")
+                            .addReturns("A string representation of the given input")
+                            .addNote("If given an input of `idk`, it will return `idk`. Not a string.")
+                            .build()
+//                    "converts any **input** of any given type to a string. With an optional **radix** input for converting integers."
+                    ));
             this.freeze();
         }
 

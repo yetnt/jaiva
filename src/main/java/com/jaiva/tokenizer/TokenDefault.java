@@ -1,6 +1,7 @@
 package com.jaiva.tokenizer;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.jdoc.JDoc;
 
 /**
  * TokenDefault class is a default implementation of all the other
@@ -73,7 +74,7 @@ public class TokenDefault {
      * @param line Token line number
      * @param tt Token tooltip
      */
-    public TokenDefault(String name, int line, String tt) {
+    public TokenDefault(String name, int line, JDoc tt) {
         this.name = name;
         this.lineNumber = line;
         this.tooltip = tt;

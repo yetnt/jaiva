@@ -9,6 +9,7 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.jdoc.JDoc;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +27,7 @@ class CustomLib extends BaseGlobals {
 
     static class FEcho extends BaseFunction {
         public FEcho() {
-            super("echo", new Token.TFunction("echo", new String[] {"arg1"}, null, -1));
+            super("echo", new Token.TFunction("echo", new String[] {"arg1"}, null, -1, JDoc.fromString("d")));
             this.freeze();
         }
 
@@ -39,7 +40,7 @@ class CustomLib extends BaseGlobals {
 
     static class VVar extends BaseVariable {
         public VVar() {
-            super("poop", new Token.TStringVar("poop", "factuality", -1, "The best var"), "facuality");
+            super("poop", new Token.TStringVar("poop", "factuality", -1, JDoc.fromString("The best string")), "facuality");
             this.freeze();
         }
     }

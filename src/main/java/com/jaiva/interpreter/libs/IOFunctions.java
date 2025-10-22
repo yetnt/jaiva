@@ -17,6 +17,7 @@ import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
 import com.jaiva.tokenizer.TokenDefault;
+import com.jaiva.tokenizer.jdoc.JDoc;
 
 /**
  * IOFunctions class holds the functions that are used for input and output in
@@ -45,7 +46,15 @@ public class IOFunctions extends BaseGlobals {
 
         FKhuluma() {
             super("khuluma", new TFunction("khuluma", new String[] { "msg?", "removeNewLn?" }, null, -1,
-                    "Prints any given input to the console with a newline afterwards. \\n(It just uses System.out.println() lol) This function returns no value."));
+                    JDoc.builder()
+                            .addDesc("Prints any given input to the console.")
+                            .addParam("msg", "idk","The message to print.", true)
+                            .addParam("removeNewLn", "boolean", "If true, no new line is printed after the message. Defaults to false.", true)
+                            .addReturns("idk")
+                            .sinceVersion("1.0.0-beta.2")
+                            .addNote("For the nerds. This is just System.out.println as default, then if removeNewLn is true, System.out.print. Lol")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -108,7 +117,13 @@ public class IOFunctions extends BaseGlobals {
     class FMamela extends BaseFunction {
         FMamela() {
             super("mamela", new TFunction("mamela", new String[] {}, null, -1,
-                    "Listens for input from the console. Warning this will pause all execution until input is given."));
+                    JDoc.builder()
+                            .addDesc("Listens for input from the console.")
+                            .addReturns("The input given from the console as a string")
+                            .addNote("Warning: This will pause all execution until input is given.")
+                            .sinceVersion("1.0.0-beta.3")
+                    .build()
+            ));
             this.freeze();
         }
 
@@ -139,7 +154,13 @@ public class IOFunctions extends BaseGlobals {
     class FAsk extends BaseFunction {
         FAsk() {
             super("ask", new TFunction("ask", new String[] { "message" }, null, -1,
-                    "Prompts the user for input via a UI."));
+                    JDoc.builder()
+                            .addDesc("Prompts the user for input via a UI dialog.")
+                            .addParam("message", "string", "The message to display in the dialog.", false)
+                            .addReturns("The user's input as a string.")
+                            .sinceVersion("1.0.0")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -174,7 +195,14 @@ public class IOFunctions extends BaseGlobals {
         FClear() {
             // Define the function without any parameters.
             super("clear",
-                    new TFunction("clear", new String[] {}, null, -1, "Clears the console."));
+                    new TFunction("clear", new String[] {}, null, -1,
+                            JDoc.builder()
+                                    .addDesc("Clears the console.")
+                                    .addReturns("idk")
+                                    .addNote("The effectiveness of this function depends on the terminal's support for ANSI escape codes.")
+                                    .sinceVersion("1.0.0")
+                                    .build()
+                    ));
             freeze();
         }
 
@@ -200,7 +228,12 @@ public class IOFunctions extends BaseGlobals {
     class VArgs extends BaseVariable {
         VArgs(IConfig<Object> config) {
             super("args", new TArrayVar("args", new ArrayList<>(Arrays.asList(config.args)), -1,
-                    "The command-line arguments passed to the jaiva command"),
+                    JDoc.builder()
+                            .addDesc("The command-line arguments passed to the Jaiva command.")
+                            .addReturns("An array of strings, where each string is a command-line argument.")
+                            .sinceVersion("1.0.2")
+                            .build()
+            ),
                     new ArrayList<>(Arrays.asList(config.args)));
             this.freeze();
         }
@@ -209,7 +242,12 @@ public class IOFunctions extends BaseGlobals {
     class VUArgs extends BaseVariable {
         VUArgs(IConfig<Object> config) {
             super("uArgs", new TArrayVar("uargs", (ArrayList) config.sanitisedArgs, -1,
-                    "The command-line arguments without jaiva specific arguments. "),
+                    JDoc.builder()
+                            .addDesc("The command-line arguments without Jaiva-specific arguments.")
+                            .addReturns("An array of strings, representing the sanitized command-line arguments.")
+                            .sinceVersion("1.0.2")
+                            .build()
+            ),
                     config.sanitisedArgs);
             this.freeze();
         }

@@ -21,6 +21,7 @@ import com.jaiva.interpreter.libs.math.Math;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.*;
 import com.jaiva.lang.Keywords;
+import com.jaiva.tokenizer.jdoc.JDoc;
 
 /**
  * Globals class holds all the global symbols that are injected into the
@@ -129,7 +130,14 @@ public class Globals extends BaseGlobals {
     class FGetVarClass extends BaseFunction {
         FGetVarClass() {
             super("getVarClass", new TFunction("getVarClass", new String[] { "var" }, null, -1,
-                    "Attempts to return the symbol's corresponding Java class in string form. If you're using this then you def don't know what you're doing."));
+                    JDoc.builder()
+                            .addDesc("Attempts to return the symbol's corresponding Java class in string form. If you're using this then you def don't know what you're doing.")
+                            .addParam("var", "idk", "The value to return it's token symbol for", false)
+                            .addReturns("The .toString() class representation of the given variable's token")
+                            .sinceVersion("1.0.0-beta.0")
+                            .build()
+
+            ));
             this.freeze();
         }
 
@@ -170,7 +178,9 @@ public class Globals extends BaseGlobals {
         VReservedKeywords() {
             super("reservedKeywords",
                     new TArrayVar("reservedKeywords", new ArrayList<>(Arrays.asList(Keywords.all)), -1,
-                            "An array containing jaiva's reserved keywords that you cannot use as symbol names."),
+                            JDoc.builder()
+                                    .sinceVersion("1.0.0-beta.0")
+                                    .addDesc("An array containing jaiva's reserved keywords that you cannot use as symbol names.").build()),
                     new ArrayList<>(Arrays.asList(Keywords.all)));
             this.freeze();
         }
@@ -183,19 +193,28 @@ public class Globals extends BaseGlobals {
     class VJaivaVersion extends BaseVariable {
         VJaivaVersion() {
             super("version", new TStringVar("version", Main.version, -1,
-                    "What do you think this returns."), Main.version);
+                    JDoc.builder()
+                            .addDesc("What do you think this returns.")
+                            .sinceVersion("1.0.0-beta.0").build()), Main.version);
             this.freeze();
         }
     }
 
     /**
-     * flat(array1, array2)
-     * Takes in 2 arrays and returns and flattens it, then retruns that.
+     * flat(array1, array2, array3, array4, ...)
+     * flat(<-arrays)
+     * Takes in 2 or more arrays and flattens them into a singular array.
      */
     class FFlat extends BaseFunction {
         FFlat() {
             super("flat", new TFunction("flat", new String[] { "<-arrays" }, null, -1,
-                    "Attempts to flatten (at the top level) the given arrays array1 and array2 into 1 single array. \\n**Note:** If there are any type mismatches in array1, it will be ignored and the same check is done to array2. Therefore this function will **always** return an array, whether or not it was successful."));
+                    JDoc.builder()
+                            .addDesc( "Attempts to flatten (at the top level) the given arrays array1 and array2 into 1 single array.")
+                            .addParam("arrays", "[]", "Variable amount of arrays to input", true)
+                            .addNote("If there are any type mismatches in array1, it will be ignored and the same check is done to array2 and so on. Therefore this function will **always** return an array, whether or not it was successful.")
+                            .sinceVersion("1.0.0-beta.2")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -253,7 +272,13 @@ public class Globals extends BaseGlobals {
     class FSleep extends BaseFunction {
         FSleep() {
             super("sleep", new TFunction("sleep", new String[] { "milliseconds" }, null, -1,
-                    "Sleep for `ms` amount of milliseconds. (Keep in mind this function still has to take your value and turn it into a Java primitive and other things, so the delay might not be exact. If you're looking for accuracy maybe remove x amount of ms till it's accurate.)"));
+                    JDoc.builder()
+                            .addDesc("Pause execution of the interpreter for n amount of milliseconds.")
+                            .addParam("milliseconds", "number", "The amount of milliseconds to sleep for", false)
+                            .addNote("(Keep in mind this function still has to take your value and turn it into a Java primitive and other things, so the delay might not be exact. If you're looking for accuracy maybe remove x amount of ms till it's accurate.)")
+                            .sinceVersion("1.0.0")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -278,7 +303,12 @@ public class Globals extends BaseGlobals {
     class FNeg extends BaseFunction {
         FNeg() {
             super("neg", new TFunction("neg", new String[] { "input" }, null, -1,
-                    "Negates the given number. This is because my unary minus shit isnt working so i had to make this."));
+                    JDoc.builder()
+                            .addDesc("Negates the given number. This is because my unary minus shit isnt working so i had to make this.")
+                            .addParam("input", "number", "The input to negate", false)
+                            .markDeprecated("Unary minus works now. Use it or multiply by -1")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -306,7 +336,13 @@ public class Globals extends BaseGlobals {
     class FTypeOf extends BaseFunction {
         FTypeOf() {
             super("typeOf", new TFunction("typeOf", new String[] { "input?" }, null, -1,
-                    "Returns the type of any given input. Which could be \"array\", \"string\", \"boolean\", \"number\", \"function\", or the primitive idk."));
+                    JDoc.builder()
+                            .addDesc("Returns the type of any given input.")
+                            .addParam("input", "idk", "The input to check the type against", true)
+                            .addReturns("Returns the string form of the typ, which could be \"array\", \"string\", \"boolean\", \"number\", \"function\", or the primitive idk.")
+                            .sinceVersion("3.0.0")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -337,7 +373,13 @@ public class Globals extends BaseGlobals {
     class FArrayLiteral extends BaseFunction {
         FArrayLiteral() {
             super("arrLit", new TFunction("arrLit", new String[] { "<-elements" }, null, -1,
-                    "Creates an array literal from the given elements. This is useful if you want to create an array without declaring it to a variable. For example, `arrLit(1, 2, 3)` will return `[1, 2, 3]`. This is needed as Jaiva doesnt have square bracket syntax"));
+                    JDoc.builder()
+                            .addDesc("Creates an array literal from the given elements. This is useful if you want to create an array without declaring it to a variable. For example, `arrLit(1, 2, 3)` will return `[1, 2, 3]`. This is needed as Jaiva doesnt have square bracket syntax")
+                            .addParam("elements", "[]", "Variable amount of elements to take in and turn into a single array.", true)
+                            .addReturns("The input given, as an array")
+                            .sinceVersion("3.0.0")
+                            .build()
+            ));
             this.freeze();
         }
 

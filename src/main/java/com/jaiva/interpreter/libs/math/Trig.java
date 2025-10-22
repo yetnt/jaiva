@@ -9,6 +9,8 @@ import com.jaiva.interpreter.libs.GlobalType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.Token.*;
+import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.jdoc.JDocBuilder;
 import com.jaiva.errors.InterpreterException.FunctionParametersException;
 
 public class Trig extends BaseGlobals {
@@ -38,7 +40,13 @@ public class Trig extends BaseGlobals {
     class FSin extends BaseFunction {
         FSin() {
             super("m_sin", new TFunction("m_sin", new String[] { "value" }, null, -1,
-                    "Returns the sine of a number in radians."));
+                    JDoc.builder()
+                            .addDesc("Returns the sine of a number in radians.")
+                            .addParam("value", "number", "The value in radians.", false)
+                            .addReturns("The sine of the given value in radians.")
+                            .sinceVersion("1.0.2")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -71,7 +79,13 @@ public class Trig extends BaseGlobals {
     class FCos extends BaseFunction {
         FCos() {
             super("m_cos", new TFunction("m_cos", new String[] { "value" }, null, -1,
-                    "Returns the cosine of a number in radians."));
+                    JDoc.builder()
+                            .addDesc("Returns the cosine of a number in radians.")
+                            .addParam("value", "number", "The value in radians.", false)
+                            .addReturns("The cosine of the given value in radians.")
+                            .sinceVersion("1.0.2")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -104,7 +118,13 @@ public class Trig extends BaseGlobals {
     class FTan extends BaseFunction {
         FTan() {
             super("m_tan", new TFunction("m_tan", new String[] { "value" }, null, -1,
-                    "Returns the tangent of a number in radians."));
+                    JDoc.builder()
+                            .addDesc("Returns the tangent of a number in radians.")
+                            .addParam("value", "number", "The value in radians.", false)
+                            .addReturns("The tangent of the given value in radians.")
+                            .sinceVersion("1.0.2")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -137,7 +157,13 @@ public class Trig extends BaseGlobals {
     class FAsin extends BaseFunction {
         FAsin() {
             super("m_asin", new TFunction("m_asin", new String[] { "value" }, null, -1,
-                    "Returns the arcsine of a number in radians."));
+                    JDoc.builder()
+                            .addDesc("Returns the arcsine of a number in radians.")
+                            .addParam("value", "number", "The value in radians.", false)
+                            .addReturns("The arcsine of the given value in radians.")
+                            .sinceVersion("1.0.2")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -170,7 +196,13 @@ public class Trig extends BaseGlobals {
     class FAcos extends BaseFunction {
         FAcos() {
             super("m_acos", new TFunction("m_acos", new String[] { "value" }, null, -1,
-                    "Returns the arccosine of a number in radians."));
+                    JDoc.builder()
+                            .addDesc("Returns the arccosine of a number in radians.")
+                            .addParam("value", "number", "The value in radians.", false)
+                            .addReturns("The arccosine of the given value in radians.")
+                            .sinceVersion("1.0.2")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -203,7 +235,13 @@ public class Trig extends BaseGlobals {
     class FAtan extends BaseFunction {
         FAtan() {
             super("m_atan", new TFunction("m_atan", new String[] { "value" }, null, -1,
-                    "Returns the arctangent of a number in radians."));
+                    JDoc.builder()
+                            .addDesc("Returns the arctangent of a number in radians.")
+                            .addParam("value", "number", "The value in radians.", false)
+                            .addReturns("The arctangent of the given value in radians.")
+                            .sinceVersion("1.0.2")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -235,7 +273,13 @@ public class Trig extends BaseGlobals {
     class FToRad extends BaseFunction {
         FToRad() {
             super("m_toRad", new TFunction("m_toRad", new String[] { "degrees" }, null, -1,
-                    "Converts degrees to radians."));
+                    JDoc.builder()
+                            .addDesc("Converts degrees to radians.")
+                            .addParam("degrees", "number", "The value in degrees.", false)
+                            .addReturns("The value in radians.")
+                            .sinceVersion("1.0.2")
+                            .build()
+            ));
             this.freeze();
         }
 
@@ -268,7 +312,13 @@ public class Trig extends BaseGlobals {
     class FToDeg extends BaseFunction {
         FToDeg() {
             super("m_toDeg", new TFunction("m_toDeg", new String[] { "radians" }, null, -1,
-                    "Converts radians to degrees."));
+                    JDoc.builder()
+                            .addDesc("Converts radians to degrees.")
+                            .addParam("radians", "number", "The value in radians.", false)
+                            .addReturns("The value in degrees.")
+                            .sinceVersion("1.0.2")
+                            .build()
+            ));
             this.freeze();
         }
 
