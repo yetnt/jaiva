@@ -6,23 +6,22 @@ import java.util.concurrent.ThreadLocalRandom;
 import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
-import com.jaiva.interpreter.libs.BaseGlobals;
-import com.jaiva.interpreter.libs.GlobalType;
+import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.LibraryType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.Token.*;
 import com.jaiva.tokenizer.jdoc.JDoc;
-import com.jaiva.tokenizer.jdoc.JDocBuilder;
 
 /**
  * Math functions ofc
  */
-public class Math extends BaseGlobals {
+public class Math extends BaseLibrary {
     /**
      * Default Constructor
      */
     public Math() {
-        super(GlobalType.LIB, "math");
+        super(LibraryType.LIB, "math");
         vfs.put("m_random", new FRandom());
         vfs.put("m_round", new FRound());
         vfs.put("m_abs", new FAbs());

@@ -10,9 +10,9 @@ import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.Token.*;
 import com.jaiva.tokenizer.jdoc.JDoc;
 
-public class Debug extends BaseGlobals {
+public class Debug extends BaseLibrary {
     Debug(IConfig<Object> config) {
-        super(GlobalType.LIB, "debug");
+        super(LibraryType.LIB, "debug");
         vfs.put("d_emit", new FEmit(config));
     }
 

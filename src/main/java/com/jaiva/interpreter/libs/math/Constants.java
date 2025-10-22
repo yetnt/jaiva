@@ -1,22 +1,21 @@
 package com.jaiva.interpreter.libs.math;
 
 import com.jaiva.interpreter.MapValue;
-import com.jaiva.interpreter.libs.BaseGlobals;
-import com.jaiva.interpreter.libs.GlobalType;
+import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.LibraryType;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.tokenizer.Token.*;
 import com.jaiva.tokenizer.jdoc.JDoc;
-import com.jaiva.tokenizer.jdoc.JDocBuilder;
 
 /**
  * Container class for mathematical constants.
  */
-public class Constants extends BaseGlobals {
+public class Constants extends BaseLibrary {
     /**
      * Default Constructor
      */
     public Constants() {
-        super(GlobalType.CONTAINER);
+        super(LibraryType.CONTAINER);
         // This is a container class for the Math class, so prefix everything with "m_"
         vfs.put("m_e", new MapValue(new VE()));
         vfs.put("m_pi", new MapValue(new VPi()));

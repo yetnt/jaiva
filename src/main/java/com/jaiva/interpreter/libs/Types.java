@@ -16,7 +16,7 @@ import com.jaiva.tokenizer.jdoc.JDoc;
  * The {@code Conversions} class provides global conversion functions for the
  * Jaiva interpreter.
  * <p>
- * It extends {@link BaseGlobals} and registers utility functions for converting
+ * It extends {@link BaseLibrary} and registers utility functions for converting
  * between
  * strings and numbers, such as {@code stringToNum} and {@code numToString},
  * into the vfs.
@@ -34,13 +34,13 @@ import com.jaiva.tokenizer.jdoc.JDoc;
  * with a descriptive error message.
  * </p>
  *
- * @see BaseGlobals
+ * @see BaseLibrary
  * @see WtfAreYouDoingException
  */
-public class Types extends BaseGlobals {
+public class Types extends BaseLibrary {
     public Types() {
         // the import will be "jaiva/types.jiv"
-        super(GlobalType.LIB, "types");
+        super(LibraryType.LIB, "types");
         vfs.put("t_num", new FNum());
         vfs.put("t_str", new FStr());
     }

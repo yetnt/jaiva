@@ -1,5 +1,6 @@
 package com.jaiva.interpreter;
 
+import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.symbol.Symbol;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.HashMap;
  * </p>
  * <p>
  *     A vfs instance, is usually created only by {@link Scope} as all symbols are scoped constructs.
- *     The only "exceptions" (haha get it), would be {@link com.jaiva.interpreter.libs.BaseGlobals} which creates
+ *     The only "exceptions" (haha get it), would be {@link BaseLibrary} which creates
  *     a vfs instance to put all the globals into.
  * </p>
  * <p>

@@ -3,8 +3,8 @@ package com.jaiva.full;
 import com.jaiva.JBundler;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.interpreter.Scope;
-import com.jaiva.interpreter.libs.BaseGlobals;
-import com.jaiva.interpreter.libs.GlobalType;
+import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.LibraryType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
@@ -18,9 +18,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Objects;
 
-class CustomLib extends BaseGlobals {
+class CustomLib extends BaseLibrary {
     public CustomLib(IConfig<Object> config) {
-        super(GlobalType.LIB, "customPath");
+        super(LibraryType.LIB, "customPath");
         vfs.put("echo", new FEcho());
         vfs.put("poop", new VVar());
     }

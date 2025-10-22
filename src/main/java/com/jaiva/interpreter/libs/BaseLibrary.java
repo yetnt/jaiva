@@ -8,7 +8,7 @@ import com.jaiva.tokenizer.Token;
 /**
  * Base class for global holder classes.
  */
-public class BaseGlobals {
+public class BaseLibrary {
     /**
      * Token container to create tokens
      */
@@ -17,9 +17,9 @@ public class BaseGlobals {
     /**
      * The type of the BaseGlobal container.
      */
-    public GlobalType type;
+    public LibraryType type;
     /**
-     * The path if this container is defined as {@link GlobalType}.LIB
+     * The path if this container is defined as {@link LibraryType}.LIB
      */
     public String path = null;
     /**
@@ -32,7 +32,7 @@ public class BaseGlobals {
      * 
      * @param value The type of this Globals holder.
      */
-    public BaseGlobals(GlobalType value) {
+    public BaseLibrary(LibraryType value) {
         type = value;
     }
 
@@ -42,7 +42,7 @@ public class BaseGlobals {
      * @param value The type of this Globals holder.
      * @param p     The "filename" (without the extension)
      */
-    public BaseGlobals(GlobalType value, String p) {
+    public BaseLibrary(LibraryType value, String p) {
         type = value;
         path = p;
     }

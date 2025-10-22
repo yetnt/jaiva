@@ -27,7 +27,7 @@ import com.jaiva.tokenizer.jdoc.JDoc;
  * Globals class holds all the global symbols that are injected into the
  * variable functions store.
  */
-public class Globals extends BaseGlobals {
+public class Globals extends BaseLibrary {
     // public Vfs vfs = new HashMap<>();
 
     public HashMap<String, Vfs> builtInGlobals = new HashMap<>();
@@ -38,7 +38,7 @@ public class Globals extends BaseGlobals {
      * @throws InterpreterException
      */
     public Globals(IConfig<Object> config) throws InterpreterException {
-        super(GlobalType.MAIN);
+        super(LibraryType.MAIN);
         vfs.put("getVarClass", new FGetVarClass());
         vfs.put("reservedKeywords", new VReservedKeywords());
         vfs.put("version", new VJaivaVersion());
@@ -67,8 +67,8 @@ public class Globals extends BaseGlobals {
      *
      * @throws InterpreterException
      */
-    public Globals(IConfig<Object> config, List<Class<? extends BaseGlobals>> external) throws InterpreterException {
-        super(GlobalType.MAIN);
+    public Globals(IConfig<Object> config, List<Class<? extends BaseLibrary>> external) throws InterpreterException {
+        super(LibraryType.MAIN);
         vfs.put("getVarClass", new FGetVarClass());
         vfs.put("reservedKeywords", new VReservedKeywords());
         vfs.put("version", new VJaivaVersion());
@@ -89,11 +89,11 @@ public class Globals extends BaseGlobals {
         Debug d = new Debug(config);
         builtInGlobals.put(d.path, d.vfs);
 
-        for (Class<? extends BaseGlobals> ext : external) {
+        for (Class<? extends BaseLibrary> ext : external) {
             try {
-                Constructor<? extends BaseGlobals> constructor = ext.getDeclaredConstructor(IConfig.class);
+                Constructor<? extends BaseLibrary> constructor = ext.getDeclaredConstructor(IConfig.class);
                 constructor.setAccessible(true); // 👈 This bypasses Java's access checks
-                BaseGlobals n = constructor.newInstance(config);
+                BaseLibrary n = constructor.newInstance(config);
 
                 builtInGlobals.put(n.path, n.vfs);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException |

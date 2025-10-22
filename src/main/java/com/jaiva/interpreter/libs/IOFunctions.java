@@ -23,13 +23,13 @@ import com.jaiva.tokenizer.jdoc.JDoc;
  * IOFunctions class holds the functions that are used for input and output in
  * the console.
  */
-public class IOFunctions extends BaseGlobals {
+public class IOFunctions extends BaseLibrary {
 
     /**
      * Constructs the IOFunctions with the Input/Output functions.
      */
     public IOFunctions(IConfig<Object> config) {
-        super(GlobalType.GLOBAL);
+        super(LibraryType.GLOBAL);
         vfs.put("khuluma", new FKhuluma());
         vfs.put("mamela", new FMamela());
         vfs.put("ask", new FAsk());

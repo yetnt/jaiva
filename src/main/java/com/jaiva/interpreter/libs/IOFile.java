@@ -15,9 +15,9 @@ import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
 import com.jaiva.tokenizer.jdoc.JDoc;
 
-public class IOFile extends BaseGlobals {
+public class IOFile extends BaseLibrary {
     IOFile(IConfig<Object> config) throws InterpreterException {
-        super(GlobalType.LIB, "file");
+        super(LibraryType.LIB, "file");
         vfs.put("f_name", new VFileName(config));
         vfs.put("f_dir", new VDirectory(config));
         vfs.put("f_bin", new VBinaryDirectory(config));

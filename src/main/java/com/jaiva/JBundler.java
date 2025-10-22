@@ -3,7 +3,7 @@ package com.jaiva;
 
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.Scope;
-import com.jaiva.interpreter.libs.BaseGlobals;
+import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.Token;
 
@@ -25,7 +25,7 @@ public class JBundler {
 
     public String filePath;
     public ArrayList<Token<?>> tokens = new ArrayList<>();
-    public List<Class<? extends BaseGlobals>> classes;
+    public List<Class<? extends BaseLibrary>> classes;
 
     /**
      * Default Constructor for JBundler
@@ -34,7 +34,7 @@ public class JBundler {
      * @throws Exception When any of the jaiva processing fails.
      */
     @SafeVarargs
-    public JBundler(String fp, Class<? extends BaseGlobals> ...cls) throws Exception {
+    public JBundler(String fp, Class<? extends BaseLibrary> ...cls) throws Exception {
         this.filePath = fp;
         instanceNum = instances;
         instances++;

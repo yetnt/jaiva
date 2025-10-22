@@ -4,18 +4,17 @@ import java.util.ArrayList;
 
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
-import com.jaiva.interpreter.libs.BaseGlobals;
-import com.jaiva.interpreter.libs.GlobalType;
+import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.LibraryType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.Token.*;
 import com.jaiva.tokenizer.jdoc.JDoc;
-import com.jaiva.tokenizer.jdoc.JDocBuilder;
 import com.jaiva.errors.InterpreterException.FunctionParametersException;
 
-public class Trig extends BaseGlobals {
+public class Trig extends BaseLibrary {
     public Trig() {
-        super(GlobalType.CONTAINER);
+        super(LibraryType.CONTAINER);
         // This is a container class for the Math class, so prefix everything with "m_"
         vfs.put("m_sin", new FSin());
         vfs.put("m_cos", new FCos());
