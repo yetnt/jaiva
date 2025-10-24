@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.jaiva.interpreter.Vfs;
+import com.jaiva.tokenizer.SymbolConfig;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
 import com.jaiva.Main;
@@ -299,7 +300,7 @@ public class Globals extends BaseLibrary {
         }
     }
 
-
+    @SymbolConfig(deprecated = true)
     class FNeg extends BaseFunction {
         FNeg() {
             super("neg", new TFunction("neg", new String[] { "input" }, null, -1,

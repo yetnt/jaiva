@@ -1,12 +1,17 @@
 package com.jaiva.interpreter.libs;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.jaiva.errors.JaivaException.DebugException;
+import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
+import com.jaiva.interpreter.symbol.BaseVariable;
+import com.jaiva.interpreter.symbol.Symbol;
+import com.jaiva.tokenizer.SymbolConfig;
 import com.jaiva.tokenizer.Token.*;
 import com.jaiva.tokenizer.jdoc.JDoc;
 
@@ -14,6 +19,44 @@ public class Debug extends BaseLibrary {
     Debug(IConfig<Object> config) {
         super(LibraryType.LIB, "debug");
         vfs.put("d_emit", new FEmit(config));
+        vfs.put("d_vfs", new FVfs(config));
+    }
+
+    @SymbolConfig(experimental = true)
+    public class FVfs extends BaseFunction {
+        FVfs(IConfig<Object> config) {
+            super("d_vfs", new TFunction("d_vfs", new String[]{}, null, -1,
+                    JDoc.builder()
+                            .addDesc("Returns the current context's vfs.")
+                            .sinceVersion("4.0.1")
+                            .addReturns("A 2d array, first array containing the keys, second array the values.")
+                            .addNote("This function does not allow you to edit the current vfs, only to get" +
+                                    " everything that is currently within the vfs as an array." +
+                                    " Everytime this function is called a new array containing all the stuff is made.")
+                            .build()
+                    ));
+            this.freeze();
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
+            ArrayList<String> names = new ArrayList<>();
+            ArrayList<Object> symbols = new ArrayList<>();
+            scope.vfs.forEach((v, f)-> {
+                names.add(v);
+                Symbol sym = f.getValue();
+                if (sym instanceof BaseVariable var) {
+                    if (var.variableType == BaseVariable.VariableType.ARRAY)
+                        symbols.add(var.a_getAll());
+                    else
+                        symbols.add(var.s_get());
+                } else if (sym instanceof BaseFunction function) {
+                    symbols.add(function);
+                }
+
+            });
+            return new ArrayList<>(List.of(names, symbols));
+        }
     }
 
     public class FEmit extends BaseFunction {

@@ -2,6 +2,7 @@ package com.jaiva.interpreter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -11,6 +12,7 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.*;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
 import com.jaiva.lang.EscapeSequence;
+import com.jaiva.tokenizer.SymbolConfig;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.TokenDefault;
 import com.jaiva.tokenizer.Token.TForLoop;
@@ -515,15 +517,7 @@ public class Primitives {
             if (v == null)
                 throw new UnknownVariableException(scope, tFuncCall);
 
-            if (!(v.getValue() instanceof BaseFunction)) {
-                throw new WtfAreYouDoingException(scope, v.getValue(), BaseFunction.class, tFuncCall.lineNumber);
-            }
-            BaseFunction function = f == null ? (BaseFunction) v.getValue() : f; /*
-                                                                                  * ret != null && ret instanceof
-                                                                                  * BaseFunction ?
-                                                                                  * (BaseFunction) ret
-                                                                                  * :
-                                                                                  */
+            BaseFunction function = null;
 
             if (tFuncCall.functionName instanceof Token) {
                 Object t = toPrimitive(parseNonPrimitive(tFuncCall.functionName),
@@ -534,6 +528,25 @@ public class Primitives {
                     return t;
                 }
             }
+// This was above the above if, along with the bottom function reassignment
+// commenting out this code fixed having arr[10](). Where since arr is an array, even if index 10 had a function the bottom if gets called.
+//            if (!(v.getValue() instanceof BaseFunction)) {
+//                throw new WtfAreYouDoingException(scope, v.getValue(), BaseFunction.class, tFuncCall.lineNumber);
+//            }
+
+            function = function != null ? function : f == null ? (BaseFunction) v.getValue() : f;
+
+            Class<?> actual = function.getClass();
+            SymbolConfig c = actual.getAnnotation(SymbolConfig.class);
+            if (!Objects.isNull(c)) {
+                if (c.deprecated()) {
+                    System.out.println(function + " is deprecated.");
+                }
+                if (c.experimental()) {
+                    System.out.println(function + " is marked as experimental. Be careful!!");
+                }
+            }
+
             Object returnValue = function.call(tFuncCall, tFuncCall.args, config, scope);
             return returnValue instanceof String && tFuncCall.getLength
                     ? EscapeSequence.fromEscape((String) returnValue, tFuncCall.lineNumber).length()

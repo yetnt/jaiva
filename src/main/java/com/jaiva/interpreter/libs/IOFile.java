@@ -11,6 +11,7 @@ import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
+import com.jaiva.tokenizer.SymbolConfig;
 import com.jaiva.tokenizer.Token;
 import com.jaiva.tokenizer.Token.*;
 import com.jaiva.tokenizer.jdoc.JDoc;
@@ -86,6 +87,7 @@ public class IOFile extends BaseLibrary {
      *     As of v4.0.0 we cant know where, so this has been deprecated
      * </p>
      */
+    @SymbolConfig(deprecated = true)
     public class VBinaryDirectory extends BaseVariable {
         public VBinaryDirectory(IConfig<Object> config) {
             super("f_bin", new TStringVar("f_bin", "/eish/my/boizin/this/variable/is/deprecated", 0,
