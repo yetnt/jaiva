@@ -7,7 +7,7 @@ import com.jaiva.tokenizer.jdoc.JDoc;
  * TokenDefault class is a default implementation of all the other
  * subclasses/tokens defined in {@link Token}
  */
-public class TokenDefault {
+public class TokenDefault implements Convertible {
     /**
      * Boolean which defines whether this token is in experimental usage or not.
      * <p>
