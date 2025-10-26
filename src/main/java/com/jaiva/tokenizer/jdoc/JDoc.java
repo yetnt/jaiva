@@ -25,12 +25,38 @@ public class JDoc {
     }
 
     /**
+     * Creates a JDoc object from various input types.
+     * @param obj The input object, which can be a JDoc itself, a String, or other types.
+     * @return A new JDoc instance based on the input, or null if the input type is not supported.
+     */
+    public static JDoc from(Object obj) {
+        return switch (obj) {
+            case JDoc j -> j;
+            case String s -> from(s);
+            default -> null;
+        };
+    }
+
+    /**
      * Creates a JDoc object from a single string, treating the entire string as a generic description.
      * @param str The input string to be wrapped as a generic JDoc.
      * @return A new JDoc instance containing a single generic tag with the provided string.
      */
-    public static JDoc fromString(String str) {
-        return new JDoc(new ArrayList<>(List.of(new Tag.DGeneric(str))));
+    public static JDoc from(String str) {
+        return JDoc.builder().addDesc(str).build();
+    }
+
+    /**
+     * Retrieves the description associated with a {@code @deprecated} tag, if present.
+     * @return The description string of the deprecated tag, or an empty string if no such tag is found.
+     */
+    public String getDeprecatedString() {
+        for (Tag tag : tags) {
+            if (tag.tagType == TagType.DEPRECATED) {
+                return (String) tag.attributes.get("description");
+            }
+        }
+        return "";
     }
 
     public JDoc(int lineNumber, String input) throws TokenizerException {

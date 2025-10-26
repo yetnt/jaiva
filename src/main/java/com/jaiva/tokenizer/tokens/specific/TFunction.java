@@ -99,6 +99,7 @@ public class TFunction extends TokenDefault {
             isArgOptional.add(arg.endsWith("?"));
             if (arg.endsWith("?"))
                 newArgs[i] = arg.substring(0, arg.length() - 1);
+            else newArgs[i] = arg;
         }
         this.args = newArgs;
         this.body = body;
