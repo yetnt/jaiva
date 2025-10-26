@@ -1,4 +1,4 @@
-package com.jaiva.tokenizer;
+package com.jaiva.interpreter.symbol;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;

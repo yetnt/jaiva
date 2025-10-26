@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.jaiva.interpreter.Vfs;
-import com.jaiva.tokenizer.SymbolConfig;
+import com.jaiva.interpreter.symbol.SymbolConfig;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.Main;
 import com.jaiva.errors.InterpreterException;

@@ -11,7 +11,7 @@ import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
-import com.jaiva.tokenizer.SymbolConfig;
+import com.jaiva.interpreter.symbol.SymbolConfig;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.specific.TArrayVar;
