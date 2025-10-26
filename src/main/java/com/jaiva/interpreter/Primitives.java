@@ -35,7 +35,7 @@ public class Primitives {
      *
      * @param s The {@link Symbol} to check for annotations.
      */
-    private static void checkSymbolAnnotation(Symbol s, int lineNumber) {
+    private static void checkSymbolAnnotation(Symbol s, int lineNumber, Scope scope) throws NoWarningsException {
         if (s == null) return;
         Class<?> actual = s.getClass();
         SymbolConfig c = actual.getAnnotation(SymbolConfig.class);
@@ -46,13 +46,15 @@ public class Primitives {
             if (!depStr.isEmpty() || (!Objects.isNull(c) && c.deprecated())) {
                 Warnings.println(
                         lineNumber,
-                        s.name + " is deprecated. " + CCol.printInline(depStr, CCol.FONT.BOLD, CCol.FONT.UNDERLINE, CCol.FONT.ITALIC)
+                        s.name + " is deprecated. " + CCol.printInline(depStr, CCol.FONT.BOLD, CCol.FONT.UNDERLINE, CCol.FONT.ITALIC),
+                        scope
                 );
             }
             if (!Objects.isNull(c) && c.experimental()) {
                 Warnings.println(
                         lineNumber,
-                        s.name + " is marked as experimental. Be careful!!"
+                        s.name + " is marked as experimental. Be careful!!",
+                        scope
                 );
             }
         }
@@ -464,7 +466,7 @@ public class Primitives {
                             tVarRef.lineNumber);
                 }
             }
-            checkSymbolAnnotation(variable, tVarRef.lineNumber);
+            checkSymbolAnnotation(variable, tVarRef.lineNumber, scope);
             if (index != null && (variable.variableType == VariableType.ARRAY
                     || variable.variableType == VariableType.A_FUCKING_AMALGAMATION
                     || tVarRef.varName instanceof TVarRef)) {
@@ -559,7 +561,7 @@ public class Primitives {
 
             function = function != null ? function : f == null ? (BaseFunction) v.getValue() : f;
 
-            checkSymbolAnnotation(function, tFuncCall.lineNumber);
+            checkSymbolAnnotation(function, tFuncCall.lineNumber, scope);
 
             Object returnValue = function.call(tFuncCall, tFuncCall.args, config, scope);
             return returnValue instanceof String && tFuncCall.getLength

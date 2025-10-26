@@ -64,6 +64,46 @@ khuluma(uargs)! @ Prints all the user arguments passed to the Jaiva program.
 
 ### <center> Functions
 
+#### `scope(<-strings) -> `_*`khutla idk!``
+
+Configures the current scope to whichever settings provided.
+
+This takes in any number of arguments (strings) to use to configure the current scope.
+
+The following table describes what each value is, aliases and what it does.
+
+(Case-insensitive.)
+
+| Property             | Aliases                 | Description                                                            |
+|----------------------|-------------------------|------------------------------------------------------------------------|
+| `"freezeAll"`        | `"constant"\"freeze"`   | Freezes all symbols defined in the current scope. (After calling this) |
+| `"elevateWarnings"`  | `"ew"\"warningsarebad"` | This will force all warnings to throw a fatal error instead of print.  |
+| `"suppressWarnings"` | `"sw"\"fuckWarnings"`   | Supresses All warnings, effectively ignoring them.                     |
+| `"strict"`           |                         | The same as enabling `"freezeAll"` and `"elevateWarnings"`             |
+
+example:
+
+```jiv
+scope("freezeAll")!
+
+kwenza af(a) ->
+    khutla a!
+<~
+
+af <- 10! @ Errors as the variable af cannot be written to.
+```
+
+```jiv
+scope("ew")!
+
+@* depr $> This fucntion is deprecated.
+kwenza af(a) ->
+    khutla a!
+<~
+
+af()! @ Errors as the usual deprecation warning is now a fatal error. (Crashes the interpreter)
+```
+
 #### `arrLit(<-content) -> `_*`khutla (array)!`*_
 
 This function, takes any number of arguments and returns an array containing those arguments.

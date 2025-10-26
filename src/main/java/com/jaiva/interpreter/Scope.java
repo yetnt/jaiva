@@ -19,6 +19,7 @@ import java.util.List;
  * any.
  */
 public class Scope {
+    public ScopeConfig config = new ScopeConfig();
     /**
      * The current scope in which the variable is defined or used.
      * This variable is used to determine the scope of a variable
@@ -95,6 +96,7 @@ public class Scope {
         this.lineNumber = token == null ? 0 : token.lineNumber;
         this.parent = parent;
         this.vfs = parent.vfs.clone();
+        this.config = parent.config;
         this.globals = parent.globals;
     }
 

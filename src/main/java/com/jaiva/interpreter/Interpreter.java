@@ -124,6 +124,15 @@ public class Interpreter {
     }
 
     /**
+     * helper method that freezes symbols on creation based on the flag.
+     * @param s The symbol in question
+     * @param s2 The current scope.
+     */
+    private static void freezeIfScopeConfig(Symbol s, Scope s2) {
+        if (s2.config.freezeAll()) s.freeze();
+    }
+
+    /**
      * Handles variable operations such as creation, reassignment, and primitive
      * parsing.
      * This method processes different types of tokens representing variables or
@@ -159,6 +168,7 @@ public class Interpreter {
                 }
                 BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                         new ArrayList<>(Collections.singletonList(number)), false);
+                freezeIfScopeConfig(var, scope);
                 scope.vfs.put(tNumberVar.name, var);
             }
             case TBooleanVar tBooleanVar -> {
@@ -169,6 +179,7 @@ public class Interpreter {
                 }
                 BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                         new ArrayList<>(Collections.singletonList(bool)), false);
+                freezeIfScopeConfig(var, scope);
                 scope.vfs.put(tBooleanVar.name, var);
             }
             case TStringVar tStringVar -> {
@@ -178,6 +189,7 @@ public class Interpreter {
                 }
                     BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
                         new ArrayList<>(Collections.singletonList(string)), false);
+                freezeIfScopeConfig(var, scope);
                 scope.vfs.put(tStringVar.name, var);
             }
             case TUnknownVar tUnknownVar -> {
@@ -194,6 +206,7 @@ public class Interpreter {
                             something instanceof ArrayList ? (ArrayList) something
                                     : new ArrayList<>(Collections.singletonList(something)),
                             false);
+                freezeIfScopeConfig(var, scope);
                 scope.vfs.put(tUnknownVar.name, var);
             }
             case TArrayVar tArrayVar -> {
@@ -213,11 +226,13 @@ public class Interpreter {
                     }
                 });
                 BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t, arr, true);
+                freezeIfScopeConfig(var, scope);
                 scope.vfs.put(tArrayVar.name, var);
             }
             case TFunction function -> {
                 String name = function.name.replace("F~", "");
                 BaseFunction func = BaseFunction.create(name, function);
+                freezeIfScopeConfig(func, scope);
                 scope.vfs.put(name, func);
             }
             case TVarReassign tVarReassign -> {

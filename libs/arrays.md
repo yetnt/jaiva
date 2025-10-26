@@ -148,3 +148,19 @@ kwenza sum(acc, curr) ->
 maak total <- a_reduce(array, sum, 0)! @ Reduces the array to the
 khuluma(total)! @ Prints 15
 ```
+
+## `a_map(arr, mapperFunction) -> `_*`khutla (array)!`*_`
+
+Transforms every element in an array using a provided `mapperFunction`.
+
+The `mapperFunction` takes one argument (the element) and returns its transformed value.
+
+```jiv
+tsea "jaiva/arrays"! @ Import the arrays library
+maak array <-| 1, 2, 3, 4, 5!
+kwenza square(n) ->
+    khutla n ^ 2! @ Returns the square of n
+<~
+maak squaredArray <- a_map(array, square)! @ Maps the array with the square function
+khuluma(squaredArray)! @ Prints [1, 4, 9, 16, 25]
+```

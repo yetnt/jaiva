@@ -482,4 +482,17 @@ public class InterpreterException extends JaivaException {
             super(ct, -1, "The library "+lib+" could not be imported. yeah neh. (prolly aint ur fault)");
         }
     }
+
+    /**
+     * Exception thrown if the current scope is not allowed to print warnings.
+     * This is used by {@link Warnings} to throw errors instead of print.
+     */
+    public static class NoWarningsException extends InterpreterException {
+
+        private static final long serialVersionUID = 1L;
+
+        public NoWarningsException(Scope ct, int linNumber, String err) {
+            super(ct, linNumber, err);
+        }
+    }
 }

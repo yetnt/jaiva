@@ -48,6 +48,7 @@ public class Globals extends BaseLibrary {
         vfs.put("typeOf", new FTypeOf());
         vfs.put("arrLit", new FArrayLiteral());
         vfs.put("neg", new FNeg());
+        vfs.put("scope", new FScope());
         vfs.putAll(new IOFunctions(config).vfs);
 
         Types c = new Types();
@@ -79,6 +80,7 @@ public class Globals extends BaseLibrary {
         vfs.put("typeOf", new FTypeOf());
         vfs.put("arrLit", new FArrayLiteral());
         vfs.put("neg", new FNeg());
+        vfs.put("scope", new FScope());
         vfs.putAll(new IOFunctions(config).vfs);
 
         if (!config.destroyLibraryCircularDependancy)
@@ -125,6 +127,50 @@ public class Globals extends BaseLibrary {
             string.append(",");
         });
         return string.substring(0, string.length() - (removeTrailingComma ? 1 : 0));
+    }
+
+    class FScope extends BaseFunction {
+        FScope() {
+            super("scope", new TFunction("scope", new String[] {"<-strings"}, null, -1,
+                    JDoc.builder()
+                            .sinceVersion("4.1.1")
+                            .addDesc("Configures the current scope to whichever settings provided.")
+                            .addParam("strings", "[]", "variable amount of strings to input.", true)
+                            .addReturns("idk")
+                            .addNote(
+                                    """
+                                    The following are accepted strings:\s
+                                        "sw" to suppress all warnings.\s
+                                        "ew" to elevate all warnings.\s
+                                        "constant" to make all symbols given constant. and\s
+                                        "strict" which toggles "ew" and "constant"
+                                    """
+                            )
+                            .build()
+                    ));
+            this.freeze();
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
+            ArrayList<String> s = new ArrayList<>();
+
+            params.forEach(o -> {
+                try {
+                    Object c = Primitives.toPrimitive(o, false, config, scope);
+                    if (c instanceof String s2) {
+                        s.add(s2);
+                    } else {
+                        throw new WtfAreYouDoingException(scope, "scope() only accepts input of string.", tFuncCall.lineNumber);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            scope.config.set(tFuncCall.lineNumber, scope, s.toArray(String[]::new));
+            return Token.voidValue(tFuncCall.lineNumber);
+        }
     }
 
     /**

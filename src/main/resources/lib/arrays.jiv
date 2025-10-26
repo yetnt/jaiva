@@ -1,3 +1,4 @@
+scope("strict")! @ This freezes all the functions, and elevates all warnings to fatal crashes.
 
 @* Remove n elements from the end of an array
 @* p        $> arr <- [] The original array
@@ -14,8 +15,7 @@ kwenza *a_remove(arr, n) ->
     <~
     maak returnValue <-|!
     colonize i <- 0 | i < arr~ - n | + ->
-        maak el <-| arr[i]!
-        returnValue <- flat(returnValue, el)!
+        returnValue <- flat(returnValue, arrLit(arr[i]))!
     <~
     khutla returnValue!
 <~
@@ -46,8 +46,7 @@ kwenza *a_push(arr, element) ->
     if (typeOf(arr) != "array") ->
         cima <== "a_push() only works on arrays"!
     <~
-    maak newArr <-| element!
-    khutla flat(arr, newArr)!
+    khutla flat(arr, arrLit(element))!
 <~
 
 
@@ -61,8 +60,7 @@ kwenza *a_unshift(arr, element) ->
     if (typeOf(arr) != "array") ->
         cima <== "a_unshift() only works on arrays"!
     <~
-    maak newArr <-| element!
-    khutla flat(newArr, arr)!
+    khutla flat(arrLit(element), arr)!
 <~
 
 
@@ -85,8 +83,7 @@ kwenza *a_shift(arr, n) ->
         if (n > i) ->
             nevermind!
         <~
-        maak el <-| arr[i]!
-        returnValue <- flat(returnValue, el)!
+        returnValue <- flat(returnValue, arrLit(arr[i]))!
     <~
     khutla returnValue!
 <~
@@ -108,8 +105,7 @@ kwenza *a_filter(arr, F~predicate) ->
     maak empty <-|!
     colonize element with arr ->
         if (predicate(element) = true) ->
-            maak new <-| element!
-            empty <- flat(empty, new)!
+            empty <- flat(empty, arrLit(element))!
         <~
     <~
 
@@ -135,11 +131,9 @@ kwenza *a_replace(arr, i, el) ->
     maak newArr <-|!
     colonize index <- 0 | index < arr~ | + ->
         if (index = i) ->
-            maak newEl <-| el!
-            newArr <- flat(newArr, newEl)!
+            newArr <- flat(newArr, arrLit(el))!
         <~ mara ->
-            maak currentEl <-| arr[index]!
-            newArr <- flat(newArr, currentEl)!
+            newArr <- flat(newArr, arrLit(arr[index]))!
         <~
     <~
     khutla newArr!
@@ -167,8 +161,7 @@ kwenza *a_delete(arr, i) ->
         if (index = i) ->
             nevermind!
         <~ mara ->
-            maak currentEl <-| arr[index]!
-            newArr <- flat(newArr, currentEl)!
+            newArr <- flat(newArr, arrLit(arr[index]))!
         <~
     <~
     khutla newArr!
@@ -206,8 +199,7 @@ kwenza *a_reverse(arr) ->
     <~
     maak newArr <-|!
     colonize i <- arr~ - 1 | i >= 0 | - ->
-        maak el <-| arr[i]!
-        newArr <- flat(newArr, el)!
+        newArr <- flat(newArr, arrLit(arr[i]))!
     <~
     khutla newArr!
 <~
@@ -240,4 +232,24 @@ kwenza *a_reduce(arr, F~reducer, initial?) ->
         <~
     <~
     khutla accumulator!
+<~
+
+@* Transforms every element in an array using a provided function.
+@* p        $> arr <- [] The original array to map over.
+@* p        $> mapperFunction <- F~any A function that takes one element and returns its transformed value.
+@* returns  $> Returns a new array populated with the results of calling the mapperFunction on every element.
+@* since    $> 4.1.1
+@* devn     $> The mapperFunction must take in 1 parameter (the element).
+@*          $> Throws if the first argument is not an array or if the second argument is not a function.
+kwenza *a_map(arr, F~mapperFunction) ->
+    if (typeOf(arr) != "array") ->
+        cima <== "a_reduce() only works on arrays"!
+    <~ mara if (typeOf(mapperFunction) != "function") ->
+        cima <== "a_reduce()'s second argument must be a function"!
+    <~
+    maak new <-|!
+    colonize el with arr ->
+        new <- flat(new, arrLit(mapperFunction(el)))!
+    <~
+    khutla new!
 <~
