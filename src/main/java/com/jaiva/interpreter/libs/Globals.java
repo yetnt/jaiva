@@ -47,6 +47,7 @@ public class Globals extends BaseLibrary {
         vfs.put("sleep", new FSleep());
         vfs.put("typeOf", new FTypeOf());
         vfs.put("arrLit", new FArrayLiteral());
+        vfs.put("neg", new FNeg());
         vfs.putAll(new IOFunctions(config).vfs);
 
         Types c = new Types();
@@ -75,6 +76,8 @@ public class Globals extends BaseLibrary {
         vfs.put("version", new VJaivaVersion());
         vfs.put("flat", new FFlat());
         vfs.put("sleep", new FSleep());
+        vfs.put("typeOf", new FTypeOf());
+        vfs.put("arrLit", new FArrayLiteral());
         vfs.put("neg", new FNeg());
         vfs.putAll(new IOFunctions(config).vfs);
 
