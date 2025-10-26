@@ -30,7 +30,7 @@ class CustomLib extends BaseLibrary {
 
     static class FEcho extends BaseFunction {
         public FEcho() {
-            super("echo", new TFunction("echo", new String[] {"arg1"}, null, -1, JDoc.fromString("d")));
+            super("echo", new TFunction("echo", new String[] {"arg1"}, null, -1, JDoc.from("d")));
             this.freeze();
         }
 
@@ -43,7 +43,7 @@ class CustomLib extends BaseLibrary {
 
     static class VVar extends BaseVariable {
         public VVar() {
-            super("poop", new TStringVar("poop", "factuality", -1, JDoc.fromString("The best string")), "facuality");
+            super("poop", new TStringVar("poop", "factuality", -1, JDoc.from("The best string")), "facuality");
             this.freeze();
         }
     }

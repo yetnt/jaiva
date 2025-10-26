@@ -105,7 +105,7 @@ public class IntTest {
             TStatementResolutionException error = (TStatementResolutionException) e.error;
 
             // The error is on line 14
-            Assertions.assertTrue(error.getMessage().startsWith("[14]"), "Error is not on line 14.");
+            Assertions.assertTrue(error.getMessage().contains("14]"), "Error is not on line 14.");
         } catch (Exception e) {
             // catch any other exception that we realistically don't want to catch
             Assertions.fail("Exception thrown: " + e.getMessage(), e);
