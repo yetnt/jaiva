@@ -11,9 +11,9 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.*;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
 import com.jaiva.lang.Keywords;
-import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.*;
-import com.jaiva.tokenizer.TokenDefault;
+import com.jaiva.tokenizer.tokens.specific.*;
+import com.jaiva.tokenizer.tokens.Token;
+import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.utils.Tuple2;
 
 /**

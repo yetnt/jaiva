@@ -9,8 +9,7 @@ import java.util.List;
 
 import com.jaiva.interpreter.Vfs;
 import com.jaiva.tokenizer.SymbolConfig;
-import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.*;
+import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.Main;
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
@@ -23,6 +22,7 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.*;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.specific.*;
 
 /**
  * Globals class holds all the global symbols that are injected into the

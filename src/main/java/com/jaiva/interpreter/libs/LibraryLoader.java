@@ -8,8 +8,9 @@ import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.runtime.ResourceLoader;
 import com.jaiva.tokenizer.TConfig;
-import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.Tokenizer;
+import com.jaiva.tokenizer.tokens.specific.TImport;
 
 import java.util.*;
 
@@ -52,7 +53,7 @@ public class LibraryLoader {
         // and variables)
 
         Vfs vfsFromFile = ((Vfs) Interpreter.interpret(tks, new Scope(Context.IMPORT,
-                new Token.TImport(path, name, true, -1), new Scope(config)), newConfig));
+                new TImport(path, name, true, -1), new Scope(config)), newConfig));
 
         return vfsFromFile;
 

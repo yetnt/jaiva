@@ -12,9 +12,12 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.tokenizer.SymbolConfig;
-import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.*;
+import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.specific.TArrayVar;
+import com.jaiva.tokenizer.tokens.specific.TFuncCall;
+import com.jaiva.tokenizer.tokens.specific.TFunction;
+import com.jaiva.tokenizer.tokens.specific.TStringVar;
 
 public class IOFile extends BaseLibrary {
     IOFile(IConfig<Object> config) throws InterpreterException {
@@ -233,7 +236,7 @@ public class IOFile extends BaseLibrary {
 
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
-                Scope scope)
+                           Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
             Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,

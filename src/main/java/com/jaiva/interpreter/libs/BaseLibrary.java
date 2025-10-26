@@ -3,7 +3,7 @@ package com.jaiva.interpreter.libs;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.symbol.Symbol;
-import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.tokens.Token;
 
 /**
  * Base class for global holder classes.

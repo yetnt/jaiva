@@ -7,9 +7,8 @@ import java.util.concurrent.Semaphore;
 import com.jaiva.Debugger;
 import com.jaiva.interpreter.*;
 import com.jaiva.interpreter.symbol.Symbol;
-import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.utils.Pair;
-import com.jaiva.utils.Tuple2;
 
 /**
  * The DebugController class is responsible for actually controllig the

@@ -2,7 +2,7 @@ package com.jaiva.utils;
 
 import java.util.Arrays;
 
-import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.tokens.Token;
 
 /**
  * 

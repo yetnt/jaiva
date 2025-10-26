@@ -14,9 +14,9 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.lang.EscapeSequence;
-import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.*;
-import com.jaiva.tokenizer.TokenDefault;
+import com.jaiva.tokenizer.tokens.specific.*;
+import com.jaiva.tokenizer.tokens.Token;
+import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.jdoc.JDoc;
 
 /**

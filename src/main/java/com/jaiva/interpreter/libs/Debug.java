@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jaiva.errors.JaivaException.DebugException;
-import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -12,8 +11,9 @@ import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.tokenizer.SymbolConfig;
-import com.jaiva.tokenizer.Token.*;
 import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.specific.TFuncCall;
+import com.jaiva.tokenizer.tokens.specific.TFunction;
 
 public class Debug extends BaseLibrary {
     Debug(IConfig<Object> config) {

@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.Scope;
-import com.jaiva.tokenizer.TokenDefault;
+import com.jaiva.tokenizer.tokens.TokenDefault;
 
 /**
  * BaseVariable class is a base class for all variables in Jaiva.

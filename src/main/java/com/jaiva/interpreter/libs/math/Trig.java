@@ -8,9 +8,10 @@ import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.LibraryType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
-import com.jaiva.tokenizer.Token.*;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.errors.InterpreterException.FunctionParametersException;
+import com.jaiva.tokenizer.tokens.specific.TFuncCall;
+import com.jaiva.tokenizer.tokens.specific.TFunction;
 
 public class Trig extends BaseLibrary {
     public Trig() {
@@ -51,7 +52,7 @@ public class Trig extends BaseLibrary {
 
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
-                Scope scope)
+                           Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
             Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config, scope);

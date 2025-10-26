@@ -1,6 +1,8 @@
-package com.jaiva.tokenizer;
+package com.jaiva.tokenizer.tokens;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.Convertible;
+import com.jaiva.tokenizer.ToJson;
 import com.jaiva.tokenizer.jdoc.JDoc;
 
 /**

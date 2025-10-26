@@ -12,9 +12,8 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.interpreter.symbol.BaseFunction.DefinedFunction;
 import com.jaiva.interpreter.symbol.BaseVariable.DefinedVariable;
-import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.utils.Pair;
-import com.jaiva.utils.Tuple2;
 
 /**
  * The Debugger class is responsible for managing the debugging environment

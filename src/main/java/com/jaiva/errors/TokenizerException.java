@@ -1,6 +1,6 @@
 package com.jaiva.errors;
 
-import com.jaiva.tokenizer.Token.TIfStatement;
+import com.jaiva.tokenizer.tokens.specific.TIfStatement;
 
 /**
  * Base Syntax Error Exception.

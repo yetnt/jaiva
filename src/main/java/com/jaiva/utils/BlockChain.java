@@ -1,6 +1,6 @@
 package com.jaiva.utils;
 
-import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.tokens.Token;
 
 /**
  * This class represents a chain of code blocks, such as if-else chains or

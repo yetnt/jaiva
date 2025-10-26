@@ -7,19 +7,10 @@ import java.util.regex.*;
 import com.jaiva.errors.TokenizerException.*;
 import com.jaiva.errors.TokenizerException;
 import com.jaiva.lang.*;
-import com.jaiva.tokenizer.Token.*;
-import com.jaiva.tokenizer.Token.TArrayVar;
-import com.jaiva.tokenizer.Token.TBooleanVar;
-import com.jaiva.tokenizer.Token.TCodeblock;
-import com.jaiva.tokenizer.Token.TDocsComment;
-import com.jaiva.tokenizer.Token.TFunction;
-import com.jaiva.tokenizer.Token.TIfStatement;
-import com.jaiva.tokenizer.Token.TNumberVar;
-import com.jaiva.tokenizer.Token.TStringVar;
-import com.jaiva.tokenizer.Token.TTryCatchStatement;
-import com.jaiva.tokenizer.Token.TUnknownVar;
-import com.jaiva.tokenizer.Token.TVarRef;
+import com.jaiva.tokenizer.tokens.Token;
+import com.jaiva.tokenizer.tokens.specific.*;
 import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.utils.*;
 import com.jaiva.utils.Validate.IsValidSymbolName;
 
@@ -244,7 +235,7 @@ public class Tokenizer {
                             finalMOutput.lineNumber);
                 }
                 TIfStatement ifStatement = new TIfStatement(obj, codeblock, finalMOutput.lineNumber);
-                TIfStatement originalIf = ((TIfStatement) ((MultipleLinesOutput) multipleLinesOutput).specialArg
+                TIfStatement originalIf = ((TIfStatement) multipleLinesOutput.specialArg
                         .value());
                 originalIf.appendElseIf(ifStatement);
                 specific = originalIf.toToken();
@@ -254,7 +245,7 @@ public class Tokenizer {
                 break;
             }
             case "mara": {
-                TIfStatement originalIf = ((TIfStatement) ((MultipleLinesOutput) multipleLinesOutput).specialArg
+                TIfStatement originalIf = ((TIfStatement) multipleLinesOutput.specialArg
                         .value());
                 originalIf.appendElse(codeblock);
                 specific = originalIf.toToken();
@@ -283,7 +274,7 @@ public class Tokenizer {
                 return new BlockChain(specific, line.replaceFirst(Chars.BLOCK_CLOSE, "").trim());
             }
             case "chaai": {
-                TTryCatchStatement tryCatch = ((TTryCatchStatement) ((MultipleLinesOutput) multipleLinesOutput).specialArg
+                TTryCatchStatement tryCatch = ((TTryCatchStatement) multipleLinesOutput.specialArg
                         .value());
                 tryCatch.appendCatchBlock(codeblock);
                 specific = tryCatch.toToken();
@@ -296,7 +287,7 @@ public class Tokenizer {
                     TokenDefault var = (TokenDefault) ((ArrayList<Token<?>>) Objects.requireNonNull(readLine(
                             Keywords.D_VAR + " "
                                     + cond
-                                    + Character.toString(Chars.END_LINE),
+                                    + Chars.END_LINE,
                             "", null,
                             null, finalMOutput.lineNumber, config)))
                             .getFirst().value();
@@ -310,7 +301,7 @@ public class Tokenizer {
                                 finalMOutput.lineNumber);
                     }
                     specific = new TForLoop(
-                            var instanceof TUnknownVar ? (TUnknownVar<?>) var : (TNumberVar) var, obj,
+                            var, obj,
                             args[2].replace(Chars.STATEMENT_CLOSE, ' ').trim(),
                             codeblock, finalMOutput.lineNumber).toToken();
                 } else {
@@ -449,7 +440,7 @@ public class Tokenizer {
                 throw new MalformedSyntaxException(
                         "if you're finna define a variable without a value, remove the assignment operator.",
                         lineNumber);
-            return new TUnknownVar<Object>(parts[0], new Token.TVoidValue(lineNumber), lineNumber)
+            return new TUnknownVar<Object>(parts[0], new TVoidValue(lineNumber), lineNumber)
                     .toToken();
         }
         parts[1] = parts[1].trim();
@@ -471,18 +462,18 @@ public class Tokenizer {
                         return new TBooleanVar(parts[0], Boolean.parseBoolean(parts[1]),
                                 lineNumber).toToken();
                     } else {
-                        Object output = Token.dispatchContext(parts[1], lineNumber);
-                        if (output instanceof Token<?>) {
-                            TokenDefault g = ((Token<?>) output).value();
+                        Object object = Token.dispatchContext(parts[1], lineNumber);
+                        if (object instanceof Token<?> t) {
+                            TokenDefault g = ((Token<?>) object).value();
                             if (g.name.equals("TStatement")) {
                                 return ((TStatement) g).statementType == 0
-                                        ? new TBooleanVar(parts[0], output,
+                                        ? new TBooleanVar(parts[0], object,
                                                 lineNumber).toToken()
-                                        : new TNumberVar(parts[0], output, lineNumber).toToken();
+                                        : new TNumberVar(parts[0], object, lineNumber).toToken();
                             }
                         }
 
-                        return new TUnknownVar<Object>(parts[0], output, lineNumber).toToken();
+                        return new TUnknownVar<Object>(parts[0], object, lineNumber).toToken();
                     }
                 }
             }
@@ -556,9 +547,9 @@ public class Tokenizer {
             ArrayList<String> args = new ArrayList<>();
             for (String arg : parts[1].trim().split(Character.toString(Chars.ARGS_SEPARATOR)))
                 args.add(arg.trim());
-            return new Token.TImport(path, fileName, isLib, args, lineNumber).toToken();
+            return new TImport(path, fileName, isLib, args, lineNumber).toToken();
         } else {
-            return new Token.TImport(path, fileName, isLib, lineNumber).toToken();
+            return new TImport(path, fileName, isLib, lineNumber).toToken();
         }
     }
 
@@ -848,7 +839,7 @@ public class Tokenizer {
 
         // TODO: This token only exists for debugging purposes at the moment.
         if (line.equals(Keywords.UNDEFINED)) {
-            tokens.add(new Token.TVoidValue(lineNumber).toToken());
+            tokens.add(new TVoidValue(lineNumber).toToken());
             return tokens;
         }
 

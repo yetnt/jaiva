@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
+import com.jaiva.tokenizer.tokens.specific.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.jaiva.Main;
-import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.*;
+import com.jaiva.tokenizer.tokens.Token;
 
 public class TokTest {
     private static final Path FILE_JIV;
@@ -61,7 +61,7 @@ public class TokTest {
             Assertions.assertEquals(3, tokens.size(), "Token size is NOT exactly 3.");
 
             // check that the last token is a TFuncCall
-            Assertions.assertInstanceOf(Token.TFuncCall.class, ((Token) tokens.getLast()).value(),
+            Assertions.assertInstanceOf(TFuncCall.class, ((Token) tokens.getLast()).value(),
                     "The last token is not a function call, thats weird thats literally what causes this DebugException.");
             // As this was emitted, the LAST token in the tokens list, should be a TFuncCall
             // and it's first parameter, should contain the exact same stirng.

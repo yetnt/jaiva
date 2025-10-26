@@ -3,7 +3,7 @@ package com.jaiva.lang;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.tokens.specific.TDocsComment;
 
 /**
  * Comments class is a utility class that provides methods for processing and
@@ -63,7 +63,7 @@ public class Comments {
         if (o.indexOf(Chars.COMMENT_DOC) != 0)
             return decimate(o);
 
-        return new Token.TDocsComment(o.substring(o.indexOf(Chars.COMMENT_DOC) + 2))
+        return new TDocsComment(o.substring(o.indexOf(Chars.COMMENT_DOC) + 2))
                 .toToken();
 
     }

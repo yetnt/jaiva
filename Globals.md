@@ -151,8 +151,8 @@ See [Globals.java](./src/main/java/com/jaiva/interpreter/libs/Globals.java) wher
 
 ```jiv
 maak name <- "ayo!"!
-khuluma(getVarClass(name))! @ Prints com.jaiva.tokenizer.Token$TStringVar@(hashcode)
-getVarClass(reservedKeywords)! @ Prints com.jaiva.tokenizer.Token$TArrayVar@(hashcode)
+khuluma(getVarClass(name))! @ Prints com.jaiva.tokenizer.tokens.Token$TStringVar@(hashcode)
+getVarClass(reservedKeywords)! @ Prints com.jaiva.tokenizer.tokens.Token$TArrayVar@(hashcode)
 ```
 
 #### `flat(array1, array2) -> `_*`khutla (array)!`*_

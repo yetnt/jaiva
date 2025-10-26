@@ -8,8 +8,11 @@ import com.jaiva.interpreter.libs.LibraryType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
-import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.specific.TFuncCall;
+import com.jaiva.tokenizer.tokens.specific.TFunction;
+import com.jaiva.tokenizer.tokens.specific.TStringVar;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -27,12 +30,12 @@ class CustomLib extends BaseLibrary {
 
     static class FEcho extends BaseFunction {
         public FEcho() {
-            super("echo", new Token.TFunction("echo", new String[] {"arg1"}, null, -1, JDoc.fromString("d")));
+            super("echo", new TFunction("echo", new String[] {"arg1"}, null, -1, JDoc.fromString("d")));
             this.freeze();
         }
 
         @Override
-        public Object call(Token.TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
             this.checkParams(tFuncCall, scope);
             return params.getFirst();
         }
@@ -40,7 +43,7 @@ class CustomLib extends BaseLibrary {
 
     static class VVar extends BaseVariable {
         public VVar() {
-            super("poop", new Token.TStringVar("poop", "factuality", -1, JDoc.fromString("The best string")), "facuality");
+            super("poop", new TStringVar("poop", "factuality", -1, JDoc.fromString("The best string")), "facuality");
             this.freeze();
         }
     }

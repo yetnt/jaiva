@@ -6,8 +6,8 @@ import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.*;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.lang.EscapeSequence;
-import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.*;
+import com.jaiva.tokenizer.tokens.specific.*;
+import com.jaiva.tokenizer.tokens.Token;
 
 /**
  * BaseFunction class is a base class for all functions in Jaiva.

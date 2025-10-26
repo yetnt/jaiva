@@ -17,7 +17,7 @@ import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.Symbol;
-import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.tokens.Token;
 
 public class IntTest {
     private static final Path FILE_JIV;

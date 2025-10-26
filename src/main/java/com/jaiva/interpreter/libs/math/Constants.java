@@ -4,8 +4,8 @@ import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.LibraryType;
 import com.jaiva.interpreter.symbol.BaseVariable;
-import com.jaiva.tokenizer.Token.*;
 import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.specific.TNumberVar;
 
 /**
  * Container class for mathematical constants.

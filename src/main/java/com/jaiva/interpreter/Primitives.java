@@ -13,16 +13,9 @@ import com.jaiva.interpreter.symbol.*;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.SymbolConfig;
-import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.TokenDefault;
-import com.jaiva.tokenizer.Token.TForLoop;
-import com.jaiva.tokenizer.Token.TFuncCall;
-import com.jaiva.tokenizer.Token.TIfStatement;
-import com.jaiva.tokenizer.Token.TStatement;
-import com.jaiva.tokenizer.Token.TTernary;
-import com.jaiva.tokenizer.Token.TVarRef;
-import com.jaiva.tokenizer.Token.TVoidValue;
-import com.jaiva.tokenizer.Token.TWhileLoop;
+import com.jaiva.tokenizer.tokens.Token;
+import com.jaiva.tokenizer.tokens.TokenDefault;
+import com.jaiva.tokenizer.tokens.specific.*;
 
 /**
  * The Primitives class is a utility class that provides methods for resolving

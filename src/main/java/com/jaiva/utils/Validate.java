@@ -3,8 +3,11 @@ package com.jaiva.utils;
 import java.util.ArrayList;
 
 import com.jaiva.lang.Chars;
-import com.jaiva.tokenizer.Token;
-import com.jaiva.tokenizer.Token.*;
+import com.jaiva.tokenizer.tokens.Token;
+import com.jaiva.tokenizer.tokens.specific.TFuncCall;
+import com.jaiva.tokenizer.tokens.specific.TIfStatement;
+import com.jaiva.tokenizer.tokens.specific.TTernary;
+import com.jaiva.tokenizer.tokens.specific.TVarRef;
 import com.jaiva.utils.cd.ContextDispatcher;
 
 /**

@@ -9,15 +9,15 @@ import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.interpreter.symbol.BaseFunction.DefinedFunction;
 import com.jaiva.interpreter.symbol.BaseVariable.DefinedVariable;
-import com.jaiva.tokenizer.TokenDefault;
-import com.jaiva.tokenizer.Token.TFuncCall;
-import com.jaiva.tokenizer.Token.TFunction;
-import com.jaiva.tokenizer.Token.TIfStatement;
-import com.jaiva.tokenizer.Token.TStatement;
-import com.jaiva.tokenizer.Token.TThrowError;
-import com.jaiva.tokenizer.Token.TVarReassign;
-import com.jaiva.tokenizer.Token.TVarRef;
-import com.jaiva.tokenizer.Token.TWhileLoop;
+import com.jaiva.tokenizer.tokens.TokenDefault;
+import com.jaiva.tokenizer.tokens.specific.TFuncCall;
+import com.jaiva.tokenizer.tokens.specific.TFunction;
+import com.jaiva.tokenizer.tokens.specific.TIfStatement;
+import com.jaiva.tokenizer.tokens.specific.TStatement;
+import com.jaiva.tokenizer.tokens.specific.TThrowError;
+import com.jaiva.tokenizer.tokens.specific.TVarReassign;
+import com.jaiva.tokenizer.tokens.specific.TVarRef;
+import com.jaiva.tokenizer.tokens.specific.TWhileLoop;
 
 /**
  * Base Interpreter Exception.

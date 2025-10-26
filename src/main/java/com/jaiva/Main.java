@@ -10,11 +10,13 @@ import com.jaiva.interpreter.libs.Types;
 import com.jaiva.interpreter.libs.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.*;
-import com.jaiva.tokenizer.Token.TArrayVar;
-import com.jaiva.tokenizer.Token.TDocsComment;
-import com.jaiva.tokenizer.Token.TFunction;
-import com.jaiva.tokenizer.Token.TUnknownVar;
+import com.jaiva.tokenizer.tokens.Token;
+import com.jaiva.tokenizer.tokens.specific.TArrayVar;
+import com.jaiva.tokenizer.tokens.specific.TDocsComment;
+import com.jaiva.tokenizer.tokens.specific.TFunction;
+import com.jaiva.tokenizer.tokens.specific.TUnknownVar;
 import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.utils.*;
 
 /**

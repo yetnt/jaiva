@@ -1,0 +1,34 @@
+package com.jaiva.tokenizer.tokens.specific;
+
+import com.jaiva.tokenizer.tokens.Token;
+import com.jaiva.tokenizer.tokens.TokenDefault;
+
+/**
+ * Represents a "null" value such as {@code maak name <- idk!} which is the same
+ * as not defining a value at all.
+ */
+public class TVoidValue extends TokenDefault {
+
+    /**
+     * Constructor for TVoidValue
+     *
+     * @param ln The line number.
+     */
+    public TVoidValue(int ln) {
+        super("TVoidValue", ln);
+    }
+
+    /**
+     * Converts this token to the default {@link Token}
+     *
+     * @return {@link Token} with a T value of {@link TVoidValue}
+     */
+    public Token<TVoidValue> toToken() {
+        return new Token<>(this);
+    }
+
+    @Override
+    public String toString() {
+        return "idk";
+    }
+}

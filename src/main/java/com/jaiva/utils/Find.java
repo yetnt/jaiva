@@ -6,7 +6,8 @@ import java.util.List;
 
 import com.jaiva.lang.Chars;
 import com.jaiva.lang.Chars.Operators;
-import com.jaiva.tokenizer.Token;
+import com.jaiva.tokenizer.tokens.Token;
+import com.jaiva.tokenizer.tokens.specific.TTernary;
 
 /**
  * This class provides utility methods for finding specific characters or
@@ -541,7 +542,7 @@ public class Find {
      * or parenthesis ()
      * <p>
      * This is meant for {@link Token#processContext(String, int)} to properly split
-     * nested {@link Token.TTernary} at the correct places. It can be used elsewhere
+     * nested {@link TTernary} at the correct places. It can be used elsewhere
      * provided with caution
      * 
      * @param statement The statement to check within

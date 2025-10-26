@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import com.jaiva.errors.JaivaException;
 import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.Token;
+import com.jaiva.tokenizer.tokens.TokenDefault;
 
 /**
  * The ToJson class is a utility for constructing JSON-like string

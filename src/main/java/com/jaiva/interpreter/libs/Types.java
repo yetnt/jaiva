@@ -9,7 +9,9 @@ import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.lang.Keywords;
-import com.jaiva.tokenizer.Token.*;
+import com.jaiva.tokenizer.tokens.specific.TFuncCall;
+import com.jaiva.tokenizer.tokens.specific.TFunction;
+import com.jaiva.tokenizer.tokens.specific.TVoidValue;
 import com.jaiva.tokenizer.jdoc.JDoc;
 
 /**
@@ -67,7 +69,7 @@ public class Types extends BaseLibrary {
 
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
-                Scope scope)
+                           Scope scope)
                 throws Exception {
             this.checkParams(tFuncCall, scope);
             Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
