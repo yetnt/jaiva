@@ -102,11 +102,26 @@ public class IOFunctions extends BaseLibrary {
             if (v instanceof Boolean && (Boolean) v) {
                 System.out.print(
                         isJustStr + EscapeSequence.fromEscape(output, tFuncCall.lineNumber) + isJustStr);
-            } else {
+            } else if (newO instanceof ArrayList<?> arr)
+            {
+                System.out.println(arrToString(arr));
+            }else{
                 System.out.println(
                         isJustStr + EscapeSequence.fromEscape(output, tFuncCall.lineNumber) + isJustStr);
             }
             return Token.voidValue(tFuncCall.lineNumber);
+        }
+
+        private String arrToString(ArrayList<?> arr) {
+            StringBuilder b = new StringBuilder();
+            b.append("[");
+            for (int i = 0; i < arr.size(); i++) {
+                Object t = arr.get(i);
+                b.append(t instanceof String ? "\"" + t + "\"" : t instanceof ArrayList<?> a ? arrToString(a) : t);
+                if (i != arr.size() - 1) b.append(", ");
+            }
+            b.append("]");
+            return b.toString();
         }
     }
 
