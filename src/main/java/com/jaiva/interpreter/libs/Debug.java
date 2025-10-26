@@ -28,7 +28,7 @@ public class Debug extends BaseLibrary {
             super("d_vfs", new TFunction("d_vfs", new String[]{}, null, -1,
                     JDoc.builder()
                             .addDesc("Returns the current context's vfs.")
-                            .sinceVersion("4.0.1")
+                            .sinceVersion("4.1.0")
                             .addReturns("A 2d array, first array containing the keys, second array the values.")
                             .addNote("This function does not allow you to edit the current vfs, only to get" +
                                     " everything that is currently within the vfs as an array." +
