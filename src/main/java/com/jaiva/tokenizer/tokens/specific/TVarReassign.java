@@ -17,7 +17,7 @@ public class TVarReassign extends TokenDefault {
      * @param value The new value of the variable.
      * @param ln    The line number.
      */
-    TVarReassign(String name, Object value, int ln) {
+    public TVarReassign(String name, Object value, int ln) {
         super(name, ln);
         this.newValue = value;
     }
@@ -30,7 +30,7 @@ public class TVarReassign extends TokenDefault {
      * @param ln    The line number.
      */
     public TVarReassign(Object name, Object value, int ln) {
-        super("TVarReassign", ln);
+        super((String)name, ln);
         this.newValue = value;
     }
 
