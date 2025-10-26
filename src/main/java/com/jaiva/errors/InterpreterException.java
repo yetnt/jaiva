@@ -18,6 +18,7 @@ import com.jaiva.tokenizer.tokens.specific.TThrowError;
 import com.jaiva.tokenizer.tokens.specific.TVarReassign;
 import com.jaiva.tokenizer.tokens.specific.TVarRef;
 import com.jaiva.tokenizer.tokens.specific.TWhileLoop;
+import com.jaiva.utils.CCol;
 
 /**
  * Base Interpreter Exception.
@@ -100,7 +101,7 @@ public class InterpreterException extends JaivaException {
      * @param message    Message to send.
      */
     public InterpreterException(Scope ct, int lineNumber, String message) {
-        super(message + "\n" + ct, lineNumber);
+        super(CCol.print(message, CCol.TEXT.RED) + "\n" + CCol.print(ct.toString(), CCol.TEXT.YELLOW), lineNumber);
     }
 
     /**

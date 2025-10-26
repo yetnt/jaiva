@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.runtime.IConfig;
+import com.jaiva.utils.CCol;
 
 /**
  * Base class for any exceptions we run into while trying to parse or run jaiva
@@ -20,7 +21,7 @@ public class JaivaException extends Exception {
      * @param lineNumber the line number
      */
     public JaivaException(String message, int lineNumber) {
-        super("[" + lineNumber + "] " + message);
+        super(CCol.print("[line " + lineNumber + "]", CCol.FONT.UNDERLINE, CCol.FONT.BOLD, CCol.BG.BRIGHT_BLACK)+" " + message);
     }
 
     /**
@@ -29,7 +30,7 @@ public class JaivaException extends Exception {
      * @param message
      */
     public JaivaException(String message) {
-        super(message);
+        super(CCol.print(message, CCol.TEXT.RED, CCol.FONT.ITALIC));
     }
 
     /**

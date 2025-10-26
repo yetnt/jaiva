@@ -12,10 +12,11 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.*;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
 import com.jaiva.lang.EscapeSequence;
-import com.jaiva.tokenizer.SymbolConfig;
+import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.*;
+import com.jaiva.utils.CCol;
 
 /**
  * The Primitives class is a utility class that provides methods for resolving
@@ -28,6 +29,34 @@ import com.jaiva.tokenizer.tokens.specific.*;
  * <p>
  */
 public class Primitives {
+    /**
+     * Checks if a given {@link Symbol} has a {@link SymbolConfig} annotation and prints
+     * deprecation or experimental warnings if applicable.
+     *
+     * @param s The {@link Symbol} to check for annotations.
+     */
+    private static void checkSymbolAnnotation(Symbol s, int lineNumber) {
+        if (s == null) return;
+        Class<?> actual = s.getClass();
+        SymbolConfig c = actual.getAnnotation(SymbolConfig.class);
+        TokenDefault token = s.token;
+        JDoc doc = JDoc.from(token.tooltip);
+        if (!Objects.isNull(c) || !Objects.isNull(doc)) {
+            String depStr = Objects.isNull(doc) ? "" : doc.getDeprecatedString();
+            if (!depStr.isEmpty() || (!Objects.isNull(c) && c.deprecated())) {
+                Warnings.println(
+                        lineNumber,
+                        s.name + " is deprecated. " + CCol.printInline(depStr, CCol.FONT.BOLD, CCol.FONT.UNDERLINE, CCol.FONT.ITALIC)
+                );
+            }
+            if (!Objects.isNull(c) && c.experimental()) {
+                Warnings.println(
+                        lineNumber,
+                        s.name + " is marked as experimental. Be careful!!"
+                );
+            }
+        }
+    }
 
     /**
      * Handles arithmetic operations between two numeric operands (Integer or
@@ -435,6 +464,7 @@ public class Primitives {
                             tVarRef.lineNumber);
                 }
             }
+            checkSymbolAnnotation(variable, tVarRef.lineNumber);
             if (index != null && (variable.variableType == VariableType.ARRAY
                     || variable.variableType == VariableType.A_FUCKING_AMALGAMATION
                     || tVarRef.varName instanceof TVarRef)) {
@@ -529,16 +559,7 @@ public class Primitives {
 
             function = function != null ? function : f == null ? (BaseFunction) v.getValue() : f;
 
-            Class<?> actual = function.getClass();
-            SymbolConfig c = actual.getAnnotation(SymbolConfig.class);
-            if (!Objects.isNull(c)) {
-                if (c.deprecated()) {
-                    System.out.println(function + " is deprecated.");
-                }
-                if (c.experimental()) {
-                    System.out.println(function + " is marked as experimental. Be careful!!");
-                }
-            }
+            checkSymbolAnnotation(function, tFuncCall.lineNumber);
 
             Object returnValue = function.call(tFuncCall, tFuncCall.args, config, scope);
             return returnValue instanceof String && tFuncCall.getLength

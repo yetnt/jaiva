@@ -1,6 +1,7 @@
 package com.jaiva.errors;
 
 import com.jaiva.tokenizer.tokens.specific.TIfStatement;
+import com.jaiva.utils.CCol;
 
 /**
  * Base Syntax Error Exception.
@@ -14,7 +15,7 @@ public class TokenizerException extends JaivaException {
      * @param message THe message.
      */
     public TokenizerException(int lineNumber, String message) {
-        super(message, lineNumber);
+        super(CCol.print(message, CCol.FONT.BOLD, CCol.FONT.ITALIC, CCol.TEXT.RED), lineNumber);
     }
 
     /**
