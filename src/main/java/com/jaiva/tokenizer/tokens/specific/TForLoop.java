@@ -1,6 +1,8 @@
 package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.tokens.TConditional;
+import com.jaiva.tokenizer.tokens.TConstruct;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
@@ -9,7 +11,7 @@ import com.jaiva.tokenizer.tokens.TokenDefault;
  * {@code colonize i <- 0 | i < 10 | + -> ... <~} and a for each loop which
  * iterates over arrays {@code colonize el with array -> ... <~}
  */
-public class TForLoop extends TokenDefault {
+public class TForLoop extends TokenDefault<TForLoop> implements TConstruct, TConditional {
     /**
      * The variable used in the for loop.
      */
@@ -80,5 +82,10 @@ public class TForLoop extends TokenDefault {
      */
     public Token<TForLoop> toToken() {
         return new Token<>(this);
+    }
+
+    @Override
+    public Object getConditionToken() {
+        return condition;
     }
 }

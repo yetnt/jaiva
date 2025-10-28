@@ -1,6 +1,7 @@
 package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.tokens.TStatement;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
@@ -12,7 +13,7 @@ import java.util.ArrayList;
  * or
  * {@code tsea "path" <- func1, func2, func3!}
  */
-public class TImport extends TokenDefault {
+public class TImport extends TokenDefault<TImport> implements TStatement {
     /**
      * Indicates whether this import is a library import.
      * <p>

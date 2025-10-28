@@ -3,6 +3,8 @@ package com.jaiva.tokenizer.tokens.specific;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.lang.Chars;
 import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.TConstruct;
+import com.jaiva.tokenizer.tokens.TSymbol;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
@@ -16,7 +18,7 @@ import java.util.regex.Pattern;
  * {@code kwenza addition(param1, param2) -> khutla (param1 + param2)! <~}
  * This class is
  */
-public class TFunction extends TokenDefault {
+public class TFunction extends TokenDefault<TFunction> implements TSymbol, TConstruct {
     /**
      * The arguments of the function.
      */
@@ -121,5 +123,29 @@ public class TFunction extends TokenDefault {
      */
     public Token<TFunction> toToken() {
         return new Token<>(this);
+    }
+
+    /**
+     * Converts this function token into a string representation of its definition,
+     * including its name, arguments, and whether they are optional or varargs.
+     *
+     * @return A string representing the function's definition.
+     */
+    public String toDefinitionString() {
+        StringBuilder out = new StringBuilder();
+        out.append(name).append("(");
+        for (int i = 0; i < this.args.length;i++) {
+            String arg = this.args[i];
+            if (this.varArgs) {
+                out.append("<-").append(arg);
+                break;
+            }
+            out.append(arg).append(
+                    this.isArgOptional.get(i) ? "?" : ""
+            ).append(
+                    i != this.args.length - 1 ? ", " : ""
+            );
+        }
+        return out.append(")").toString();
     }
 }

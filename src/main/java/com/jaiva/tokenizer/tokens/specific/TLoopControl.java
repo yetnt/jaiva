@@ -3,6 +3,7 @@ package com.jaiva.tokenizer.tokens.specific;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.errors.TokenizerException;
 import com.jaiva.lang.Keywords;
+import com.jaiva.tokenizer.tokens.TStatement;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
@@ -10,7 +11,7 @@ import com.jaiva.tokenizer.tokens.TokenDefault;
  * Represents a loop control statement such as {@code voetsek!} or
  * {@code nevermind!}
  */
-public class TLoopControl extends TokenDefault {
+public class TLoopControl extends TokenDefault<TLoopControl> implements TStatement {
     /**
      * The type of the loop control statement.
      */

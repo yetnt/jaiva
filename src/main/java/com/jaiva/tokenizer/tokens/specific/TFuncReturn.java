@@ -1,6 +1,7 @@
 package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.tokens.TStatement;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
@@ -8,7 +9,7 @@ import com.jaiva.tokenizer.tokens.TokenDefault;
  * Represents a function return which can only be defined in a function (Duh)
  * such as {@code khulta 10!}
  */
-public class TFuncReturn extends TokenDefault {
+public class TFuncReturn extends TokenDefault<TFuncReturn> implements TStatement {
     /**
      * The value which the function should return.
      */

@@ -1,6 +1,7 @@
 package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.tokens.TAtomicValue;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
@@ -11,7 +12,7 @@ import java.util.ArrayList;
  * or {@code func3(10, 20) -> ... <~} or {@code func4(10, 20)!}. Any, if not ALL
  * function calls are possible.
  */
-public class TFuncCall extends TokenDefault {
+public class TFuncCall extends TokenDefault<TFuncCall> implements TAtomicValue {
     /**
      * The name of the function being called.
      * <p>

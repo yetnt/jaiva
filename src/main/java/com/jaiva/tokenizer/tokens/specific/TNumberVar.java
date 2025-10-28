@@ -7,7 +7,7 @@ import com.jaiva.tokenizer.tokens.Token;
 /**
  * Represents a number variable such as {@code maak age <- 20};
  */
-public class TNumberVar extends TUnknownVar<Object> {
+public class TNumberVar extends TUnknownScalar<Object, TNumberVar> {
     /**
      * Constructor for TNumberVar
      *
@@ -44,7 +44,7 @@ public class TNumberVar extends TUnknownVar<Object> {
      * @return {@link Token} with a T value of {@link TNumberVar}
      */
     @Override
-    public Token toToken() {
+    public Token<TNumberVar> toToken() {
         return new Token<>(this);
     }
 }

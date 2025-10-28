@@ -1,6 +1,8 @@
 package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.tokens.TAtomicValue;
+import com.jaiva.tokenizer.tokens.TConditional;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
@@ -8,7 +10,7 @@ import com.jaiva.tokenizer.tokens.TokenDefault;
  * Represents a ternary expression such as
  * {@code condition => expr1 however expr2}
  */
-public class TTernary extends TokenDefault {
+public class TTernary extends TokenDefault<TTernary> implements TAtomicValue, TConditional {
     /**
      * The condition of the ternary expression.
      */
@@ -52,5 +54,10 @@ public class TTernary extends TokenDefault {
      */
     public Token<TTernary> toToken() {
         return new Token<>(this);
+    }
+
+    @Override
+    public Object getConditionToken() {
+        return condition;
     }
 }

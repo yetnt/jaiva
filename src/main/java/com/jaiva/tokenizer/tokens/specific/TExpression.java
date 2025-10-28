@@ -1,6 +1,7 @@
 package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.tokens.TAtomicValue;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.utils.Find;
@@ -11,7 +12,7 @@ import com.jaiva.utils.cd.ContextDispatcher;
  * This class usually isn't used directly, but rather as a part of another
  * instance.
  */
-public class TStatement extends TokenDefault {
+public class TExpression extends TokenDefault implements TAtomicValue {
     /**
      * The left hand side of the statement.
      * <p>
@@ -47,7 +48,7 @@ public class TStatement extends TokenDefault {
      *
      * @param ln The line number.
      */
-    public TStatement(int ln) {
+    public TExpression(int ln) {
         super("TStatement", ln);
     }
 
@@ -106,20 +107,20 @@ public class TStatement extends TokenDefault {
             info.op = ">=";
         }
 
-        lHandSide = Token.handleNegatives(new TStatement(lineNumber).parse(statement.substring(0, info.index).trim()));
+        lHandSide = Token.handleNegatives(new TExpression(lineNumber).parse(statement.substring(0, info.index).trim()));
         this.op = info.op.trim();
         rHandSide = Token.handleNegatives(
-                new TStatement(lineNumber).parse(statement.substring(info.index + info.op.length()).trim()));
+                new TExpression(lineNumber).parse(statement.substring(info.index + info.op.length()).trim()));
         statementType = info.tStatementType;
-        return ((TStatement) Token.handleNegatives(this)).toToken();
+        return ((TExpression) Token.handleNegatives(this)).toToken();
     }
 
     /**
      * Converts this token to the default {@link Token}
      *
-     * @return {@link Token} with a T value of {@link TStatement}
+     * @return {@link Token} with a T value of {@link TExpression}
      */
-    public Token<TStatement> toToken() {
+    public Token<TExpression> toToken() {
         return new Token<>(this);
     }
 }

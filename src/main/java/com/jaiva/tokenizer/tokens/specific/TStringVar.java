@@ -8,7 +8,7 @@ import com.jaiva.tokenizer.tokens.Token;
 /**
  * Represents a string variable such as {@code maak name <- "John"};
  */
-public class TStringVar extends TUnknownVar<String> {
+public class TStringVar extends TUnknownScalar<String, TStringVar> {
 
     /**
      * Constructor for TStringVar
@@ -48,7 +48,7 @@ public class TStringVar extends TUnknownVar<String> {
      * @return {@link Token} with a T value of {@link TStringVar}
      */
     @Override
-    public Token toToken() {
+    public Token<TStringVar> toToken() {
         return new Token<>(this);
     }
 }

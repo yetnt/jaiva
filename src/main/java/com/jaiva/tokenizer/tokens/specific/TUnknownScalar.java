@@ -3,6 +3,7 @@ package com.jaiva.tokenizer.tokens.specific;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.lang.Chars;
 import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.TVariable;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
@@ -16,7 +17,7 @@ import java.util.regex.Pattern;
  *
  * @param <Type> The type of the variable.
  */
-public class TUnknownVar<Type> extends TokenDefault {
+public class TUnknownScalar<Type, K extends TokenDefault<K>> extends TokenDefault<K> implements TVariable {
     /**
      * The value of the variable.
      */
@@ -29,7 +30,7 @@ public class TUnknownVar<Type> extends TokenDefault {
      * @param value The value of the variable.
      * @param ln    The line number.
      */
-    public TUnknownVar(String name, Type value, int ln) {
+    public TUnknownScalar(String name, Type value, int ln) {
         super(name.startsWith(Character.toString(Chars.EXPORT_SYMBOL)),
                 (name.startsWith(Character.toString(Chars.EXPORT_SYMBOL))
                         ? name.replaceFirst(Pattern.quote(Character.toString(Chars.EXPORT_SYMBOL)),
@@ -46,7 +47,7 @@ public class TUnknownVar<Type> extends TokenDefault {
      * @param value The value of the variable.
      * @param ln    The line number.
      */
-    public TUnknownVar(String name, Type value, int ln, JDoc customToolTip) {
+    public TUnknownScalar(String name, Type value, int ln, JDoc customToolTip) {
         super(name, ln, customToolTip);
         this.value = value;
     }
@@ -61,9 +62,9 @@ public class TUnknownVar<Type> extends TokenDefault {
     /**
      * Converts this token to the default {@link Token}
      *
-     * @return {@link Token} with a T value of {@link TUnknownVar}
+     * @return {@link Token} with a T value of {@link TUnknownScalar}
      */
-    public Token<TUnknownVar<?>> toToken() {
-        return new Token<>(this);
+    public Token<K> toToken() {
+        return new Token(this);
     }
 }

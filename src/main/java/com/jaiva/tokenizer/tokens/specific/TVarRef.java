@@ -2,6 +2,7 @@ package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
 import com.jaiva.lang.Chars;
+import com.jaiva.tokenizer.tokens.TAtomicValue;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
@@ -9,7 +10,7 @@ import com.jaiva.tokenizer.tokens.TokenDefault;
  * Represents a variable reference such as {@code name} or {@code age} or
  * {@code array[index]}.
  */
-public class TVarRef extends TokenDefault {
+public class TVarRef extends TokenDefault<TVarRef> implements TAtomicValue {
     /**
      * The type of the variable reference.
      */

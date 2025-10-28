@@ -1,13 +1,15 @@
 package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.tokens.TConditional;
+import com.jaiva.tokenizer.tokens.TConstruct;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
 /**
  * Represents a while loop such as {@code nikhil (i > 10) -> ... <~}
  */
-public class TWhileLoop extends TokenDefault {
+public class TWhileLoop extends TokenDefault<TWhileLoop> implements TConstruct, TConditional {
     /**
      * The condition of the while loop.
      */
@@ -44,5 +46,10 @@ public class TWhileLoop extends TokenDefault {
      */
     public Token<TWhileLoop> toToken() {
         return new Token<>(this);
+    }
+
+    @Override
+    public Object getConditionToken() {
+        return condition;
     }
 }

@@ -75,7 +75,7 @@ public record Token<T extends TokenDefault>(T value) {
      * @return The handled statement.
      */
     public static Object handleNegatives(Object s) {
-        if (s instanceof TStatement statement) {
+        if (s instanceof TExpression statement) {
             if (statement.lHandSide == null && statement.op.equals("-")) {
                 statement.lHandSide = -1;
                 statement.op = "*";
@@ -156,7 +156,7 @@ public record Token<T extends TokenDefault>(T value) {
 
         ContextDispatcher d = new ContextDispatcher(line);
         if (d.getDeligation() == To.TSTATEMENT) {
-            return new TStatement(lineNumber).parse(line);
+            return new TExpression(lineNumber).parse(line);
         }
         int index = Find.lastOutermostBracePair(line);
 
@@ -164,7 +164,7 @@ public record Token<T extends TokenDefault>(T value) {
             // the outmost pair is just () so its prolly a TStatement, remove the stuff then
             // parse as TStatement, if it isnt a TStatement,TStatement will route back here
             // anyways.
-            return new TStatement(lineNumber).parse(line.substring(1, line.length() - 1));
+            return new TExpression(lineNumber).parse(line.substring(1, line.length() - 1));
         }
 
         if (d.bits == ReservedCases.TERNARY.code()) {
@@ -176,7 +176,7 @@ public record Token<T extends TokenDefault>(T value) {
             String c = line.substring(0, Find.lastIndexOf(line, Chars.TERNARY)).trim();
             String expressions = line.substring(Find.lastIndexOf(line, Chars.TERNARY) + 2).trim();
 
-            Object condition = new TStatement(lineNumber).parse(c.trim());
+            Object condition = new TExpression(lineNumber).parse(c.trim());
             String expr1 = expressions.substring(0, Find.lastIndexOf(expressions, Keywords.TERNARY)).trim();
             String expr2 = expressions.substring(Find.lastIndexOf(
                             expressions, Keywords.TERNARY) + Keywords.TERNARY.length())
@@ -256,7 +256,7 @@ public record Token<T extends TokenDefault>(T value) {
         ContextDispatcher d = new ContextDispatcher(line);
         switch (d.getDeligation()) {
             case TSTATEMENT:
-                return new TStatement(lineNumber).parse(line);
+                return new TExpression(lineNumber).parse(line);
             case PROCESS_CONTENT:
                 return processContext(line, lineNumber);
             case SINGLE_BRACE, EMPTY_STRING:

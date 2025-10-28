@@ -1,10 +1,11 @@
 package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.tokens.TStatement;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
-public class TVarReassign extends TokenDefault {
+public class TVarReassign extends TokenDefault<TVarReassign> implements TStatement {
     /**
      * The new value of the variable.
      */

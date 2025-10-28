@@ -16,7 +16,7 @@ import com.jaiva.tokenizer.tokens.TokenDefault;
  * <p>
  * (This ensures if we collect multiple TDocsComment)
  */
-public class TDocsComment extends TokenDefault {
+public class TDocsComment extends TokenDefault<TDocsComment> {
     /**
      * The documentation comment.
      */

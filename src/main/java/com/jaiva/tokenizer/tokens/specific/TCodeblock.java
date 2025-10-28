@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * This class usually isn't used directly, but rather as a part of another
  * instance
  */
-public class TCodeblock extends TokenDefault {
+public class TCodeblock extends TokenDefault<TCodeblock> {
     /**
      * The lines of code in the code block.
      */

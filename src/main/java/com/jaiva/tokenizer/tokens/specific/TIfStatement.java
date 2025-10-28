@@ -1,6 +1,8 @@
 package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.tokens.TConditional;
+import com.jaiva.tokenizer.tokens.TConstruct;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
@@ -15,7 +17,7 @@ import java.util.ArrayList;
  * body nor its own chain of elseIfs. only the original if contaisn all the else
  * ifs and the last else block.
  */
-public class TIfStatement extends TokenDefault {
+public class TIfStatement extends TokenDefault<TIfStatement> implements TConstruct, TConditional {
     /**
      * The condition of the if statement.
      */
@@ -83,5 +85,10 @@ public class TIfStatement extends TokenDefault {
      */
     public Token<TIfStatement> toToken() {
         return new Token<>(this);
+    }
+
+    @Override
+    public Object getConditionToken() {
+        return condition;
     }
 }

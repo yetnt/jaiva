@@ -9,16 +9,11 @@ import com.jaiva.tokenizer.jdoc.JDoc;
  * TokenDefault class is a default implementation of all the other
  * subclasses/tokens defined in {@link Token}
  */
-public class TokenDefault implements Convertible {
-    /**
-     * Boolean which defines whether this token is in experimental usage or not.
-     * <p>
-     * Currently, this is not used in the Jaiva language, but it can be used
-     * in the future to mark tokens that are experimental and not yet fully
-     * implemented.
-     * </p>
-     */
-    public boolean experimental = false;
+public class TokenDefault<T extends TokenDefault<T>> implements Convertible {
+    public Token<T> toToken() {
+        return null;
+    }
+
     /**
      * The name of the token.
      * <p>

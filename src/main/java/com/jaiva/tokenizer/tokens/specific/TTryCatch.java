@@ -1,6 +1,7 @@
 package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.tokens.TConstruct;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
@@ -8,7 +9,7 @@ import com.jaiva.tokenizer.tokens.TokenDefault;
  * Represents a try-catch statement such as
  * {@code zama zama -> ... <~ chaai -> ... <~}
  */
-public class TTryCatchStatement extends TokenDefault {
+public class TTryCatch extends TokenDefault<TTryCatch> implements TConstruct {
     /**
      * The try block of the try-catch statement.
      */
@@ -24,7 +25,7 @@ public class TTryCatchStatement extends TokenDefault {
      * @param tryBlock The try block of the try-catch statement.
      * @param ln       The line number.
      */
-    public TTryCatchStatement(TCodeblock tryBlock, int ln) {
+    public TTryCatch(TCodeblock tryBlock, int ln) {
         super("TTryCatchStatement", ln);
         this.tryBlock = tryBlock;
     }
@@ -48,9 +49,9 @@ public class TTryCatchStatement extends TokenDefault {
     /**
      * Converts this token to the default {@link Token}
      *
-     * @return {@link Token} with a T value of {@link TTryCatchStatement}
+     * @return {@link Token} with a T value of {@link TTryCatch}
      */
-    public Token<TTryCatchStatement> toToken() {
+    public Token<TTryCatch> toToken() {
         return new Token<>(this);
     }
 }
