@@ -4,7 +4,8 @@ import com.jaiva.errors.TokenizerException;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.jdoc.tags.Tag;
-import com.jaiva.tokenizer.tokens.TExportable;
+import com.jaiva.tokenizer.tokens.TSymbol;
+import com.jaiva.tokenizer.tokens.TVariable;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.*;
@@ -39,7 +40,7 @@ public class ToMarkdown {
         // Pre-file: Filter the arraylist to only hold Exportable Tokens.
         List<TokenDefault> exportables = (List<TokenDefault>) tokens.stream()
                 .map(Token::value)
-                .filter(t -> t instanceof TExportable)
+                .filter(t -> t instanceof TSymbol)
                 .filter(t -> t.exportSymbol)
                 .toList();
 
@@ -77,8 +78,8 @@ public class ToMarkdown {
         } else if (option == 'y') {
             ArrayList<ArrayList<TokenDefault>> buckets = Buckets.of(
                     new ArrayList<>(exportables),
-                    new Bucket(TArrayVar.class, TUnknownVar.class),
-                    new Bucket(TFunction.class));
+                    TVariable.class,
+                    TFunction.class);
             printToFile();
             for (int j = 0; j < buckets.size(); j++) {
                 ArrayList<TokenDefault> bucket = buckets.get(j);
@@ -159,7 +160,7 @@ public class ToMarkdown {
                 case TStringVar ignored -> "string";
                 case TBooleanVar ignored -> "boolean";
                 case TArrayVar ignored -> "[]";
-                case TUnknownVar<?> ignored -> "idk";
+                case TUnknownScalar<?, ?> ignored -> "idk";
                 default -> throw new TokenizerException.CatchAllException("Unexpected Value: " + symbol, 0);
             };
             printToFile(

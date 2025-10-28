@@ -6,6 +6,7 @@ import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.*;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.lang.EscapeSequence;
+import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.*;
 import com.jaiva.tokenizer.tokens.Token;
 
@@ -217,20 +218,20 @@ public class BaseFunction extends Symbol {
                         // wrappedValue = new BaseVariable(name, tFuncCall, o);
                         wrappedValue = BaseVariable.create(name,
                                 o instanceof ArrayList ? new TArrayVar(name, (ArrayList) o, tFuncCall.lineNumber)
-                                        : new TUnknownVar<Object>(name, o, tFuncCall.lineNumber),
+                                        : new TUnknownScalar(name, o, tFuncCall.lineNumber),
                                 o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Collections.singletonList(o)),
                                 o instanceof ArrayList);
                     } else if (Primitives.isPrimitive(value)) {
                         // primitivers ong
                         wrappedValue = BaseVariable.create(name,
-                                new TUnknownVar<Object>(name, value, tFuncCall.lineNumber),
+                                new TUnknownScalar(name, value, tFuncCall.lineNumber),
                                 new ArrayList<>(List.of(value)), false);
 
                     } else {
                         // cacthes nested calls, operations and others
                         Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), false, config, scope);
                         wrappedValue = BaseVariable.create(name,
-                                new TUnknownVar<Object>(name, o, tFuncCall.lineNumber),
+                                new TUnknownScalar(name, o, tFuncCall.lineNumber),
                                 o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Collections.singletonList(o)), false);
                     }
                     newVfs.put(name.replace("F~", "").replace("V~", ""), (Symbol) wrappedValue);

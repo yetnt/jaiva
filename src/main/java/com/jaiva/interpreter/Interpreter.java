@@ -11,6 +11,8 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.*;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
 import com.jaiva.lang.Keywords;
+import com.jaiva.tokenizer.tokens.TAtomicValue;
+import com.jaiva.tokenizer.tokens.TSymbol;
 import com.jaiva.tokenizer.tokens.specific.*;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
@@ -118,8 +120,7 @@ public class Interpreter {
      * @return Returns true if the token is a variable token, false otherwise.
      */
     public static boolean isVariableToken(Object t) {
-        return t instanceof TUnknownVar || t instanceof TVarReassign || t instanceof TVarRef
-                || t instanceof  TArrayVar || t instanceof TFuncCall || t instanceof TStatement || t instanceof TFunction
+        return t instanceof TSymbol || t instanceof TVarReassign || t instanceof TAtomicValue
                 || Primitives.isPrimitive(t);
     }
 
@@ -192,11 +193,11 @@ public class Interpreter {
                 freezeIfScopeConfig(var, scope);
                 scope.vfs.put(tStringVar.name, var);
             }
-            case TUnknownVar tUnknownVar -> {
-                Object something = Primitives.toPrimitive(tUnknownVar.value, false, config, scope);
+            case TUnknownScalar tUnknownScalar -> {
+                Object something = Primitives.toPrimitive(tUnknownScalar.value, false, config, scope);
                 Symbol var;
                 if (something instanceof TThrowError) {
-                    throwIfGlobalContext(scope, something, tUnknownVar.lineNumber);
+                    throwIfGlobalContext(scope, something, tUnknownScalar.lineNumber);
                 }
                 if (something instanceof BaseFunction)
                     // this assigns
@@ -207,7 +208,7 @@ public class Interpreter {
                                     : new ArrayList<>(Collections.singletonList(something)),
                             false);
                 freezeIfScopeConfig(var, scope);
-                scope.vfs.put(tUnknownVar.name, var);
+                scope.vfs.put(tUnknownScalar.name, var);
             }
             case TArrayVar tArrayVar -> {
                 ArrayList<Object> arr = new ArrayList<>();
@@ -404,7 +405,7 @@ public class Interpreter {
                 // while loop
             } else if (token instanceof TIfStatement ifStatement && !config.importVfs) {
                 // if statement handling below
-                if (!(ifStatement.condition instanceof TStatement))
+                if (!(ifStatement.condition instanceof TExpression))
                     throw new WtfAreYouDoingException(scope,
                             "Okay well idk how i will check for true in " + ifStatement,
                             token.lineNumber);
@@ -423,7 +424,7 @@ public class Interpreter {
                     boolean runElseBlock = true;
                     for (Object e : ifStatement.elseIfs) {
                         TIfStatement elseIf = (TIfStatement) e;
-                        if (!(elseIf.condition instanceof TStatement))
+                        if (!(elseIf.condition instanceof TExpression))
                             throw new WtfAreYouDoingException(scope,
                                     "Okay well idk how i will check for true in " + elseIf, token.lineNumber);
                         Object cond2 = Primitives.setCondition(elseIf, config, scope);
@@ -518,7 +519,7 @@ public class Interpreter {
 
                 scope.vfs.remove(v.name);
                 // for loop
-            } else if (token instanceof TTryCatchStatement throwError && !config.importVfs) {
+            } else if (token instanceof TTryCatch throwError && !config.importVfs) {
 
                 Vfs errorVfs = ((Vfs) scope.vfs.clone());
                 errorVfs.entrySet().removeIf(vf -> !vf.getKey().contains("error"));

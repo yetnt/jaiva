@@ -15,7 +15,7 @@ import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.TArrayVar;
 import com.jaiva.tokenizer.tokens.specific.TDocsComment;
 import com.jaiva.tokenizer.tokens.specific.TFunction;
-import com.jaiva.tokenizer.tokens.specific.TUnknownVar;
+import com.jaiva.tokenizer.tokens.specific.TUnknownScalar;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.utils.*;
@@ -375,7 +375,7 @@ public class Main {
                                 tks.remove(t);
                                 continue;
                             }
-                            if (comment == null || (!(l instanceof TArrayVar) && !(l instanceof TUnknownVar)
+                            if (comment == null || (!(l instanceof TArrayVar) && !(l instanceof TUnknownScalar)
                                     && !(l instanceof TFunction)))
                                 continue;
                             JDoc doc = new JDoc(lineNum, comment.trim());
@@ -403,7 +403,7 @@ public class Main {
                     if (returnVfs && !t.exportSymbol) {
                         // dont do anythin.
                     } else if (comment != null
-                            && ((t instanceof TArrayVar) || (t instanceof TUnknownVar)
+                            && ((t instanceof TArrayVar) || (t instanceof TUnknownScalar)
                             || (t instanceof TFunction))) {
 
                         JDoc doc = new JDoc(lineNum, comment.trim());

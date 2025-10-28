@@ -78,7 +78,7 @@ public class IOFunctions extends BaseLibrary {
                 TokenDefault token = ((Token<?>) o).value();
                 // Only TokenDefault classes have the .toToken() method, but TokenDefualt itself
                 // doesnt, so we kinda need to check for every possible case unfortunately.
-                Object input = token instanceof TStatement || token instanceof TVarRef || token instanceof TFuncCall
+                Object input = token instanceof TExpression || token instanceof TVarRef || token instanceof TFuncCall
                         ? o
                         : token;
                 Object value = Interpreter.handleVariables(input, config, scope);

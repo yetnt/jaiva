@@ -17,7 +17,7 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.TConfig;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
-import com.jaiva.tokenizer.tokens.specific.TStatement;
+import com.jaiva.tokenizer.tokens.specific.TExpression;
 import com.jaiva.tokenizer.tokens.specific.TVarRef;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.Tokenizer;
@@ -312,7 +312,7 @@ public class REPL {
                     if (tokens.size() == 1) {
                         TokenDefault token = ((Token<?>) tokens.get(0)).value();
                         if (Interpreter.isVariableToken(token)) {
-                            boolean isReturnTokenClass = token instanceof TStatement || token instanceof TVarRef
+                            boolean isReturnTokenClass = token instanceof TExpression || token instanceof TVarRef
                                     || token instanceof TFuncCall;
                             Object input = isReturnTokenClass
                                     ? ((Token<?>) tokens.getFirst())

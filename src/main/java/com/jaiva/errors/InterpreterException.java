@@ -13,7 +13,7 @@ import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 import com.jaiva.tokenizer.tokens.specific.TFunction;
 import com.jaiva.tokenizer.tokens.specific.TIfStatement;
-import com.jaiva.tokenizer.tokens.specific.TStatement;
+import com.jaiva.tokenizer.tokens.specific.TExpression;
 import com.jaiva.tokenizer.tokens.specific.TThrowError;
 import com.jaiva.tokenizer.tokens.specific.TVarReassign;
 import com.jaiva.tokenizer.tokens.specific.TVarRef;
@@ -242,10 +242,10 @@ public class InterpreterException extends JaivaException {
     }
 
     /**
-     * Exception to throw when a {@link TStatement} could not be resolved to a
+     * Exception to throw when a {@link TExpression} could not be resolved to a
      * meaningful value.
      */
-    public static class TStatementResolutionException extends InterpreterException {
+    public static class TExpressionResolutionException extends InterpreterException {
         private static final long serialVersionUID = 1L;
 
         /**
@@ -257,8 +257,8 @@ public class InterpreterException extends JaivaException {
          * @param side      "lhs" or "rhs"
          * @param incorrect The .toString() of the Object we received.
          */
-        public TStatementResolutionException(Scope ct, TStatement s, String side,
-                                             String incorrect) {
+        public TExpressionResolutionException(Scope ct, TExpression s, String side,
+                                              String incorrect) {
             super(ct, s.lineNumber,
                     incorrect + " (the " + side + ") in (" + s.statement + ") is not allowed in" +
                             (s.op.equals("'") || s.op.equals("||") || s.op.equals("&&") ? " a logical"
@@ -268,16 +268,16 @@ public class InterpreterException extends JaivaException {
 
         /**
          * Constrcutor for when when some construct (like an {@link TIfStatement} or
-         * {@link TWhileLoop}) expected the input {@link TStatement} to resolve to
+         * {@link TWhileLoop}) expected the input {@link TExpression} to resolve to
          * something like a boolean but it resolved to something else.
          * 
          * @param outer    The construct's token which triggered the error.
-         * @param s        The {@link TStatement} in question.
+         * @param s        The {@link TExpression} in question.
          * @param expected What it expected (in string form)
          * @param received What it received (in string form)
          */
-        public TStatementResolutionException(Scope ct, TokenDefault outer, TStatement s,
-                                             String expected, String received) {
+        public TExpressionResolutionException(Scope ct, TokenDefault outer, TExpression s,
+                                              String expected, String received) {
             super(ct, s.lineNumber,
                     "i expected (" + s.statement + ") to resolve to a " + expected
                             + ". (I'm pretty sure a " + outer.name
@@ -409,7 +409,7 @@ public class InterpreterException extends JaivaException {
          * 
          * @param st The TStatement.
          */
-        public StringCalcException(Scope ct, TStatement st) {
+        public StringCalcException(Scope ct, TExpression st) {
             super(ct, st.lineNumber,
                     st.statement + "A statement contains invalid string operations. Not telling u what tho lolol.");
         }
@@ -421,7 +421,7 @@ public class InterpreterException extends JaivaException {
          * @param s The TStatement.
          * @param e The Exception that got caught.
          */
-        public StringCalcException(Scope ct, TStatement s, Exception e) {
+        public StringCalcException(Scope ct, TExpression s, Exception e) {
             super(ct, s.lineNumber,
                     e instanceof StringIndexOutOfBoundsException
                             ? "Bro, whatever you did, it's out of the string's bounbds. fix it pls 🙏"

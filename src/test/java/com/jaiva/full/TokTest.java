@@ -190,10 +190,10 @@ public class TokTest {
                 Assertions.assertEquals(LINE_NUMBER, call4.lineNumber, "Last call, is not on line 14");
                 Assertions.assertEquals(1, call4.args.size(),
                         "Last call, has more or less args than 1");
-                Assertions.assertInstanceOf(TStatement.class,
-                        (TStatement) ((Token) call4.args.getFirst()).value(),
+                Assertions.assertInstanceOf(TExpression.class,
+                        (TExpression) ((Token) call4.args.getFirst()).value(),
                         "Last call's arguments is not a TStatement.");
-                TStatement lastCallStatement = (TStatement) ((Token) call4.args.getFirst()).value();
+                TExpression lastCallStatement = (TExpression) ((Token) call4.args.getFirst()).value();
                 Assertions.assertEquals(LINE_NUMBER, lastCallStatement.lineNumber,
                         "Last call's TStatement is not on line 14");
                 Assertions.assertEquals("!=", lastCallStatement.op,
@@ -215,10 +215,10 @@ public class TokTest {
                  */
                 Assertions.assertEquals(LINE_NUMBER, call3.lineNumber, "3rd call, is not on line 14");
                 Assertions.assertEquals(1, call3.args.size(), "3rd call, has more or less args than 1");
-                Assertions.assertInstanceOf(TStatement.class,
-                        (TStatement) ((Token) call3.args.getFirst()).value(),
+                Assertions.assertInstanceOf(TExpression.class,
+                        (TExpression) ((Token) call3.args.getFirst()).value(),
                         "3rd call's arguments is not a TStatement.");
-                TStatement call3Statement = (TStatement) ((Token) call3.args.getFirst()).value();
+                TExpression call3Statement = (TExpression) ((Token) call3.args.getFirst()).value();
                 Assertions.assertEquals(LINE_NUMBER,
                         call3Statement.lineNumber,
                         "3rd call's TStatement is not on line 14");
@@ -244,10 +244,10 @@ public class TokTest {
                  */
                 Assertions.assertEquals(LINE_NUMBER, call2.lineNumber, "2nd call, is not on line 14");
                 Assertions.assertEquals(1, call2.args.size(), "2nd call, has more or less args than 1");
-                Assertions.assertInstanceOf(TStatement.class,
-                        (TStatement) ((Token) call2.args.getFirst()).value(),
+                Assertions.assertInstanceOf(TExpression.class,
+                        (TExpression) ((Token) call2.args.getFirst()).value(),
                         "2nd call's arguments is not a TStatement.");
-                TStatement call2Statement = (TStatement) ((Token) call2.args.getFirst()).value();
+                TExpression call2Statement = (TExpression) ((Token) call2.args.getFirst()).value();
                 Assertions.assertEquals(LINE_NUMBER,
                         call2Statement.lineNumber,
                         "2nd call's TStatement is not on line 14");
@@ -276,14 +276,14 @@ public class TokTest {
                 Assertions.assertEquals(LINE_NUMBER, call1.lineNumber, "First call, is not on line 14");
                 Assertions.assertEquals(2, call1.args.size(),
                         "First call, has more or less args than 1");
-                Assertions.assertInstanceOf(TStatement.class,
-                        (TStatement) ((Token) call1.args.getFirst()).value(),
+                Assertions.assertInstanceOf(TExpression.class,
+                        (TExpression) ((Token) call1.args.getFirst()).value(),
                         "First call's 1st arg is not a TStatement.");
-                Assertions.assertInstanceOf(TStatement.class,
-                        (TStatement) ((Token) call1.args.getLast()).value(),
+                Assertions.assertInstanceOf(TExpression.class,
+                        (TExpression) ((Token) call1.args.getLast()).value(),
                         "First call's 2nd arg is not a TStatement.");
-                TStatement call1Statement1 = (TStatement) ((Token) call1.args.getFirst()).value();
-                TStatement call1Statement2 = (TStatement) ((Token) call1.args.getLast()).value();
+                TExpression call1Statement1 = (TExpression) ((Token) call1.args.getFirst()).value();
+                TExpression call1Statement2 = (TExpression) ((Token) call1.args.getLast()).value();
 
                 Assertions.assertEquals(LINE_NUMBER,
                         call1Statement1.lineNumber,
@@ -305,10 +305,10 @@ public class TokTest {
                 Assertions.assertEquals("+",
                         call1Statement2.op,
                         "First call's TStatement's (arg2) operator is not -");
-                Assertions.assertInstanceOf(TStatement.class,
+                Assertions.assertInstanceOf(TExpression.class,
                         ((Token) call1Statement2.lHandSide).value(),
                         "First call's TStatement's (arg2) left hand side is incorrect.");
-                TStatement st2lhs = (TStatement) ((Token) call1Statement2.lHandSide).value();
+                TExpression st2lhs = (TExpression) ((Token) call1Statement2.lHandSide).value();
 
                 Assertions.assertEquals(LINE_NUMBER,
                         st2lhs.lineNumber,

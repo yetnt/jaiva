@@ -1,6 +1,6 @@
 package com.jaiva.utils.cd;
 
-import com.jaiva.tokenizer.tokens.specific.TStatement;
+import com.jaiva.tokenizer.tokens.specific.TExpression;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.lang.Chars;
 import com.jaiva.lang.Keywords;
@@ -202,7 +202,7 @@ public class ContextDispatcher {
      */
     public enum To {
         /**
-         * The statement parsed should be handled by {@link TStatement}
+         * The statement parsed should be handled by {@link TExpression}
          */
         TSTATEMENT,
         /**

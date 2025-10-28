@@ -226,7 +226,7 @@ public class Tokenizer {
         assert multipleLinesOutput != null;
         switch (type) {
             case "mara if": {
-                Object obj = new TStatement(finalMOutput.lineNumber).parse(args[0]);
+                Object obj = new TExpression(finalMOutput.lineNumber).parse(args[0]);
                 if (Validate.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).value() : obj;
                 } else {
@@ -254,7 +254,7 @@ public class Tokenizer {
             case "if": {
                 String cond = args[0].replaceFirst(Pattern.quote(Character.toString(Chars.STATEMENT_OPEN)),
                         Matcher.quoteReplacement(" ")).trim();
-                Object obj = new TStatement(finalMOutput.lineNumber)
+                Object obj = new TExpression(finalMOutput.lineNumber)
                         .parse(cond);
                 if (Validate.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).value() : obj;
@@ -270,11 +270,11 @@ public class Tokenizer {
                 break;
             }
             case "zama zama": {
-                specific = new TTryCatchStatement(codeblock, finalMOutput.lineNumber).toToken();
+                specific = new TTryCatch(codeblock, finalMOutput.lineNumber).toToken();
                 return new BlockChain(specific, line.replaceFirst(Chars.BLOCK_CLOSE, "").trim());
             }
             case "chaai": {
-                TTryCatchStatement tryCatch = ((TTryCatchStatement) multipleLinesOutput.specialArg
+                TTryCatch tryCatch = ((TTryCatch) multipleLinesOutput.specialArg
                         .value());
                 tryCatch.appendCatchBlock(codeblock);
                 specific = tryCatch.toToken();
@@ -292,7 +292,7 @@ public class Tokenizer {
                             null, finalMOutput.lineNumber, config)))
                             .getFirst().value();
 
-                    Object obj = new TStatement(finalMOutput.lineNumber).parse(args[1]);
+                    Object obj = new TExpression(finalMOutput.lineNumber).parse(args[1]);
                     if (Validate.isValidBoolInput(obj)) {
                         obj = obj instanceof Token<?> ? ((Token<?>) obj).value() : obj;
                     } else {
@@ -305,7 +305,7 @@ public class Tokenizer {
                             args[2].replace(Chars.STATEMENT_CLOSE, ' ').trim(),
                             codeblock, finalMOutput.lineNumber).toToken();
                 } else {
-                    TUnknownVar<?> variable = (TUnknownVar<?>) ((ArrayList<Token<?>>) Objects.requireNonNull(readLine(
+                    TUnknownScalar<?, ?> variable = (TUnknownScalar<?, ?>) ((ArrayList<Token<?>>) Objects.requireNonNull(readLine(
                             Keywords.D_VAR + " "
                                     + args[0].replaceFirst("\\" + Chars.STATEMENT_OPEN, " ").trim()
                                     + Chars.END_LINE,
@@ -336,7 +336,7 @@ public class Tokenizer {
                 break;
             }
             case "nikhil": {
-                Object obj = new TStatement(finalMOutput.lineNumber).parse(args[0]);
+                Object obj = new TExpression(finalMOutput.lineNumber).parse(args[0]);
                 if (Validate.isValidBoolInput(obj)) {
                     obj = obj instanceof Token<?> ? ((Token<?>) obj).value() : obj;
                 } else {
@@ -440,7 +440,7 @@ public class Tokenizer {
                 throw new MalformedSyntaxException(
                         "if you're finna define a variable without a value, remove the assignment operator.",
                         lineNumber);
-            return new TUnknownVar<Object>(parts[0], new TVoidValue(lineNumber), lineNumber)
+            return new TUnknownScalar(parts[0], new TVoidValue(lineNumber), lineNumber)
                     .toToken();
         }
         parts[1] = parts[1].trim();
@@ -466,14 +466,14 @@ public class Tokenizer {
                         if (object instanceof Token<?> t) {
                             TokenDefault g = ((Token<?>) object).value();
                             if (g.name.equals("TStatement")) {
-                                return ((TStatement) g).statementType == 0
+                                return ((TExpression) g).statementType == 0
                                         ? new TBooleanVar(parts[0], object,
                                                 lineNumber).toToken()
                                         : new TNumberVar(parts[0], object, lineNumber).toToken();
                             }
                         }
 
-                        return new TUnknownVar<Object>(parts[0], object, lineNumber).toToken();
+                        return new TUnknownScalar(parts[0], object, lineNumber).toToken();
                     }
                 }
             }
@@ -678,7 +678,7 @@ public class Tokenizer {
                         if (((ArrayList<Token<?>>) something).size() == 1) {
                             for (Token<?> t : (ArrayList<Token<?>>) something) {
                                 TokenDefault g = t.value();
-                                if (comment == null || (!(g instanceof TArrayVar) && !(g instanceof TUnknownVar)
+                                if (comment == null || (!(g instanceof TArrayVar) && !(g instanceof TUnknownScalar)
                                         && !(g instanceof TFunction)))
                                     continue;
                                 JDoc doc = new JDoc(lineNumber, comment.trim());
@@ -707,7 +707,7 @@ public class Tokenizer {
                         t.tooltip = comment != null ? comment : t.tooltip;
 
                         if (comment != null
-                                && ((t instanceof TArrayVar) || (t instanceof TUnknownVar)
+                                && ((t instanceof TArrayVar) || (t instanceof TUnknownScalar)
                                 || (t instanceof TFunction))) {
 
                             JDoc doc = new JDoc(lineNumber, comment.trim());
