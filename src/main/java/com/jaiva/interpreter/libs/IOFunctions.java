@@ -135,7 +135,7 @@ public class IOFunctions extends BaseLibrary {
                     JDoc.builder()
                             .addDesc("Listens for input from the console.")
                             .addReturns("The input given from the console as a string")
-                            .addNote("Warning: This will pause all execution until input is given.")
+                            .addNote("GithubBlockQuote: This will pause all execution until input is given.")
                             .sinceVersion("1.0.0-beta.3")
                     .build()
             ));

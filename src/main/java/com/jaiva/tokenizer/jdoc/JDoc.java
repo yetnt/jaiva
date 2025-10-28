@@ -59,6 +59,52 @@ public class JDoc {
         return "";
     }
 
+    public String getDescription() {
+        for (Tag tag : tags) {
+            if (tag.tagType == TagType.GENERIC) {
+                return (String) tag.attributes.get("description");
+            }
+        }
+        return "";
+    }
+
+    public String getReturns() {
+        for (Tag tag : tags) {
+            if (tag.tagType == TagType.RETURNS) {
+                return (String) tag.attributes.get("description");
+            }
+        }
+        return "";
+    }
+
+    public String getNote() {
+        for (Tag tag : tags) {
+            if (tag.tagType == TagType.DEVNOTE) {
+                return (String) tag.attributes.get("description");
+            }
+        }
+        return "";
+    }
+
+    public ArrayList<String> getDependencies() {
+        for (Tag tag : tags) {
+            if (tag.tagType == TagType.DEPENDS) {
+                return (ArrayList<String>) tag.attributes.get("symbols");
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    public ArrayList<Tag.DParameter> getParameters() {
+        ArrayList<Tag.DParameter> params = new ArrayList<>();
+        for (Tag tag : tags) {
+            if (tag.tagType == TagType.PARAMETER) {
+                params.add((Tag.DParameter) tag);
+            }
+        }
+        return params;
+    }
+
     public JDoc(int lineNumber, String input) throws TokenizerException {
         Scanner s = new Scanner(input);
         Tag.DGeneric generics = new Tag.DGeneric("");

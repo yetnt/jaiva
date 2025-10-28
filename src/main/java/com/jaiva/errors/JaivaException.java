@@ -139,4 +139,13 @@ public class JaivaException extends Exception {
                     + ", config=" + config + ", error=" + error + "]";
         }
     }
+
+    public static class TooLittleArgsException extends JaivaException {
+        private static final long serialVersionUID = 1L;
+
+        public TooLittleArgsException(String message) {
+            super(message);
+        }
+
+    }
 }

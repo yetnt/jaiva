@@ -1,6 +1,7 @@
 package com.jaiva;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 
 import com.jaiva.errors.*;
@@ -46,7 +47,7 @@ public class Main {
      */
     public static ArrayList<String> tokenArgs = new ArrayList<>(
             Arrays.asList("-s", "-j", "--string", "--json", "-jg", "--json-with-globals", "-d", "--debug", "-is",
-                    "--include-stacks"));
+                    "--include-stacks", "--markdown", "-md"));
     /**
      * Version of the Jaiva programming language interpreter. This is a string
      * variable that holds the version number in the format
@@ -54,7 +55,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "4.1.1";
+    public static String version = "4.2.0";
     /**
      * Author, it's just me.
      */
@@ -244,6 +245,15 @@ public class Main {
                             }
                         }
                         System.out.print("]");
+                        System.exit(0);
+                        return;
+                    }
+                    case "-md", "--markdown" -> {
+                        if (args.length != 3)
+                            throw new JaivaException.TooLittleArgsException("Markdown output needs an output directory!");
+                        String out = args[2];
+                        Path outDir = Path.of(out);
+                        new ToMarkdown((ArrayList<Token<?>>) tokens, iconfig, outDir);
                         System.exit(0);
                         return;
                     }

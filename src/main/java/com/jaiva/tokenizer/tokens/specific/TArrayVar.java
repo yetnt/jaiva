@@ -3,6 +3,8 @@ package com.jaiva.tokenizer.tokens.specific;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.lang.Chars;
 import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.TExportable;
+import com.jaiva.tokenizer.tokens.TVariable;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
@@ -13,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * Represents an array variable such as {@code maak name <-| 1, 2, 3, 4!};
  */
-public class TArrayVar extends TokenDefault {
+public class TArrayVar extends TokenDefault implements TVariable {
     /**
      * The contents of the array variable.
      */

@@ -89,26 +89,34 @@ public class Tag {
     }
 
     public static class DParameter extends Tag {
+        public String varName;
+        public boolean optional;
+        public String type;
+        public String desc;
         public DParameter(String input) {
             super(TagType.PARAMETER);
             // given an input such as "par <- type docs"
             String[] parts = input.split("<-");
-            String varName = parts[0].trim();
-            boolean optional = varName.endsWith("?");
+            varName = parts[0].trim();
+            optional = varName.endsWith("?");
             if (optional) varName = varName.substring(0, varName.length() - 1);
             String trimmed = parts[1].trim();
             int firstSpace = trimmed.indexOf(' ');
-            String type = firstSpace == -1 ? trimmed : trimmed.substring(0, firstSpace).trim();
-            String docs = firstSpace == -1 ? "" : trimmed.substring(firstSpace + 1).trim();
+            type = firstSpace == -1 ? trimmed : trimmed.substring(0, firstSpace).trim();
+            desc = firstSpace == -1 ? "" : trimmed.substring(firstSpace + 1).trim();
 
             attributes.put("var", varName);
             attributes.put("type", type);
             attributes.put("optional", optional);
-            if (addToDescription(docs)) attributes.put("description", docs);
+            if (addToDescription(desc)) attributes.put("description", desc);
         }
 
         public DParameter(String varName, String type, String description, boolean optional) {
             super(TagType.PARAMETER);
+            this.varName = varName;
+            this.type = type;
+            this.optional = optional;
+            this.desc = description;
             attributes.put("var", varName);
             attributes.put("type", type);
             attributes.put("optional", optional);

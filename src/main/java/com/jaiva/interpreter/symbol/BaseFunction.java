@@ -48,23 +48,7 @@ public class BaseFunction extends Symbol {
 
     @Override
     public String toString() {
-        StringBuilder out = new StringBuilder();
-        out.append(name).append("(");
-        TFunction f = ((TFunction) token);
-        for (int i = 0; i < f.args.length;i++) {
-            String arg = f.args[i];
-            if (f.varArgs) {
-                out.append("<-").append(arg);
-                break;
-            }
-            out.append(arg).append(
-                    f.isArgOptional.get(i) ? "?" : ""
-            ).append(
-                    i != f.args.length - 1 ? ", " : ""
-            );
-        }
-        return out.append(")").toString();
-//                Arrays.asList(((TFunction) token).args).toString().replace("[", "(").replace("]", ")");
+        return ((TFunction)token).toDefinitionString();
     }
 
     @Override
