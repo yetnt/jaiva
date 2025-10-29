@@ -34,7 +34,7 @@ public class Globals extends BaseLibrary {
     public HashMap<String, Vfs> builtInGlobals = new HashMap<>();
 
     /**
-     * Constructor to create and get the globals.
+     * Constructor to createFunction and get the globals.
      * 
      * @throws InterpreterException
      */
@@ -66,7 +66,7 @@ public class Globals extends BaseLibrary {
 
 
     /**
-     * Constructor to create and get the globals with external globals too.
+     * Constructor to createFunction and get the globals with external globals too.
      *
      * @throws InterpreterException
      */
@@ -424,7 +424,7 @@ public class Globals extends BaseLibrary {
         FArrayLiteral() {
             super("arrLit", new TFunction("arrLit", new String[] { "<-elements" }, null, -1,
                     JDoc.builder()
-                            .addDesc("Creates an array literal from the given elements. This is useful if you want to create an array without declaring it to a variable. For example, `arrLit(1, 2, 3)` will return `[1, 2, 3]`. This is needed as Jaiva doesnt have square bracket syntax")
+                            .addDesc("Creates an array literal from the given elements. This is useful if you want to createFunction an array without declaring it to a variable. For example, `arrLit(1, 2, 3)` will return `[1, 2, 3]`. This is needed as Jaiva doesnt have square bracket syntax")
                             .addParam("elements", "[]", "Variable amount of elements to take in and turn into a single array.", true)
                             .addReturns("The input given, as an array")
                             .sinceVersion("3.0.0")

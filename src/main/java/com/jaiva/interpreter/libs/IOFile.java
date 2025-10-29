@@ -161,7 +161,7 @@ public class IOFile extends BaseLibrary {
                             .build()
                     ),
                     new ArrayList<>());
-            // create the array containing this current file's structure
+            // createFunction the array containing this current file's structure
             // if we're in the file.
             /*
              * [
@@ -309,7 +309,7 @@ public class IOFile extends BaseLibrary {
                     new String[] { "path", "content", "canRead?", "canWrite?", "canExecute?" }, null, -1,
                     JDoc.builder()
                             .addDesc("Creates a new file with the given properties at the given file.")
-                            .addParam("path", "string", "The path to the new file to create. Along with the file name and extension", false)
+                            .addParam("path", "string", "The path to the new file to createFunction. Along with the file name and extension", false)
                             .addParam("content", "idk", "The content the file should hold. Either a string or an array of strings.", false)
                             .addParam("canRead", "boolean", "Whether or not the file can be read. Defaults to true", true)
                             .addParam("canWrite", "boolean", "Whether the file can be written to or not. Defaults to true", true)
@@ -395,7 +395,7 @@ public class IOFile extends BaseLibrary {
                 boolean w = newFile.setWritable(canWrite);
                 boolean e = newFile.setExecutable(canExecute);
             } catch (IOException e) {
-                return false; // failed to create file
+                return false; // failed to createFunction file
             }
             return true; // file created successfully
             // return super.call(tFuncCall, params, config);

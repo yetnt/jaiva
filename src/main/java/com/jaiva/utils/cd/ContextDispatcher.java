@@ -141,7 +141,11 @@ public class ContextDispatcher {
             bits |= 0b0010; // if mistaken for 0b1001 (single brace) and its not a single brace, its a clean
                             // function call
                             // so bump brac es closed bit
-
+        // hard coded value. If it starts with the F~ and somewhere along the lines :, ifs a lambda
+        if (line.startsWith(Chars.LAMBDA_DEFINITION) && line.contains(":")) {
+            bits = ReservedCases.LAMBDA.code();
+            return;
+        }
         // hard coded value. If we find => in the outermost pair of braces, it's 100% a
         // ternary
         // Only do this if it contains both the characters and the keyword
@@ -158,7 +162,7 @@ public class ContextDispatcher {
                     count--;
                 if (count == 0) {
                     if (c == Chars.TERNARY.charAt(0) && next == Chars.TERNARY.charAt(1)) {
-                        bits = 0b10010;
+                        bits = ReservedCases.TERNARY.code();
                         break;
                     }
                 }
@@ -186,8 +190,8 @@ public class ContextDispatcher {
      */
     public String printCase() {
         return switch (bits) {
-            case 6, 7, 12, 14, 15 -> "TStatement";
-            case 0, 11, 13, 17, 18 -> "processContext";
+            case 6, 7, 12, 14, 15 -> "TExpression";
+            case 0, 11, 13, 17, 18, 19 -> "processContext";
             case 9, 8 -> "single brace";
             case 16 -> "empty string";
             default -> "ERROR";
@@ -204,7 +208,7 @@ public class ContextDispatcher {
         /**
          * The statement parsed should be handled by {@link TExpression}
          */
-        TSTATEMENT,
+        TEXPRESSION,
         /**
          * The statement parsed should be handled by {@link Token#processContext}
          */
@@ -235,8 +239,8 @@ public class ContextDispatcher {
      */
     public To getDeligation() {
         return switch (bits) {
-            case 6, 7, 12, 14, 15 -> To.TSTATEMENT;
-            case 0, 11, 13, 17, 18 -> To.PROCESS_CONTENT;
+            case 6, 7, 12, 14, 15 -> To.TEXPRESSION;
+            case 0, 11, 13, 17, 18, 19 -> To.PROCESS_CONTENT;
             case 9, 8 -> To.SINGLE_BRACE;
             case 16 -> To.EMPTY_STRING;
             default -> To.ERROR;

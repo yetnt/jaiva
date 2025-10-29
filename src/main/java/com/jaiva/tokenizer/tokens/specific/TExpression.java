@@ -1,6 +1,7 @@
 package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.errors.TokenizerException;
 import com.jaiva.tokenizer.tokens.TAtomicValue;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
@@ -12,7 +13,7 @@ import com.jaiva.utils.cd.ContextDispatcher;
  * This class usually isn't used directly, but rather as a part of another
  * instance.
  */
-public class TExpression extends TokenDefault implements TAtomicValue {
+public class TExpression extends TokenDefault<TExpression> implements TAtomicValue {
     /**
      * The left hand side of the statement.
      * <p>
@@ -52,6 +53,26 @@ public class TExpression extends TokenDefault implements TAtomicValue {
         super("TStatement", ln);
     }
 
+    /**
+     * Helper function that handles negatives in a statement. This is used to handle
+     * the case where a negative sign is used as a unary operator.
+     *
+     * @param s The statement to handle.
+     * @return The handled statement.
+     */
+    public static Object handleNegatives(Object s) {
+        if (s instanceof TExpression statement) {
+            if (statement.lHandSide == null && statement.op.equals("-")) {
+                statement.lHandSide = -1;
+                statement.op = "*";
+            }
+            // handled by the interpreter
+
+            return statement;
+        }
+        return s;
+    }
+
     @Override
     public String toJson() throws JaivaException {
         json.append("lhs", lHandSide, false);
@@ -72,7 +93,7 @@ public class TExpression extends TokenDefault implements TAtomicValue {
      *
      * @param statement The statement to parse.
      */
-    public Object parse(String statement) {
+    public Object parse(String statement) throws TokenizerException {
         statement = statement.trim();
 
         if (statement.isEmpty()) {
@@ -107,12 +128,12 @@ public class TExpression extends TokenDefault implements TAtomicValue {
             info.op = ">=";
         }
 
-        lHandSide = Token.handleNegatives(new TExpression(lineNumber).parse(statement.substring(0, info.index).trim()));
+        lHandSide = handleNegatives(new TExpression(lineNumber).parse(statement.substring(0, info.index).trim()));
         this.op = info.op.trim();
-        rHandSide = Token.handleNegatives(
+        rHandSide = handleNegatives(
                 new TExpression(lineNumber).parse(statement.substring(info.index + info.op.length()).trim()));
         statementType = info.tStatementType;
-        return ((TExpression) Token.handleNegatives(this)).toToken();
+        return ((TExpression) handleNegatives(this)).toToken();
     }
 
     /**

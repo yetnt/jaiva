@@ -29,7 +29,7 @@ public class MapValue {
     /**
      * Constructs a MapValue instance without a specified value.
      * <p>
-     * This constructor is used to create an empty MapValue.
+     * This constructor is used to createFunction an empty MapValue.
      *
      */
     public MapValue() {

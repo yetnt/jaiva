@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 /**
  * The `Tag` class represents a documentation tag with a specific type and associated attributes.
- * It provides functionality to create tags, manipulate their attributes, and handle various tag types.
+ * It provides functionality to createFunction tags, manipulate their attributes, and handle various tag types.
  */
 public class Tag {
     /**

@@ -2,11 +2,14 @@ package com.jaiva.tokenizer.tokens;
 
 import java.util.*;
 
+import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.TokenizerException.*;
 import com.jaiva.errors.TokenizerException;
 import com.jaiva.lang.Chars;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.tokens.specific.*;
+import com.jaiva.utils.Pair;
+import com.jaiva.utils.Tuple2;
 import com.jaiva.utils.cd.ContextDispatcher;
 import com.jaiva.utils.Find;
 import com.jaiva.utils.Validate;
@@ -65,26 +68,6 @@ public record Token<T extends TokenDefault>(T value) {
      */
     public static TVoidValue voidValue(int lineNumber) {
         return new TVoidValue(lineNumber);
-    }
-
-    /**
-     * Helper function that handles negatives in a statement. This is used to handle
-     * the case where a negative sign is used as a unary operator.
-     *
-     * @param s The statement to handle.
-     * @return The handled statement.
-     */
-    public static Object handleNegatives(Object s) {
-        if (s instanceof TExpression statement) {
-            if (statement.lHandSide == null && statement.op.equals("-")) {
-                statement.lHandSide = -1;
-                statement.op = "*";
-            }
-            // handled by the interpreter
-
-            return statement;
-        }
-        return s;
     }
 
     /**
@@ -151,11 +134,11 @@ public record Token<T extends TokenDefault>(T value) {
      * @param line given line.
      * @return an atomic token
      */
-    public static Object processContext(String line, int lineNumber) {
+    public static Object processContext(String line, int lineNumber) throws TokenizerException {
         line = line.trim(); // gotta trim da line fr
 
         ContextDispatcher d = new ContextDispatcher(line);
-        if (d.getDeligation() == To.TSTATEMENT) {
+        if (d.getDeligation() == To.TEXPRESSION) {
             return new TExpression(lineNumber).parse(line);
         }
         int index = Find.lastOutermostBracePair(line);
@@ -165,6 +148,35 @@ public record Token<T extends TokenDefault>(T value) {
             // parse as TStatement, if it isnt a TStatement,TStatement will route back here
             // anyways.
             return new TExpression(lineNumber).parse(line.substring(1, line.length() - 1));
+        }
+
+        if (d.bits == ReservedCases.LAMBDA.code()) {
+            // 19, It's a lambda!!
+            // f~() : "weee"!
+            String lambdaName = "__lambda__ln" + lineNumber  + "__" + UUID.randomUUID();
+            Tuple2<ArrayList<Pair<Integer>>, ArrayList<Tuple2<Integer, Character>>> bracePairs = Find.bracePairs(line);
+            int indexOfCol = line.indexOf(':');
+            if (bracePairs.first.isEmpty()) throw new TokenizerException.MalformedSyntaxException(
+                    "So like, are you going to add any parentheses to your lambda or..?", lineNumber);
+            if (bracePairs.first.getFirst().second > indexOfCol) throw new TokenizerException.MalformedSyntaxException(
+                    "How did you add a colon before the lambda's parameter list ends???", lineNumber);
+
+            // "f~  (woot, w) : woot - 1" becomes "(woot, w)"
+            String defintion = line.substring(0, indexOfCol).trim().substring(2).trim()
+                    .substring(1); // now "woot, w)"
+            defintion = defintion.substring(0, defintion.length() - 1); // now "woot, w"
+            String[] args = defintion.split(Character.toString(Chars.ARGS_SEPARATOR));
+            for (int i = 0; i < args.length; i++) args[i] = args[i].trim();
+
+
+            // "f~  (bleh) : woot - 1" becomes "woot - 1"
+            String implementation = line.substring(indexOfCol+1).trim();
+            return new TLambda(
+                    lambdaName,
+                    args,
+                    processContext(implementation, lineNumber),
+                    lineNumber
+            );
         }
 
         if (d.bits == ReservedCases.TERNARY.code()) {
@@ -191,7 +203,13 @@ public record Token<T extends TokenDefault>(T value) {
 
             ArrayList<String> args = new ArrayList<>(Token.splitByTopLevelComma(params));
             ArrayList<Object> parsedArgs = new ArrayList<>();
-            args.forEach(arg -> parsedArgs.add(processContext((String) arg, lineNumber)));
+            args.forEach(arg -> {
+                try {
+                    parsedArgs.add(processContext((String) arg, lineNumber));
+                } catch (TokenizerException e) {
+                    throw new RuntimeException(e);
+                }
+            });
             return new TFuncCall(processContext(simplifyIdentifier(name, "F~"), lineNumber), parsedArgs,
                     lineNumber, line.charAt(line.length() - 1) == '~').toToken();
         } else if (index != -1 && (line.charAt(index) == '[')) {
@@ -255,7 +273,7 @@ public record Token<T extends TokenDefault>(T value) {
         line = line.trim();
         ContextDispatcher d = new ContextDispatcher(line);
         switch (d.getDeligation()) {
-            case TSTATEMENT:
+            case TEXPRESSION:
                 return new TExpression(lineNumber).parse(line);
             case PROCESS_CONTENT:
                 return processContext(line, lineNumber);

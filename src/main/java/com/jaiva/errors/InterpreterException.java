@@ -7,7 +7,7 @@ import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.Symbol;
-import com.jaiva.interpreter.symbol.BaseFunction.DefinedFunction;
+import com.jaiva.interpreter.symbol.DefinedFunction;
 import com.jaiva.interpreter.symbol.BaseVariable.DefinedVariable;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;

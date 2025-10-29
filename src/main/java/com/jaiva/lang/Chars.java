@@ -130,6 +130,12 @@ public class Chars {
      * Represents the separator needed to separate a tag in a JDoc string.
      */
     public static String DOC_TAG = "$>";
+    /**
+     * Represents something that is a function.
+     * This is used for defining lambdas
+     */
+    public static String LAMBDA_DEFINITION = "f~";
+
 
     /**
      * The Operators class defines a set of arithmetic and boolean operators.

@@ -1,6 +1,6 @@
 # Problem
 
-TStatement : handles splitting boolean and arithmatic into `lhs` and `rhs`
+TExpression : handles splitting boolean and arithmatic into `lhs` and `rhs`
 
 processContext : processes function calls and variable calls and also array access stuff
 
@@ -32,9 +32,9 @@ Now they both call each other to make sure that we are in the correct context, b
 | imppossible case                                   | -   | 0   | 0   | 1   | 1   | ERROR            |
 | impossible                                         | -   | 0   | 1   | 0   | 0   | ERROR            |
 | impossible                                         | -   | 0   | 1   | 0   | 1   | ERROR            |
-| `1 + a`                                            | -   | 0   | 1   | 1   | 0   | TStatement       |
-| `a + func(b)`                                      | -   | 0   | 1   | 1   | 1   | TStatement       |
-| `1 + a - (a / b)`                                  | -   | 0   | 1   | 1   | 1   | TStatement       |
+| `1 + a`                                            | -   | 0   | 1   | 1   | 0   | TExpression       |
+| `a + func(b)`                                      | -   | 0   | 1   | 1   | 1   | TExpression       |
+| `1 + a - (a / b)`                                  | -   | 0   | 1   | 1   | 1   | TExpression       |
 | impossible case                                    | -   | 0   | 1   | 1   | 0   | ERROR            |
 | impossible case                                    | -   | 0   | 1   | 1   | 1   | ERROR            |
 | impoissible case                                   | -   | 1   | 0   | 0   | 0   | ERROR            |
@@ -42,25 +42,26 @@ Now they both call each other to make sure that we are in the correct context, b
 | `)`                                                | -   | 1   | 0   | 0   | 1   | ERROR            |
 | imnpossible case                                   | -   | 1   | 0   | 1   | 0   | ERROR            |
 | `func()`                                           | -   | 1   | 0   | 1   | 1   | processContext   |
-| `(1 - c) + n`                                      | -   | 1   | 1   | 0   | 0   | TStatement       |
+| `(1 - c) + n`                                      | -   | 1   | 1   | 0   | 0   | TExpression       |
 | `func(a + b)`                                      | -   | 1   | 1   | 0   | 1   | processContext   |
 | `func(a + (b - a))`                                | -   | 1   | 1   | 0   | 1   | processContext   |
 | `func(func(a - b))`                                | -   | 1   | 1   | 0   | 1   | processContext   |
 | `func(func(a) \| b)`                               | -   | 1   | 1   | 0   | 1   | processContext   |
 | `func((1 > 1) \| func(10))`                        | -   | 1   | 1   | 0   | 1   | processContext   |
-| `func(a) + b`                                      | -   | 1   | 1   | 1   | 0   | TStatement       |
-| `func(q) - a`                                      | -   | 1   | 1   | 1   | 0   | TStatement       |
-| `func(func(b)) - a`                                | -   | 1   | 1   | 1   | 0   | TStatement       |
-| `func(a + func(c)) + v`                            | -   | 1   | 1   | 1   | 0   | TStatement       |
-| `(1 > 1) \| func(10)`                              | -   | 1   | 1   | 1   | 1   | TStatement       |
-| `func(2) > func(4)`                                | -   | 1   | 1   | 1   | 1   | TStatement       |
+| `func(a) + b`                                      | -   | 1   | 1   | 1   | 0   | TExpression       |
+| `func(q) - a`                                      | -   | 1   | 1   | 1   | 0   | TExpression       |
+| `func(func(b)) - a`                                | -   | 1   | 1   | 1   | 0   | TExpression       |
+| `func(a + func(c)) + v`                            | -   | 1   | 1   | 1   | 0   | TExpression       |
+| `(1 > 1) \| func(10)`                              | -   | 1   | 1   | 1   | 1   | TExpression       |
+| `func(2) > func(4)`                                | -   | 1   | 1   | 1   | 1   | TExpression       |
 | ``                                                 | 1   | 0   | 0   | 0   | 0   | Empty String     |
 | (Reserved case for input encased in double quotes) | 1   | 0   | 0   | 0   | 1   | processContext   |
 | (Reserbed case for ternary input)                  | 1   | 0   | 0   | 1   | 0   | processContext() |
+| (Reserved case for lambda) | 1 | 0 | 0 | 1 | 1 | processContext() |
 
 The integers we get are:
 
-TStatement = 6, 7, 12, 14, 15
+TExpression = 6, 7, 12, 14, 15
 
 processContext = 0, 11, 13, 17*, 18*
 
@@ -71,7 +72,7 @@ single brace = 9, 8
 impossible cases = 1, 2, 3, 4, 5, 10, 19 - 31
 
 ---
-Reserved Cases = 17, 18 
+Reserved Cases = 17, 18, 19
 > These are hard coded and do not follow the pattern.
 > This is typically for any value higher than 16. Since 16 signifies the string is empty, we can use the other, higher, values for special cases because you cant have an empty string with the other conditions.
 ---

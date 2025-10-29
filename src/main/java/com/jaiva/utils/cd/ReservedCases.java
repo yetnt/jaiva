@@ -8,7 +8,8 @@ package com.jaiva.utils.cd;
 public enum ReservedCases {
 //    EMPTY_STRING(0b10000), // 16. Commented out because this follows the standard rules.
     DOUBLE_QUOTES(0b10001), // 17. A string that starts and ends with double quotes.
-    TERNARY(0b10010); // 18. A ternary operation.
+    TERNARY(0b10010), // 18. A ternary operation.
+    LAMBDA(0b10011); // 19. A lambda.
 
     /**
      * The code representing the reserved case.

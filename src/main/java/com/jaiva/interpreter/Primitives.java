@@ -298,8 +298,10 @@ public class Primitives {
     public static Object toPrimitive(Object token, boolean returnName,
                                      IConfig<Object> config, Scope scope)
             throws Exception {
-
-        if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TExpression tExpression) {
+        if (token instanceof TLambda lambda) {
+            return BaseFunction.createLambda(lambda.name, lambda, scope);
+        }
+        else if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TExpression tExpression) {
             // If the input is a TStatement, resolve the lhs and rhs.
             Object lhs = toPrimitive(tExpression.lHandSide, false, config, scope);
             String op = tExpression.op;
@@ -427,7 +429,8 @@ public class Primitives {
 
             }
 
-        } else if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TVarRef tVarRef) {
+        }
+        else if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TVarRef tVarRef) {
             // just find the reference in the table and return whatever it is
             if (returnName) {
                 Object t = toPrimitive(tVarRef.varName, returnName, config, scope);
@@ -512,7 +515,8 @@ public class Primitives {
                 }
             }
 
-        } else if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TFuncCall tFuncCall) {
+        }
+        else if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TFuncCall tFuncCall) {
             if (returnName) {
                 Object t = toPrimitive(parseNonPrimitive(tFuncCall.functionName), returnName, config, scope);
                 if (t instanceof String)
@@ -584,7 +588,7 @@ public class Primitives {
             }
             return token;
         } else if (token instanceof TVoidValue) {
-            return (TVoidValue) token; // just return as is.
+            return token; // just return as is.
         }
         return void.class;
     }

@@ -103,7 +103,7 @@ public class Scope {
     /**
      * Constructor for Scope with parent scope and a given vfs object.
      * <p>
-     *     This is used by {@link com.jaiva.interpreter.symbol.BaseFunction} which needs to create it's own copy to inject parameters.
+     *     This is used by {@link com.jaiva.interpreter.symbol.BaseFunction} which needs to createFunction it's own copy to inject parameters.
      * </p>
      * @param newC The current scope
      * @param token The token associated

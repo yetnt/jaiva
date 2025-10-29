@@ -407,7 +407,11 @@ public class Tokenizer {
             }
 
             Token.splitByTopLevelComma(parts[1]).forEach(value -> {
-                parsedValues.add(Token.processContext(value.trim(), lineNumber));
+                try {
+                    parsedValues.add(Token.processContext(value.trim(), lineNumber));
+                } catch (TokenizerException e) {
+                    throw new RuntimeException(e);
+                }
             });
             return new TArrayVar(parts[0], parsedValues, lineNumber).toToken();
 

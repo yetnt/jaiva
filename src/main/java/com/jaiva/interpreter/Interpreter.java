@@ -53,7 +53,7 @@ public class Interpreter {
         /**
          * The constructor for the ThrowIfGlobalContext class.
          * <p>
-         * This is used to create a new instance of the class with the given object and
+         * This is used to createFunction a new instance of the class with the given object and
          * line number.
          *
          * @param cObject    The object which caused the interuption.
@@ -231,8 +231,10 @@ public class Interpreter {
                 scope.vfs.put(tArrayVar.name, var);
             }
             case TFunction function -> {
+                if (function instanceof TLambda)
+                    return Primitives.toPrimitive(t, false, config, scope);
                 String name = function.name.replace("F~", "");
-                BaseFunction func = BaseFunction.create(name, function);
+                BaseFunction func = BaseFunction.createFunction(name, function);
                 freezeIfScopeConfig(func, scope);
                 scope.vfs.put(name, func);
             }
@@ -267,7 +269,7 @@ public class Interpreter {
 
                 // so hopefully this chanegs the instance and yeah 👍
             }
-            case null, default -> {
+            default -> {
                 // here its a primitive being parsed or recursively called
                 // or TVarRef or TFuncCall or TStatement
                 return Primitives.toPrimitive(t, false, config, scope);
@@ -368,7 +370,7 @@ public class Interpreter {
                 }
                 scope.vfs.putAll(vfsFromFile);
             } else if (isVariableToken(token)) {
-                if (token instanceof TFuncCall || token instanceof TVarRef)
+                if (token instanceof TFuncCall || token instanceof TVarRef || token instanceof TLambda)
                     handleVariables(t, config, scope);
                 else
                     handleVariables(token, config, scope);

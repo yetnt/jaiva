@@ -203,7 +203,7 @@ public class BaseVariable extends Symbol {
     /**
      * This creates a user-defined variable.
      * <p>
-     * If this variable only has a scalar value, create an arraylist with only that
+     * If this variable only has a scalar value, createFunction an arraylist with only that
      * 1 value.
      * 
      * @param name Name of the variable.

@@ -10,7 +10,7 @@ import com.jaiva.tokenizer.tokens.Token;
  */
 public class BaseLibrary {
     /**
-     * Token container to create tokens
+     * Token container to createFunction tokens
      */
     public final Token<?> container = new Token<>(null);
 
