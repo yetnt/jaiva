@@ -48,7 +48,7 @@ Simple CLI Ngl.
     > jaiva --update
     ```
 
-## Read File
+## File Shenanigans
 
 This command will attempt to find `<filePath>` and execute the jaiva code.
 
@@ -88,6 +88,13 @@ This command will attempt to find `<filePath>` and execute the jaiva code.
     > jaiva <filePath> -d
     > jaiva <filePath> --debug
     ```
+
+7. Export library as Markdown documentation
+
+   > ```sh
+   > jaiva <filePath> --markdown <outputFolder>
+   > jaiva <filePath> -md <outputFolder>
+   > ```
 
 ## Debugger Commands
 
