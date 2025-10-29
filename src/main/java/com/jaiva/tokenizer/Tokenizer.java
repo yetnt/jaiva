@@ -823,7 +823,7 @@ public class Tokenizer {
 
         // if it doesnt start with declaration nfor var, it might be a reassingment
         String[] parts = line.split(Chars.ASSIGNMENT);
-        if (parts.length > 1) {
+        if (parts.length > 1 && !parts[0].endsWith("(")) {
             String varName = parts[0].trim();
             Object varValue = Token.processContext(parts[1].trim(), lineNumber);
             if (varName.contains("]") || varName.contains("[")) {

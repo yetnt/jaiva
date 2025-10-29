@@ -2,9 +2,11 @@
 
 (Current) Version : **_4.2.0_**
 
-![isTen](./images/isTen.png)
+[//]: # ()
+[//]: # (![isTen]&#40;./images/isTen.png&#41;)
 
-![screenshot of the testType.jiv program](./images/testType.png)
+[//]: # ()
+[//]: # (![screenshot of the testType.jiv program]&#40;./images/testType.png&#41;)
 
 <!-- ![sc](./images/game.png) -->
 
@@ -21,7 +23,7 @@ For a list of global variables and functions, see [Globals.md](./Globals.md)
 
 Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
 
-## <center>Prerquisuiesdsfb
+## Prerquisuiesdsfb
 
 1. **Get and Install (at least) Java 21**
    yeah this isn't a good start 💀 but this shit is amde in java so ye man.
@@ -33,7 +35,7 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
 3. **CLI**
    The basic command to run your file is `jaiva <filePath>` but [CLI.md](./CLI.md) exists.
 
-## <center>Index
+## Index
 
 -   **[Jaiva!](#jaiva)**
     -   **[Prerequisites](#prerequisites)**
@@ -65,6 +67,7 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
             -   [Higher-Order Functions](#higher-order-functions)
             -   [Optional Arguments](#optional-arguments)
             - [Variadic Arguments](#variadic-arguments)
+        - _[Lambdas](#lambdas)_ 
     -   **[If Statements](#if-statements)**
         -   _[Basic If](#basic-if)_
         -   _[mara (else)](#mara-else)_
@@ -81,7 +84,7 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
     -   **[Scopes](#scopes)**
     -   **[Tsea (Import) and Exporting Files](#tsea-import-and-exporting-files)**
 
-## <center>Syntax
+## Syntax
 
 It's simple really, to start off with:
 
@@ -368,7 +371,7 @@ infinity()()()()()()()()()()()()()()()()()()()()()()! @ Still returns itself.
 
 Jaiva's Interpreter however will take a while to resolve this mess of code when the chaining gets absurdly long. But if you give it time it will work.
 
-## <center>Keywords
+## Keywords
 
 Alot of the keywords refer to words from South African languages, so if you happen to know one, you've got the advantage
 here's a cheat table though
@@ -394,7 +397,7 @@ here's a cheat table though
 | idk       | -                            | This is a special keyword, as it also acts as a value. (null) | English               | [idk](#idk)                                 |
 | however   | -                            | (`else` keyword in a ternary)                                 | English               | [Ternary ifs](#ternary-ifs)                 |
 
-## <center>Variables
+## Variables
 
 Variables are [scoped](#scopes) constructs.
 
@@ -445,7 +448,7 @@ a <- "string"!
 
 You can reassign any type really. This shit aint type safe.
 
-## <center> Arrays
+##  Arrays
 
 **Arrays are 0-indexed. This isn't Lua afterall**
 
@@ -470,7 +473,7 @@ maak a <-| 10, 23, 984!
 khuluma(a~)! @ returns 3
 ```
 
-## <center>Functions
+## Functions
 
 Functions are [scoped](#scopes) constructs.
 
@@ -594,8 +597,39 @@ function()! @ prints an empty array
 maak a <- 10!
 function(10, 20, "string", aowa, a)! @ prints [10, 20, "string", false, 10]
 ```
+### Lambdas
 
-## <center>If Statements
+Using
+
+```jaiva
+f~(<param>) : (return value)
+```
+
+where `<param>` is your basic jaiva parameter. Can be required, optional, var args, another function?? anything.
+
+and `(return value)` is an atomic value, so that's your number, string, variable, function call, another lambda. All good.
+
+Also. Yes. Creating a lambda, preserves the [Scope](#scope) it was created in.
+
+e.g.
+
+```jaiva
+maak add <- f~(a) : f~(b) : a + b!
+
+khuluma(add(1)(4))! @ prints 5
+```
+
+And now functions which take in simple functions, can be reduced to a single line
+
+e.g.
+
+```jaiva
+a_reduce(arr, f~(a, b) : a << b)!
+```
+
+Lambdas, are strictly single line and have to return something within that single line (Without the `khutla` keyword)
+
+## If Statements
 
 For if statements, `if` is the keyword, and `mara` is the else statement.
 
@@ -710,7 +744,7 @@ Here we define a function `clamp` which will... clamp, what'd you think, the giv
 > [!WARNING]
 > You cant have ternaries on new lines, they hve to be in the sam eline if you chain them unfortunately
 
-## <center>Loops
+## Loops
 
 ### Nikhil loops (while loops)
 
@@ -799,7 +833,7 @@ colonize i <- 0 | i <= 10 | + ->
 <~
 ```
 
-## <center>Error handling
+## Error handling
 
 Jaiva has error handling and throwing! This is done using 2 constructs.
 
@@ -875,7 +909,7 @@ zama zama ->
 > Just keep this in mind
 > This is defined in [Interpreter.java on line 499](/src/main/java/com/jaiva/interpreter/Interpreter.java)
 
-## <center>Scopes
+## Scopes
 
 Everytime you open a block, you create a new scope. This means that any variables or functions you define in that block are not accessible outside of that block.
 
@@ -898,7 +932,7 @@ if (a = 10) ->
 addition(10, 20)! @ Will also error, because addition() is not defined in this scope.
 ```
 
-## <center>Tsea (import) and exporting files
+## Tsea (import) and exporting files
 
 Importing isn't that bad. Here's a simple import.
 
