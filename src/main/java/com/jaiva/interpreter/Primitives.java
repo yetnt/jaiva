@@ -527,34 +527,34 @@ public class Primitives {
                             scope)
                     : tFuncCall.functionName, false, config, scope);
 
-            if (!(funcName instanceof String name))
-                throw new WeirdAhhFunctionException(scope, tFuncCall);
-            BaseFunction f = null;
-            if (!(tFuncCall.functionName instanceof String)) {
-                Object j = toPrimitive(tFuncCall.functionName, false, config, scope);
-                if (j instanceof BaseFunction) f = (BaseFunction) j;
-                else return j;
-            }
-            MapValue v = scope.vfs.get(name);
-            if (v == null)
-                throw new UnknownVariableException(scope, tFuncCall);
-
             BaseFunction function = null;
+            MapValue v = null;
 
-            if (tFuncCall.functionName instanceof Token) {
-                Object t = toPrimitive(parseNonPrimitive(tFuncCall.functionName),
-                        returnName, config, scope);
-                if (t instanceof BaseFunction) function = (BaseFunction) (t);
-                else if (t instanceof String) return t;
+            if (funcName instanceof Lambda lambda) {
+                function = lambda;
+            } else {
+                if (!(funcName instanceof String name))
+                    throw new WeirdAhhFunctionException(scope, tFuncCall);
+                if (!(tFuncCall.functionName instanceof String)) {
+                    Object j = toPrimitive(tFuncCall.functionName, false, config, scope);
+                    if (j instanceof BaseFunction) function = (BaseFunction) j;
+                    else return j;
+                }
+                v = scope.vfs.get(name);
+                if (v == null)
+                    throw new UnknownVariableException(scope, tFuncCall);
+
+                if (tFuncCall.functionName instanceof Token) {
+                    Object t = toPrimitive(parseNonPrimitive(tFuncCall.functionName),
+                            returnName, config, scope);
+                    if (t instanceof BaseFunction) function = (BaseFunction) (t);
+                    else if (t instanceof String) return t;
+
+                }
 
             }
-// This was above the above if, along with the bottom function reassignment
-// commenting out this code fixed having arr[10](). Where since arr is an array, even if index 10 had a function the bottom if gets called.
-//            if (!(v.getValue() instanceof BaseFunction)) {
-//                throw new WtfAreYouDoingException(scope, v.getValue(), BaseFunction.class, tFuncCall.lineNumber);
-//            }
 
-            function = function != null ? function : f == null ? (BaseFunction) v.getValue() : f;
+            function = function != null ? function : (BaseFunction) v.getValue();
 
             checkSymbolAnnotation(function, tFuncCall.lineNumber, scope);
 

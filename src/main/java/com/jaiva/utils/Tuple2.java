@@ -27,6 +27,14 @@ public class Tuple2<A, B> {
         this.second = second;
     }
 
+    public A getFirst() {
+        return first;
+    }
+
+    public B getSecond() {
+        return second;
+    }
+
     /**
      * Returns a string representation of this Tuple2 object.
      * The string includes the values of the first and second elements.

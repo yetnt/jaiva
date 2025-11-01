@@ -73,11 +73,14 @@ public class BaseFunction extends Symbol {
         return Token.voidValue(tFuncCall.lineNumber);
     }
 
+
     /**
-     * Check the parameters
-     * 
-     * @param tFuncCall the function call
-     * @throws InterpreterException when args are wrong.
+     * Checks if the parameters passed to a function call match the function's definition.
+     * This method validates the number of arguments and their optionality.
+     *
+     * @param tFuncCall The function call token containing the arguments.
+     * @param scope The current scope for error reporting.
+     * @throws InterpreterException If there's a mismatch in parameters (e.g., missing required arguments).
      */
     protected void checkParams(TFuncCall tFuncCall, Scope scope) throws InterpreterException {
         TFunction tFunc = (TFunction) this.token;
