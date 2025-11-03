@@ -1,0 +1,6 @@
+tsea "jaiva/arrays"!
+tsea "jaiva/debug"!
+
+maak g <- (f~(msg) : msg + "const")("yolo")!
+
+d_emit( g, a_map(reservedKeywords, f~(input) : input[0]), reservedKeywords)!

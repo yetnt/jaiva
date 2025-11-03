@@ -21,6 +21,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import static com.jaiva.full.Files.BUNDLER_JIV;
+
 class CustomLib extends BaseLibrary {
     public CustomLib(IConfig<Object> config) {
         super(LibraryType.LIB, "customPath");
@@ -50,19 +52,7 @@ class CustomLib extends BaseLibrary {
 }
 
 public class BundlerTest {
-    private static final Path BUNDLER_JIV;
 
-    static {
-        try {
-            BUNDLER_JIV = Path.of(
-                    Objects.requireNonNull(
-                                    IntTest.class.getClassLoader()
-                                            .getResource("bundler.jiv"))
-                            .toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
     @Test
     void test1() {
         ArrayList<Token<?>> tokens = new ArrayList<>();

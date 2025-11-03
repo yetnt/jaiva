@@ -1,10 +1,7 @@
 package com.jaiva.full;
 
-import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
 
 import com.jaiva.tokenizer.tokens.specific.*;
 import org.junit.jupiter.api.Assertions;
@@ -13,42 +10,9 @@ import org.junit.jupiter.api.Test;
 import com.jaiva.Main;
 import com.jaiva.tokenizer.tokens.Token;
 
+import static com.jaiva.full.Files.*;
+
 public class TokTest {
-    private static final Path FILE_JIV;
-    private static final Path FILE2_JIV;
-    private static final Path IMPORT_JIV;
-    private static final Path COMMENTS_JIV;
-
-    static {
-        try {
-
-            FILE_JIV = Path.of(
-                    Objects.requireNonNull(
-                            TokTest.class.getClassLoader()
-                                    .getResource("file.jiv"))
-                            .toURI());
-
-            FILE2_JIV = Path.of(
-                    Objects.requireNonNull(
-                            TokTest.class.getClassLoader()
-                                    .getResource("file2.jiv"))
-                            .toURI());
-
-            IMPORT_JIV = Path.of(
-                    Objects.requireNonNull(
-                            TokTest.class.getClassLoader()
-                                    .getResource("import.jiv"))
-                            .toURI());
-
-            COMMENTS_JIV = Path.of(
-                    Objects.requireNonNull(
-                                    TokTest.class.getClassLoader()
-                                            .getResource("comments.jiv"))
-                            .toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Test
     void fileJiv() {
@@ -344,8 +308,8 @@ public class TokTest {
             // or invoke the required things so we can customize the environment.
             ArrayList<Token<?>> tokens = Main.parseTokens(IMPORT_JIV.toString(), false);
 
-            // check that there are exactly 5 outer tokens.
-            Assertions.assertEquals(4, tokens.size(), "Token size is NOT exactly 4.");
+            // check that there are exactly 3 outer tokens.
+            Assertions.assertEquals(3, tokens.size(), "Token size is NOT exactly 3.");
 
             // first 2 tokens should all be TImport tokens
             tokens.subList(0, 2)
@@ -368,23 +332,28 @@ public class TokTest {
             Assertions.assertEquals(new ArrayList<>(), import2.symbols,
                     "Third import imports symbols when it should be a wildcard import.");
 
+            // Last token should be a TFuncCall
+            Assertions.assertInstanceOf(TFuncCall.class, tokens.getLast().value(),
+                    "Last toke is not a TFuncCall");
+            // on line 7
+            TFuncCall tFuncCall = (TFuncCall) tokens.getLast().value();
+            Assertions.assertEquals(4, tFuncCall.lineNumber, "TFuncCall is not on line 4");
+            Assertions.assertEquals("d_emit", tFuncCall.functionName, "Function call is not d_emit");
+
             ArrayList<String> values = new ArrayList<>(
                     Arrays.asList("m_pi", "m_sqrt"));
-            // The 4th token, should be a TArrayVar with 4 elements (All TVarRef)
-            Assertions.assertInstanceOf(TArrayVar.class, tokens.get(2).value(),
-                    "4th token is not a TArrayVar");
-            TArrayVar arr = (TArrayVar) tokens.get(2).value();
-            // assert on same line
-            Assertions.assertEquals(4, arr.lineNumber);
+            ArrayList<Object> arr = tFuncCall.args;
+
+
             // Check against each value in the array.
-            Assertions.assertEquals(values.size(), arr.contents.size(), "Array content is not on line 4");
+            Assertions.assertEquals(values.size(), arr.size(), "Array content does not match expected value of 2");
             for (int i = 0; i < values.size(); i++) {
-                Object v = arr.contents.get(i);
+                Object v = arr.get(i);
                 Assertions.assertInstanceOf(TVarRef.class, ((Token<?>) v).value(),
                         v + " is not a TVarRef");
                 TVarRef varRef = (TVarRef) ((Token<?>) v).value();
                 Assertions.assertEquals(4, varRef.lineNumber,
-                        "TVarRef in arr array (" + varRef.varName + ") is not on line 5.");
+                        "TVarRef in arr array (" + varRef.varName + ") is not on line 4.");
                 Assertions.assertEquals(values.get(i), varRef.varName,
                         "TVarRef in arr array (" + varRef.varName
                                 + ") does not refer to it's expected value "
@@ -396,14 +365,6 @@ public class TokTest {
                         "TVarRef in arr array (" + varRef.varName
                                 + ") has a length boolea when it shouldnt");
             }
-
-            // Last token should be a TFuncCall
-            Assertions.assertInstanceOf(TFuncCall.class, tokens.getLast().value(),
-                    "Last toke is not a TFuncCall");
-            // on line 7
-            TFuncCall tFuncCall = (TFuncCall) tokens.getLast().value();
-            Assertions.assertEquals(6, tFuncCall.lineNumber, "TFuncCall is not on line 7");
-            Assertions.assertEquals("d_emit", tFuncCall.functionName, "Function call is not d_emit");
 
         } catch (Exception e) {
             // catch any other exception that we realistically don't want to catch
