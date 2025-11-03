@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.jaiva.interpreter.Vfs;
+import com.jaiva.interpreter.libs.time.Time;
+import com.jaiva.interpreter.libs.time.TimeZone;
 import com.jaiva.interpreter.symbol.SymbolConfig;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.Main;
@@ -33,13 +35,7 @@ public class Globals extends BaseLibrary {
 
     public HashMap<String, Vfs> builtInGlobals = new HashMap<>();
 
-    /**
-     * Constructor to createFunction and get the globals.
-     * 
-     * @throws InterpreterException
-     */
-    public Globals(IConfig<Object> config) throws InterpreterException {
-        super(LibraryType.MAIN);
+    public void putGlobals(IConfig<Object> config) throws InterpreterException {
         vfs.put("getVarClass", new FGetVarClass());
         vfs.put("reservedKeywords", new VReservedKeywords());
         vfs.put("version", new VJaivaVersion());
@@ -51,6 +47,9 @@ public class Globals extends BaseLibrary {
         vfs.put("scope", new FScope());
         vfs.putAll(new IOFunctions(config).vfs);
 
+        if (!config.destroyLibraryCircularDependancy)
+            builtInGlobals.putAll(new LibraryLoader().loadAllLibraries(new IConfig<Object>(true, null)));
+
         Types c = new Types();
         builtInGlobals.put(c.path, c.vfs);
         Math m = new Math();
@@ -59,9 +58,20 @@ public class Globals extends BaseLibrary {
         builtInGlobals.put(f.path, f.vfs);
         Debug d = new Debug(config);
         builtInGlobals.put(d.path, d.vfs);
+        Time t = new Time(config);
+        builtInGlobals.put(t.path, t.vfs);
+        TimeZone tz = new TimeZone();
+        builtInGlobals.put(tz.path, tz.vfs);
+    }
 
-        if (!config.destroyLibraryCircularDependancy)
-            builtInGlobals.putAll(new LibraryLoader().loadAllLibraries(new IConfig<Object>(true, null)));
+    /**
+     * Constructor to createFunction and get the globals.
+     * 
+     * @throws InterpreterException
+     */
+    public Globals(IConfig<Object> config) throws InterpreterException {
+        super(LibraryType.MAIN);
+        putGlobals(config);
     }
 
 
@@ -72,28 +82,8 @@ public class Globals extends BaseLibrary {
      */
     public Globals(IConfig<Object> config, List<Class<? extends BaseLibrary>> external) throws InterpreterException {
         super(LibraryType.MAIN);
-        vfs.put("getVarClass", new FGetVarClass());
-        vfs.put("reservedKeywords", new VReservedKeywords());
-        vfs.put("version", new VJaivaVersion());
-        vfs.put("flat", new FFlat());
-        vfs.put("sleep", new FSleep());
-        vfs.put("typeOf", new FTypeOf());
-        vfs.put("arrLit", new FArrayLiteral());
-        vfs.put("neg", new FNeg());
-        vfs.put("scope", new FScope());
-        vfs.putAll(new IOFunctions(config).vfs);
 
-        if (!config.destroyLibraryCircularDependancy)
-            builtInGlobals.putAll(new LibraryLoader().loadAllLibraries(new IConfig<Object>(true, null)));
-
-        Types c = new Types();
-        builtInGlobals.put(c.path, c.vfs);
-        Math m = new Math();
-        builtInGlobals.put(m.path, m.vfs);
-        IOFile f = new IOFile(config);
-        builtInGlobals.put(f.path, f.vfs);
-        Debug d = new Debug(config);
-        builtInGlobals.put(d.path, d.vfs);
+        putGlobals(config);
 
         for (Class<? extends BaseLibrary> ext : external) {
             try {

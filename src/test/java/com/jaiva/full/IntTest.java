@@ -4,7 +4,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,33 +18,9 @@ import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.tokenizer.tokens.Token;
 
+import static com.jaiva.full.Files.*;
+
 public class IntTest {
-    private static final Path FILE_JIV;
-    private static final Path FILE2_JIV;
-    private static final Path IMPORT_JIV;
-
-    static {
-        try {
-            FILE_JIV = Path.of(
-                    Objects.requireNonNull(
-                            IntTest.class.getClassLoader()
-                                    .getResource("file.jiv"))
-                            .toURI());
-
-            FILE2_JIV = Path.of(
-                    Objects.requireNonNull(
-                            IntTest.class.getClassLoader()
-                                    .getResource("file2.jiv"))
-                            .toURI());
-            IMPORT_JIV = Path.of(
-                    Objects.requireNonNull(
-                            IntTest.class.getClassLoader()
-                                    .getResource("import.jiv"))
-                            .toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Test
     void fileJiv() {
