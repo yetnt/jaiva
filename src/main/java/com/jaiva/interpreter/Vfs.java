@@ -2,6 +2,7 @@ package com.jaiva.interpreter;
 
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.symbol.Symbol;
+import com.jaiva.tokenizer.tokens.Token;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,5 +92,15 @@ public class Vfs extends HashMap<String, MapValue> {
         });
 
         return new Vfs(vfs);
+    }
+
+    /**
+     * Converts the Vfs into a list of tokens containing every symbol's token.
+     * @return An ArrayList of tokens.
+     */
+    public ArrayList<Token<?>> toTokenList() {
+        ArrayList<Token<?>> tokens = new ArrayList<>();
+        this.forEach((s, mv) -> tokens.add(mv.getValue().token.toToken()));
+        return tokens;
     }
 }

@@ -29,19 +29,19 @@ public class ToMarkdown {
     private ArrayList<Token<?>> tokens;
     private Scanner reader = new Scanner(System.in);
 
-    public ToMarkdown(ArrayList<Token<?>> ts, IConfig<?> i, Path outputDir) throws IOException, TokenizerException.CatchAllException {
+    public ToMarkdown(ArrayList<Token<?>> ts, IConfig<?> i, Path outputDir, boolean globals) throws IOException, TokenizerException.CatchAllException {
         tokens = ts;
-        run(i, outputDir);
+        run(i, outputDir, globals);
     }
 
-    private void run(IConfig<?> i, Path outputDir) throws IOException, TokenizerException.CatchAllException {
+    private void run(IConfig<?> i, Path outputDir, boolean globals) throws IOException, TokenizerException.CatchAllException {
         // For each token, we need to make a markdown file. Ohhh boy.
 
         // Pre-file: Filter the arraylist to only hold Exportable Tokens.
         List<TokenDefault> exportables = (List<TokenDefault>) tokens.stream()
                 .map(Token::value)
                 .filter(t -> t instanceof TSymbol)
-                .filter(t -> t.exportSymbol)
+                .filter(t -> (globals ? globals : t.exportSymbol))
                 .toList();
 
         if (exportables.isEmpty()) {

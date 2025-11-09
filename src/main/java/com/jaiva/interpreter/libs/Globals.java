@@ -74,7 +74,6 @@ public class Globals extends BaseLibrary {
         putGlobals(config);
     }
 
-
     /**
      * Constructor to createFunction and get the globals with external globals too.
      *
@@ -117,6 +116,13 @@ public class Globals extends BaseLibrary {
             string.append(",");
         });
         return string.substring(0, string.length() - (removeTrailingComma ? 1 : 0));
+    }
+
+    public Vfs getBuiltInGlobal(String name) {
+        if (name.startsWith("jaiva/") || name.startsWith("jaiva\\")) {
+            name = name.substring(6);
+        }
+        return builtInGlobals.get(name);
     }
 
     class FScope extends BaseFunction {

@@ -7,6 +7,7 @@ import java.util.*;
 import com.jaiva.errors.*;
 import com.jaiva.errors.JaivaException.*;
 import com.jaiva.interpreter.*;
+import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.Types;
 import com.jaiva.interpreter.libs.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -177,7 +178,7 @@ public class Main {
                 }
             }
             return;
-        } else if (!args[0].contains(".")) {
+        } else if (!args[0].contains(".") && !args[0].contains("jaiva/") && !args[0].contains("jaiva\\")) {
             // this is to catch the case where the user does not provide a file name
             System.out.println("Provide a file name or a cmd flag kau.");
             System.exit(-1);
@@ -194,8 +195,10 @@ public class Main {
                 if (args[1].equals("-d") || args[1].equals("--debug"))
                     debug = true;
             }
-            ArrayList<Token<?>> tokens = parseTokens(args[0], false);
-            if (tokens.isEmpty()) {
+            ArrayList<Token<?>> tokens = new ArrayList<>();
+            if (!args[0].startsWith("jaiva/") && !args[0].startsWith("jaiva\\"))
+                tokens = parseTokens(args[0], false);
+            if (tokens.isEmpty() && (args.length > 1 && !args[1].equals("-md") && !args[1].equals("--markdown"))) {
                 System.exit(0);
                 return;
             }
@@ -209,10 +212,14 @@ public class Main {
                         break;
                     }
                     case "-d", "--debug" -> {
+                        if (args[0].contains("jaiva/") || args[0].contains("jaiva\\"))
+                            throw new JaivaException.UnknownFileException("You can't debug the built-in jaiva libs.");
                         new Debugger(iconfig, tokens, args[1].equals("-d"));
                         return;
                     }
                     case "-s", "--string" -> {
+                        if (args[0].contains("jaiva/") || args[0].contains("jaiva\\"))
+                            throw new JaivaException.UnknownFileException("You can't print tokens of the built-in jaiva libs.");
                         for (Token<?> t : tokens) {
                             System.out.println(t.toString());
                         }
@@ -220,6 +227,8 @@ public class Main {
                         return;
                     }
                     case "-j", "--json" -> {
+                        if (args[0].contains("jaiva/") || args[0].contains("jaiva\\"))
+                            throw new JaivaException.UnknownFileException("You can't print tokens of the built-in jaiva libs.");
                         System.out.println();
                         System.out.print("[");
                         for (int i = 0; i < tokens.size(); i++) {
@@ -234,6 +243,8 @@ public class Main {
                         return;
                     }
                     case "-jg", "--json-with-globals" -> {
+                        if (args[0].contains("jaiva/") || args[0].contains("jaiva\\"))
+                            throw new JaivaException.UnknownFileException("The globals (built-in) will be included with the given file's tokens automatically.");
                         System.out.println();
                         System.out.print("[");
                         System.out.print(new Globals(iconfig).returnGlobalsJSON(false));
@@ -251,9 +262,17 @@ public class Main {
                     case "-md", "--markdown" -> {
                         if (args.length != 3)
                             throw new JaivaException.TooLittleArgsException("Markdown output needs an output directory!");
+                        if (args[0].startsWith("jaiva/") || args[0].startsWith("jaiva\\")) {
+                            // The user is trying to output markdown for the built-in jaiva libs. Why not give it to them.
+                            Vfs vfs = new Globals(new IConfig<>(null)).getBuiltInGlobal(args[0]);
+                            if (vfs == null)
+                                throw new JaivaException.UnknownFileException("You can't output markdown for the built-in jaiva libs that don't exist.");
+                            tokens = vfs.toTokenList();
+                        }
                         String out = args[2];
                         Path outDir = Path.of(out);
-                        new ToMarkdown((ArrayList<Token<?>>) tokens, iconfig, outDir);
+                        new ToMarkdown((ArrayList<Token<?>>) tokens, iconfig, outDir,
+                                args[0].startsWith("jaiva/") || args[0].startsWith("jaiva\\"));
                         System.exit(0);
                         return;
                     }
