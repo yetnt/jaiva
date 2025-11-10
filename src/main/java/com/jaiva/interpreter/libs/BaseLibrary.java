@@ -88,6 +88,7 @@ public class BaseLibrary {
     public static String requireStaticPath(Class<?> clazz) {
         try {
             Field path = clazz.getDeclaredField("path");
+            path.setAccessible(true);
             int mods = path.getModifiers();
 
             if (!Modifier.isStatic(mods) || !Modifier.isPublic(mods) || path.getType() != String.class)
