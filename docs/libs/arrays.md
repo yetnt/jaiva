@@ -4,7 +4,7 @@ This library contains functions for manipulating arrays.
 
 If you ask why not just make arrays mutable, Jaiva is a functional programming language. I'm doing you a favour by already having these implemented. I could've not had arrays at all. (TLDR; I'm too lazy to implement an array index reassignment token or adjust my old tokens for that.)
 
-Unlike the other libs, this one is implemented in jaiva itself, you can find it here [arrays.jiv](../src/main/resources/lib/arrays.jiv)
+Unlike the other libs, this one is implemented in jaiva itself, you can find it here [arrays.jiv](../../src/main/resources/lib/arrays.jiv)
 
 > [!WARNING]
 > Some functions use other functions. It's best to just import the whole library instead of trying to import only the functions you need. (e.g. If you import only `a_pop` you will get an error because `a_pop` uses `a_remove` internally.). I will however, list the functions that depend on other functions.
