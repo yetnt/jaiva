@@ -1,6 +1,7 @@
 package com.jaiva.interpreter.libs;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +34,7 @@ import com.jaiva.tokenizer.tokens.specific.*;
 public class Globals extends BaseLibrary {
     // public Vfs vfs = new HashMap<>();
 
-    public HashMap<String, Vfs> builtInGlobals = new HashMap<>();
+    public HashMap<String, LibraryLike> builtInGlobals = new HashMap<>();
 
     public void putGlobals(IConfig<Object> config) throws InterpreterException {
         vfs.put("getVarClass", new FGetVarClass());
@@ -47,21 +48,14 @@ public class Globals extends BaseLibrary {
         vfs.put("scope", new FScope());
         vfs.putAll(new IOFunctions(config).vfs);
 
-        if (!config.destroyLibraryCircularDependancy)
-            builtInGlobals.putAll(new LibraryLoader().loadAllLibraries(new IConfig<Object>(true, null)));
-
-        Types c = new Types();
-        builtInGlobals.put(c.path, c.vfs);
-        Math m = new Math();
-        builtInGlobals.put(m.path, m.vfs);
-        IOFile f = new IOFile(config);
-        builtInGlobals.put(f.path, f.vfs);
-        Debug d = new Debug(config);
-        builtInGlobals.put(d.path, d.vfs);
-        Time t = new Time(config);
-        builtInGlobals.put(t.path, t.vfs);
-        TimeZone tz = new TimeZone();
-        builtInGlobals.put(tz.path, tz.vfs);
+//        if (!config.destroyLibraryCircularDependancy)
+            builtInGlobals.put("arrays", LibraryLike.of("arrays.jiv"));
+        builtInGlobals.put(Types.path, LibraryLike.of(Types.class));
+        builtInGlobals.put(Math.path, LibraryLike.of(Math.class));
+        builtInGlobals.put(IOFile.path, LibraryLike.of(IOFile.class));
+        builtInGlobals.put(Debug.path, LibraryLike.of(Debug.class));
+        builtInGlobals.put(Time.path, LibraryLike.of(Time.class));
+        builtInGlobals.put(TimeZone.path, LibraryLike.of(TimeZone.class));
     }
 
     /**
@@ -85,16 +79,8 @@ public class Globals extends BaseLibrary {
         putGlobals(config);
 
         for (Class<? extends BaseLibrary> ext : external) {
-            try {
-                Constructor<? extends BaseLibrary> constructor = ext.getDeclaredConstructor(IConfig.class);
-                constructor.setAccessible(true); // 👈 This bypasses Java's access checks
-                BaseLibrary n = constructor.newInstance(config);
-
-                builtInGlobals.put(n.path, n.vfs);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                     NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
+            String path = BaseLibrary.requireStaticPath(ext);
+            builtInGlobals.put(path, LibraryLike.of(ext));
         }
     }
 
@@ -122,7 +108,7 @@ public class Globals extends BaseLibrary {
         if (name.startsWith("jaiva/") || name.startsWith("jaiva\\")) {
             name = name.substring(6);
         }
-        return builtInGlobals.get(name);
+        return builtInGlobals.get(name).load(new IConfig<Object>(true, null));
     }
 
     class FScope extends BaseFunction {

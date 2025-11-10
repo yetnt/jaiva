@@ -16,7 +16,8 @@ import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 import com.jaiva.tokenizer.tokens.specific.TFunction;
 
 public class Debug extends BaseLibrary {
-    Debug(IConfig<Object> config) {
+    static String path = "debug";
+    public Debug(IConfig<Object> config) {
         super(LibraryType.LIB, "debug");
         vfs.put("d_emit", new FEmit(config));
         vfs.put("d_vfs", new FVfs(config));

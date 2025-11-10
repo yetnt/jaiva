@@ -42,7 +42,7 @@ public class IConfig<T extends Object> extends Config {
      * file to use in the current file. (This means it will skip tokenizing other
      * stuff and only import exported symbols.)
      */
-    public boolean importVfs = false;
+    public ImportVfs importVfs = new ImportVfs(false);
 
     /**
      * If this flag is set to true, during start up when an external library is being imported, it wont import

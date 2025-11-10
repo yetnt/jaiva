@@ -18,6 +18,7 @@ import com.jaiva.tokenizer.tokens.specific.TFunction;
  * Math functions ofc
  */
 public class Math extends BaseLibrary {
+    public static String path = "math";
     /**
      * Default Constructor
      */

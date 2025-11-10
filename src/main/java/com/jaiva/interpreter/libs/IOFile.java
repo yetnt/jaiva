@@ -20,7 +20,8 @@ import com.jaiva.tokenizer.tokens.specific.TFunction;
 import com.jaiva.tokenizer.tokens.specific.TStringVar;
 
 public class IOFile extends BaseLibrary {
-    IOFile(IConfig<Object> config) throws InterpreterException {
+    static String path = "file";
+    public IOFile(IConfig<Object> config) throws InterpreterException {
         super(LibraryType.LIB, "file");
         vfs.put("f_name", new VFileName(config));
         vfs.put("f_dir", new VDirectory(config));

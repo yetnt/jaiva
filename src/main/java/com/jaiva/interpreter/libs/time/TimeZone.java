@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 public class TimeZone extends BaseLibrary {
 
+    public static String path = "timezone";
     private static ArrayList<Pair<String>> zoneIds = mapZoneIds();
 
     public TimeZone() {

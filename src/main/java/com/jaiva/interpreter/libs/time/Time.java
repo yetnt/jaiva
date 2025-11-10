@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.TimeZone;
 
 public class Time extends BaseLibrary {
+    public static String path = "time";
     public Time(IConfig<Object> config) {
         super(LibraryType.LIB, "time");
         vfs.put("t_now", new FNow());

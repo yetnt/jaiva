@@ -24,6 +24,7 @@ import java.util.Objects;
 import static com.jaiva.full.Files.BUNDLER_JIV;
 
 class CustomLib extends BaseLibrary {
+    public static String path = "customPath";
     public CustomLib(IConfig<Object> config) {
         super(LibraryType.LIB, "customPath");
         vfs.put("echo", new FEcho());

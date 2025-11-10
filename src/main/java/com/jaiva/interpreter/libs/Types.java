@@ -40,6 +40,7 @@ import com.jaiva.tokenizer.jdoc.JDoc;
  * @see WtfAreYouDoingException
  */
 public class Types extends BaseLibrary {
+    static String path = "types";
     public Types() {
         // the import will be "jaiva/types.jiv"
         super(LibraryType.LIB, "types");
