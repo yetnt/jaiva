@@ -33,10 +33,10 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
 
 # Links
 
-To setup, see [Install.md](docs/Install.md)
-To run, see [CLI.md](docs/CLI.md)
-To learn, see [Language.md](docs/Language.md)
-For a list of variables and functions you have available, see [Libraries.md](docs/Libraries.md)
+- To setup, see [Install.md](docs/Install.md)
+- To run, see [CLI.md](docs/CLI.md)
+- To learn, see [Language.md](docs/Language.md)
+- For a list of variables and functions you have available, see [Libraries.md](docs/Libraries.md)
 
 ---
 
