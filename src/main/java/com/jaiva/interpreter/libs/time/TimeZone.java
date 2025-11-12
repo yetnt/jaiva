@@ -29,8 +29,20 @@ public class TimeZone extends BaseLibrary {
                         new ArrayList<>(zoneIds.stream().map(Pair::getSecond).toList()),
                         -1,
                         JDoc.builder()
-                                .addDesc("The complete list of timezone variable constants")
+                                .addDesc("The complete list of IANA format timezone constants.")
                                 .sinceVersion("4.2.0")
+                                .addExample("""
+                                        tsea "jaiva/timezone"!
+                                        
+                                        @ Get all timezone constants
+                                        maak list <- tz_getAll!
+                                        @ Print everything with Etc prefix
+                                        colonize item with list ->
+                                            if (item ? "Etc") ->
+                                                khuluma(item)!
+                                            <~
+                                        <~
+                                        """)
                                 .build()
                 ), new ArrayList<>(zoneIds.stream().map(Pair::getSecond).toList()));
         getAll.freeze();

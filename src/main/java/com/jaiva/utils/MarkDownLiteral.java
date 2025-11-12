@@ -18,6 +18,7 @@ public final class MarkDownLiteral {
         literal.add(input);
     }
 
+
     /**
      * Applies bold formatting to the literal.
      *
@@ -69,7 +70,7 @@ public final class MarkDownLiteral {
      */
     public MarkDownLiteral linkTo(String URL) {
         literal.addFirst("[");
-        literal.add("](\"" + URL + "\")");
+        literal.add("](" + URL + ")");
         return this;
     }
 
@@ -104,6 +105,44 @@ public final class MarkDownLiteral {
         literal.addFirst("<!-- ");
         literal.add(" -->");
         return this;
+    }
+
+    /**
+     * Wraps the input list of strings in a Markdown code block with the specified language.
+     *
+     * @param input The list of strings to be wrapped.
+     * @param languageIdentifier The language identifier for the code block.
+     * @return An ArrayList of strings representing the formatted code block.
+     */
+    public static ArrayList<String> asCodeBlock(ArrayList<String> input, String languageIdentifier) {
+        ArrayList<String> out = new ArrayList<>();
+        out.add("```" + languageIdentifier);
+        out.addAll(input);
+        out.add("```");
+        return out;
+    }
+
+    /**
+     * Converts headers and rows into a Markdown table format.
+     *
+     * @param headers The list of header strings.
+     * @param rows The list of rows, where each row is a list of strings.
+     * @return An ArrayList of strings representing the formatted Markdown table.
+     */
+    public static ArrayList<String> asTable(ArrayList<String> headers, ArrayList<ArrayList<String>> rows) {
+        ArrayList<String> out = new ArrayList<>();
+        // Create header row
+        String headerRow = "| " + String.join(" | ", headers) + " |";
+        out.add(headerRow);
+        // Create separator row
+        String separatorRow = "| " + String.join(" | ", headers.stream().map(h -> "---").toArray(String[]::new)) + " |";
+        out.add(separatorRow);
+        // Create data rows
+        for (ArrayList<String> row : rows) {
+            String dataRow = "| " + String.join(" | ", row) + " |";
+            out.add(dataRow);
+        }
+        return out;
     }
 
     /**

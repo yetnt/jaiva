@@ -78,14 +78,14 @@ public class ToMarkdown {
         } else if (option == 'y') {
             ArrayList<ArrayList<TokenDefault>> buckets = Buckets.of(
                     new ArrayList<>(exportables),
-                    TVariable.class,
-                    TFunction.class);
+                    TFunction.class,
+                    TVariable.class);
             printToFile();
             for (int j = 0; j < buckets.size(); j++) {
                 ArrayList<TokenDefault> bucket = buckets.get(j);
                 printToFile(
                         new MarkDownLiteral(
-                                (j == 0 ? "Variables" : "Functions")
+                                (j == 0 ? "Functions" : "Variables")
                         ).title(MarkDownLiteral.Title.SUBTITLE).toString()
                 );
                 for (TokenDefault t : bucket) {
@@ -208,8 +208,6 @@ public class ToMarkdown {
 
         printToFile();
         printToFile(jDoc.getDescription());
-        // TODO: When example JDoc tag is added, add here.
-        // printToFile();
 
         if (!jDoc.getParameters().isEmpty()) {
             printToFile();
@@ -233,6 +231,17 @@ public class ToMarkdown {
             printToFile(
                     MarkDownLiteral.asBlockQuote(
                             new ArrayList<>(List.of(new MarkDownLiteral(jDoc.getReturns()).bold().italics().toString()))
+                    )
+            );
+        }
+
+        if (!jDoc.getExample().isEmpty()) {
+            printToFile();
+            printToFile(new MarkDownLiteral("Example:").bold().toString());
+            printToFile(
+                    MarkDownLiteral.asCodeBlock(
+                            jDoc.getExample(),
+                            "jaiva"
                     )
             );
         }

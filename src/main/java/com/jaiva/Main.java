@@ -12,6 +12,7 @@ import com.jaiva.interpreter.libs.Types;
 import com.jaiva.interpreter.libs.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.*;
+import com.jaiva.tokenizer.tokens.TSymbol;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.TArrayVar;
 import com.jaiva.tokenizer.tokens.specific.TDocsComment;
@@ -364,7 +365,7 @@ public class Main {
         ArrayList<Token<?>> tokens = new ArrayList<>();
         MultipleLinesOutput m = null;
         BlockChain b = null;
-        Scanner scanner = null;
+        Scanner scanner;
         try {
             scanner = new Scanner(myObj);
         } catch (FileNotFoundException e) {
@@ -394,8 +395,7 @@ public class Main {
                                 tks.remove(t);
                                 continue;
                             }
-                            if (comment == null || (!(l instanceof TArrayVar) && !(l instanceof TUnknownScalar)
-                                    && !(l instanceof TFunction)))
+                            if (comment == null || !(l instanceof TSymbol))
                                 continue;
                             JDoc doc = new JDoc(lineNum, comment.trim());
                             l.tooltip = doc;
@@ -404,7 +404,7 @@ public class Main {
                         }
                     }
                     comment = null;
-                    tokens.addAll((ArrayList<Token<?>>) tks);
+                    tokens.addAll(tks);
                 }
                 case BlockChain blockChain -> {
                     m = null;
@@ -418,12 +418,11 @@ public class Main {
                             + ((TDocsComment) token1.value()).comment;
                 }
                 case Token<?> token -> {
-                    TokenDefault t = ((TokenDefault) token.value());
+                    TokenDefault t = token.value();
                     if (returnVfs && !t.exportSymbol) {
                         // dont do anythin.
                     } else if (comment != null
-                            && ((t instanceof TArrayVar) || (t instanceof TUnknownScalar)
-                            || (t instanceof TFunction))) {
+                            && t instanceof TSymbol) {
 
                         JDoc doc = new JDoc(lineNum, comment.trim());
                         t.tooltip = doc;

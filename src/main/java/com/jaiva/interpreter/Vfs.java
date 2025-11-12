@@ -6,6 +6,8 @@ import com.jaiva.tokenizer.tokens.Token;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.function.BiFunction;
 
 /**
  * "vfs" stands for Variable FunctionS. It's a class that extends HashMap and in term inherits all it's properties.
@@ -102,5 +104,63 @@ public class Vfs extends HashMap<String, MapValue> {
         ArrayList<Token<?>> tokens = new ArrayList<>();
         this.forEach((s, mv) -> tokens.add(mv.getValue().token.toToken()));
         return tokens;
+    }
+
+    /**
+     * Sorts the keys of the Vfs in alphabetical order.
+     */
+    public void sortKeys() {
+        ArrayList<String> keys = new ArrayList<>(this.keySet());
+        keys.sort(String::compareTo);
+        HashMap<String, MapValue> sorted = new HashMap<>();
+        for (String key : keys) {
+            sorted.put(key, this.get(key));
+        }
+        this.clear();
+        this.putAll(sorted);
+    }
+
+    public ArrayList<MapValue> sortKeys(BiFunction<String, String, Integer> comparator, boolean returnSorted) {
+        ArrayList<String> keys = new ArrayList<>(this.keySet());
+        keys.sort(comparator::apply);
+        HashMap<String, MapValue> sorted = new HashMap<>();
+        ArrayList<MapValue> sortedValues = new ArrayList<>();
+        for (String key : keys) {
+            MapValue mv = this.get(key);
+            sorted.put(key, mv);
+            sortedValues.add(mv);
+        }
+        this.clear();
+        this.putAll(sorted);
+        return returnSorted ? sortedValues : null;
+    }
+
+    /**
+     * Sorts the keys of the Vfs giving priority to the provided top keys.
+     * The top keys will appear first in the order they are provided, followed by the rest in alphabetical order.
+     * @param topKeys The keys to prioritize.
+     */
+    public void sortWithKeyPriority(String ...topKeys) {
+        ArrayList<String> keys = new ArrayList<>(this.keySet());
+        ArrayList<String> topKeysList = new ArrayList<>(List.of(topKeys));
+        keys.sort((a, b) -> {
+            boolean aIsTop = topKeysList.contains(a);
+            boolean bIsTop = topKeysList.contains(b);
+            if (aIsTop && bIsTop) {
+                return Integer.compare(topKeysList.indexOf(a), topKeysList.indexOf(b));
+            } else if (aIsTop) {
+                return -1;
+            } else if (bIsTop) {
+                return 1;
+            } else {
+                return a.compareTo(b);
+            }
+        });
+        HashMap<String, MapValue> sorted = new HashMap<>();
+        for (String key : keys) {
+            sorted.put(key, this.get(key));
+        }
+        this.clear();
+        this.putAll(sorted);
     }
 }
