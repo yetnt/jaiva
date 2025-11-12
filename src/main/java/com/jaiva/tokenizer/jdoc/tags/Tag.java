@@ -1,5 +1,7 @@
 package com.jaiva.tokenizer.jdoc.tags;
 
+import com.jaiva.lang.EscapeSequence;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,6 +46,7 @@ public class Tag {
                     case FROM -> new DFrom(content);
                     case DEPENDS -> new DDepends(content);
                     case EMPTY -> new DEmpty(content);
+                    case EXAMPLE -> new DExample(content);
                     case GENERIC -> new DGeneric(content);
                     default -> null;
                 };
@@ -62,7 +65,7 @@ public class Tag {
      */
     public Tag(TagType tagType) {
         this.tagType = tagType;
-        if (!Arrays.asList(TagType.DEPENDS, TagType.FROM).contains(tagType))
+        if (!Arrays.asList(TagType.DEPENDS, TagType.FROM, TagType.EXAMPLE).contains(tagType))
                 attributes.put("description", null);
     }
 
@@ -70,7 +73,7 @@ public class Tag {
     public String toString() {
         return "{" +
                 "\"tagType\":\"" + tagType.getTag().getFirst() + "\","
-                + (attributes.containsKey("description") ? "\"description\":\"" + attributes.get("description") + "\"" : "");
+                + (attributes.containsKey("description") ? "\"description\":\"" + attributes.get("description").toString().replace("\"", "\\\"") + "\"" : "");
     }
 
     /**
@@ -142,6 +145,49 @@ public class Tag {
         @Override
         public String toString() {
             return super.toString() + "}";
+        }
+    }
+
+    public static class DExample extends Tag {
+        public DExample(String input) {
+            super(TagType.EXAMPLE);
+            // given an input such as "codeblock"
+            ArrayList<String> codeblock = new ArrayList<>();
+            codeblock.add(input);
+            attributes.put("codeblock", codeblock);
+        }
+        public DExample(ArrayList<String> st) {
+            super(TagType.EXAMPLE);
+            attributes.put("codeblock", st);
+        }
+
+        @Override
+        public String toString(){
+            StringBuilder st = new StringBuilder();
+            ArrayList<String> lines = (ArrayList<String>) attributes.get("codeblock");
+            st.append("[");
+            for (String lin : lines) {
+                String lineOriginal = lin;
+                lin = lin.replace("\n", "\\n").replace("\r", "\\r");
+                lin = lin.replace("\"", "\\\"").replace("\\", "\\\\");
+                if (lines.getFirst().equals(lineOriginal)) {
+                    st.append("\"").append(lin).append("\"");
+                } else {
+                    st.append(",").append("\"").append(lin).append("\"");
+                }
+            }
+            return super.toString()
+                    + "\"codeblock\":" + st.append("]") + "}";
+        }
+
+        @Override
+        public boolean addToDescription(String description) {
+//            if (attributes.containsKey("codeblock")) {
+                ArrayList<String> codeblock = (ArrayList<String>) attributes.get("codeblock");
+                codeblock.add(description);
+                return false;
+//            }
+//            return true;
         }
     }
 

@@ -39,6 +39,14 @@ public class ToJson {
     }
 
     /**
+     * Default constructor for the ToJson class.
+     * Initializes an empty JSON string.
+     */
+    public ToJson() {
+        json.append("{");
+    }
+
+    /**
      * Checks if a key exists in the JSON string.
      *
      * @param key The key to check for existence in the JSON string.

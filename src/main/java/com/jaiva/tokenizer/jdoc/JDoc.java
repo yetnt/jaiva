@@ -105,6 +105,15 @@ public class JDoc {
         return params;
     }
 
+    public ArrayList<String> getExample() {
+        for (Tag tag : tags) {
+            if (tag.tagType == TagType.EXAMPLE) {
+                return (ArrayList<String>) tag.attributes.get("codeblock");
+            }
+        }
+        return new ArrayList<>();
+    }
+
     public JDoc(int lineNumber, String input) throws TokenizerException {
         Scanner s = new Scanner(input);
         Tag.DGeneric generics = new Tag.DGeneric("");

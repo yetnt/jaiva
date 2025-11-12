@@ -13,6 +13,7 @@ public enum TagType {
     DEVNOTE("devnote", "note", "devn", "dn"),
     DEPRECATED("deprecated", "deprec", "depr"),
     FROM("from", "f", "version", "since", "ver"),
+    EXAMPLE("example", "ex", "eg"),
     UNKNOWN(),
     EMPTY(""),
     GENERIC("GENERIC"); // Generic represents just a plain description. Not a tag specifically but its tested for.

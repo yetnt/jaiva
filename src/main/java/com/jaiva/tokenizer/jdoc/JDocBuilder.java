@@ -3,6 +3,7 @@ package com.jaiva.tokenizer.jdoc;
 import com.jaiva.tokenizer.jdoc.tags.Tag;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A builder class for creating {@link JDoc} objects.
@@ -95,6 +96,30 @@ public class JDocBuilder {
      */
     public JDocBuilder markDeprecated(String reason) {
         tags.add(new Tag.DDeprecated(reason));
+        return this;
+    }
+
+    /**
+     * Adds an example tag to the JDoc.
+     *
+     * @param example The example string, potentially containing multiple lines.
+     * @return This JDocBuilder instance for method chaining.
+     */
+    public JDocBuilder addExample(String example) {
+        tags.add(new Tag.DExample(new ArrayList<>(
+                Arrays.stream(example.split("\n")).toList()
+        )));
+        return this;
+    }
+
+    /**
+     * Adds an example tag to the JDoc.
+     *
+     * @param exampleLines An ArrayList of strings representing lines of the example.
+     * @return This JDocBuilder instance for method chaining.
+     */
+    public JDocBuilder addExample(ArrayList<String> exampleLines) {
+        tags.add(new Tag.DExample(exampleLines));
         return this;
     }
 
