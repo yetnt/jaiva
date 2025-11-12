@@ -227,7 +227,7 @@ public class Main {
                         return;
                     }
                     case "-j", "--json" -> {
-                        if (args[0].contains("jaiva/") || args[0].contains("jaiva\\"))
+                        if (args[0].startsWith("jaiva/") || args[0].startsWith("jaiva\\"))
                             throw new JaivaException.UnknownFileException("You can't print tokens of the built-in jaiva libs.");
                         System.out.println();
                         System.out.print("[");

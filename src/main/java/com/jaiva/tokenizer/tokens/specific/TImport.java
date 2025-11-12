@@ -68,7 +68,7 @@ public class TImport extends TokenDefault<TImport> implements TStatement {
 
     @Override
     public String toJson() throws JaivaException {
-        json.append("filePath", filePath, false);
+        json.append("filePath", filePath.replace("\\", "\\\\"), false);
         json.append("fileName", fileName, false);
         json.append("isLib", isLib, false);
         json.append("symbols", symbols, true);
