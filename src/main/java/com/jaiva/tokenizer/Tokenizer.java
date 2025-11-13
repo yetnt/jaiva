@@ -428,7 +428,10 @@ public class Tokenizer {
         }
         line = line.trim();
         line = line.substring(4);
-        String[] parts = line.split(Chars.ASSIGNMENT);
+        String[] parts = new String[] {
+                line.substring(0, line.indexOf(Chars.ASSIGNMENT)),
+                line.substring(line.indexOf(Chars.ASSIGNMENT) + 2)
+        };
         parts[0] = parts[0].trim();
         IsValidSymbolName IVSN = Validate.isValidSymbolName(parts[0]);
         if (!IVSN.isValid)
