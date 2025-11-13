@@ -88,7 +88,7 @@ public class Keywords {
      * All keywords in JAIVA.
      */
     public static String[] all = { D_VAR, WHILE, IF, ELSE, FALSE, TRUE, D_FUNCTION, RETURN, FOR,
-            TRY, CATCH, THROW, LC_BREAK, LC_CONTINUE, UNDEFINED, IMPORT.getFirst(), IMPORT.getLast() };
+            TRY, CATCH, THROW, LC_BREAK, LC_CONTINUE, UNDEFINED, IMPORT.getFirst(), IMPORT.getLast(), FOR_EACH, TERNARY, "true", "false" };
 
     /**
      * LoopControl is an enum that represents the control flow of a loop.
