@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
 
 public class TimeZone extends BaseLibrary {
 
-    public static String path = "timezone";
+    public static String path = "time/zone";
     private static ArrayList<Pair<String>> zoneIds = mapZoneIds();
 
     public TimeZone() {
-        super(LibraryType.LIB, "timezone");
+        super(LibraryType.LIB, "time/zone");
 
         BaseVariable getAll = new BaseVariable(
                 "tz_getAll",

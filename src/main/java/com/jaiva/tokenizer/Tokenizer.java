@@ -542,11 +542,17 @@ public class Tokenizer {
         }
         String fileName;
 
-        try {
-            // try set the filename
-            fileName = pObj.getFileName().toString().replaceAll(Pattern.quote(".jiv"), "");
-        } catch (NullPointerException e) {
-            throw new FileOrDirectoryNotFoundException("I don't think " + path + " exits...", lineNumber);
+        if (isLib) {
+            fileName = line.substring(stringStart + 1, stringEnd)
+                    .replaceFirst("jaiva[/\\\\]", "")
+                    .replace("\\", "/");
+        } else {
+            try {
+                // try set the filename
+                fileName = pObj.getFileName().toString().replaceAll(Pattern.quote(".jiv"), "");
+            } catch (NullPointerException e) {
+                throw new FileOrDirectoryNotFoundException("I don't think " + path + " exits...", lineNumber);
+            }
         }
 
         if (parts.length > 1) {

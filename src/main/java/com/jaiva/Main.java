@@ -265,7 +265,9 @@ public class Main {
                             throw new JaivaException.TooLittleArgsException("Markdown output needs an output directory!");
                         if (args[0].startsWith("jaiva/") || args[0].startsWith("jaiva\\")) {
                             // The user is trying to output markdown for the built-in jaiva libs. Why not give it to them.
-                            Vfs vfs = new Globals(new IConfig<>(null)).getBuiltInGlobal(args[0]);
+                            Vfs vfs = args[0].endsWith("globals")  // edge case for globals lib.
+                                    ? new Globals(new IConfig<>(null)).vfs
+                                    : new Globals(new IConfig<>(null)).getBuiltInGlobal(args[0]);
                             if (vfs == null)
                                 throw new JaivaException.UnknownFileException("You can't output markdown for the built-in jaiva libs that don't exist.");
                             tokens = vfs.toTokenList();
