@@ -13,10 +13,7 @@ import com.jaiva.interpreter.symbol.*;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.jdoc.JDoc;
-import com.jaiva.tokenizer.tokens.TAtomicValue;
-import com.jaiva.tokenizer.tokens.TConditional;
-import com.jaiva.tokenizer.tokens.Token;
-import com.jaiva.tokenizer.tokens.TokenDefault;
+import com.jaiva.tokenizer.tokens.*;
 import com.jaiva.tokenizer.tokens.specific.*;
 import com.jaiva.utils.CCol;
 
@@ -599,22 +596,13 @@ public class Primitives {
     }
 
     /**
-     * Checks if the given object is a primitive type supported by the interpreter.
-     * The supported types are:
-     * <ul>
-     * <li>Boolean</li>
-     * <li>Integer</li>
-     * <li>Double</li>
-     * <li>String</li>
-     * </ul>
-     *
-     * @param t the object to check
-     * @return {@code true} if the object is an instance of one of the supported
-     *         primitive types; {@code false} otherwise
+     * Checks if the given object is a primitive type (Boolean, Integer, Double, String, or TVoidValue).
+     * @param t The object to be checked.
+     * @return True if the object is a primitive type, false otherwise.
      */
     public static boolean isPrimitive(Object t) {
         return t instanceof Boolean || t instanceof Integer
-                || t instanceof Double || t instanceof String;
+                || t instanceof Double || t instanceof String || t instanceof TVoidValue;
     }
 
     /**
