@@ -13,6 +13,7 @@ import com.jaiva.interpreter.Interpreter.ThrowIfGlobalContext;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
+import com.jaiva.interpreter.symbol.SymbolConfig;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.tokens.specific.*;
 import com.jaiva.tokenizer.tokens.Token;
@@ -53,6 +54,13 @@ public class IOFunctions extends BaseLibrary {
                             .addReturns("idk")
                             .sinceVersion("1.0.0-beta.2")
                             .addNote("For the nerds. This is just System.out.println as default, then if removeNewLn is true, System.out.print. Lol")
+                            .addExample("""
+                                    khuluma("Hello, World!")! @ Prints "Hello, World!" to the console with a new line.
+                                    @ Then the following prints "Hello" then "World!" on the same line.
+                                    khuluma("Hello, ", true)!
+                                    khuluma("World!")!
+                                    khuluma()! @ Prints just a new line.
+                                    """)
                             .build()
             ));
             this.freeze();
@@ -137,6 +145,11 @@ public class IOFunctions extends BaseLibrary {
                             .addReturns("The input given from the console as a string")
                             .addNote("GithubBlockQuote: This will pause all execution until input is given.")
                             .sinceVersion("1.0.0-beta.3")
+                            .addExample("""
+                                    khuluma("What is your name?")!
+                                    maak name <- mamela()! @ Reads input from the user and stores it in the variable name.
+                                    khuluma("Hello, " + name + "!")!
+                                    """)
                     .build()
             ));
             this.freeze();
@@ -166,6 +179,7 @@ public class IOFunctions extends BaseLibrary {
      *
      * @see javax.swing.JOptionPane#showInputDialog(Object)
      */
+    @SymbolConfig(deprecated = true)
     class FAsk extends BaseFunction {
         FAsk() {
             super("ask", new TFunction("ask", new String[] { "message" }, null, -1,
@@ -174,6 +188,11 @@ public class IOFunctions extends BaseLibrary {
                             .addParam("message", "string", "The message to display in the dialog.", false)
                             .addReturns("The user's input as a string.")
                             .sinceVersion("1.0.0")
+                            .addExample("""
+                                    maak name <- ask("what's ur name cuh?")! @ Reads input from the user and stores it in the variable name.
+                                    khuluma("Hello, " + name + "!")!
+                                    """)
+                            .markDeprecated("This function serves no real purpose. (it doesn't work in most environments)")
                             .build()
             ));
             this.freeze();
@@ -216,6 +235,9 @@ public class IOFunctions extends BaseLibrary {
                                     .addReturns("idk")
                                     .addNote("The effectiveness of this function depends on the terminal's support for ANSI escape codes.")
                                     .sinceVersion("1.0.0")
+                                    .addExample("""
+                                            clear()! @ Clears the console output.
+                                            """)
                                     .build()
                     ));
             freeze();
@@ -247,6 +269,11 @@ public class IOFunctions extends BaseLibrary {
                             .addDesc("The command-line arguments passed to the Jaiva command.")
                             .addReturns("An array of strings, where each string is a command-line argument.")
                             .sinceVersion("1.0.2")
+                            .addNote("This is the raw arguments given from Main.args[], including Jaiva-specific arguments.")
+                            .addExample("""
+                                    khuluma(args[0])! @ Prints "jaiva" if the command was 'jaiva myscript.jv'
+                                    khuluma(args[1])! @ Prints "myscript.jv" if the command was 'jaiva myscript.jv'
+                                    """)
                             .build()
             ),
                     new ArrayList<>(Arrays.asList(config.args)));
@@ -261,6 +288,11 @@ public class IOFunctions extends BaseLibrary {
                             .addDesc("The command-line arguments without Jaiva-specific arguments.")
                             .addReturns("An array of strings, representing the sanitized command-line arguments.")
                             .sinceVersion("1.0.2")
+                            .addExample("""
+                                    khuluma(uargs[0])! @ Prints any other argument given after the Jaiva specific ones.
+                                    khuluma(uargs[1])! @ Prints the second user argument if provided.
+                                    khuluma(uargs[2])! @ And so on...
+                                    """)
                             .build()
             ),
                     config.sanitisedArgs);

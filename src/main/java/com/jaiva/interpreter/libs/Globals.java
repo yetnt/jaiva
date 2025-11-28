@@ -1,14 +1,12 @@
 package com.jaiva.interpreter.libs;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import com.jaiva.interpreter.Vfs;
+import com.jaiva.interpreter.libs.file.File;
 import com.jaiva.interpreter.libs.time.Time;
 import com.jaiva.interpreter.libs.time.TimeZone;
 import com.jaiva.interpreter.symbol.SymbolConfig;
@@ -52,7 +50,7 @@ public class Globals extends BaseLibrary {
             builtInGlobals.put("arrays", LibraryLike.of("arrays.jiv"));
         builtInGlobals.put(Types.path, LibraryLike.of(Types.class));
         builtInGlobals.put(Math.path, LibraryLike.of(Math.class));
-        builtInGlobals.put(IOFile.path, LibraryLike.of(IOFile.class));
+        builtInGlobals.put(File.path, LibraryLike.of(File.class));
         builtInGlobals.put(Debug.path, LibraryLike.of(Debug.class));
         builtInGlobals.put(Time.path, LibraryLike.of(Time.class));
         builtInGlobals.put(TimeZone.path, LibraryLike.of(TimeZone.class));
@@ -128,6 +126,22 @@ public class Globals extends BaseLibrary {
                                         "strict" which toggles "ew" and "constant"
                                     """
                             )
+                            .addExample("""
+                                    scope("freezeAll")!
+                                    kwenza af(a) ->
+                                        khutla a!
+                                    <~
+                                    af <- 10! @ Errors as the variable af cannot be written to.
+                                    
+                                    @ Or
+                                    
+                                    scope("ew")!
+                                    @* depr $> This fucntion is deprecated.
+                                    kwenza af(a) ->
+                                        khutla a!
+                                    <~
+                                    af()! @ Errors as the usual deprecation warning is now a fatal error. (Crashes the interpreter)
+                                    """)
                             .build()
                     ));
             this.freeze();
@@ -167,6 +181,11 @@ public class Globals extends BaseLibrary {
                             .addParam("var", "idk", "The value to return it's token symbol for", false)
                             .addReturns("The .toString() class representation of the given variable's token")
                             .sinceVersion("1.0.0-beta.0")
+                            .addExample("""
+                                    maak name <- "ayo!"!
+                                    khuluma(getVarClass(name))! @ Prints com.jaiva.tokenizer.tokens.Token$TStringVar@(hashcode)
+                                    khuluma(getVarClass(reservedKeywords))! @ Prints com.jaiva.tokenizer.tokens.Token$TArrayVar@(hashcode)
+                                    """)
                             .build()
 
             ));
@@ -212,6 +231,7 @@ public class Globals extends BaseLibrary {
                     new TArrayVar("reservedKeywords", new ArrayList<>(Arrays.asList(Keywords.all)), -1,
                             JDoc.builder()
                                     .sinceVersion("1.0.0-beta.0")
+                                    .addExample("khuluma(reservedKeywords)! @ Prints all the reserved keywords.")
                                     .addDesc("An array containing jaiva's reserved keywords that you cannot use as symbol names.").build()),
                     new ArrayList<>(Arrays.asList(Keywords.all)));
             this.freeze();
@@ -227,6 +247,9 @@ public class Globals extends BaseLibrary {
             super("version", new TStringVar("version", Main.version, -1,
                     JDoc.builder()
                             .addDesc("What do you think this returns.")
+                            .addExample("""
+                                    khuluma(version)! @ Prints 4.2.0 (at the time of writing)
+                                    """)
                             .sinceVersion("1.0.0-beta.0").build()), Main.version);
             this.freeze();
         }
@@ -245,6 +268,12 @@ public class Globals extends BaseLibrary {
                             .addParam("arrays", "[]", "Variable amount of arrays to input", true)
                             .addNote("If there are any type mismatches in array1, it will be ignored and the same check is done to array2 and so on. Therefore this function will **always** return an array, whether or not it was successful.")
                             .sinceVersion("1.0.0-beta.2")
+                            .addExample("""
+                                    maak array1 <-| 1, 2, 3!
+                                    maak array2 <-| 4, 5, 6!
+                                    maak array3 <- flat(array1, array2)! @ Flattens the two arrays into a new one.
+                                    khuluma(array3)! @ Prints [1, 2, 3, 4, 5, 6]
+                                    """)
                             .build()
             ));
             this.freeze();
@@ -309,6 +338,11 @@ public class Globals extends BaseLibrary {
                             .addParam("milliseconds", "number", "The amount of milliseconds to sleep for", false)
                             .addNote("(Keep in mind this function still has to take your value and turn it into a Java primitive and other things, so the delay might not be exact. If you're looking for accuracy maybe remove x amount of ms till it's accurate.)")
                             .sinceVersion("1.0.0")
+                            .addExample("""
+                                    khuluma("yo")!
+                                    sleep(1000)! @ pause for 1 second.
+                                    khuluma("yo.. again")!
+                                    """)
                             .build()
             ));
             this.freeze();
@@ -373,6 +407,17 @@ public class Globals extends BaseLibrary {
                             .addParam("input", "idk", "The input to check the type against", true)
                             .addReturns("Returns the string form of the typ, which could be \"array\", \"string\", \"boolean\", \"number\", \"function\", or the primitive idk.")
                             .sinceVersion("3.0.0")
+                            .addExample("""
+                                    maak b <- 100!
+                                    
+                                    khuluma(typeOf(b))!                   @ "number"
+                                    khuluma(typeOf(typeOf))!                @ "function"
+                                    khuluma(typeOf())!                    @ idk
+                                    khuluma(typeOf(aowa))!                @ "boolean"
+                                    khuluma(typeOf("what the f"))!        @ "string"
+                                    khuluma(typeOf(reservedKeywords))!    @ "array"
+                                    khuluma(typeOf(idk))!                 @ idk
+                                    """)
                             .build()
             ));
             this.freeze();
@@ -410,6 +455,14 @@ public class Globals extends BaseLibrary {
                             .addParam("elements", "[]", "Variable amount of elements to take in and turn into a single array.", true)
                             .addReturns("The input given, as an array")
                             .sinceVersion("3.0.0")
+                            .addExample("""
+                                    maak array1 <- arrLit(1, 2, 3, "hello", aowa, idk)! @ Creates an array with mixed types.
+                                    maak array2 <-| 1, 2, 3, "hello", aowa, idk! @ Creates an array with mixed types. (Same as above but with maak syntax)
+                                    maak array3 <- arrLit()! @ Creates an empty array.
+                                    khuluma(array1)! @ Prints [1, 2, 3, "hello", aowa, idk]
+                                    khuluma(array3)! @ Prints []
+                                    khuluma(array1 = array2)! @ Prints aowa (false) (I am not implementing array equality via `=` operator anytime soon. It is the exact same array though.)
+                                    """)
                             .build()
             ));
             this.freeze();

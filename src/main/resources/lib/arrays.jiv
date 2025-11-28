@@ -7,6 +7,10 @@ scope("strict")! @ This freezes all the functions, and elevates all warnings to 
 @* since     $> 1.0.0-beta.3
 @* devn     $> Throws if the first argument is not an array or if the second argument is not a non-negative number.
 @*          $> Not to be confused with a_delete() which removes elements from a specific index in an array.
+@* example  $> maak arr <-| 1, 2, 3, 4, 5!
+@*          $> khuluma(a_remove(arr, 2))! @ Returns [1, 2, 3]
+@*          $> khuluma(a_remove(arr, 0))! @ Returns [1, 2, 3, 4, 5]
+@*          $> khuluma(a_remove(arr, 5))! @ Returns []
 kwenza *a_remove(arr, n) ->
     if (typeOf(arr) != "array") ->
         cima <== "a_remove() only works on arrays"!

@@ -551,7 +551,7 @@ public class Primitives {
 
             }
 
-            if (v.getValue() instanceof BaseVariable bn) {
+            if (v != null && v.getValue() instanceof BaseVariable bn) {
                 throw new WtfAreYouDoingException(scope,
                         "You are trying to use the variable " + bn.name + " as a function.",
                         tFuncCall.lineNumber);
