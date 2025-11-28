@@ -32,12 +32,14 @@ public class DefinedFunction extends BaseFunction {
         Vfs newVfs = scope.vfs.clone();
         if (((TFunction) this.token).varArgs) {
             ArrayList<Object> varArgsArr = new ArrayList<>();
-            for (Object o : params) {
-                // Parse each param
-                if (o instanceof String)
-                    o = EscapeSequence.fromEscape((String) o, tFuncCall.lineNumber);
-                varArgsArr.add(Primitives.toPrimitive(Primitives.parseNonPrimitive(o), false, config, scope));
-            }
+            // below if because a single null param is, not supposed to be even possible, but here we are.
+            if (!params.isEmpty() && (params.size() == 1 && params.getFirst() != null))
+                for (Object o : params) {
+                    // Parse each param
+                    if (o instanceof String)
+                        o = EscapeSequence.fromEscape((String) o, tFuncCall.lineNumber);
+                    varArgsArr.add(Primitives.toPrimitive(Primitives.parseNonPrimitive(o), false, config, scope));
+                }
             newVfs.put(paramNames[0], new BaseVariable(paramNames[0],
                     new TArrayVar(paramNames[0], varArgsArr, tFuncCall.lineNumber),
                     varArgsArr));
