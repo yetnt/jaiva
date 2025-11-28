@@ -132,7 +132,7 @@ public class JDoc {
 
             if (tagName.chars().anyMatch(Character::isUpperCase))
                 throw new MalformedJDocException(lineNumber, "A tag cannot contain uppercase letters.");
-            Tag tag = Tag.tagToClass(tagName, args);
+            Tag tag = Tag.tagToClass(tagName, args, lineNumber);
 
             if (tag == null) throw new MalformedJDocException(lineNumber, "An invalid JDoc tag was used! Fix it wena");
 

@@ -1,5 +1,7 @@
 package com.jaiva.tokenizer.jdoc.tags;
 
+import com.jaiva.errors.TokenizerException;
+import com.jaiva.lang.Chars;
 import com.jaiva.lang.EscapeSequence;
 
 import java.util.ArrayList;
@@ -35,11 +37,11 @@ public class Tag {
      * @param content The content associated with the tag.
      * @return A specific subclass of `Tag` corresponding to the tag type, or `null` if the tag type is unrecognized.
      */
-    public static Tag tagToClass(String tag, String content) {
+    public static Tag tagToClass(String tag, String content, int lineNumber) throws TokenizerException.MalformedJDocException {
         for (TagType t : TagType.values()) {
             if (t.getTag().contains(tag)) {
                 return switch (t) {
-                    case PARAMETER -> new DParameter(content);
+                    case PARAMETER -> new DParameter(content, lineNumber);
                     case RETURNS -> new DReturns(content);
                     case DEVNOTE -> new DDevNote(content);
                     case DEPRECATED -> new DDeprecated(content);
@@ -96,10 +98,14 @@ public class Tag {
         public boolean optional;
         public String type;
         public String desc;
-        public DParameter(String input) {
+        public DParameter(String input, int lineNumber) throws TokenizerException.MalformedJDocException {
             super(TagType.PARAMETER);
             // given an input such as "par <- type docs"
-            String[] parts = input.split("<-");
+            if (!input.contains("<-")) {
+                throw new TokenizerException.MalformedJDocException(lineNumber,
+                        "Parameter tag input must contain '<-' between the parameter name and it's type. Given: " + input);
+            }
+            String[] parts = input.split(Chars.ASSIGNMENT);
             varName = parts[0].trim();
             optional = varName.endsWith("?");
             if (optional) varName = varName.substring(0, varName.length() - 1);

@@ -428,6 +428,21 @@ public class Tokenizer {
         }
         line = line.trim();
         line = line.substring(4);
+        if (!line.contains(Chars.ASSIGNMENT)) {
+            // they declared the variable with no value. Still valid syntax.
+            // unless the name is nothing, then we have a problem.
+            String name = line.trim();
+            if (name.isEmpty()) {
+                throw new MalformedSyntaxException(
+                        "Bro defined a variable on line " + lineNumber + " with no name lmao.", lineNumber);
+            }
+            if (line.contains(Chars.ASSIGNMENT))
+                throw new MalformedSyntaxException(
+                        "if you're finna define a variable without a value, remove the assignment operator.",
+                        lineNumber);
+            return new TUnknownScalar(name, new TVoidValue(lineNumber), lineNumber)
+                    .toToken();
+        }
         String[] parts = new String[] {
                 line.substring(0, line.indexOf(Chars.ASSIGNMENT)),
                 line.substring(line.indexOf(Chars.ASSIGNMENT) + 2)
@@ -436,20 +451,8 @@ public class Tokenizer {
         IsValidSymbolName IVSN = Validate.isValidSymbolName(parts[0]);
         if (!IVSN.isValid)
             throw new MalformedSyntaxException(IVSN.op + " cannot be used in a variable name zawg.", lineNumber);
-        if (parts.length == 1) {
-            // they declared the variable with no value. Still valid syntax.
-            // unless the name is nothing, then we have a problem.
-            if (parts[0].isEmpty()) {
-                throw new MalformedSyntaxException(
-                        "Bro defined a variable on line " + lineNumber + " with no name lmao.", lineNumber);
-            }
-            if (line.contains(Chars.ASSIGNMENT))
-                throw new MalformedSyntaxException(
-                        "if you're finna define a variable without a value, remove the assignment operator.",
-                        lineNumber);
-            return new TUnknownScalar(parts[0], new TVoidValue(lineNumber), lineNumber)
-                    .toToken();
-        }
+//        if (parts.length == 1) {
+//        }
         parts[1] = parts[1].trim();
 
         if (isString) {
