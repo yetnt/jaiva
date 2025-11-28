@@ -1,4 +1,4 @@
-package com.jaiva.interpreter.libs;
+package com.jaiva.interpreter.libs.file;
 
 import java.io.*;
 import java.nio.file.*;
@@ -8,6 +8,8 @@ import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.LibraryType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
@@ -19,16 +21,17 @@ import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 import com.jaiva.tokenizer.tokens.specific.TFunction;
 import com.jaiva.tokenizer.tokens.specific.TStringVar;
 
-public class IOFile extends BaseLibrary {
-    static String path = "file";
-    public IOFile(IConfig<Object> config) throws InterpreterException {
+public class File extends BaseLibrary {
+    public static String path = "file";
+    public File(IConfig<Object> config) throws InterpreterException {
         super(LibraryType.LIB, "file");
         vfs.put("f_name", new VFileName(config));
         vfs.put("f_dir", new VDirectory(config));
-        vfs.put("f_bin", new VBinaryDirectory(config));
+        vfs.put("f_bin", new VBinaryDirectory(config)); // Deprecated.
         vfs.put("f_this", new VThis(config));
         vfs.put("f_file", new FFile(config));
         vfs.put("f_new", new FNew(config));
+        vfs.putAll(new JaivaFile(config).vfs); // Functions such as f_nameOf f_dirOf etc.
     }
 
     /**
@@ -49,6 +52,11 @@ public class IOFile extends BaseLibrary {
                                     .addDesc("Variable that holds the current file's name")
                                     .addNote("If you call this within the REPL, or somehow the filePath is null, it holds \"REPL\"")
                                     .sinceVersion("1.0.0")
+                                    .addExample("""
+                                            if (f_name != "myFile.jiv") ->
+                                                khuluma("This is not myFile.jiv!")!
+                                            <~
+                                            """)
                                     .build()
                     ),
                     config.filePath == null ? "REPL" : config.filePath.getFileName().toString());
@@ -77,6 +85,9 @@ public class IOFile extends BaseLibrary {
                                     .addDesc("Variable that holds the current file's directory.")
                                     .addNote("If you call this within the REPL, or somehow the filePath is null, it holds \"REPL\"")
                                     .sinceVersion("1.0.0")
+                                    .addExample("""
+                                            khuluma("Current file directory is: " + f_dir)!
+                                            """)
                                     .build()
                     ),
                     config.fileDirectory == null ? "REPL" : config.fileDirectory.toAbsolutePath().toString());
@@ -97,9 +108,15 @@ public class IOFile extends BaseLibrary {
             super("f_bin", new TStringVar("f_bin", "/eish/my/boizin/this/variable/is/deprecated", 0,
                     JDoc.builder()
                             .addDesc("Variable that holds the directory where you can find jaiva.jar")
-                            .markDeprecated("Reframe from using this as I've removed support for finding the"
-                            + " jaiva-cli method. You can't know now. Deep shit.")
+                            .markDeprecated(
+                                    "As of (one of the versions), the jaiva-cli sh and windows command " +
+                                    "no longer exist. (This was only used to locate where the /lib/ folder was, however" +
+                                    " now the lib folder lives within jaiva.jar itself, deprecating the need for locating jaiva.jar)")
                             .sinceVersion("1.0.0")
+                            .addExample("""
+                                    @ Now. I would give an example for this.
+                                    @ However, why should I if it's deprecated?
+                                    """)
                             .build()
                     ),
                     "/eish/my/boizin/this/variable/is/deprecated");
@@ -159,6 +176,12 @@ public class IOFile extends BaseLibrary {
                             .addNote("Returns an array containing the current file's properties \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]")
                             .addNote("Once again, if we are inside the REPL, we just return static content. (Does not represent the REPL)")
                             .sinceVersion("1.0.1")
+                            .addExample("""
+                                    f_this[0]! @ holds the file name
+                                    f_this[1]! @ holds the file directory
+                                    khuluma("File contents: " + f_this[2])! @ holds the file contents as an array
+                                    khuluma("Can we write to this file? " + f_this[3][1])! @ holds the file permissions
+                                    """)
                             .build()
                     ),
                     new ArrayList<>());
@@ -172,17 +195,25 @@ public class IOFile extends BaseLibrary {
              * [canRead?, canWrite?, canExecute?]
              * ]
              */
+            FileType fl;
             if (config.filePath == null) {
-                ((TArrayVar) this.token).contents.addAll(Arrays.asList(
-                        "REPL",
-                        Token.voidValue(-1),
-                        new ArrayList<>(Arrays.asList("fweah!", "seeyuh")),
-                        new ArrayList<>(Arrays.asList(false, true, false))));
+                fl = FileType.of(
+                        new FileCreator()
+                );
+                ((TArrayVar) this.token).contents.addAll(fl);
+
+                this.a_unsafeSet(fl);
+
+//                ((TArrayVar) this.token).contents.addAll(Arrays.asList(
+//                        "REPL",
+//                        Token.voidValue(-1),
+//                        new ArrayList<>(Arrays.asList("fweah!", "seeyuh")),
+//                        new ArrayList<>(Arrays.asList(false, true, false))));
                 return;
             }
 
             ArrayList<Object> file = new ArrayList<>();
-            File f = config.filePath.toFile();
+            java.io.File f = config.filePath.toFile();
             Scanner fs;
             try {
                 fs = new Scanner(f);
@@ -229,6 +260,11 @@ public class IOFile extends BaseLibrary {
                             .addDesc("Finds the specified file and retrieves it's contents.")
                             .addParam("path", "string", "The path to the file you want to fetch.", false)
                             .addReturns("Returns an array containing the properties of the file at the given `path` \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]")
+                            .addExample("""
+                                    maak file <- f_file("data/myFile.txt")!
+                                    khuluma("File name: " + file[0])!
+                                    khuluma("File directory: " + file[1])!
+                                    """)
                             .sinceVersion("1.0.1")
                             .build()
             ));
@@ -257,7 +293,7 @@ public class IOFile extends BaseLibrary {
                 filePath = Paths.get((String) path);
             }
 
-            File file = filePath.toFile();
+            java.io.File file = filePath.toFile();
             if (!file.exists())
                 throw new WtfAreYouDoingException(new Scope(config), "File does not exist: " + filePath,
                         tFuncCall.lineNumber);
@@ -316,6 +352,14 @@ public class IOFile extends BaseLibrary {
                             .addParam("canWrite", "boolean", "Whether the file can be written to or not. Defaults to true", true)
                             .addParam("canExecute", "boolean", "Whether the file can be executed or not. Defaults to true.", true)
                             .addReturns("A boolean `true` if the file could be created. `false` otherwise.")
+                            .addExample("""
+                                    maak success <- f_new("data/newFile.txt", arrLit("Hello, World!", "This is a new file."), true, true, false)!
+                                    if (success) ->
+                                        khuluma("File created successfully!")!
+                                    <~ else ->
+                                        khuluma("Failed to createFunction file.")!
+                                    <~
+                                    """)
                             .sinceVersion("2.0.1")
                             .build()
             ));
@@ -391,7 +435,7 @@ public class IOFile extends BaseLibrary {
             try {
                 Files.createDirectories(newFilePath.getParent()); // ensure parent directories exist
                 Files.writeString(newFilePath, output, StandardOpenOption.CREATE_NEW);
-                File newFile = newFilePath.toFile();
+                java.io.File newFile = newFilePath.toFile();
                 boolean r = newFile.setReadable(canRead);
                 boolean w = newFile.setWritable(canWrite);
                 boolean e = newFile.setExecutable(canExecute);
