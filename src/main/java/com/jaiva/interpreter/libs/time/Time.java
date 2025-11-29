@@ -36,7 +36,7 @@ public class Time extends BaseLibrary {
                     JDoc.builder()
                             .addDesc("Returns the current time in milliseconds since the Unix epoch.")
                             .addReturns("A number representing the current time in milliseconds.")
-                            .sinceVersion("4.2.0")
+                            .sinceVersion("5.0.0")
                             .build()
             ));
             freeze();
@@ -56,7 +56,7 @@ public class Time extends BaseLibrary {
                             .addDesc("Converts milliseconds to seconds.")
                             .addParam("milliseconds", "number", "The number of milliseconds to convert.", false)
                             .addReturns("A number representing the converted seconds.")
-                            .sinceVersion("4.2.0")
+                            .sinceVersion("5.0.0")
                             .build()
             ));
             freeze();
@@ -84,7 +84,13 @@ public class Time extends BaseLibrary {
                             .addParam("timezone", "string", "The timezone to parse this date into. You can either put a magic string yourself or use the constants within \"jaiva/timezone\"", true)
                             .addReturns("A number representing the parsed date in milliseconds.")
                             .addNote("If no timezone is provided, a default timezone of UTC is used.")
-                            .sinceVersion("4.2.0")
+                            .addExample("""
+                                    @ Import jaiva/time/zone
+                                    tsea "jaiva/time/zone" <- TZ_AfricaJohannesburg!
+                                    maak ms <- t_parseDate("2023-10-05 14:30:00", "yyyy-MM-dd HH:mm:ss", TZ_AfricaJohannesburg)!
+                                    khuluma(ms)! @ Outputs the milliseconds since epoch for the given date in the specified timezone.
+                                    """)
+                            .sinceVersion("5.0.0")
                             .build()
             ));
             freeze();
@@ -118,10 +124,11 @@ public class Time extends BaseLibrary {
             LocalDateTime dateTime = LocalDateTime.parse(dateString, formatter);
 
             String timezone = "UTC";
-            if (params.size() != 2) {
+            if (params.size() > 2) {
                 Object formatObj = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(2)), false, config, scope);
                 if (!(formatObj instanceof String))
-                    throw new InterpreterException.WtfAreYouDoingException(scope, "t_parseDate() needs the 3rd param to be a string zawg.", tFuncCall.lineNumber);
+                    throw new InterpreterException.FunctionParametersException(scope, this, "3", formatObj, String.class, tFuncCall.lineNumber);
+//                    throw new InterpreterException.WtfAreYouDoingException(scope, "t_parseDate() needs the 3rd param to be a string zawg.", tFuncCall.lineNumber);
                 timezone = (String) formatObj;
             }
 
@@ -142,7 +149,7 @@ public class Time extends BaseLibrary {
             super("t_maxTime", new TNumberVar("t_maxTime", Long.MAX_VALUE, -1,
                     JDoc.builder()
                             .addDesc("Returns the maximum possible value for a time in milliseconds (Long.MAX_VALUE).")
-                            .sinceVersion("4.2.0")
+                            .sinceVersion("5.0.0")
                             .build()
             ), Long.MAX_VALUE);
             freeze();

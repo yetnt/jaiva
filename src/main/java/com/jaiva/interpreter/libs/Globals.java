@@ -248,7 +248,7 @@ public class Globals extends BaseLibrary {
                     JDoc.builder()
                             .addDesc("What do you think this returns.")
                             .addExample("""
-                                    khuluma(version)! @ Prints 4.2.0 (at the time of writing)
+                                    khuluma(version)! @ Prints 5.0.0 (at the time of writing)
                                     """)
                             .sinceVersion("1.0.0-beta.0").build()), Main.version);
             this.freeze();

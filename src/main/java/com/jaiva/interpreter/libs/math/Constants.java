@@ -57,6 +57,9 @@ public class Constants extends BaseLibrary {
                             JDoc.builder()
                                     .addDesc("The mathematical constant e (Euler's number)")
                                     .addNote("Just java.lang.Math.E")
+                                    .addExample("""
+                                            khuluma(2 ^ m_e)! @ approximately 7.38905609893065
+                                            """)
                                     .build()
                     ),
                     java.lang.Math.E);
@@ -77,6 +80,12 @@ public class Constants extends BaseLibrary {
                             JDoc.builder()
                                     .addDesc("The mathematical constant τ (tau), which is equal to 2π")
                                     .addNote("Just java.lang.Math.TAU")
+                                    .addExample("""
+                                            @ Using tau to calculate the circumference of a circle with radius 5
+                                            maak radius <- 5!
+                                            maak circumference <- m_tau * radius!
+                                            khuluma(circumference)! @ approximately 31.41592653589793
+                                            """)
                                     .build()
                     ),
                     java.lang.Math.TAU);
@@ -97,6 +106,12 @@ public class Constants extends BaseLibrary {
             super("m_phi", new TNumberVar("m_phi", (1 + java.lang.Math.sqrt(5)) / 2, -1,
                     JDoc.builder()
                             .addDesc("The golden ratio φ (phi)")
+                            .addExample("""
+                                    @ Calculating the golden rectangle dimensions
+                                    maak shortSide <- 10!
+                                    maak longSide <- shortSide * m_phi!
+                                    khuluma("Long side of the golden rectangle: " + longSide)! @ approximately 16.18033988749895
+                                    """)
                             .addNote("No note here.")
                             .build()
             ), (1 + java.lang.Math.sqrt(5)) / 2);

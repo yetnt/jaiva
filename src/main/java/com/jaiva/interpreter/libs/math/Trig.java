@@ -277,6 +277,11 @@ public class Trig extends BaseLibrary {
                             .addDesc("Converts degrees to radians.")
                             .addParam("degrees", "number", "The value in degrees.", false)
                             .addReturns("The value in radians.")
+                            .addExample("""
+                                    maak deg <- 90!
+                                    maak rad <- m_toRad(deg)!
+                                    khuluma(rad) @ Output: 1.5707963267948966
+                                    """)
                             .sinceVersion("1.0.2")
                             .build()
             ));
@@ -316,6 +321,11 @@ public class Trig extends BaseLibrary {
                             .addDesc("Converts radians to degrees.")
                             .addParam("radians", "number", "The value in radians.", false)
                             .addReturns("The value in degrees.")
+                            .addExample("""
+                                    maak rad <- 1.5708!
+                                    maak deg <- m_toDeg(rad)!
+                                    khuluma(deg) @ Output: 90.0002104591497
+                                    """)
                             .sinceVersion("1.0.2")
                             .build()
             ));

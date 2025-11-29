@@ -64,7 +64,7 @@ public class BaseFunction extends Symbol {
      * @param params    The parameters passed to the function. (taken from the
      *                  parameters in tFuncCall)
      * @param config    The Interpreter configuration.
-     * @return The return value of the function, if not overriden it will return
+     * @return The return value of the function, if not overridden it will return
      *         {@code void.class}
      * @throws Exception If an error occurs during the function call.
      */

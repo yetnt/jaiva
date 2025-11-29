@@ -43,7 +43,7 @@ public class JaivaFile extends BaseLibrary {
                             .addDesc("Gets the name of the file from a file.")
                             .addParam("file", "[]", "The file array to get the name from.", false)
                             .addReturns("The name of the file as a string.")
-                            .sinceVersion("4.2.0")
+                            .sinceVersion("5.0.0")
                             .addExample("""
                                     khuluma(f_nameOf(f_this))! @ Prints the name of the current file.
                                     """)
@@ -72,7 +72,7 @@ public class JaivaFile extends BaseLibrary {
                             .addDesc("Gets the directory path of the file from a file.")
                             .addParam("file", "[]", "The file array to get the directory path from.", false)
                             .addReturns("The directory path of the file as a string.")
-                            .sinceVersion("4.2.0")
+                            .sinceVersion("5.0.0")
                             .addExample("""
                                     khuluma(f_dirOf(f_this))! @ Prints the directory path of the current file.
                                     """)
@@ -101,7 +101,7 @@ public class JaivaFile extends BaseLibrary {
                             .addDesc("Gets the content of the file from a file.")
                             .addParam("file", "[]", "The file array to get the content from.", false)
                             .addReturns("The content of the file as an array of strings.")
-                            .sinceVersion("4.2.0")
+                            .sinceVersion("5.0.0")
                             .addExample("""
                                     khuluma(f_contentOf(f_this))! @ Prints the content of the current file.
                                     """)
@@ -131,7 +131,7 @@ public class JaivaFile extends BaseLibrary {
                             .addParam("file", "[]", "The file array to get the permissions from.", false)
                             .addReturns("A function that allows you to return a specific permission or all permissions as an array.")
                             .addNote("Unlike other functions, this one may require a bit of functional thinking. It returns a function that you can call to get specific permissions or all permissions at once.")
-                            .sinceVersion("4.2.0")
+                            .sinceVersion("5.0.0")
                             .addExample("""
                                     maak permissions <- f_permsOf(f_this)!
                                     khuluma(permissions())! @ Prints all permissions as an array [canRead, canWrite, canExecute]
@@ -162,7 +162,7 @@ public class JaivaFile extends BaseLibrary {
                                 .addDesc("Gets specific permissions or all permission of the specified file.")
                                 .addParam("perm", "idk", "The permission to get ('read'/'r'/0, 'write'/'w'/1, 'execute'/'x'/2). If omitted, returns all permissions as an array.", true)
                                 .addReturns("The requested permission as a boolean, or all permissions as an array if no parameter is given.")
-                                .sinceVersion("4.2.0")
+                                .sinceVersion("5.0.0")
                                 .addExample("""
                                         maak permissions <- f_permsOf(f_this)!
                                         khuluma(permissions())! @ Prints all permissions as an array [canRead, canWrite, canExecute]

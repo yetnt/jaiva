@@ -30,7 +30,7 @@ public class TimeZone extends BaseLibrary {
                         -1,
                         JDoc.builder()
                                 .addDesc("The complete list of IANA format timezone constants.")
-                                .sinceVersion("4.2.0")
+                                .sinceVersion("5.0.0")
                                 .addExample("""
                                         tsea "jaiva/timezone"!
                                         
@@ -54,7 +54,7 @@ public class TimeZone extends BaseLibrary {
 
     protected static ArrayList<Pair<String>> mapZoneIds() {
         ArrayList<Pair<String>> out = new ArrayList<>();
-        ZoneId.getAvailableZoneIds().stream().forEach(zoneId -> {
+        ZoneId.getAvailableZoneIds().forEach(zoneId -> {
             StringBuilder name = new StringBuilder();
             name.append("TZ_");
             if (!zoneId.contains("/")) {
@@ -89,7 +89,7 @@ public class TimeZone extends BaseLibrary {
         BaseVariable var = new BaseVariable(varName, new TStringVar(varName, value, -1,
                 JDoc.builder()
                         .addDesc(value + " zone constant.")
-                        .sinceVersion("4.2.0")
+                        .sinceVersion("5.0.0")
                         .build()
         ), value);
         var.freeze();
