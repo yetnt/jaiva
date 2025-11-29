@@ -62,7 +62,7 @@ public class Debug extends BaseLibrary {
 
     public class FEmit extends BaseFunction {
         FEmit(IConfig<Object> config) {
-            super("d_emit", new TFunction("d_emit", new String[] { "arr?" }, null, -1,
+            super("d_emit", new TFunction("d_emit", new String[] { "<-arr" }, null, -1,
                     JDoc.builder()
                             .addDesc("Throws a DebugException to be caught by a Java test class and emits the given variables")
                             .addParam("arr", "[]", "The array of values to pass to the exception", true)
@@ -91,12 +91,12 @@ public class Debug extends BaseLibrary {
                                                 // varargs, so its
                 // fine.
                 if (!params.isEmpty()) {
-                    Object param = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false,
-                            config, scope);
-                    if (param instanceof ArrayList<?> arr) {
-                        components.addAll(arr);
-                    } else {
-                        components.add(param);
+                    for (Object param : params) {
+                        components.add(Primitives.toPrimitive(
+                                Primitives.parseNonPrimitive(param),
+                                false,
+                                config, scope
+                        ));
                     }
                 }
             } catch (Exception e) {
