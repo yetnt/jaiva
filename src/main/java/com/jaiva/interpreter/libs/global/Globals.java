@@ -1,4 +1,4 @@
-package com.jaiva.interpreter.libs;
+package com.jaiva.interpreter.libs.global;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,9 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.jaiva.interpreter.Vfs;
+import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.LibraryLike;
+import com.jaiva.interpreter.libs.LibraryType;
+import com.jaiva.interpreter.libs.debug.Debug;
 import com.jaiva.interpreter.libs.file.File;
 import com.jaiva.interpreter.libs.time.Time;
 import com.jaiva.interpreter.libs.time.TimeZone;
+import com.jaiva.interpreter.libs.types.Types;
 import com.jaiva.interpreter.symbol.SymbolConfig;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.Main;

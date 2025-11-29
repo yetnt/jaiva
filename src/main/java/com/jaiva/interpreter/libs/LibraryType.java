@@ -1,5 +1,6 @@
 package com.jaiva.interpreter.libs;
 
+import com.jaiva.interpreter.libs.global.Globals;
 import com.jaiva.interpreter.libs.math.Math;
 import com.jaiva.tokenizer.tokens.specific.TImport;
 import com.jaiva.interpreter.libs.math.*;

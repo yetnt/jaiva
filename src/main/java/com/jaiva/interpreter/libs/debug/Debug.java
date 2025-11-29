@@ -1,4 +1,4 @@
-package com.jaiva.interpreter.libs;
+package com.jaiva.interpreter.libs.debug;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,8 @@ import java.util.List;
 import com.jaiva.errors.JaivaException.DebugException;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.LibraryType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
@@ -16,7 +18,7 @@ import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 import com.jaiva.tokenizer.tokens.specific.TFunction;
 
 public class Debug extends BaseLibrary {
-    static String path = "debug";
+    public static String path = "debug";
     public Debug(IConfig<Object> config) {
         super(LibraryType.LIB, "debug");
         vfs.put("d_emit", new FEmit(config));

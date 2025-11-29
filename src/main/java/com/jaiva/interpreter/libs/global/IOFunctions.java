@@ -1,4 +1,4 @@
-package com.jaiva.interpreter.libs;
+package com.jaiva.interpreter.libs.global;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +10,8 @@ import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Interpreter.ThrowIfGlobalContext;
+import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.LibraryType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;

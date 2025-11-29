@@ -1,4 +1,4 @@
-package com.jaiva.interpreter.libs;
+package com.jaiva.interpreter.libs.types;
 
 import java.util.ArrayList;
 
@@ -6,6 +6,8 @@ import com.jaiva.errors.InterpreterException.FunctionParametersException;
 import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.LibraryType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.lang.Keywords;
@@ -40,7 +42,7 @@ import com.jaiva.tokenizer.jdoc.JDoc;
  * @see WtfAreYouDoingException
  */
 public class Types extends BaseLibrary {
-    static String path = "types";
+    public static String path = "types";
     public Types() {
         // the import will be "jaiva/types.jiv"
         super(LibraryType.LIB, "types");
@@ -62,6 +64,12 @@ public class Types extends BaseLibrary {
                             .addParam("radix", "number", "An optional radix to convert to", true)
                             .addNote("Jaiva integer prefixes [such as _0x_ or _0b_], are checked for first before the radix.")
                             .addReturns("A number. (Either a double or integer)")
+                            .addExample("""
+                                    khuluma(t_num("0b1010"))! @ prints 10
+                                    khuluma(t_num("FF", 16))! @ prints 255
+                                    khuluma(t_num("3.14"))! @ prints 3.14
+                                    khuluma(t_num("0x1A"))! @ prints 26
+                                    """)
                             .sinceVersion("2.0.0-beta.3")
                             .build()
             ));
@@ -116,9 +124,15 @@ public class Types extends BaseLibrary {
                             .addDesc("Converts any input of any given type to a string.")
                             .addParam("input", "idk", "The input to convert", true)
                             .addParam("radix", "number", "A given radix for integers", true)
-                            .sinceVersion("2.0.0-beta.3")
                             .addReturns("A string representation of the given input")
                             .addNote("If given an input of `idk`, it will return `idk`. Not a string.")
+                            .addExample("""
+                                    khuluma(t_str(255))! @ prints "255"
+                                    khuluma(t_str(true))! @ prints "yebo"
+                                    khuluma(t_str(yebo))! @ prints "yebo"
+                                    khuluma(t_str(10, 2))! @ prints "0b1010"
+                                    """)
+                            .sinceVersion("2.0.0-beta.3")
                             .build()
 //                    "converts any **input** of any given type to a string. With an optional **radix** input for converting integers."
                     ));

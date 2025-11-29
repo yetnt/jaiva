@@ -6,7 +6,7 @@ import java.util.*;
 import com.jaiva.Main;
 import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.errors.JaivaException.DebugException;
-import com.jaiva.interpreter.libs.Globals;
+import com.jaiva.interpreter.libs.global.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.runtime.ImportVfs;
 import com.jaiva.interpreter.symbol.*;
