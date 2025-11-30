@@ -84,16 +84,10 @@ public class DefinedFunction extends BaseFunction {
                     // name and add to the vfs.
                     Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), false, config, scope);
                     // wrappedValue = new BaseVariable(name, tFuncCall, o);
-                    wrappedValue = BaseVariable.create(name,
-                            o instanceof ArrayList ? new TArrayVar(name, (ArrayList) o, tFuncCall.lineNumber)
-                                    : new TUnknownScalar(name, o, tFuncCall.lineNumber),
-                            o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Collections.singletonList(o)),
-                            o instanceof ArrayList);
+                    wrappedValue = createScalarOrArr(name, o, tFuncCall);
                 } else if (Primitives.isPrimitive(value)) {
                     // primitivers ong
-                    wrappedValue = BaseVariable.create(name,
-                            new TUnknownScalar(name, value, tFuncCall.lineNumber),
-                            new ArrayList<>(List.of(value)), false);
+                    wrappedValue = createScalarOrArr(name, value, tFuncCall);
 
                 } else {
                     // cacthes nested calls, operations and others
@@ -112,5 +106,25 @@ public class DefinedFunction extends BaseFunction {
         } else {
             return Token.voidValue(tFuncCall.lineNumber);
         }
+    }
+
+    /**
+     * Creates a BaseVariable that is either a scalar or an array based on the value type.
+     *
+     * @param name      The name of the variable.
+     * @param value     The value of the variable, which can be a scalar or an ArrayList.
+     * @param tFuncCall The function call token for line number reference.
+     * @return A BaseVariable instance representing the scalar or array.
+     * @implNote This depends on how BaseVariable.create works. As of now
+     * if it's an array, it's passed as is and marked as true so it's an array.
+     * otherwise, it's parsed as a singleton list, with it's boolean marked as false.
+     * therefore allowing BaseVariable to extract the single value and label the variable as scalar.
+     */
+    private BaseVariable createScalarOrArr(String name, Object value, TFuncCall tFuncCall) {
+        return BaseVariable.create(name,
+                value instanceof ArrayList ? new TArrayVar(name, (ArrayList) value, tFuncCall.lineNumber)
+                        : new TUnknownScalar(name, value, tFuncCall.lineNumber),
+                value instanceof ArrayList ? (ArrayList) value : new ArrayList<>(Collections.singletonList(value)),
+                value instanceof ArrayList);
     }
 }
