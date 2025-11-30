@@ -602,7 +602,7 @@ public class Primitives {
      */
     public static boolean isPrimitive(Object t) {
         return t instanceof Boolean || t instanceof Integer
-                || t instanceof Double || t instanceof String || t instanceof TVoidValue;
+                || t instanceof Double || t instanceof String || t instanceof TVoidValue || t instanceof ArrayList<?>;
     }
 
     /**
