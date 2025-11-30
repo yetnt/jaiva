@@ -176,6 +176,21 @@ public class InterpreterException extends JaivaException {
         }
 
         /**
+         * Overload when a function expects a specific amount of parameters
+         *
+         * @param s          base function instance
+         * @param amtGiven   the amount of parameters they gave.
+         * @param amtRequired the amount of parameters required
+         * @param lineNumber the line number this happened on
+         */
+
+        public FunctionParametersException(Scope ct, BaseFunction s, int amtGiven, int amtRequired, int lineNumber) {
+            super(ct, lineNumber, s.name + "() needs " + amtRequired
+                    + " parameter" + (amtRequired == 1 ? "" : "s") + ", and your goofy ahh gave " + amtGiven
+                    + ". ☠️");
+        }
+
+        /**
          * Constructor for when a function takes no input
          * 
          * @param s          Base function instance
@@ -214,7 +229,7 @@ public class InterpreterException extends JaivaException {
                                            Class<?> expected,
                                            int lineNumber) {
             super(ct, lineNumber, "The " + nthParam + (nthParam.endsWith("1") ? "st"
-                    : nthParam.endsWith("2") ? "nd" : nthParam.endsWith("3") ? "rd" : "") + " parameter in " + s.name
+                    : nthParam.endsWith("2") ? "nd" : nthParam.endsWith("3") ? "rd" : "th") + " parameter in " + s.name
                     + "() is required to be a " + friendlyName(expected) + ", but you gave me a "
                     + friendlyName(param.getClass()) + ". Wtf bro.");
         }

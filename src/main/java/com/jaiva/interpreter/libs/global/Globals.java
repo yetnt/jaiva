@@ -11,6 +11,7 @@ import com.jaiva.interpreter.libs.LibraryLike;
 import com.jaiva.interpreter.libs.LibraryType;
 import com.jaiva.interpreter.libs.debug.Debug;
 import com.jaiva.interpreter.libs.file.File;
+import com.jaiva.interpreter.libs.math.MathUtils;
 import com.jaiva.interpreter.libs.time.Time;
 import com.jaiva.interpreter.libs.time.TimeZone;
 import com.jaiva.interpreter.libs.types.Types;
@@ -59,6 +60,7 @@ public class Globals extends BaseLibrary {
         builtInGlobals.put(Debug.path, LibraryLike.of(Debug.class));
         builtInGlobals.put(Time.path, LibraryLike.of(Time.class));
         builtInGlobals.put(TimeZone.path, LibraryLike.of(TimeZone.class));
+        builtInGlobals.put(MathUtils.path, LibraryLike.of(MathUtils.class));
     }
 
     /**
