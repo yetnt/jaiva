@@ -9,7 +9,6 @@ import com.jaiva.tokenizer.tokens.specific.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * A Function that is defined by the user at runtime.
@@ -33,7 +32,7 @@ public class DefinedFunction extends BaseFunction {
         if (((TFunction) this.token).varArgs) {
             ArrayList<Object> varArgsArr = new ArrayList<>();
             // below if because a single null param is, not supposed to be even possible, but here we are.
-            if (!params.isEmpty() && (params.size() == 1 && params.getFirst() != null))
+            if (!params.isEmpty())
                 for (Object o : params) {
                     // Parse each param
                     if (o instanceof String)

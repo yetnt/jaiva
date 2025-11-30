@@ -3,6 +3,7 @@ package com.jaiva.tokenizer.tokens.specific;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.lang.Chars;
 import com.jaiva.tokenizer.tokens.TAtomicValue;
+import com.jaiva.tokenizer.tokens.TReference;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
@@ -10,7 +11,7 @@ import com.jaiva.tokenizer.tokens.TokenDefault;
  * Represents a variable reference such as {@code name} or {@code age} or
  * {@code array[index]}.
  */
-public class TVarRef extends TokenDefault<TVarRef> implements TAtomicValue {
+public class TVarRef extends TokenDefault<TVarRef> implements TReference {
     /**
      * The type of the variable reference.
      */
@@ -34,7 +35,11 @@ public class TVarRef extends TokenDefault<TVarRef> implements TAtomicValue {
     /**
      * Indicates whether the variable reference is a length call.
      */
-    public boolean getLength = false;
+    private boolean getLength = false;
+    /**
+     * Indicates whether the function call spreads an array as arguments.
+     */
+    private boolean spreadArr = false;
 
     /**
      * Constructor for TVarRef
@@ -42,13 +47,17 @@ public class TVarRef extends TokenDefault<TVarRef> implements TAtomicValue {
      * @param name The name of the variable being referenced.
      * @param ln   The line number.
      */
-    public TVarRef(Object name, int ln, boolean getLength) {
+    public TVarRef(Object name, int ln, boolean getLength, boolean spreadArr) {
         super("TVarRef", ln);
-        if (name instanceof String n)
-            this.varName = n.endsWith(Chars.LENGTH_CHAR + "") ? n.substring(0, n.length() - 1) : n;
-        else
+        if (name instanceof String n) {
+            n = n.endsWith(Chars.LENGTH_CHAR + "") ? n.substring(0, n.length() - 1) : n;
+            if (n.endsWith(Chars.SPREAD))
+                n = n.substring(0, n.length() - Chars.SPREAD.length());
+            this.varName = n;
+        } else
             this.varName = name;
         this.getLength = getLength;
+        this.spreadArr = spreadArr;
     }
 
     /**
@@ -69,10 +78,25 @@ public class TVarRef extends TokenDefault<TVarRef> implements TAtomicValue {
         this.getLength = getLength;
     }
 
+    public TVarRef(Object name, Object index, int ln, boolean getLength, boolean spreadArr) {
+        super("TVarRef", ln);
+        this.index = index;
+        if (name instanceof String n) {
+            n = n.endsWith(Chars.LENGTH_CHAR + "") ? n.substring(0, n.length() - 1) : n;
+            if (n.endsWith(Chars.SPREAD))
+                this.varName = n.substring(0, n.length() - Chars.SPREAD.length());
+            this.varName = n;
+        } else
+            this.varName = name;
+        this.getLength = getLength;
+        this.spreadArr = spreadArr;
+    }
+
     @Override
     public String toJson() throws JaivaException {
         json.append("varName", varName, false);
         json.append("getLength", getLength, false);
+        json.append("spreadArr", spreadArr, false);
         json.append("index", index != null ? index : null, true);
         return super.toJson();
     }
@@ -84,5 +108,15 @@ public class TVarRef extends TokenDefault<TVarRef> implements TAtomicValue {
      */
     public Token<TVarRef> toToken() {
         return new Token<>(this);
+    }
+
+    @Override
+    public boolean getLength() {
+        return getLength;
+    }
+
+    @Override
+    public boolean getSpreadArr() {
+        return spreadArr;
     }
 }

@@ -136,6 +136,11 @@ public class Chars {
      */
     public static String LAMBDA_DEFINITION = "f~";
 
+    /**
+     * Represents the spread operator used in function calls and array definitions.
+     */
+    public static String SPREAD = ":::";
+
 
     /**
      * The Operators class defines a set of arithmetic and boolean operators.
@@ -379,7 +384,8 @@ public class Chars {
                 ARRAY_CLOSE +
                 ARGS_SEPARATOR +
                 FOR_SEPARATOR +
-                STRING;
+                STRING +
+                SPREAD;
         return new ArrayList<>(new HashSet<>(Arrays.asList(all.split(""))));
     }
 }

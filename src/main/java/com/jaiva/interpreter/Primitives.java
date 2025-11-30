@@ -458,7 +458,7 @@ public class Primitives {
                         throw new WtfAreYouDoingException(scope,
                                 "The function you used there did not return an array, and you expect to be able to index into that?",
                                 tVarRef.lineNumber);
-                    return ((ArrayList<?>) ret).get((Integer) index) instanceof ArrayList && tVarRef.getLength
+                    return ((ArrayList<?>) ret).get((Integer) index) instanceof ArrayList && tVarRef.getLength()
                             ? ((ArrayList<?>) ((ArrayList<?>) ret).get((Integer) index)).size()
                             : ((ArrayList<?>) ret)
                                     .get((Integer) index);
@@ -486,7 +486,7 @@ public class Primitives {
                 if (arr.size() <= (Integer) index)
                     return new WtfAreYouDoingException(scope,
                             "Bro you're tryna access more data than there is in " + variable.name, tVarRef.lineNumber);
-                return arr.get((Integer) index) instanceof ArrayList && tVarRef.getLength
+                return arr.get((Integer) index) instanceof ArrayList && tVarRef.getLength()
                         ? ((ArrayList<?>) arr.get((Integer) index)).size()
                         : arr
                                 .get((Integer) index);
@@ -495,11 +495,11 @@ public class Primitives {
                 // return the arraylist of variables. and hope something up the chain catches
                 // the array list.
                 // that's what we assume to happen since they just like passed a reference yknow.
-                return tVarRef.getLength ? variable.a_size() : variable.a_getAll();
+                return tVarRef.getLength() ? variable.a_size() : variable.a_getAll();
             } else {
                 // normal variable ref, return it
                 try {
-                    if (variable.s_get() instanceof String vs) return tVarRef.getLength ? vs.length()
+                    if (variable.s_get() instanceof String vs) return tVarRef.getLength() ? vs.length()
                                 : (index instanceof Integer newI) ? vs.charAt(newI) : variable.s_get();
                     else
                         return variable.s_get();
@@ -560,10 +560,14 @@ public class Primitives {
 
             checkSymbolAnnotation(function, tFuncCall.lineNumber, scope);
 
-            Object returnValue = function.call(tFuncCall, tFuncCall.args, config, scope);
-            return returnValue instanceof String && tFuncCall.getLength
+            ArrayList<Object> args = BaseFunction.resolveParameters(function, tFuncCall, config, scope);
+            Object returnValue = function.call(
+                    tFuncCall,
+                    args,
+                    config, scope);
+            return returnValue instanceof String && tFuncCall.getLength()
                     ? EscapeSequence.fromEscape((String) returnValue, tFuncCall.lineNumber).length()
-                    : returnValue instanceof ArrayList && tFuncCall.getLength ? ((ArrayList<?>) returnValue).size()
+                    : returnValue instanceof ArrayList && tFuncCall.getLength() ? ((ArrayList<?>) returnValue).size()
                             : returnValue;
         } else if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TTernary ternary) {
             // parse the condition.

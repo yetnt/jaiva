@@ -16,10 +16,7 @@ import com.jaiva.tokenizer.tokens.specific.TStringVar;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import static com.jaiva.full.Files.BUNDLER_JIV;
 

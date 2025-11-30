@@ -183,7 +183,11 @@ public class Find {
             String sString = line.substring(i);
             char openingChar = line.charAt(i);
             int closingCharI = closingCharIndex(sString, openingChar, openingChar == '(' ? ')' : ']');
-            if (closingCharI == sString.length() - 1 || closingCharI == sString.length() - 2)
+            if (
+                    closingCharI == sString.length() - 1 || // Normal closing
+                            closingCharI == sString.length() - 2 || // Account for length operator '~'
+                            closingCharI == sString.length() - 4 // Account for spread operator ':::'
+            )
                 return i;
         }
 

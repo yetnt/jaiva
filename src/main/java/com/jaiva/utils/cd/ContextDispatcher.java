@@ -126,7 +126,8 @@ public class ContextDispatcher {
                 (line.contains("]")) && (opIndex > line.indexOf("]"));
         BC = checkBracesClosedBeforeOutermostOperand(line);
 
-        EIB = line.charAt(line.length() - 1) == ')' || line.charAt(line.length() - 1) == ']';
+        EIB =
+                line.charAt(line.length() - 1) == ')' || line.charAt(line.length() - 1) == ']';
 
         if (EB)
             bits |= 0b1000; // Add EB

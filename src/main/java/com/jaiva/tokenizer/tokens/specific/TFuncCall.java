@@ -2,6 +2,7 @@ package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
 import com.jaiva.tokenizer.tokens.TAtomicValue;
+import com.jaiva.tokenizer.tokens.TReference;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
@@ -12,7 +13,7 @@ import java.util.ArrayList;
  * or {@code func3(10, 20) -> ... <~} or {@code func4(10, 20)!}. Any, if not ALL
  * function calls are possible.
  */
-public class TFuncCall extends TokenDefault<TFuncCall> implements TAtomicValue {
+public class TFuncCall extends TokenDefault<TFuncCall> implements TReference {
     /**
      * The name of the function being called.
      * <p>
@@ -31,20 +32,11 @@ public class TFuncCall extends TokenDefault<TFuncCall> implements TAtomicValue {
     /**
      * Indicates whether the function call is a length call.
      */
-    public boolean getLength = false;
-
+    private boolean getLength = false;
     /**
-     * Constructor for TFuncCall
-     *
-     * @param name The name of the function being called.
-     * @param args The arguments of the function call.
-     * @param ln   The line number.
+     * Indicates whether the function call spreads an array as arguments.
      */
-    TFuncCall(Object name, ArrayList<Object> args, int ln) {
-        super("TFuncCall", ln);
-        this.functionName = name;
-        this.args = args;
-    }
+    private boolean spreadArr = false;
 
     /**
      * Constructor for TFuncCall
@@ -61,10 +53,27 @@ public class TFuncCall extends TokenDefault<TFuncCall> implements TAtomicValue {
         this.getLength = getL;
     }
 
+    /**
+     * Constructor for TFuncCall with spreadArr
+     * @param name The name of the function being called.
+     * @param args The arguments of the function call.
+     * @param ln  The line number.
+     * @param getL Indicates whether the function call is a length call.
+     * @param spreadArr Indicates whether the function call spreads an array as arguments.
+     */
+    public TFuncCall(Object name, ArrayList<Object> args, int ln, boolean getL, boolean spreadArr) {
+        super("TFuncCall", ln);
+        this.functionName = name;
+        this.args = args;
+        this.getLength = getL;
+        this.spreadArr = spreadArr;
+    }
+
     @Override
     public String toJson() throws JaivaException {
         json.append("functionName", functionName, false);
         json.append("getLength", getLength, false);
+        json.append("spreadArr", spreadArr, false);
         json.append("args", args, true);
         return super.toJson();
     }
@@ -76,5 +85,15 @@ public class TFuncCall extends TokenDefault<TFuncCall> implements TAtomicValue {
      */
     public Token<TFuncCall> toToken() {
         return new Token<>(this);
+    }
+
+    @Override
+    public boolean getLength() {
+        return getLength;
+    }
+
+    @Override
+    public boolean getSpreadArr() {
+        return spreadArr;
     }
 }

@@ -361,7 +361,7 @@ public class TokTest {
                 Assertions.assertNull(varRef.index,
                         "TVarRef in arr array (" + varRef.varName
                                 + ") contains an index when it shouldnt");
-                Assertions.assertFalse(varRef.getLength,
+                Assertions.assertFalse(varRef.getLength(),
                         "TVarRef in arr array (" + varRef.varName
                                 + ") has a length boolea when it shouldnt");
             }

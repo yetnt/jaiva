@@ -5,6 +5,9 @@ import java.util.*;
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.*;
 import com.jaiva.interpreter.runtime.IConfig;
+import com.jaiva.lang.EscapeSequence;
+import com.jaiva.tokenizer.tokens.TReference;
+import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.*;
 import com.jaiva.tokenizer.tokens.Token;
 
@@ -73,16 +76,73 @@ public class BaseFunction extends Symbol {
         return Token.voidValue(tFuncCall.lineNumber);
     }
 
+    /**
+     * Resolves the parameters for a function call, handling spread operators.
+     *
+     * @param f          The function being called.
+     * @param tFuncCall  The function call token containing the arguments.
+     * @param config     The interpreter configuration.
+     * @param scope      The current scope for error reporting.
+     * @return A list of resolved parameters for the function call.
+     * @throws Exception If an error occurs during parameter resolution.
+     */
+    public static ArrayList<Object> resolveParameters(BaseFunction f, TFuncCall tFuncCall, IConfig<Object> config, Scope scope) throws Exception {
+        ArrayList<Object> newTokenArgs = new ArrayList<>();
+        // Go through each arg.
+
+        // fast path, filter out non spread args, if new size 0, then return.
+        boolean hasSpread = tFuncCall.args.stream().map(
+                arg -> {
+                    if (arg instanceof Token<?>(Object value)) {
+                        arg = value;
+                    }
+                    return arg;
+                }
+        ).anyMatch(
+                arg -> arg instanceof TReference referenceToken && referenceToken.getSpreadArr()
+        );
+        if (!hasSpread)
+            return tFuncCall.args;
+        for (Object arg : tFuncCall.args) {
+            if (arg instanceof Token<?>(Object value)) {
+                arg = value;
+            }
+            if (!((TFunction)f.token).varArgs && newTokenArgs.size() > ((TFunction)f.token).isArgOptional.size())  {
+                // We could hard fail, or be funnier and just cut off the rest of the data.
+                // Cut off the rest of the data.
+                while (newTokenArgs.size() > ((TFunction)f.token).isArgOptional.size())
+                    newTokenArgs.removeLast();
+                break;
+            }
+            if (arg instanceof TReference referenceToken && referenceToken.getSpreadArr()) {
+                Object evaledToken = Primitives.toPrimitive(((TokenDefault<?>)referenceToken).toToken(), false, config, scope);
+                if (evaledToken instanceof ArrayList<?> arr) {
+                    newTokenArgs.addAll(arr);
+                } else if (evaledToken instanceof String string) {
+                    string = EscapeSequence.toEscape(string);
+                    newTokenArgs.addAll(Arrays.asList(string.split("")));
+                } else {
+                    throw new InterpreterException.WtfAreYouDoingException(scope,
+                            "Spread operator can only be used on arrays or strings.",
+                            tFuncCall.lineNumber);
+                }
+            } else {
+                newTokenArgs.add(arg);
+            }
+        }
+
+        return newTokenArgs;
+    }
 
     /**
      * Checks if the parameters passed to a function call match the function's definition.
      * This method validates the number of arguments and their optionality.
      *
      * @param tFuncCall The function call token containing the arguments.
-     * @param scope The current scope for error reporting.
+     * @param scope     The current scope for error reporting.
      * @throws InterpreterException If there's a mismatch in parameters (e.g., missing required arguments).
      */
-    protected void checkParams(TFuncCall tFuncCall, Scope scope) throws InterpreterException {
+    protected void checkParams(TFuncCall tFuncCall, Scope scope) throws Exception {
         TFunction tFunc = (TFunction) this.token;
 
         // this if sanitizes tFuncCall, as if it has 1 singular entry and that entry is

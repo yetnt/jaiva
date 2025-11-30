@@ -211,17 +211,20 @@ public record Token<T extends TokenDefault>(T value) {
                 }
             });
             return new TFuncCall(processContext(simplifyIdentifier(name, "F~"), lineNumber), parsedArgs,
-                    lineNumber, line.charAt(line.length() - 1) == '~').toToken();
+                    lineNumber, line.charAt(line.length() - 1) == Chars.LENGTH_CHAR,
+                    line.length() - Chars.SPREAD.length() == line.indexOf(Chars.SPREAD)).toToken();
         } else if (index != -1 && (line.charAt(index) == '[')) {
             // then its a variable call an array one to be specific
             // name[index]
             String name = line.substring(0, index).trim();
             String arrayIndex = line.substring(index + 1, line.lastIndexOf("]")).trim();
-            return new TVarRef(processContext(simplifyIdentifier(name, "V~"),
-                    lineNumber),
-                    processContext(arrayIndex,
-                            lineNumber),
-                    lineNumber, line.charAt(line.length() - 1) == '~')
+            return new TVarRef(
+                    processContext(simplifyIdentifier(name, "V~"), lineNumber),
+                    processContext(arrayIndex, lineNumber),
+                    lineNumber,
+                    line.charAt(line.length() - 1) == Chars.LENGTH_CHAR,
+                    line.length() - Chars.SPREAD.length() == line.indexOf(Chars.SPREAD)
+                    )
                     .toToken();
         } else {
             // here, processTFuncCall will try to parse "line" as a primitive type. (if not
@@ -248,7 +251,8 @@ public record Token<T extends TokenDefault>(T value) {
                         if (line.startsWith("V~") || line.startsWith("F~")) {
                             return line.substring(2);
                         } else {
-                            return new TVarRef(line, lineNumber, line.charAt(line.length() - 1) == '~').toToken();
+                            return new TVarRef(line, lineNumber, line.charAt(line.length() - 1) == '~',
+                                    line.length() - Chars.SPREAD.length() == line.indexOf(Chars.SPREAD)).toToken();
                         }
                     }
                 }
