@@ -158,6 +158,7 @@ public class Globals extends BaseLibrary {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
             ArrayList<String> s = new ArrayList<>();
 
+            checkParams(tFuncCall, scope);
             params.forEach(o -> {
                 try {
                     Object c = Primitives.toPrimitive(o, false, config, scope);
@@ -291,8 +292,9 @@ public class Globals extends BaseLibrary {
                            IConfig<Object> config, Scope scope)
                 throws Exception {
 
+            checkParams(tFuncCall, scope);
             ArrayList<Object> returned = new ArrayList<>();
-            tFuncCall.args.forEach(arg -> {
+            params.forEach(arg -> {
                 if (arg instanceof TVarRef && ((TVarRef) arg).index == null) {
                     String name = ((TVarRef) arg).name;
                     MapValue v = scope.vfs.get(name);
@@ -480,8 +482,9 @@ public class Globals extends BaseLibrary {
                            IConfig<Object> config, Scope scope)
                 throws Exception {
 
+            checkParams(tFuncCall, scope);
             ArrayList<Object> returned = new ArrayList<>();
-            tFuncCall.args.forEach(arg -> {
+            params.forEach(arg -> {
                 try {
                     returned.add(Primitives.toPrimitive(Primitives.parseNonPrimitive(arg), false, config, scope));
                 } catch (Exception e) {
