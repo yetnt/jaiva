@@ -21,7 +21,7 @@ maak monPerFuel <- 1000! @ Amount to refuel.
 maak fuelPerKm <- 10! @ 10 fuel is spent while driving for every kilometre.
 maak loanAmt <- 3e6! @ Total amount of money they can take out. when this reaches 0 they cannot take any more.
 maak SLEEP_TIME <- 500! @ While driving, it will decrease in fuel every 2 seconds.
-maak WIN <- 100000000!
+maak WIN <- 1e6!
 maak totalKm <- 0!
 
 maak carLvl <- 1!
@@ -49,8 +49,8 @@ kwenza shop() ->
     khuluma()!
     khuluma("1:$tUPGRADE UR CAR (IT WILL BE MORE EXPENSIVE TO MAINTAIN.) FOR R" + upgradePrice)!
     khuluma("2:$tFUEL UR CAR FOR R" + monPerFuel)!
-    khuluma("3:$tWIN THE GAME R" + 1e4)!
-    khuluma("4:$tLEAVE THE ESTABISHMENT.")!
+    khuluma("3:$tWIN THE GAME R" + WIN)!
+    khuluma("4:$tLEAVE THE ESTABLISHMENT.")!
     maak option <- mamela()!
     if (option = "1" && (money > upgradePrice)) ->
 
@@ -79,7 +79,7 @@ kwenza shop() ->
             fuelAmt <- maxFuel!
         <~
     <~  mara if (option = "3") ->
-        if (money = WIN) ->
+        if (money >= WIN) ->
             khutla yebo!
         <~
     <~ mara if (option = "4") ->
