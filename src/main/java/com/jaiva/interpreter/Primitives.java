@@ -577,24 +577,32 @@ public class Primitives {
                 return toPrimitive(ternary.trueExpr, false, config, scope);
             else
                 return toPrimitive(ternary.falseExpr, false, config, scope);
-        } else if (token instanceof Integer || token instanceof Double || token instanceof Boolean
-                || token instanceof String) {
+        } else if (isPrimitive(token)) {
+            // Primitives include: Boolean, Integer, Double, String, TVoidValue, ArrayList
+            // If we got here, then
             // its not a token so its def jus a primitive, so we wanna parse it as a
             // primitive.
             // also for the above recursive call where it may already be a primitive.
-            if (token instanceof String) {
-                return EscapeSequence.fromEscape((String) token, -1);
-            }
-            // Return int if the double is whole.
-            if (token instanceof Double) {
-                double d = (Double) token;
-                if (d == Math.rint(d)) {
-                    return (int) d;
+            return switch (token) {
+                case String s -> EscapeSequence.fromEscape(s, -1);
+                case Double d -> {
+                    double val = d;
+                    if (val == Math.rint(val)) {
+                        yield (int) val;
+                    } else {
+                        yield d;
+                    }
                 }
-            }
-            return token;
-        } else if (token instanceof TVoidValue) {
-            return token; // just return as is.
+                case ArrayList a -> {
+                    ArrayList<Object> parsedArr = new ArrayList<>();
+                    for (Object o : a) {
+                        parsedArr.add(toPrimitive(parseNonPrimitive(o), false, config, scope));
+                    }
+                    yield parsedArr; // yield keyword for returning in switch expressions
+                                    // pretty cool, never used it before
+                }
+                default -> token;
+            };
         }
         return void.class;
     }
