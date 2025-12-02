@@ -23,9 +23,9 @@ public class TimeZone extends BaseLibrary {
         super(LibraryType.LIB, "time/zone");
 
         BaseVariable getAll = new BaseVariable(
-                "tz_getAll",
+                "tz_all",
                 new TArrayVar(
-                        "tz_getAll",
+                        "tz_all",
                         new ArrayList<>(zoneIds.stream().map(Pair::getSecond).toList()),
                         -1,
                         JDoc.builder()
@@ -35,7 +35,7 @@ public class TimeZone extends BaseLibrary {
                                         tsea "jaiva/timezone"!
                                         
                                         @ Get all timezone constants
-                                        maak list <- tz_getAll!
+                                        maak list <- tz_all!
                                         @ Print everything with Etc prefix
                                         colonize item with list ->
                                             if (item ? "Etc") ->
