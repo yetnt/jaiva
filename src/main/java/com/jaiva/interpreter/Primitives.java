@@ -500,7 +500,7 @@ public class Primitives {
                 // normal variable ref, return it
                 try {
                     if (variable.s_get() instanceof String vs) return tVarRef.getLength() ? vs.length()
-                                : (index instanceof Integer newI) ? vs.charAt(newI) : variable.s_get();
+                                : (index instanceof Integer newI) ? vs.charAt(newI) + "" : variable.s_get();
                     else
                         return variable.s_get();
 

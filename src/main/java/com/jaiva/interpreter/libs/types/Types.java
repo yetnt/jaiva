@@ -169,8 +169,10 @@ public class Types extends BaseLibrary {
                 };
             } else if (val instanceof TVoidValue v) {
                 return v.toString();
+            } else if (val instanceof String s) {
+                return s;
             } else {
-                throw new WtfAreYouDoingException(scope, params.get(0) + " cannot become a string kau",
+                throw new WtfAreYouDoingException(scope, val + " cannot become a string kau",
                         tFuncCall.lineNumber);
             }
         }

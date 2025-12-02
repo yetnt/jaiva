@@ -2,6 +2,7 @@
 
 
 -   **[Index](#index)** <- you are here.
+-   **[Examples](#examples)**
 -   **[Syntax](#syntax)**
     -   _[Comments](#comments)_
     -   _[Assignment Operators](#assignment-operators)_
@@ -25,6 +26,7 @@
 -   **[Functions](#functions)**
     -   _[Definition](#definition-1)_
     -   _[Calling](#calling)_
+        -   [Spread Operator](#spread-operator)
     -   _[Referencing](#referencing)_
     -   _[Parameters](#parameters)_
         -   [Higher-Order Functions](#higher-order-functions)
@@ -45,6 +47,13 @@
     -   _[Throw an Error](#throw-an-error)_
     -   _[zama zama (Try) chaai (Catch) Block](#zama-zama-try-chaai-catch-block)_
 -   **[Tsea (Import) and Exporting Files](#tsea-import-and-exporting-files)**
+
+# Examples
+
+These examples tend to use multiple different features at once.
+See the relevant sections for more in depth explanations of each feature used.
+
+
 
 # Syntax
 
@@ -231,7 +240,7 @@ khuluma(func())! @ Prints idk, as the parameter t did not get a value.
 ```
 
 > [!NOTE]
-> In the case of passing `idk` into a function call, unless the paramter is marked as optional, you cannot pass `idk` into a required parameter.
+> In the case of passing `idk` into a function call, unless the parameter is marked as optional, you cannot pass `idk` into a required parameter.
 
 ## Operators
 
@@ -468,13 +477,21 @@ maak a <-| 10, 23, 984!
 khuluma(a~)! @ returns 3
 ```
 
+There is a function, which allows you to create an array literal on the fly:
+
+```jiv
+maak a <- arrLit(10, 23, 984)!
+@ Same as
+maak a <-| 10, 23, 984!
+```
+
 # Functions
 
 Functions are [scoped](#scopes) constructs.
 
 See [Globals](docs/Libraries.md) for a list of global functions that are available to you.
 
-## Defintion
+## Definition
 
 Functions are defined using the `kwenza` keyword, and return values using the `khutla` keyword.
 
@@ -497,6 +514,96 @@ maak c <- addition(10, 20)! @ 30
 ```
 
 Function parameters can take any type of variable, including arrays and other functions.
+
+### Spread Operator
+
+See [Arrays](#arrays) for more information on arrays.
+
+The spread operator (`:::`) allows you to spread the elements of an array into individual 
+arguments when calling a function.
+
+```jiv
+maak arr <-| 10, 20, 30!
+
+kwenza sum(param1, param2, param3) ->
+    khutla (param1 + param2 + param3)!
+<~
+
+maak result <- sum(arr:::)! @ This is equivalent to sum(10, 20, 30)
+```
+
+It works best when paired with [Variadic Arguments](#variadic-arguments), otherwise other arguments will be
+effectively discarded
+
+```jiv
+maak arr <-| 10, 20, 30!
+
+kwenza sum(<-params) ->
+    maak total!
+    colonize param with params ->
+        total <- total + param!
+    <~
+<~
+
+kwenza sum2(a, b) ->
+    khutla a + b!
+<~
+
+maak result <- sum(arr:::)! @ This works perfectly, as sum takes in a variadic parameter
+maak result2 <- sum2(arr:::)! @ Will be 30, as only the first 2 elements of arr are consumed and the last elemnt is discarded.
+```
+
+And a more in depth example of this behaviour
+
+```jiv
+maak arr <-| 1, 4, 3!
+
+kwenza sub(p, q) ->
+    khutla p - q!
+<~
+
+maak result <- sub(arr:::, 2)!
+```
+>   In the above call, the spread operator expands to 1, 4 and 3 before the function is called.
+>   Therefore the second parameter given which was 2, is giuven as the 4th parameter to the function.
+>    Effectively making the function call sub(1, 4, 3, 2), However since the function only takes in 2 parameters,
+>    the 3rd and 4th parameters are discarded.
+    
+>    Therefore, result will be -3 sub(1, 4)
+    
+>    Parameters are read left to right, and when a spread operator is used, it expands the array elements in place,
+>    pushing any subsequent parameters to the right.
+
+And a shorter example using [lambdas](#lambdas)
+
+```jiv
+maak arr <-| "hello", " ", "world"!
+
+khuluma( (f~(arr):arr~)(arr:::) )!
+```
+
+>   In this example, we define a lambda function that takes an array and returns its length.
+>   However, when we call this lambda with the spread operator, it expands the array elements into individual arguments.
+>   The lambda instead receives each string as a separate argument rather than a single array
+>   and since the lambda expects a single array parameter, the extra arguments are discarded.
+
+>   Therefore, it will return the length of the first argument "hello", which is 5.
+
+It is up to the function's definition to handle the parameters correctly, otherwise out of bounds parameters will be discarded.
+
+The only exception to this is when the function takes in a [Variadic Argument](#variadic-arguments), in which case all parameters after the spread operator 
+will be consumed into the variadic parameter as an array and any other parameters before and/or after will be assigned normally.
+
+Also yes, you can spread multiple arrays multiple times in a single function call.
+
+```jiv
+maak arr1 <-| 1, 2, 3!
+maak arr2 <-| 4, 5, 6!
+kwenza combine(<-params) ->
+    khutla params!
+<~
+maak result <- combine(-1, 0, arr1:::, arr2:::, 7, 8)! @ result is now [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+```
 
 ## Referencing
 
@@ -604,7 +711,9 @@ where `<param>` is your basic jaiva parameter. Can be required, optional, var ar
 
 and `(return value)` is an atomic value, so that's your number, string, variable, function call, another lambda. All good.
 
-Also. Yes. Creating a lambda, preserves the [Scope](#scope) it was created in.
+Lambdas, are strictly single line and have to return something within that single line (Without the `khutla` keyword)
+
+Also. Yes. Creating a lambda, preserves the [Scope](#scope) it was created in, allowing for functional paradigms like currying and closures.
 
 e.g.
 
@@ -619,10 +728,16 @@ And now functions which take in simple functions, can be reduced to a single lin
 e.g.
 
 ```jaiva
+tsea "jaiva/arrays"!
+
 a_reduce(arr, f~(a, b) : a << b)!
 ```
 
-Lambdas, are strictly single line and have to return something within that single line (Without the `khutla` keyword)
+A lambda, is no different to a function at all. Parameters are defined the same way, and it's called the same way too.
+Don't believe me? The token [TLambda](../src/main/java/com/jaiva/tokenizer/tokens/specific/TLambda.java)
+extends the token [TFunction](../src/main/java/com/jaiva/tokenizer/tokens/specific/TFunction.java) and within the interpreter,
+the class [Lambda](../src/main/java/com/jaiva/interpreter/symbol/Lambda.java) extends the class
+[BaseFunction](../src/main/java/com/jaiva/interpreter/symbol/BaseFunction.java)
 
 # If Statements
 

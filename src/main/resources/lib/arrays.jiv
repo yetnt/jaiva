@@ -327,3 +327,55 @@ kwenza *a_map(arr, F~mapperFunction) ->
     <~
     khutla new!
 <~
+
+@* Creates an array from a string, splitting it by a specified delimiter or index.
+@* p        $> input <- string The input string to convert into an array.
+@* p        $> split? <- idk An optional delimiter string or index number.
+@* returns  $> An array created from the input string, split by the specified delimiter or index.
+@* since    $> 5.0.0
+@* devn     $> Throws if the input is not a string. Also, this function imports jaiva/types for type
+@*          $> conversions. A perfomance hit may be observed the first time this function is called.
+@* example  $> khuluma(a_from("hello"))! @ Returns ["h", "e", "l", "l", "o"]
+@*          $> khuluma(a_from("apple,banana,cherry", ","))! @ Returns ["apple", "banana", "cherry"]
+@*          $> khuluma(a_from("abcdef", 3))! @ Returns ["abc", "def"]
+kwenza *a_from(input, split?) ->
+    @ Should probably not do this, but we need type conversions, so import types
+    if (typeOf(input) != "string") ->
+        cima <== "a_from() only works on strings"!
+    <~
+
+    tsea "jaiva/types" <- t_str!
+
+    if ((split = idk) || (split = "")) ->
+        khutla arrLit(input:::)! @ Spread syntax to convert string to array of characters.
+    <~
+
+    maak arr <-|!
+    maak current <- ""!
+
+    if (typeOf(split) = "number") ->
+        @ here we split at that index, splitting into an array of 2 elements
+        colonize i <- 0 | i < input~ | + ->
+            if (i != split) ->
+                current <- current + input[i]!
+            <~ mara ->
+                arr <- arrLit(arr:::, current)!
+                current <- ""!
+            <~
+        <~
+        khutla arrLit(arr:::, current)! @ Add the last part
+    <~
+
+    split <- t_str(split)! @ Whatever it is, convert to string first.
+
+    colonize part with input ->
+        if (part != split) ->
+            current <- current + part!
+        <~ mara ->
+            arr <- arrLit(arr:::, current)!
+            current <- ""!
+        <~
+    <~
+
+    khutla arrLit(arr:::, current)! @ Add the last part
+<~
