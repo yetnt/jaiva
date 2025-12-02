@@ -1,213 +1,238 @@
 # `math`
-
-This library contains (some) math functions. Unless really needed I don't see myself adding more than these.
-
-All functions and variables from this library are prefixed with `m_` to avoid conflicts with other libraries.
-
-See [Math.java](../src/main/java/com/jaiva/interpreter/libs/Math.java) where this is defined.
-
-## Constants
-
-### `m_pi <- `_*`number`*_
-
-Holds the value of π (pi).
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_pi)! @ Prints 3.141592653589793
-```
-
-### `m_e <- `_*`number`*_
-
-Holds the value of e (Euler's number).
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_e)! @ Prints 2.718281828459045
-```
-
-### `m_tau <- `_*`number`*_
-
-Holds the value of τ (tau), which is 2π.
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_tau)! @ Prints 6.283185307179586
-```
-
-### `m_phi <- `_*`number`*_
-
-Holds the value of φ (phi), which is the golden ratio.
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_phi)! @ Prints 1.618033988749895
-```
-
+ 
+Math library
+ 
+ 
 ## Functions
-
-### `m_abs(value) -> `_*`khutla number!`*_
-
-
-Returns the absolute value of the given number. This is useful for getting rid of negative signs.
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_abs(-5))! @ Prints 5
-khuluma(m_abs(5))! @ Prints 5
+ 
+### `F~m_toDeg(radians) -> `_**`number`**_
+ 
+Converts radians to degrees.
+ 
+- **`radians`** <- `"number"` : _The value in radians._
+ 
+Returns :
+> _**The value in degrees.**_
+ 
+**Example:**
+```jaiva
+maak rad <- 1.5708!
+maak deg <- m_toDeg(rad)!
+khuluma(deg) @ Output: 90.0002104591497
 ```
-
-### `m_sqrt(value) -> `_*`khutla number!`*_
-
-
-Returns the square root of the given number.
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_sqrt(16))! @ Prints 4
-khuluma(m_sqrt(25))! @ Prints 5
+ 
+### `F~m_asin(value) -> `_**`number`**_
+ 
+Returns the arcsine of a number in radians.
+ 
+- **`value`** <- `"number"` : _The value in radians._
+ 
+Returns :
+> _**The arcsine of the given value in radians.**_
+ 
+### `F~m_round(value) -> `_**`number`**_
+ 
+Rounds the given real number to an integer.
+ 
+- **`value`** <- `"number"` : _The input to round up/down._
+ 
+Returns :
+> _**An integer value**_
+ 
+**Example:**
+```jaiva
+khuluma("Rounded value of 4.6 is: " + m_round(4.6))!
 ```
-
-### `m_pow(base, exponent) -> `_*`khutla number!`*_
-
-
-Raises the `base` to the power of `exponent`.
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_pow(2, 3))! @ Prints 8
-khuluma(m_pow(5, 2))! @ Prints 25
+ 
+### `F~m_sqrt(value) -> `_**`number`**_
+ 
+Calculates the square root of the input value.
+ 
+- **`value`** <- `"number"` : _The number to find the square root of._
+ 
+Returns :
+> _**Returns the (positive) square root of the number provided**_
+ 
+**Example:**
+```jaiva
+khuluma("The square root of 16 is: " + m_sqrt(16))!
 ```
-
-### `m_sin(value) -> `_*`khutla number!`*_
-
-
-Returns the sine of the given angle in radians.
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_sin(m_pi / 2))! @ Prints 1.0
-khuluma(m_sin(m_pi))! @ Prints 0.0
+ 
+### `F~m_tan(value) -> `_**`number`**_
+ 
+Returns the tangent of a number in radians.
+ 
+- **`value`** <- `"number"` : _The value in radians._
+ 
+Returns :
+> _**The tangent of the given value in radians.**_
+ 
+### `F~m_floor(value) -> `_**`number`**_
+ 
+Returns the largest integer less than or equal to the given value.
+ 
+- **`value`** <- `"number"` : _The value to floor._
+ 
+Returns :
+> _**The largest integer less than or equal to the given value.**_
+ 
+### `F~m_sin(value) -> `_**`number`**_
+ 
+Returns the sine of a number in radians.
+ 
+- **`value`** <- `"number"` : _The value in radians._
+ 
+Returns :
+> _**The sine of the given value in radians.**_
+ 
+### `F~m_abs(value) -> `_**`number`**_
+ 
+Returns the absolute value of a number.
+ 
+- **`value`** <- `"number"` : _The value to return the value of._
+ 
+Returns :
+> _**A positive value.**_
+ 
+**Example:**
+```jaiva
+khuluma("The absolute value of -5 is: " + m_abs(-5))!
 ```
-
-### `m_cos(value) -> `_*`khutla number!`*_
-
-
-Returns the cosine of the given angle in radians.
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_cos(0))! @ Prints 1.0
-khuluma(m_cos(m_pi))! @ Prints -1.0
+ 
+### `F~m_acos(value) -> `_**`number`**_
+ 
+Returns the arccosine of a number in radians.
+ 
+- **`value`** <- `"number"` : _The value in radians._
+ 
+Returns :
+> _**The arccosine of the given value in radians.**_
+ 
+### `F~m_toRad(degrees) -> `_**`number`**_
+ 
+Converts degrees to radians.
+ 
+- **`degrees`** <- `"number"` : _The value in degrees._
+ 
+Returns :
+> _**The value in radians.**_
+ 
+**Example:**
+```jaiva
+maak deg <- 90!
+maak rad <- m_toRad(deg)!
+khuluma(rad) @ Output: 1.5707963267948966
 ```
-
-### `m_tan(value) -> `_*`khutla number!`*_
-
-
-Returns the tangent of the given angle in radians.
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_tan(m_pi / 4))! @ Prints 1.0
-khuluma(m_tan(m_pi / 2))! @ Prints Infinity (or throws an error, depending on the implementation)
+ 
+### `F~m_random(a?, b?) -> `_**`number`**_
+ 
+Returns a random number in the range of `a` and `b`, If both are omitted, returns a random (double) between 0 and 1.
+ 
+- _`a?`_ <- `"number"` : _The highest number possible between `a` and 0, otherwise the lowest between `a` and `b` (inclusive)_
+- _`b?`_ <- `"number"` : _The highest number possible between a and b (inclusive). _
+ 
+Returns :
+> _**A random number.**_
+ 
+**Example:**
+```jaiva
+khuluma("Random number between 1 and 10: " + m_random(1, 10))!
+khuluma("Random number between 0 and 5: " + m_random(5))!
+khuluma("Random number between 0 and 1: " + m_random())!
 ```
-
-### `m_asin(value) -> `_*`khutla number!`*_
-
-
-Returns the arcsine (inverse sine) of the given value. The input should be between -1 and 1, and the output is in radians.
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_asin(1))! @ Prints 1.5707963267948966 (which is π/2)
-khuluma(m_asin(0))! @ Prints 0.0
+ 
+> [!NOTE]
+> _Unlike other functions, if you provide no arguments, this function returns a double between 0 and 1. If you provide only one argument, it is treated as the upper bound, with the lower bound being 0._
+ 
+### `F~m_cos(value) -> `_**`number`**_
+ 
+Returns the cosine of a number in radians.
+ 
+- **`value`** <- `"number"` : _The value in radians._
+ 
+Returns :
+> _**The cosine of the given value in radians.**_
+ 
+### `F~m_atan(value) -> `_**`number`**_
+ 
+Returns the arctangent of a number in radians.
+ 
+- **`value`** <- `"number"` : _The value in radians._
+ 
+Returns :
+> _**The arctangent of the given value in radians.**_
+ 
+### `F~m_ceil(value) -> `_**`number`**_
+ 
+Returns the smallest integer greater than or equal to the given value.
+ 
+- **`value`** <- `"number"` : _The value to ceil._
+ 
+Returns :
+> _**The smallest integer greater than or equal to the given value.**_
+ 
+### `F~m_log(value, base?) -> `_**`number`**_
+ 
+Calculates the logarithm of a value with the specified base.
+ 
+- **`value`** <- `"number"` : _The value to calculate the logarithm for._
+- _`base?`_ <- `"number"` : _The base of the logarithm, otherwise 10 is used_
+ 
+Returns :
+> _**The logarithm of the value with the specified base.**_
+ 
+**Example:**
+```jaiva
+khuluma("Log base 10 of 1000 is: " + m_log(1000))!
+khuluma("Log base 2 of 1024 is: " + m_log(1024, 2))!
 ```
-
-### `m_acos(value) -> `_*`khutla number!`*_
-
-
-Returns the arccosine (inverse cosine) of the given value. The input should be between -1 and 1, and the output is in radians.
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_acos(1))! @ Prints 0.0
-khuluma(m_acos(0))! @ Prints 1.5707963267948966 (which is π/2)
+## Variables
+ 
+### `m_e <- `_**`number`**_
+ 
+The mathematical constant e (Euler's number)
+ 
+**Example:**
+```jaiva
+khuluma(2 ^ m_e)! @ approximately 7.38905609893065
 ```
-
-### `m_atan(value) -> `_*`khutla number!`*_
-
-
-Returns the arctangent (inverse tangent) of the given value. The output is in radians.
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_atan(1))! @ Prints 0.7853981633974483 (which is π/4)
-khuluma(m_atan(0))! @ Prints 0.0
+ 
+> [!NOTE]
+> _Just java.lang.Math.E_
+ 
+### `m_phi <- `_**`number`**_
+ 
+The golden ratio φ (phi)
+ 
+**Example:**
+```jaiva
+@ Calculating the golden rectangle dimensions
+maak shortSide <- 10!
+maak longSide <- shortSide * m_phi!
+khuluma("Long side of the golden rectangle: " + longSide)! @ approximately 16.18033988749895
 ```
-
-### `m_toRad(degrees) -> `_*`khutla number!`*_
-
-
-Converts degrees to radians. This is useful for trigonometric functions that expect radians.
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_toRad(180))! @ Prints 3.141592653589793 (which is π)
-khuluma(m_toRad(90))! @ Prints 1.5707963267948966 (which is π/2)
+ 
+> [!NOTE]
+> _No note here._
+ 
+### `m_pi <- `_**`number`**_
+ 
+The mathematical constant π (pi)
+ 
+> [!NOTE]
+> _It's just java.lang.Math.PI_
+ 
+### `m_tau <- `_**`number`**_
+ 
+The mathematical constant τ (tau), which is equal to 2π
+ 
+**Example:**
+```jaiva
+@ Using tau to calculate the circumference of a circle with radius 5
+maak radius <- 5!
+maak circumference <- m_tau * radius!
+khuluma(circumference)! @ approximately 31.41592653589793
 ```
-
-### `m_toDeg(radians) -> `_*`khutla number!`*_
-
-
-Converts radians to degrees. This is useful for converting angles to a more human-readable format.
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_toDeg(m_pi))! @ Prints 180.0
-khuluma(m_toDeg(m_pi / 2))! @ Prints 90.0
-```
-
-### `m_floor(value) -> `_*`khutla number!`*_
-
-
-Rounds the given real number down to the nearest integer.
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_floor(4.51))! @ Prints 4
-khuluma(m_floor(-4.51))! @ Prints -5
-```
-
-### `m_ceil(value) -> `_*`khutla number!`*_
-
-
-Rounds the given real number up to the nearest integer.
-
-```jiv
-tsea "jaiva/math"!
-khuluma(m_ceil(4.51))! @ Prints 5
-khuluma(m_ceil(-4.51))! @ Prints -4
-```
-
-### `m_round(value) -> `_*`khutla number!`*_
-
-
-Rounds the given real nmber to an integer. This is for the real ones who hate working with precision.
-
-```jiv
-tsea "jaiva/math"!
-
-khuluma(m_round(4.51))! @ Prints 5
-```
-
-### `m_random(lower, upper) `_*`khutla number!`*_
-
-
-Returns a random (integer) between the `lower` and `upper` bounds. (Both inclusive)
-
-```jiv
-tsea "jaiva/math"!
-
-khuluma(m_random(0, 10) > 5)! @ Might print true or false
-khuluma(m_random(0, 10) > 5)! @ Might print true or false
-```
+ 
+> [!NOTE]
+> _Just java.lang.Math.TAU_

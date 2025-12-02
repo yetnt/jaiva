@@ -1,56 +1,47 @@
 # `types`
-
-This library contains functions for converting stuff to different types.
-
-See [Types.java](../../src/main/java/com/jaiva/interpreter/libs/Types.java) where this is defined.
-
-## `t_str(input?, radix?) -> `_*`khutla "string"!`*_
-
-
-Attempts to convert the `input` of any given type into it's string form. With an optional `radix` parameter for integers
-
-```jiv
-tsea "jaiva/types"!
-
-maak b <- 100!
-
-khuluma(t_str(idk))!        @ "idk"
-khuluma(t_str(false))!      @ "aowa"
-khuluma(t_str(-10, 16))!    @ "0xFFFFFFF6"
-khuluma(t_str(khuluma))!    @ "khuluma(msg, removeNewLn?)"
-khuluma(t_str(b))!          @ "100"
+ 
+Stuff for handling with types.
+ 
+## Symbols
+ 
+### `F~t_num(string, radix?) -> `_**`number`**_
+ 
+Converts a given **string** to a number with an optional **radix**.
+ 
+- **`string`** <- `"string"` : _The input to convert to a number_
+- _`radix?`_ <- `"number"` : _An optional radix to convert to_
+ 
+Returns :
+> _**A number. (Either a double or integer)**_
+ 
+**Example:**
+```jaiva
+khuluma(t_num("0b1010"))! @ prints 10
+khuluma(t_num("FF", 16))! @ prints 255
+khuluma(t_num("3.14"))! @ prints 3.14
+khuluma(t_num("0x1A"))! @ prints 26
 ```
-
-If an integer with a radix of `2`, `8` or `16` is given, the function will append it's corresponding prefix, otherwise it just returns the string form.
-
-```jiv
-tsea "jaiva/types"
-
-khuluma(t_str(10, 16))!     @ "0xA"
-khuluma(t_str(10, 2))!      @ "0b1010"
-khuluma(t_str(10, 8))!      @ "0c12"
-khuluma(t_str(4000, 4))     @ "332200"
+ 
+> [!NOTE]
+> _Jaiva integer prefixes [such as _0x_ or _0b_], are checked for first before the radix._
+ 
+### `F~t_str(input?, radix?) -> `_**`string`**_
+ 
+Converts any input of any given type to a string.
+ 
+- _`input?`_ <- `"idk"` : _The input to convert_
+- _`radix?`_ <- `"number"` : _A given radix for integers_
+ 
+Returns :
+> _**A string representation of the given input**_
+ 
+**Example:**
+```jaiva
+khuluma(t_str(255))! @ prints "255"
+khuluma(t_str(true))! @ prints "yebo"
+khuluma(t_str(yebo))! @ prints "yebo"
+khuluma(t_str(10, 2))! @ prints "0b1010"
 ```
-
-## `t_num(string, radix?) -> `_*`khutla number!`*_
-
-
-Attempts to convert a given `string` to number, with an optional `radix` input for integers.
-
-```jiv
-tsea "jaiva/types"!
-
-khuluma(t_num("10.3"))          @ 10.3
-khuluma(t_num("A", 16))!        @ 10
-khuluma(t_num("0xA"))!          @ 10
-khuluma(t_num("0b1001010"))!    @ 74
-khuluma(t_num("1010", 2))!      @ 10
-khuluma(t_num("23123", 21))!    @ 417231
-```
-
-If both a prefixed integer and radix input is given, the `prefix` is used over the `radix`, effectively ignoring it
-
-```jiv
-khuluma(t_num("0b1010"))        @ 10
-khuluma(t_num("0b1010", 12))!   @ Still outputs 10, because it's prefixed with 0b, which is base 2
-```
+ 
+> [!NOTE]
+> _If given an input of `idk`, it will return `idk`. Not a string._

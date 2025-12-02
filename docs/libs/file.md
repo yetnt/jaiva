@@ -1,102 +1,164 @@
 # `file`
-
-This library contains variables (and soon maybe functions) for handling file related things.
-
-> [!WARNING]
-> `f_bin` has been deprecated as of `v4.0.0`
-
-## `[file]` Structure
-
-Some of these functions return an array which contains relevant information about the file in question.
-
-This is the format all these arrays follow
-
-```jaiva
-[fileName, fileDir, [contents], [canRead, canWrite, canExecute]]
-```
-
-So for a file "C:/Users/Documents/myfile.js", with the content:
-
-```js
-console.log("I love Brotherkupa.");
-console.log("Nobody asked.");
-```
-
-the array will contain the following:
-
-```json
-[
-    "myfile.js",
-    "C:/Users/Documents/",
-    [
-        "console.log(\"I love Brotherkupa.\");",
-        "console.log(\"Nobody asked.\");"
-    ],
-    [
-        true, true, true
-    ]
-]
-```
-
-See [IOFile.java](../../src/main/java/com/jaiva/interpreter/libs/IOFile.java) where this is defined.
-
-For all exmaples, the "current" file is located in C:\Users\me\file.jiv
-
-## Constants
-
-### `f_this <- `_*`[file]!`*_
-
-Returns an array containing the current file's properties ([Structure](#file-structure))
-
-```jiv
-tsea "jaiva/file"!
-maak fileInfo <- f_this()! @ Gets the current file's properties.
-khuluma(fileInfo)! @ Prints the array with file name, directory, contents, and permissions.
-```
-
-### `f_name <- `_*`"string"`*_
-
-
-Returns the current file name
-
-```jiv
-tsea "jaiva/file"!
-khuluma(f_name)! @ file.jiv
-```
-
-### `f_dir <- `_*`"string"`*_
-
-
-Returns the current working directory
-
-```jiv
-tsea "jaiva/file"!
-khuluma(f_dir)! @ C:\Users\me\file.jiv
-```
-
+ 
+File I/O library. Where the type [file] is a structured array with the following [filename, fileDir, [filecontent, separatedby, lines], [canRead, canWrite, canExecute]]
+ 
+ 
 ## Functions
-
-### `f_file(path) -> `_*`khutla ([file])!`*_
-
-Returns an array containing the properties of the file at the given `path` ([Structure](#file-structure)).
-
-```jiv
-tsea "jaiva/file"!
-maak fileInfo <- f_file("C:/Users/me/anotherfile.js")! @ Gets the properties of anotherfile.js.
-khuluma(fileInfo)! @ Prints the array with file name, directory, contents, and permissions.
+ 
+### `F~f_permsOf(file) -> `_**`function`**_
+ 
+Gets the permissions of the file from a file.
+ 
+- **`file`** <- `"[]"` : _The file array to get the permissions from._
+ 
+Returns :
+> _**A function that allows you to return a specific permission or all permissions as an array.**_
+ 
+**Example:**
+```jaiva
+maak permissions <- f_permsOf(f_this)!
+khuluma(permissions())! @ Prints all permissions as an array [canRead, canWrite, canExecute]
+khuluma(permissions("read"))! @ Prints whether the file can be read (true/false)
+khuluma(permissions("r"))! @ Prints whether the file can be read (true/false)
+khuluma(permissions(0))! @ Prints whether the file can be read (true/false)
+@ Similarly for "write"/"w"/1 and "execute"/"x"/2
 ```
-
-### `f_new(path, content, canRead?, canWrite?, canExecute?) -> `_*`khutla boolean`*_
-
-
-Creates a new file at the given `path` with the given `content`. The `canRead`, `canWrite`, and `canExecute` parameters are optional and default to true if not provided.
-
-Returns true if the file was created successfully, false otherwise.
-Therefore if the file already exists or could not be created, it will return false.
-
-```jiv
-tsea "jaiva/file"!
-maak filePath <-  "C:/Users/Documents/somewhere/newfile.jiv"! @ Creates a new file
-f_new(filePath, "khuluma($"Hello, world$!$")!")! @ Creates a new file with the given content.
-khuluma("File created at " + filePath)! @ Prints the file path
+ 
+> [!NOTE]
+> _Unlike other functions, this one may require a bit of functional thinking. It returns a function that you can call to get specific permissions or all permissions at once._
+ 
+### `F~f_dirOf(file) -> `_**`string`**_
+ 
+Gets the directory path of the file from a file.
+ 
+- **`file`** <- `"[]"` : _The file array to get the directory path from._
+ 
+Returns :
+> _**The directory path of the file as a string.**_
+ 
+**Example:**
+```jaiva
+khuluma(f_dirOf(f_this))! @ Prints the directory path of the current file.
 ```
+ 
+### `F~f_contentOf(file) -> `_**`[]`**_
+ 
+Gets the content of the file from a file.
+ 
+- **`file`** <- `"[]"` : _The file array to get the content from._
+ 
+Returns :
+> _**The content of the file as an array of strings.**_
+ 
+**Example:**
+```jaiva
+khuluma(f_contentOf(f_this))! @ Prints the content of the current file.
+```
+ 
+### `F~f_file(path) -> `_**`[]`**_
+ 
+Finds the specified file and retrieves it's contents.
+ 
+- **`path`** <- `"string"` : _The path to the file you want to fetch._
+ 
+Returns :
+> _**Returns an array containing the properties of the file at the given `path` \n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]**_
+ 
+**Example:**
+```jaiva
+maak file <- f_file("data/myFile.txt")!
+khuluma("File name: " + file[0])!
+khuluma("File directory: " + file[1])!
+```
+ 
+### `F~f_new(path, content, canRead?, canWrite?, canExecute?) -> `_**`boolean`**_
+ 
+Creates a new file with the given properties at the given file.
+ 
+- **`path`** <- `"string"` : _The path to the new file to createFunction. Along with the file name and extension_
+- **`content`** <- `"idk"` : _The content the file should hold. Either a string or an array of strings._
+- _`canRead?`_ <- `"boolean"` : _Whether or not the file can be read. Defaults to true_
+- _`canWrite?`_ <- `"boolean"` : _Whether the file can be written to or not. Defaults to true_
+- _`canExecute?`_ <- `"boolean"` : _Whether the file can be executed or not. Defaults to true._
+ 
+Returns :
+> _**A boolean `true` if the file could be created. `false` otherwise.**_
+ 
+**Example:**
+```jaiva
+maak success <- f_new("data/newFile.txt", arrLit("Hello, World!", "This is a new file."), true, true, false)!
+if (success) ->
+    khuluma("File created successfully!")!
+<~ else ->
+    khuluma("Failed to createFunction file.")!
+<~
+```
+ 
+### `F~f_nameOf(file) -> `_**`string`**_
+ 
+Gets the name of the file from a file.
+ 
+- **`file`** <- `"[]"` : _The file array to get the name from._
+ 
+Returns :
+> _**The name of the file as a string.**_
+ 
+**Example:**
+```jaiva
+khuluma(f_nameOf(f_this))! @ Prints the name of the current file.
+```
+## Variables
+ 
+### `f_bin <- `_**`string`**_
+ 
+> [!IMPORTANT]
+> _**This symbol is deprecated!**__`As of (one of the versions), the jaiva-cli sh and windows command no longer exist. (This was only used to locate where the /lib/ folder was, however now the lib folder lives within jaiva.jar itself, deprecating the need for locating jaiva.jar)`_
+ 
+Variable that holds the directory where you can find jaiva.jar
+ 
+**Example:**
+```jaiva
+@ Now. I would give an example for this.
+@ However, why should I if it's deprecated?
+```
+ 
+### `f_name <- `_**`string`**_
+ 
+Variable that holds the current file's name
+ 
+**Example:**
+```jaiva
+if (f_name != "myFile.jiv") ->
+    khuluma("This is not myFile.jiv!")!
+<~
+```
+ 
+> [!NOTE]
+> _If you call this within the REPL, or somehow the filePath is null, it holds "REPL"_
+ 
+### `f_this <- `_**`[]`**_
+ 
+Returns the current file's properties and contents.
+ 
+**Example:**
+```jaiva
+f_this[0]! @ holds the file name
+f_this[1]! @ holds the file directory
+khuluma("File contents: " + f_this[2])! @ holds the file contents as an array
+khuluma("Can we write to this file? " + f_this[3][1])! @ holds the file permissions
+```
+ 
+> [!NOTE]
+> _Returns an array containing the current file's properties \n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]_
+ 
+### `f_dir <- `_**`string`**_
+ 
+Variable that holds the current file's directory.
+ 
+**Example:**
+```jaiva
+khuluma("Current file directory is: " + f_dir)!
+```
+ 
+> [!NOTE]
+> _If you call this within the REPL, or somehow the filePath is null, it holds "REPL"_
