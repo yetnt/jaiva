@@ -216,7 +216,7 @@ Returns :
 **Example:**
 ```jaiva
 khuluma(a_from("hello"))! @ Returns ["h", "e", "l", "l", "o"]
-khuluma(a_from("apple$,banana$,cherry", "$,"))! @ Returns ["apple", "banana", "cherry"]
+khuluma(a_from("apple,banana,cherry", ","))! @ Returns ["apple", "banana", "cherry"]
 khuluma(a_from("abcdef", 3))! @ Returns ["abc", "def"]
 ```
  
