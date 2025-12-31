@@ -55,7 +55,7 @@ public class Trig extends BaseLibrary {
                            Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config, scope);
+            Object v = Primitives.toPrimitive(params.getFirst(), false, config, scope);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(scope, this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -94,7 +94,7 @@ public class Trig extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config, scope);
+            Object v = Primitives.toPrimitive(params.getFirst(), false, config, scope);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(scope, this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -133,7 +133,7 @@ public class Trig extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config, scope);
+            Object v = Primitives.toPrimitive(params.getFirst(), false, config, scope);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(scope, this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -172,7 +172,7 @@ public class Trig extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config, scope);
+            Object v = Primitives.toPrimitive(params.getFirst(), false, config, scope);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(scope, this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -211,7 +211,7 @@ public class Trig extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config, scope);
+            Object v = Primitives.toPrimitive(params.getFirst(), false, config, scope);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(scope, this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -250,7 +250,7 @@ public class Trig extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object v = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config, scope);
+            Object v = Primitives.toPrimitive(params.getFirst(), false, config, scope);
             // Ensure the first parameter is a number
             if (!(v instanceof Number)) {
                 throw new FunctionParametersException(scope, this, "1", v, Number.class, tFuncCall.lineNumber);
@@ -293,7 +293,7 @@ public class Trig extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+            Object value = Primitives.toPrimitive(params.getFirst(), false, config,
                     scope);
             // Ensure the first parameter is a number
             if (!(value instanceof Number)) {
@@ -337,7 +337,7 @@ public class Trig extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+            Object value = Primitives.toPrimitive(params.getFirst(), false, config,
                     scope);
             // Ensure the first parameter is a number
             if (!(value instanceof Number)) {

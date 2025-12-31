@@ -63,7 +63,7 @@ public class Time extends BaseLibrary {
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
             checkParams(tFuncCall, scope);
-            Object val = Primitives.toPrimitive(com.jaiva.interpreter.Primitives.parseNonPrimitive(params.getFirst()), false, config, scope);
+            Object val = Primitives.toPrimitive(params.getFirst(), false, config, scope);
             if (!(val instanceof Number num))
                 throw new InterpreterException.WtfAreYouDoingException(scope, "t_msToSec() only accepts a number.", tFuncCall.lineNumber);
 
@@ -97,13 +97,13 @@ public class Time extends BaseLibrary {
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
             checkParams(tFuncCall, scope);
-            Object dateStringObj = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config, scope);
+            Object dateStringObj = Primitives.toPrimitive(params.getFirst(), false, config, scope);
             if (!(dateStringObj instanceof String dateString))
                 throw new InterpreterException.WtfAreYouDoingException(scope, "t_parseDate() expects a date string as the first argument.", tFuncCall.lineNumber);
 
             String format = null;
             if (params.size() > 1) {
-                Object formatObj = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), false, config, scope);
+                Object formatObj = Primitives.toPrimitive(params.get(1), false, config, scope);
                 if (!(formatObj instanceof String) && !(formatObj instanceof TVoidValue))
                     throw new InterpreterException.WtfAreYouDoingException(scope, "t_parseDate() expects a format string as the second argument.", tFuncCall.lineNumber);
                 format = formatObj instanceof TVoidValue ? null : (String) formatObj;
@@ -123,7 +123,7 @@ public class Time extends BaseLibrary {
 
             String timezone = "UTC";
             if (params.size() > 2) {
-                Object formatObj = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(2)), false, config, scope);
+                Object formatObj = Primitives.toPrimitive(params.get(2), false, config, scope);
                 if (!(formatObj instanceof String))
                     throw new InterpreterException.FunctionParametersException(scope, this, "3", formatObj, String.class, tFuncCall.lineNumber);
 //                    throw new InterpreterException.WtfAreYouDoingException(scope, "t_parseDate() needs the 3rd param to be a string zawg.", tFuncCall.lineNumber);

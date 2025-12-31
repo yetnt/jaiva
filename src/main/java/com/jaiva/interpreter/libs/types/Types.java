@@ -81,7 +81,7 @@ public class Types extends BaseLibrary {
                            Scope scope)
                 throws Exception {
             this.checkParams(tFuncCall, scope);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+            Object val = Primitives.toPrimitive(params.getFirst(), false, config,
                     scope);
 
             if (!(val instanceof String value))
@@ -97,7 +97,7 @@ public class Types extends BaseLibrary {
                     if (params.size() == 1)
                         return Integer.parseInt(value, type != -1 ? type : 10);
 
-                    Object r = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), false, config,
+                    Object r = Primitives.toPrimitive(params.get(1), false, config,
                             scope);
                     if (!(r instanceof TVoidValue) && !(r instanceof Integer))
                         throw new FunctionParametersException(scope, this, "2", tFuncCall.lineNumber);
@@ -144,7 +144,7 @@ public class Types extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             this.checkParams(tFuncCall, scope);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), false, config,
+            Object val = Primitives.toPrimitive(params.get(0), false, config,
                     scope);
 
             if (val instanceof Double || val instanceof BaseFunction) {
@@ -156,7 +156,7 @@ public class Types extends BaseLibrary {
             else if (val instanceof Integer integer) {
                 if (params.size() == 1)
                     return val.toString();
-                Object r = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), false, config,
+                Object r = Primitives.toPrimitive(params.get(1), false, config,
                         scope);
                 if (!(r instanceof TVoidValue) && !(r instanceof Integer))
                     throw new FunctionParametersException(scope, this, "2", tFuncCall.lineNumber);

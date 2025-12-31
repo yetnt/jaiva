@@ -6,6 +6,7 @@ import java.util.*;
 import com.jaiva.Main;
 import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.errors.JaivaException.DebugException;
+import com.jaiva.errors.Warnings;
 import com.jaiva.interpreter.libs.global.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.runtime.ImportVfs;
@@ -106,7 +107,7 @@ public class Interpreter {
 
         } else if (lc instanceof TThrowError) {
 //            if (scope.current == Context.GLOBAL)
-            Object message = Primitives.toPrimitive(Primitives.parseNonPrimitive(((TThrowError) lc).errorMessage), false, null, scope);
+            Object message = Primitives.toPrimitive(((TThrowError) lc).errorMessage, false, null, scope);
                 throw new CimaException(scope, message.toString(), lineNumber);
         }
         return new ThrowIfGlobalContext(lc, lineNumber);
@@ -225,7 +226,7 @@ public class Interpreter {
                         if (obj instanceof ArrayList) {
                             arr.add(obj);
                         } else {
-                            arr.add(Primitives.toPrimitive(Primitives.parseNonPrimitive(obj), false, config, scope));
+                            arr.add(Primitives.toPrimitive(obj, false, config, scope));
                         }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -254,7 +255,7 @@ public class Interpreter {
                 if (var.isFrozen)
                     throw new FrozenSymbolException(scope, var, tVarReassign.lineNumber);
 
-                Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarReassign.newValue), false,
+                Object o = Primitives.toPrimitive(tVarReassign.newValue, false,
                         config, scope);
 
 
@@ -270,6 +271,12 @@ public class Interpreter {
                     } else {
                         v.s_set(o, scope);
                     }
+                } else if (var instanceof BaseFunction && Primitives.isPrimitive(o)) {
+                    // create BaseVariable instead
+                    Warnings.println(tVarReassign.lineNumber, "Reassigning what once was a function to a variable can cause token errors and confusion. Avoid doing this.", scope);
+                    mapValue.setValue(BaseVariable.create(tVarReassign.name, tVarReassign,
+                            o instanceof ArrayList<?> a ? (ArrayList<Object>) a : new ArrayList<>(List.of(o)), false
+                    ));
                 }
 
                 // so hopefully this chanegs the instance and yeah 👍

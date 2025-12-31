@@ -3,7 +3,9 @@ package com.jaiva.interpreter.libs.debug;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.JaivaException.DebugException;
+import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.libs.BaseLibrary;
@@ -14,8 +16,11 @@ import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.interpreter.symbol.SymbolConfig;
 import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.Token;
+import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 import com.jaiva.tokenizer.tokens.specific.TFunction;
+import com.jaiva.tokenizer.tokens.specific.TVarRef;
 
 public class Debug extends BaseLibrary {
     public static String path = "debug";
@@ -23,6 +28,75 @@ public class Debug extends BaseLibrary {
         super(LibraryType.LIB, "debug");
         vfs.put("d_emit", new FEmit(config));
         vfs.put("d_vfs", new FVfs(config));
+        vfs.put("d_link", new FLink());
+    }
+
+    public class FLink extends BaseFunction {
+        FLink() {
+            super("d_link", new TFunction("d_link", new String[]{"a", "b"}, null, -1,
+                    JDoc.builder()
+                            .addDesc("Links the MapValue instance of 'a' into 'b' such that they hold the same value and if one is edited the other will also have that edit.")
+                            .addParam("a", "idk", "The symbol which holds the MapValue to be linked.", false)
+                            .addParam("b", "idk", "The symbol who's MapValue will either be created or overwritten", false)
+                            .sinceVersion("5.1.0")
+                            .addReturns("idk")
+                            .addNote("""
+                                    A usual (b <- a) syntax would suffice if you'd like to copy the value of a into b.
+                                    However when a is changed, b will stay the value you set earlier. This function fixes that where it will
+                                    link the exact MapValue from a into b, discarding b's old MapValue. such that editing any one of the symbols
+                                    via the reassignment syntax will update the linked variable.
+                                    
+                                    In the case that the "b" parameter does not actually exist in the symbol table, d_link will try to make it, itself.
+                                    """)
+                            .addExample("""
+                                    maak a <- f~() : 10! @ Lambda that returns 10
+                                    maak b <- true! @ boolean value true
+                                    
+                                    @ With normal reassignment syntax, setting b to a then changing b does not update a
+                                    b <- a!
+                                    b <- 10!
+                                    khuluma(a)! @ prints the lambda signature and not 10.
+                                    
+                                    @ With d_link, the exact MapValue held by that alias is copied.
+                                    d_link(a, b)!
+                                    b <- 10!
+                                    khuluma(a)! @ prints 10
+                                    a <- 100!
+                                    khuluma(b)! @ prints 100
+                                    """)
+                            .build()
+                    ));
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
+            checkParams(tFuncCall, scope);
+            TokenDefault refA = null;
+            TokenDefault refB = null;
+
+            if (tFuncCall.args.getFirst() instanceof Token<?> t)
+                refA = t.value();
+            else if (tFuncCall.args.getFirst() instanceof TokenDefault t)
+                refA = t;
+            if (tFuncCall.args.get(1) instanceof Token<?> t)
+                refB = t.value();
+            else  if (tFuncCall.args.get(1) instanceof TokenDefault t)
+                refB = t;
+
+            assert refA != null;
+            assert refB != null;
+            if (!(refA instanceof TVarRef))
+                throw new InterpreterException.WtfAreYouDoingException(scope, "The first parameter has to be a reference or variable.", tFuncCall.lineNumber);
+            if  (!(refB instanceof TVarRef))
+                throw new InterpreterException.WtfAreYouDoingException(scope, "The second parameter has to be a reference or variable.", tFuncCall.lineNumber);
+
+            MapValue mv = scope.vfs.get(((TVarRef) refA).varName.toString());
+            if (mv == null || MapValue.isEmpty(mv))
+                throw new InterpreterException.UnknownVariableException(scope, refA.name, tFuncCall.lineNumber);
+
+            scope.vfs.put(((TVarRef) refB).varName.toString(), mv); // This does mean, if the second reference doesnt exist this function woll create it.
+            return Token.voidValue(tFuncCall.lineNumber);
+        }
     }
 
     @SymbolConfig(experimental = true)
@@ -95,7 +169,7 @@ public class Debug extends BaseLibrary {
                 if (!params.isEmpty()) {
                     for (Object param : params) {
                         components.add(Primitives.toPrimitive(
-                                Primitives.parseNonPrimitive(param),
+                                param,
                                 false,
                                 config, scope
                         ));

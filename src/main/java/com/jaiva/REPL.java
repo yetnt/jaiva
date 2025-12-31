@@ -290,7 +290,7 @@ public class REPL {
                 if (mode == REPLMode.STANDARD) {
                     TokenDefault token = ((Token<?>) something).value();
                     if (Interpreter.isVariableToken(token)) {
-                        Object value = Interpreter.handleVariables(Primitives.parseNonPrimitive(token),
+                        Object value = Interpreter.handleVariables(token,
                                 iConfig, scope);
                         // TODO: This assumes the global context, which might not be correct.
                         assert value != null;

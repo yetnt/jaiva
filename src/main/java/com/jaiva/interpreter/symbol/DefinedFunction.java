@@ -37,7 +37,7 @@ public class DefinedFunction extends BaseFunction {
                     // Parse each param
                     if (o instanceof String)
                         o = EscapeSequence.fromEscape((String) o, tFuncCall.lineNumber);
-                    varArgsArr.add(Primitives.toPrimitive(Primitives.parseNonPrimitive(o), false, config, scope));
+                    varArgsArr.add(Primitives.toPrimitive(o, false, config, scope));
                 }
             newVfs.put(paramNames[0], new BaseVariable(paramNames[0],
                     new TArrayVar(paramNames[0], varArgsArr, tFuncCall.lineNumber),
@@ -81,7 +81,7 @@ public class DefinedFunction extends BaseFunction {
                     // throw an error
                     // if found, createFunction aq copy of that MapValue, and name it to instead this new
                     // name and add to the vfs.
-                    Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), false, config, scope);
+                    Object o = Primitives.toPrimitive(value, false, config, scope);
                     // wrappedValue = new BaseVariable(name, tFuncCall, o);
                     wrappedValue = createScalarOrArr(name, o, tFuncCall);
                 } else if (Primitives.isPrimitive(value)) {
@@ -90,7 +90,7 @@ public class DefinedFunction extends BaseFunction {
 
                 } else {
                     // cacthes nested calls, operations and others
-                    Object o = Primitives.toPrimitive(Primitives.parseNonPrimitive(value), false, config, scope);
+                    Object o = Primitives.toPrimitive(value, false, config, scope);
                     wrappedValue = BaseVariable.create(name,
                             new TUnknownScalar(name, o, tFuncCall.lineNumber),
                             o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Collections.singletonList(o)), false);

@@ -276,7 +276,7 @@ public class File extends BaseLibrary {
                            Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+            Object path = Primitives.toPrimitive(params.getFirst(), false, config,
                     scope);
             if (!(path instanceof String))
                 throw new WtfAreYouDoingException(scope, "Da path must be a string.",
@@ -370,13 +370,13 @@ public class File extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object path = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), false, config,
+            Object path = Primitives.toPrimitive(params.getFirst(), false, config,
                     scope);
             if (!(path instanceof String))
                 throw new FunctionParametersException(scope, this, "1", params.get(0), String.class,
                         tFuncCall.lineNumber);
 
-            Object content = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), false, config,
+            Object content = Primitives.toPrimitive(params.get(1), false, config,
                     scope);
             StringBuilder outBuilder = new StringBuilder();
             String output = content instanceof String ? (String) content : "";
@@ -400,7 +400,7 @@ public class File extends BaseLibrary {
 
             boolean canRead = true, canWrite = true, canExecute = true;
             if (params.size() > 2) {
-                Object cr = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(2)), false, config,
+                Object cr = Primitives.toPrimitive(params.get(2), false, config,
                         scope);
                 if (!(cr instanceof Boolean))
                     throw new FunctionParametersException(scope, this, "3", params.get(2), boolean.class,
@@ -408,7 +408,7 @@ public class File extends BaseLibrary {
                 canRead = cr.equals(Boolean.TRUE);
             }
             if (params.size() > 3) {
-                Object cw = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(3)), false, config,
+                Object cw = Primitives.toPrimitive(params.get(3), false, config,
                         scope);
                 if (!(cw instanceof Boolean))
                     throw new FunctionParametersException(scope, this, "4", params.get(3), boolean.class,
@@ -416,7 +416,7 @@ public class File extends BaseLibrary {
                 canWrite = cw.equals(Boolean.TRUE);
             }
             if (params.size() > 4) {
-                Object ce = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(4)), false, config,
+                Object ce = Primitives.toPrimitive(params.get(4), false, config,
                         scope);
                 if (!(ce instanceof Boolean))
                     throw new FunctionParametersException(scope, this, "5", params.get(4), boolean.class,

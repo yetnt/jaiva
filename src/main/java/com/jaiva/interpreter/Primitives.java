@@ -295,314 +295,324 @@ public class Primitives {
     public static Object toPrimitive(Object token, boolean returnName,
                                      IConfig<Object> config, Scope scope)
             throws Exception {
-        if (token instanceof TLambda lambda) {
-            return BaseFunction.createLambda(lambda.name, lambda, scope);
-        }
-        else if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TExpression tExpression) {
-            // If the input is a TStatement, resolve the lhs and rhs.
-            Object lhs = toPrimitive(tExpression.lHandSide, false, config, scope);
-            String op = tExpression.op;
-            Object rhs = toPrimitive(tExpression.rHandSide, false, config, scope);
-
-            Object sTuff = resolveStringOperations(lhs, rhs, op, tExpression, scope);
-            if (sTuff != void.class)
-                return sTuff;
-
-            // Check the input type, where input 1 is arithmatic, and 0 is boolean.
-            if (tExpression.statementType == 1 || (op.equals("|") || op.equals("&"))) {
-                // check input first of all
-                if (!(lhs instanceof Integer) && !(lhs instanceof Double))
-                    throw new TExpressionResolutionException(scope,
-                            tExpression, "left hand side",
-                            lhs.toString());
-                if (!(rhs instanceof Integer) && !(rhs instanceof Double))
-                    throw new TExpressionResolutionException(scope,
-                            tExpression, "right hand side",
-                            rhs.toString());
-
-                // For the following if, thanks to the above condition
-                // if one is an integer then the other is an integer too
-                Object v = handleNumOperations(op, lhs, rhs, tExpression.lineNumber, scope);
-                if (!(v instanceof TVoidValue)) {
-                    return v;
-                }
-            } else {
-                // In this else branch, the type is boolean logic
-                switch (op) {
-                    case "&&", "||", "'" -> {
-                        // if the logic operator is one of these naturally, the input has to be boolean
-                        // check input first of all
-                        if (!(lhs instanceof Boolean))
-                            throw new TExpressionResolutionException(scope,
-                                    tExpression, "left hand side",
-                                    lhs.toString());
-                        if (!op.equals("'") && !(rhs instanceof Boolean))
-                            throw new TExpressionResolutionException(scope,
-                                    tExpression, "right hand side",
-                                    rhs.toString());
-
-                        switch (op) {
-                            case "&&":
-                                return ((Boolean) lhs) && ((Boolean) rhs);
-                            case "||":
-                                return ((Boolean) lhs) || ((Boolean) rhs);
-                            case "'":
-                                return !((Boolean) lhs);
-                        }
-                    }
-                    case ">=", "<=", "<", ">" -> {
-                        // however if its these the input is a number or a double
-                        // check input first of all
-                        if (!(lhs instanceof Integer) && !(lhs instanceof Double))
-                            throw new TExpressionResolutionException(scope,
-                                    tExpression, "left hand side",
-                                    lhs.toString());
-                        if (!(rhs instanceof Integer) && !(rhs instanceof Double))
-                            throw new TExpressionResolutionException(scope,
-                                    tExpression, "right hand side",
-                                    rhs.toString());
-
-                        if (lhs instanceof Integer) {
-                            // handle ints
-                            assert rhs instanceof Integer;
-                            switch (op) {
-                                case ">=":
-                                    return ((Integer) lhs) >= ((Integer) rhs);
-                                case "<=":
-                                    return ((Integer) lhs) <= ((Integer) rhs);
-                                case "<":
-                                    return ((Integer) lhs) < ((Integer) rhs);
-                                case ">":
-                                    return ((Integer) lhs) > ((Integer) rhs);
-                            }
-                        } else {
-                            // handle doubles
-                            assert rhs instanceof Double;
-                            switch (op) {
-                                case ">=":
-                                    return ((Double) lhs) >= ((Double) rhs);
-                                case "<=":
-                                    return ((Double) lhs) <= ((Double) rhs);
-                                case "<":
-                                    return ((Double) lhs) < ((Double) rhs);
-                                case ">":
-                                    return ((Double) lhs) > ((Double) rhs);
-                            }
-                        }
-                    }
-                    case "=", "!=" -> {
-                        // here, the inputs can be either a
-                        // int, double, boolean or string.
-                        // check input first of all
-                        // TODO: This is literally just anything that can be input. Fix
-                        if (!(lhs instanceof Integer) && !(lhs instanceof Double) && !(lhs instanceof Boolean)
-                                && !(lhs instanceof String) && !(lhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
-                                && !(lhs instanceof BaseFunction))
-                            throw new TExpressionResolutionException(scope,
-                                    tExpression, "left hand side",
-                                    lhs.toString());
-                        if (!(rhs instanceof Integer) && !(rhs instanceof Double) && !(rhs instanceof Boolean)
-                                && !(rhs instanceof String) && !(rhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
-                                && !(lhs instanceof BaseFunction))
-                            throw new TExpressionResolutionException(scope,
-                                    tExpression, "right hand side",
-                                    rhs.toString());
-
-                        // for TVoidValue, set to void.class
-                        if (rhs instanceof TVoidValue)
-                            rhs = void.class;
-                        if (lhs instanceof TVoidValue)
-                            lhs = void.class;
-
-                        // handle ALL types.
-                        switch (op) {
-                            case "=":
-                                return lhs.equals(rhs);
-                            case "!=":
-                                return !lhs.equals(rhs);
-                        }
-                    }
-                }
-
+        Object parsed;
+        if (token instanceof Token<?>)
+            parsed = ((Token<?>) token).value();
+        else
+            parsed = token;
+        switch (parsed) {
+            case TLambda lambda -> {
+                return BaseFunction.createLambda(lambda.name, lambda, scope);
             }
+            case TExpression tExpression -> {
+                // If the input is a TStatement, resolve the lhs and rhs.
+                Object lhs = toPrimitive(tExpression.lHandSide, false, config, scope);
+                String op = tExpression.op;
+                Object rhs = toPrimitive(tExpression.rHandSide, false, config, scope);
 
-        }
-        else if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TVarRef tVarRef) {
-            // just find the reference in the table and return whatever it is
-            if (returnName) {
-                Object t = toPrimitive(tVarRef.varName, returnName, config, scope);
-                if (t instanceof String)
-                    return t;
-            }
-            MapValue v = scope.vfs.get(tVarRef.varName instanceof Token<?>
-                    ? toPrimitive(tVarRef.varName, true, config,
-                            scope)
-                    : (tVarRef).varName);
-            Object index = (tVarRef).index == null ? null : toPrimitive(tVarRef.index, false, config, scope);
-            if (index != null && (Integer) index <= -1)
-                return new WtfAreYouDoingException(scope,
-                        "Now tell me, how do you access negative data in ana array?",
-                        tVarRef.lineNumber);
-            if (v == null)
-                throw new UnknownVariableException(scope, tVarRef);
-            if (!(v.getValue() instanceof BaseVariable variable)) {
-                if (v.getValue() instanceof BaseFunction) {
-                    if (index == null)
-                        return v.getValue();
-                    // in this case, index is something so we need to call the function and it
-                    // SHOULD return an array.
-                    // therefore, we want to call toPrimitive on it again
-                    // If we got BaseFunction, that means tVarRef.varName is a TFuncCall.
-                    Object ret = toPrimitive(parseNonPrimitive(tVarRef.varName), false, config, scope);
-                    if (!(ret instanceof ArrayList))
-                        throw new WtfAreYouDoingException(scope,
-                                "The function you used there did not return an array, and you expect to be able to index into that?",
-                                tVarRef.lineNumber);
-                    return ((ArrayList<?>) ret).get((Integer) index) instanceof ArrayList && tVarRef.getLength()
-                            ? ((ArrayList<?>) ((ArrayList<?>) ret).get((Integer) index)).size()
-                            : ((ArrayList<?>) ret)
-                                    .get((Integer) index);
+                Object sTuff = resolveStringOperations(lhs, rhs, op, tExpression, scope);
+                if (sTuff != void.class)
+                    return sTuff;
+
+                // Check the input type, where input 1 is arithmatic, and 0 is boolean.
+                if (tExpression.statementType == 1 || (op.equals("|") || op.equals("&"))) {
+                    // check input first of all
+                    if (!(lhs instanceof Integer) && !(lhs instanceof Double))
+                        throw new TExpressionResolutionException(scope,
+                                tExpression, "left hand side",
+                                lhs.toString());
+                    if (!(rhs instanceof Integer) && !(rhs instanceof Double))
+                        throw new TExpressionResolutionException(scope,
+                                tExpression, "right hand side",
+                                rhs.toString());
+
+                    // For the following if, thanks to the above condition
+                    // if one is an integer then the other is an integer too
+                    Object v = handleNumOperations(op, lhs, rhs, tExpression.lineNumber, scope);
+                    if (!(v instanceof TVoidValue)) {
+                        return v;
+                    }
                 } else {
-                    throw new WtfAreYouDoingException(scope, v.getValue(), BaseVariable.class,
-                            tVarRef.lineNumber);
+                    // In this else branch, the type is boolean logic
+                    switch (op) {
+                        case "&&", "||", "'" -> {
+                            // if the logic operator is one of these naturally, the input has to be boolean
+                            // check input first of all
+                            if (!(lhs instanceof Boolean))
+                                throw new TExpressionResolutionException(scope,
+                                        tExpression, "left hand side",
+                                        lhs.toString());
+                            if (!op.equals("'") && !(rhs instanceof Boolean))
+                                throw new TExpressionResolutionException(scope,
+                                        tExpression, "right hand side",
+                                        rhs.toString());
+
+                            switch (op) {
+                                case "&&":
+                                    return ((Boolean) lhs) && ((Boolean) rhs);
+                                case "||":
+                                    return ((Boolean) lhs) || ((Boolean) rhs);
+                                case "'":
+                                    return !((Boolean) lhs);
+                            }
+                        }
+                        case ">=", "<=", "<", ">" -> {
+                            // however if its these the input is a number or a double
+                            // check input first of all
+                            if (!(lhs instanceof Integer) && !(lhs instanceof Double))
+                                throw new TExpressionResolutionException(scope,
+                                        tExpression, "left hand side",
+                                        lhs.toString());
+                            if (!(rhs instanceof Integer) && !(rhs instanceof Double))
+                                throw new TExpressionResolutionException(scope,
+                                        tExpression, "right hand side",
+                                        rhs.toString());
+
+                            if (lhs instanceof Integer) {
+                                // handle ints
+                                assert rhs instanceof Integer;
+                                switch (op) {
+                                    case ">=":
+                                        return ((Integer) lhs) >= ((Integer) rhs);
+                                    case "<=":
+                                        return ((Integer) lhs) <= ((Integer) rhs);
+                                    case "<":
+                                        return ((Integer) lhs) < ((Integer) rhs);
+                                    case ">":
+                                        return ((Integer) lhs) > ((Integer) rhs);
+                                }
+                            } else {
+                                // handle doubles
+                                assert rhs instanceof Double;
+                                switch (op) {
+                                    case ">=":
+                                        return ((Double) lhs) >= ((Double) rhs);
+                                    case "<=":
+                                        return ((Double) lhs) <= ((Double) rhs);
+                                    case "<":
+                                        return ((Double) lhs) < ((Double) rhs);
+                                    case ">":
+                                        return ((Double) lhs) > ((Double) rhs);
+                                }
+                            }
+                        }
+                        case "=", "!=" -> {
+                            // here, the inputs can be either a
+                            // int, double, boolean or string.
+                            // check input first of all
+                            // TODO: This is literally just anything that can be input. Fix
+                            if (!(lhs instanceof Integer) && !(lhs instanceof Double) && !(lhs instanceof Boolean)
+                                    && !(lhs instanceof String) && !(lhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
+                                    && !(lhs instanceof BaseFunction))
+                                throw new TExpressionResolutionException(scope,
+                                        tExpression, "left hand side",
+                                        lhs.toString());
+                            if (!(rhs instanceof Integer) && !(rhs instanceof Double) && !(rhs instanceof Boolean)
+                                    && !(rhs instanceof String) && !(rhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
+                                    && !(lhs instanceof BaseFunction))
+                                throw new TExpressionResolutionException(scope,
+                                        tExpression, "right hand side",
+                                        rhs.toString());
+
+                            // for TVoidValue, set to void.class
+                            if (rhs instanceof TVoidValue)
+                                rhs = void.class;
+                            if (lhs instanceof TVoidValue)
+                                lhs = void.class;
+
+                            // handle ALL types.
+                            switch (op) {
+                                case "=":
+                                    return lhs.equals(rhs);
+                                case "!=":
+                                    return !lhs.equals(rhs);
+                            }
+                        }
+                    }
+
                 }
             }
-            checkSymbolAnnotation(variable, tVarRef.lineNumber, scope);
-            if (index != null && (variable.variableType == VariableType.ARRAY
-                    || variable.variableType == VariableType.A_FUCKING_AMALGAMATION
-                    || tVarRef.varName instanceof TVarRef)) {
-                // it's an array ref, where we have an index
-                ArrayList<Object> arr = variable.a_getAll();
+            case TVarRef tVarRef -> {
+                // just find the reference in the table and return whatever it is
+                if (returnName) {
+                    Object t = toPrimitive(tVarRef.varName, returnName, config, scope);
+                    if (t instanceof String)
+                        return t;
+                }
+                MapValue v = scope.vfs.get(tVarRef.varName instanceof Token<?>
+                        ? toPrimitive(tVarRef.varName, true, config,
+                        scope)
+                        : (tVarRef).varName);
+                Object index = (tVarRef).index == null ? null : toPrimitive(tVarRef.index, false, config, scope);
+                if (index != null && (Integer) index <= -1)
+                    return new WtfAreYouDoingException(scope,
+                            "Now tell me, how do you access negative data in ana array?",
+                            tVarRef.lineNumber);
+                if (v == null)
+                    throw new UnknownVariableException(scope, tVarRef);
+                if (!(v.getValue() instanceof BaseVariable variable)) {
+                    if (v.getValue() instanceof BaseFunction) {
+                        if (index == null)
+                            return v.getValue();
+                        // in this case, index is something so we need to call the function and it
+                        // SHOULD return an array.
+                        // therefore, we want to call toPrimitive on it again
+                        // If we got BaseFunction, that means tVarRef.varName is a TFuncCall.
+                        Object ret = toPrimitive(tVarRef.varName, false, config, scope);
+                        if (!(ret instanceof ArrayList))
+                            throw new WtfAreYouDoingException(scope,
+                                    "The function you used there did not return an array, and you expect to be able to index into that?",
+                                    tVarRef.lineNumber);
+                        return ((ArrayList<?>) ret).get((Integer) index) instanceof ArrayList && tVarRef.getLength()
+                                ? ((ArrayList<?>) ((ArrayList<?>) ret).get((Integer) index)).size()
+                                : ((ArrayList<?>) ret)
+                                .get((Integer) index);
+                    } else {
+                        throw new WtfAreYouDoingException(scope, v.getValue(), BaseVariable.class,
+                                tVarRef.lineNumber);
+                    }
+                }
+                checkSymbolAnnotation(variable, tVarRef.lineNumber, scope);
+                if (index != null && (variable.variableType == VariableType.ARRAY
+                        || variable.variableType == VariableType.A_FUCKING_AMALGAMATION
+                        || tVarRef.varName instanceof TVarRef)) {
+                    // it's an array ref, where we have an index
+                    ArrayList<Object> arr = variable.a_getAll();
 //                if (!(index instanceof Integer) && index != null)
 //                    throw new WtfAreYouDoingException(cTrace,
 //                            tVarRef, Integer.valueOf(0).getClass(),
 //                            tVarRef.lineNumber);
-                if (tVarRef.varName instanceof Token) {
-                    Object t = Primitives.toPrimitive(Primitives.parseNonPrimitive(tVarRef.varName), returnName,
-                            config, scope);
-                    if (t instanceof ArrayList) arr = (ArrayList) (t);
-                    else if (t instanceof String) return t;
-                }
-                if (arr.size() <= (Integer) index)
-                    return new WtfAreYouDoingException(scope,
-                            "Bro you're tryna access more data than there is in " + variable.name, tVarRef.lineNumber);
-                return arr.get((Integer) index) instanceof ArrayList && tVarRef.getLength()
-                        ? ((ArrayList<?>) arr.get((Integer) index)).size()
-                        : arr
-                                .get((Integer) index);
-            } else if (index == null && (variable.variableType == VariableType.ARRAY
-                    || variable.variableType == VariableType.A_FUCKING_AMALGAMATION)) {
-                // return the arraylist of variables. and hope something up the chain catches
-                // the array list.
-                // that's what we assume to happen since they just like passed a reference yknow.
-                return tVarRef.getLength() ? variable.a_size() : variable.a_getAll();
-            } else {
-                // normal variable ref, return it
-                try {
-                    if (variable.s_get() instanceof String vs) return tVarRef.getLength() ? vs.length()
+                    if (tVarRef.varName instanceof Token) {
+                        Object t = Primitives.toPrimitive(tVarRef.varName, returnName,
+                                config, scope);
+                        if (t instanceof ArrayList) arr = (ArrayList) (t);
+                        else if (t instanceof String) return t;
+                    }
+                    if (arr.size() <= (Integer) index)
+                        return new WtfAreYouDoingException(scope,
+                                "Bro you're tryna access more data than there is in " + variable.name, tVarRef.lineNumber);
+                    return arr.get((Integer) index) instanceof ArrayList && tVarRef.getLength()
+                            ? ((ArrayList<?>) arr.get((Integer) index)).size()
+                            : arr
+                            .get((Integer) index);
+                } else if (index == null && (variable.variableType == VariableType.ARRAY
+                        || variable.variableType == VariableType.A_FUCKING_AMALGAMATION)) {
+                    // return the arraylist of variables. and hope something up the chain catches
+                    // the array list.
+                    // that's what we assume to happen since they just like passed a reference yknow.
+                    return tVarRef.getLength() ? variable.a_size() : variable.a_getAll();
+                } else {
+                    // normal variable ref, return it
+                    try {
+                        if (variable.s_get() instanceof String vs) return tVarRef.getLength() ? vs.length()
                                 : (index instanceof Integer newI) ? vs.charAt(newI) + "" : variable.s_get();
-                    else
-                        return variable.s_get();
+                        else
+                            return variable.s_get();
 
-                } catch (IndexOutOfBoundsException e) {
-                    // user gave an invalid index.
+                    } catch (IndexOutOfBoundsException e) {
+                        // user gave an invalid index.
+                        throw new WtfAreYouDoingException(scope,
+                                "I don't think " + variable.name + " has a position " + index,
+                                tVarRef.lineNumber);
+                    }
+                }
+
+            }
+            case TFuncCall tFuncCall -> {
+                if (returnName) {
+                    Object t = toPrimitive(tFuncCall.functionName, returnName, config, scope);
+                    if (t instanceof String)
+                        return t;
+                }
+                Object funcName = toPrimitive(tFuncCall.functionName instanceof Token
+                        ? toPrimitive(tFuncCall.functionName, true, config,
+                        scope)
+                        : tFuncCall.functionName, false, config, scope);
+
+                BaseFunction function = null;
+                MapValue v = null;
+
+                if (funcName instanceof Lambda lambda) {
+                    function = lambda;
+                } else {
+                    if (!(funcName instanceof String name))
+                        throw new WeirdAhhFunctionException(scope, tFuncCall);
+                    if (!(tFuncCall.functionName instanceof String)) {
+                        Object j = toPrimitive(tFuncCall.functionName, false, config, scope);
+                        if (j instanceof BaseFunction) function = (BaseFunction) j;
+                        else return j;
+                    }
+                    v = scope.vfs.get(name);
+                    if (v == null)
+                        throw new UnknownVariableException(scope, tFuncCall);
+
+                    if (tFuncCall.functionName instanceof Token) {
+                        Object t = toPrimitive(tFuncCall.functionName,
+                                returnName, config, scope);
+                        if (t instanceof BaseFunction) function = (BaseFunction) (t);
+                        else if (t instanceof String) return t;
+
+                    }
+
+                }
+
+                if (v != null && v.getValue() instanceof BaseVariable bn) {
                     throw new WtfAreYouDoingException(scope,
-                            "I don't think " + variable.name + " has a position " + index,
-                            tVarRef.lineNumber);
+                            "You are trying to use the variable " + bn.name + " as a function.",
+                            tFuncCall.lineNumber);
                 }
+                function = function != null ? function : (BaseFunction) v.getValue();
+
+                checkSymbolAnnotation(function, tFuncCall.lineNumber, scope);
+
+                ArrayList<Object> args = BaseFunction.resolveParameters(function, tFuncCall, config, scope);
+                Object returnValue = function.call(
+                        tFuncCall,
+                        args,
+                        config, scope);
+                return returnValue instanceof String && tFuncCall.getLength()
+                        ? EscapeSequence.fromEscape((String) returnValue, tFuncCall.lineNumber).length()
+                        : returnValue instanceof ArrayList && tFuncCall.getLength() ? ((ArrayList<?>) returnValue).size()
+                        : returnValue;
             }
+            case TTernary ternary -> {
+                // parse the condition.
+                Object condition = setCondition(ternary, config, scope);
 
-        }
-        else if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TFuncCall tFuncCall) {
-            if (returnName) {
-                Object t = toPrimitive(parseNonPrimitive(tFuncCall.functionName), returnName, config, scope);
-                if (t instanceof String)
-                    return t;
+                if ((Boolean) condition)
+                    return toPrimitive(ternary.trueExpr, false, config, scope);
+                else
+                    return toPrimitive(ternary.falseExpr, false, config, scope);
             }
-            Object funcName = toPrimitive(tFuncCall.functionName instanceof Token
-                    ? toPrimitive(parseNonPrimitive(tFuncCall.functionName), true, config,
-                            scope)
-                    : tFuncCall.functionName, false, config, scope);
-
-            BaseFunction function = null;
-            MapValue v = null;
-
-            if (funcName instanceof Lambda lambda) {
-                function = lambda;
-            } else {
-                if (!(funcName instanceof String name))
-                    throw new WeirdAhhFunctionException(scope, tFuncCall);
-                if (!(tFuncCall.functionName instanceof String)) {
-                    Object j = toPrimitive(tFuncCall.functionName, false, config, scope);
-                    if (j instanceof BaseFunction) function = (BaseFunction) j;
-                    else return j;
-                }
-                v = scope.vfs.get(name);
-                if (v == null)
-                    throw new UnknownVariableException(scope, tFuncCall);
-
-                if (tFuncCall.functionName instanceof Token) {
-                    Object t = toPrimitive(parseNonPrimitive(tFuncCall.functionName),
-                            returnName, config, scope);
-                    if (t instanceof BaseFunction) function = (BaseFunction) (t);
-                    else if (t instanceof String) return t;
-
-                }
-
-            }
-
-            if (v != null && v.getValue() instanceof BaseVariable bn) {
-                throw new WtfAreYouDoingException(scope,
-                        "You are trying to use the variable " + bn.name + " as a function.",
-                        tFuncCall.lineNumber);
-            }
-            function = function != null ? function : (BaseFunction) v.getValue();
-
-            checkSymbolAnnotation(function, tFuncCall.lineNumber, scope);
-
-            ArrayList<Object> args = BaseFunction.resolveParameters(function, tFuncCall, config, scope);
-            Object returnValue = function.call(
-                    tFuncCall,
-                    args,
-                    config, scope);
-            return returnValue instanceof String && tFuncCall.getLength()
-                    ? EscapeSequence.fromEscape((String) returnValue, tFuncCall.lineNumber).length()
-                    : returnValue instanceof ArrayList && tFuncCall.getLength() ? ((ArrayList<?>) returnValue).size()
-                            : returnValue;
-        } else if (token instanceof Token<?> && ((Token<?>) token).value() instanceof TTernary ternary) {
-            // parse the condition.
-            Object condition = setCondition(ternary, config, scope);
-
-            if ((Boolean) condition)
-                return toPrimitive(ternary.trueExpr, false, config, scope);
-            else
-                return toPrimitive(ternary.falseExpr, false, config, scope);
-        } else if (isPrimitive(token)) {
-            // Primitives include: Boolean, Integer, Double, String, TVoidValue, ArrayList
-            // If we got here, then
-            // its not a token so its def jus a primitive, so we wanna parse it as a
-            // primitive.
-            // also for the above recursive call where it may already be a primitive.
-            return switch (token) {
-                case String s -> EscapeSequence.fromEscape(s, -1);
-                case Double d -> {
-                    double val = d;
-                    if (val == Math.rint(val)) {
-                        yield (int) val;
-                    } else {
-                        yield d;
+            case null, default -> {
+//        else if (isPrimitive(token)) {
+                // Primitives include: Boolean, Integer, Double, String, TVoidValue, ArrayList
+                // If we got here, then
+                // its not a token so its def jus a primitive, so we wanna parse it as a
+                // primitive.
+                // also for the above recursive call where it may already be a primitive.
+                return switch (token) {
+                    case String s -> EscapeSequence.fromEscape(s, -1);
+                    case Integer i -> i;
+                    case Double d -> {
+                        double val = d;
+                        if (val == Math.rint(val)) {
+                            yield (int) val;
+                        } else {
+                            yield d;
+                        }
                     }
-                }
-                case ArrayList a -> {
-                    ArrayList<Object> parsedArr = new ArrayList<>();
-                    for (Object o : a) {
-                        parsedArr.add(toPrimitive(parseNonPrimitive(o), false, config, scope));
+                    case ArrayList a -> {
+                        ArrayList<Object> parsedArr = new ArrayList<>();
+                        for (Object o : a) {
+                            parsedArr.add(toPrimitive(o, false, config, scope));
+                        }
+                        yield parsedArr; // yield keyword for returning in switch expressions
+                        // pretty cool, never used it before
                     }
-                    yield parsedArr; // yield keyword for returning in switch expressions
-                                    // pretty cool, never used it before
-                }
-                default -> token;
-            };
+                    default -> void.class;
+                };
+            }
         }
         return void.class;
     }
@@ -615,28 +625,6 @@ public class Primitives {
     public static boolean isPrimitive(Object t) {
         return t instanceof Boolean || t instanceof Integer
                 || t instanceof Double || t instanceof String || t instanceof TVoidValue || t instanceof ArrayList<?>;
-    }
-
-    /**
-     * Parses a non-primitive object and converts it to a token representation if
-     * applicable.
-     * 
-     * @param t The object to be parsed. It can be an instance of TStatement,
-     *          TVarRef, TFuncCall,
-     *          or any other type.
-     * @return If the object is an instance of TStatement, TVarRef, or TFuncCall, it
-     *         returns the
-     *         result of their respective `toToken()` method. Otherwise, it returns
-     *         the object itself.
-     */
-    public static Object parseNonPrimitive(Object t) {
-        // Check for the TAtomicValue interface for grouping
-        if (t instanceof TAtomicValue) {
-            // Since TAtomicValue implementors are guaranteed to be TokenDefault,
-            // we can safely cast and call the method defined on TokenDefault.
-            return ((TokenDefault) t).toToken();
-        }
-        return t;
     }
 
     /**
@@ -661,8 +649,7 @@ public class Primitives {
             c = null;
 
 
-        Object condition = Interpreter.handleVariables(
-                parseNonPrimitive(c), config, scope);
+        Object condition = Interpreter.handleVariables(c, config, scope);
 
         if (!(condition instanceof Boolean)) {
             assert condition != null;

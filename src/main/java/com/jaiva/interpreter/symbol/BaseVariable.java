@@ -218,6 +218,7 @@ public class BaseVariable extends Symbol {
         return new DefinedVariable(name, t, arr);
     }
 
+
     /**
      * A class that represents a user-defined variable.
      */

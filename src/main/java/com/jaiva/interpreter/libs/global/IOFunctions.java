@@ -81,7 +81,7 @@ public class IOFunctions extends BaseLibrary {
                 return Token.voidValue(tFuncCall.lineNumber);
             }
             Object v = params.size() > 1
-                    ? Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), false, config, scope)
+                    ? Primitives.toPrimitive(params.get(1), false, config, scope)
                     : null;
             if (o instanceof Token<?> || (o instanceof TokenDefault && Interpreter.isVariableToken(o))) {
                 assert o instanceof Token<?>;

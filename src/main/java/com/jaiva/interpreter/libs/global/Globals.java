@@ -310,7 +310,7 @@ public class Globals extends BaseLibrary {
                     // stuff that need be parsed, parse and pray arraylist is returned.
                     Object parsed = null;
                     try {
-                        parsed = Primitives.toPrimitive(Primitives.parseNonPrimitive(arg),  false, config, scope);
+                        parsed = Primitives.toPrimitive(arg,  false, config, scope);
                     } catch (Exception e) {
                         // do nothing.
                     }
@@ -362,7 +362,7 @@ public class Globals extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()),  false, config,
+            Object val = Primitives.toPrimitive(params.getFirst(),  false, config,
                     scope);
             if (!(val instanceof Integer integer))
                 throw new WtfAreYouDoingException(scope, "Bruv, you can't just like, pls put number",
@@ -392,7 +392,7 @@ public class Globals extends BaseLibrary {
                            Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()),  false, config,
+            Object val = Primitives.toPrimitive(params.getFirst(),  false, config,
                     scope);
             if (!(val instanceof Number num))
                 throw new WtfAreYouDoingException(scope, "Bruv, you can't just like, pls put number",
@@ -440,7 +440,7 @@ public class Globals extends BaseLibrary {
             this.checkParams(tFuncCall, scope);
             if (params.isEmpty())
                 return Token.voidValue(tFuncCall.lineNumber);
-            Object val = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+            Object val = Primitives.toPrimitive(params.getFirst(), false, config,
                     scope);
 
             return switch (val) {
@@ -486,7 +486,7 @@ public class Globals extends BaseLibrary {
             ArrayList<Object> returned = new ArrayList<>();
             params.forEach(arg -> {
                 try {
-                    returned.add(Primitives.toPrimitive(Primitives.parseNonPrimitive(arg), false, config, scope));
+                    returned.add(Primitives.toPrimitive(arg, false, config, scope));
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

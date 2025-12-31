@@ -66,7 +66,7 @@ public class Math extends BaseLibrary {
                            Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+            Object value = Primitives.toPrimitive(params.getFirst(), false, config,
                     scope);
 
             if (value instanceof Integer i)
@@ -120,9 +120,9 @@ public class Math extends BaseLibrary {
             if (params.isEmpty())
                 return ThreadLocalRandom.current().nextDouble();
 
-            Object lowerObject = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), false,
+            Object lowerObject = Primitives.toPrimitive(params.get(0), false,
                     config, scope);
-            Object upperObject = params.size() > 1 ? Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), false,
+            Object upperObject = params.size() > 1 ? Primitives.toPrimitive(params.get(1), false,
                     config, scope) : null;
 
             if (!(lowerObject instanceof Integer lower))
@@ -190,7 +190,7 @@ public class Math extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+            Object value = Primitives.toPrimitive(params.getFirst(), false, config,
                     scope);
 
             if (value instanceof Integer)
@@ -235,7 +235,7 @@ public class Math extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+            Object value = Primitives.toPrimitive(params.getFirst(), false, config,
                     scope);
 
             if (value instanceof Integer i)
@@ -277,7 +277,7 @@ public class Math extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+            Object value = Primitives.toPrimitive(params.getFirst(), false, config,
                     scope);
 
             if (value instanceof Integer i)
@@ -318,7 +318,7 @@ public class Math extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.getFirst()), false, config,
+            Object value = Primitives.toPrimitive(params.getFirst(), false, config,
                     scope);
 
             if (value instanceof Integer i)
@@ -353,10 +353,10 @@ public class Math extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
-            Object value = Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(0)), false, config,
+            Object value = Primitives.toPrimitive(params.get(0), false, config,
                     scope);
             Object base = params.size() > 1
-                    ? Primitives.toPrimitive(Primitives.parseNonPrimitive(params.get(1)), false, config, scope)
+                    ? Primitives.toPrimitive(params.get(1), false, config, scope)
                     : 10;
 
             if (!(value instanceof Number))
