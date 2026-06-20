@@ -7,6 +7,7 @@ import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.utils.Find;
 import com.jaiva.utils.cd.ContextDispatcher;
+import com.jaiva.utils.generic.LeastImportantOperator;
 
 /**
  * Represents a statement such as {@code 10 + 1} or {@code true && false}
@@ -110,7 +111,7 @@ public class TExpression extends TokenDefault<TExpression> implements TAtomicVal
             return parse(statement.substring(1, statement.length() - 1).trim());
         }
 
-        Find.LeastImportantOperator info = Find.leastImportantOperator(statement);
+        LeastImportantOperator info = Find.leastImportantOperator(statement);
         if (info.index == -1) {
             // no operator found, so its a single value
             return Token.processContext(statement, lineNumber);

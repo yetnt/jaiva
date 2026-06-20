@@ -13,7 +13,7 @@ import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.interpreter.symbol.DefinedFunction;
 import com.jaiva.interpreter.symbol.BaseVariable.DefinedVariable;
 import com.jaiva.tokenizer.tokens.Token;
-import com.jaiva.utils.Pair;
+import com.jaiva.utils.generic.SamePair;
 
 /**
  * The Debugger class is responsible for managing the debugging environment
@@ -177,7 +177,7 @@ public class Debugger {
                     }
                     case "step", "s" -> {
                         if (config.dc.active) {
-                            config.dc.stepOver = new Pair<>(Boolean.TRUE, Boolean.FALSE); // Set step over flag
+                            config.dc.stepOver = new SamePair<>(Boolean.TRUE, Boolean.FALSE); // Set step over flag
                             config.dc.currentLineNumber++; // Increment the line number
                             if (CLI)
                                 System.out.println("Stepping over the next line.");

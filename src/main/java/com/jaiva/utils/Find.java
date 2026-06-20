@@ -8,6 +8,7 @@ import com.jaiva.lang.Chars;
 import com.jaiva.lang.Chars.Operators;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.TTernary;
+import com.jaiva.utils.generic.*;
 
 /**
  * This class provides utility methods for finding specific characters or
@@ -40,9 +41,9 @@ public class Find {
      * @return
      */
     public static MultipleLinesOutput closingCharIndexML(String line, String start,
-            String end,
-            int startCount, int endCount, String previousLines, String type, String[] args, Token<?> blockChain,
-            int lineNumber) {
+                                                         String end,
+                                                         int startCount, int endCount, String previousLines, String type, String[] args, Token<?> blockChain,
+                                                         int lineNumber) {
         if (start.length() > 2 || end.length() > 2)
             throw new IllegalArgumentException("Arguments must be at most 2 characters long!");
         boolean isStart = true;
@@ -194,93 +195,6 @@ public class Find {
         return -1;
     }
 
-    public static class LeastImportantOperator {
-        public String op;
-        public int index;
-        public int tStatementType;
-
-        public LeastImportantOperator(String op, int index, int group) {
-            this.op = op;
-            this.index = index;
-            switch (group) {
-                case 0:// Exponentiation
-                case 1:// DivMult
-                case 2:// AddSub
-                case 3:// Bitwise shifts, Also handled within number handling.
-                case 4:// Bitwise operations. Normally this should be by itself, but since the
-                       // interprter knows how to handle bitwise stuff and its in the number handling
-                       // method, group it under numbers
-                    tStatementType = 1;
-                    break;
-                case 5, 6: // Comparison and logical operators
-                    tStatementType = 0;
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid group: " + group);
-            }
-        }
-
-        /**
-         * Constructor for no return value.
-         */
-        public LeastImportantOperator() {
-            this.op = null;
-            this.index = -1;
-            this.tStatementType = -1;
-        }
-
-        @Override
-        public String toString() {
-            return "LeastImportantOperator{" +
-                    "op='" + op + '\'' +
-                    ", index=" + index +
-                    ", tStatementType=" + tStatementType +
-                    '}';
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((op == null) ? 0 : op.hashCode());
-            result = prime * result + index;
-            result = prime * result + tStatementType;
-            return result;
-        }
-
-        /**
-         * Indicates whether some other object is "equal to" this one.
-         * <p>
-         * The method checks for reference equality, nullity, class type, and then
-         * compares
-         * the fields {@code op}, {@code index}, and {@code tStatementType} for
-         * equality.
-         * </p>
-         *
-         * @param obj the reference object with which to compare
-         * @return {@code true} if this object is the same as the obj argument;
-         *         {@code false} otherwise
-         */
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            LeastImportantOperator other = (LeastImportantOperator) obj;
-            if (op == null) {
-                if (other.op != null)
-                    return false;
-            } else if (!op.equals(other.op))
-                return false;
-            if (index != other.index)
-                return false;
-            return tStatementType == other.tStatementType;
-        }
-    }
-
     /**
      * Determines the least important operator in a given mathematical or logical
      * statement.
@@ -339,7 +253,7 @@ public class Find {
         int group = -1; // 0 = Exponentiation, 1 = DivMult, 2 = AddSub, 3 = Bitwise, 4 = Comparison, 5 =
                         // Logical
 
-        ArrayList<Tuple2<String, Integer>> indexes2 = new ArrayList<>(); // WHere the string, is the op itself, the
+        ArrayList<Pair<String, Integer>> indexes2 = new ArrayList<>(); // WHere the string, is the op itself, the
                                                                          // integer is the index.
 
         List<Character> multiOpChars = Arrays.asList('|', '&', '=', 'x', '>', '<'); // If the op is 2 chars long, it's
@@ -377,9 +291,9 @@ public class Find {
 
                 if (group == -1) {
                     group = i;
-                    indexes2.add(new Tuple2<String, Integer>(op, opIndex));
+                    indexes2.add(new Pair<String, Integer>(op, opIndex));
                 } else if (group == Operators.getType(op)) {
-                    indexes2.add(new Tuple2<String, Integer>(op, opIndex));
+                    indexes2.add(new Pair<String, Integer>(op, opIndex));
                 }
             }
         }
@@ -387,10 +301,10 @@ public class Find {
         if (indexes2.isEmpty())
             return new LeastImportantOperator();
 
-        Tuple2<String, Integer> fTuple2 = indexes2.getLast();
+        Pair<String, Integer> ipair = indexes2.getLast();
 
         return new LeastImportantOperator(
-                fTuple2.first, fTuple2.second,
+                ipair.first, ipair.second,
                 group);
     }
 
@@ -475,14 +389,14 @@ public class Find {
      * quotation mark.
      *
      * @param line The input string to search for quotation mark pairs.
-     * @return An ArrayList of Tuple2 objects, where each Tuple2 contains two
+     * @return An ArrayList of Pair objects, where each Pair contains two
      *         integers:
      *         the starting and ending indices of a pair of matching quotation
      *         marks.
      *         If no pairs are found, an empty list is returned.
      */
-    public static ArrayList<Pair<Integer>> quotationPairs(String line) {
-        ArrayList<Pair<Integer>> arr = new ArrayList<>();
+    public static ArrayList<SamePair<Integer>> quotationPairs(String line) {
+        ArrayList<SamePair<Integer>> arr = new ArrayList<>();
         int oldCharIndex = -1;
         for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
@@ -492,7 +406,7 @@ public class Find {
                 if (oldCharIndex == -1) {
                     oldCharIndex = i;
                 } else {
-                    arr.add(new Pair<>(oldCharIndex, i));
+                    arr.add(new SamePair<>(oldCharIndex, i));
                     oldCharIndex = -1;
                 }
             }
@@ -510,34 +424,34 @@ public class Find {
      * Both [] and ()
      *
      * @param line The input string to search for quotation brace pairs.
-     * @return A Tuple2 containing two ArrayLists:
-     *         - The first ArrayList contains pairs of indices representing the
-     *         beginning
-     *         and end of matching braces.
-     *         - The second ArrayList contains pairs of indices representing
-     *         unmatched
-     *         braces.
+     * @return A Pair containing two ArrayLists:
+     * - The first ArrayList contains pairs of indices representing the
+     * beginning
+     * and end of matching braces.
+     * - The second ArrayList contains pairs of indices representing
+     * unmatched
+     * braces.
      */
-    public static Tuple2<ArrayList<Pair<Integer>>, ArrayList<Tuple2<Integer, Character>>> bracePairs(
+    public static BracePairs bracePairs(
             String line) {
-        ArrayList<Pair<Integer>> finalArr = new ArrayList<>();
-        ArrayList<Tuple2<Integer, Character>> stack = new ArrayList<>();
+        ArrayList<SamePair<Integer>> finalArr = new ArrayList<>();
+        ArrayList<Pair<Integer, Character>> stack = new ArrayList<>();
 
         for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
             if ((c == '[' || c == '(') && Validate.isOpInQuotePair(line, i) == -1)
-                stack.add(new Tuple2<>(i, c));
+                stack.add(new Pair<>(i, c));
 
             if ((c == ']' || c == ')') && Validate.isOpInQuotePair(line, i) == -1) {
-                Tuple2<Integer, Character> t = stack.getLast();
+                Pair<Integer, Character> t = stack.getLast();
                 if ((t.second == '[' && c == ']') || (t.second == '(' && c == ')')) {
-                    finalArr.add(new Pair<>(t.first, i));
+                    finalArr.add(new SamePair<>(t.first, i));
                     stack.removeLast();
                 }
             }
         }
 
-        return new Tuple2<>(finalArr, stack);
+        return new BracePairs(finalArr, stack);
     }
 
     /**
@@ -567,7 +481,7 @@ public class Find {
                 continue;
             }
             if (Validate.isOpInQuotePair(statement, i) == -1
-                    && Validate.isOpInPair(i, Find.bracePairs(statement).first) == -1)
+                    && Validate.isOpInPair(i, Find.bracePairs(statement).closedPairs()) == -1)
                 index = i;
             statement = statement.replaceFirst(input, "-".repeat(input.length()));
         }

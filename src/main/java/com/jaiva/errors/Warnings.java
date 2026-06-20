@@ -1,7 +1,7 @@
 package com.jaiva.errors;
 
 import com.jaiva.interpreter.Scope;
-import com.jaiva.utils.CCol;
+import com.jaiva.utils.generator.CCol;
 
 public final class Warnings {
     private Warnings() {

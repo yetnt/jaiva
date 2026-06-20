@@ -16,7 +16,8 @@ import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.TDocsComment;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.TokenDefault;
-import com.jaiva.utils.*;
+import com.jaiva.utils.generic.BlockChain;
+import com.jaiva.utils.generic.MultipleLinesOutput;
 
 /**
  * The Main class serves as the entry point for the Jaiva programming language

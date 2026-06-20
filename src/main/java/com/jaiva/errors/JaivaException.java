@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.runtime.IConfig;
-import com.jaiva.utils.CCol;
+import com.jaiva.utils.generator.CCol;
 
 /**
  * Base class for any exceptions we run into while trying to parse or run jaiva

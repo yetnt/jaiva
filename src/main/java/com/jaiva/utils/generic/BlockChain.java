@@ -1,4 +1,4 @@
-package com.jaiva.utils;
+package com.jaiva.utils.generic;
 
 import com.jaiva.tokenizer.tokens.Token;
 

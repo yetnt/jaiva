@@ -6,7 +6,7 @@ import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.specific.TArrayVar;
 import com.jaiva.tokenizer.tokens.specific.TStringVar;
-import com.jaiva.utils.Pair;
+import com.jaiva.utils.generic.SamePair;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class TimeZone extends BaseLibrary {
 
     public static String path = "time/zone";
-    private static ArrayList<Pair<String>> zoneIds = mapZoneIds();
+    private static ArrayList<SamePair<String>> zoneIds = mapZoneIds();
 
     public TimeZone() {
         super(LibraryType.LIB, "time/zone");
@@ -26,7 +26,7 @@ public class TimeZone extends BaseLibrary {
                 "tz_all",
                 new TArrayVar(
                         "tz_all",
-                        new ArrayList<>(zoneIds.stream().map(Pair::getSecond).toList()),
+                        new ArrayList<>(zoneIds.stream().map(SamePair::getSecond).toList()),
                         -1,
                         JDoc.builder()
                                 .addDesc("The complete list of IANA format timezone constants.")
@@ -44,7 +44,7 @@ public class TimeZone extends BaseLibrary {
                                         <~
                                         """)
                                 .build()
-                ), new ArrayList<>(zoneIds.stream().map(Pair::getSecond).toList()));
+                ), new ArrayList<>(zoneIds.stream().map(SamePair::getSecond).toList()));
         getAll.freeze();
         vfs.put("tz_getAll", getAll);
 
@@ -52,20 +52,20 @@ public class TimeZone extends BaseLibrary {
 
     }
 
-    protected static ArrayList<Pair<String>> mapZoneIds() {
-        ArrayList<Pair<String>> out = new ArrayList<>();
+    protected static ArrayList<SamePair<String>> mapZoneIds() {
+        ArrayList<SamePair<String>> out = new ArrayList<>();
         ZoneId.getAvailableZoneIds().forEach(zoneId -> {
             StringBuilder name = new StringBuilder();
             name.append("TZ_");
             if (!zoneId.contains("/")) {
-                out.add(new Pair<>(name.append(zoneId).toString(), zoneId));
+                out.add(new SamePair<>(name.append(zoneId).toString(), zoneId));
             } else if (zoneId.contains("Etc/")) {
                 String st = zoneId.replace("Etc/","");
                 if (zoneId.length() == 7) {
                     // "Etc/GMT" or "Etc/UTC" to "TZ_GMT" and "TZ_UTC"
-                    out.add(new Pair<>(name.append(st).toString(), zoneId));
+                    out.add(new SamePair<>(name.append(st).toString(), zoneId));
                 } else {
-                    out.add(new Pair<>(
+                    out.add(new SamePair<>(
                             name.append(st).toString().replace("+", "Behind").replace("-", "After"),
                             zoneId
                     ));
@@ -74,7 +74,7 @@ public class TimeZone extends BaseLibrary {
                 String st = Arrays.stream(zoneId.split(Pattern.quote("/"))).map(
                         str -> String.join("", str.split(Pattern.quote("_")))
                 ).collect(Collectors.joining());
-                out.add(new Pair<>(
+                out.add(new SamePair<>(
                         name.append(st).toString(),
                         zoneId
                 ));
@@ -83,7 +83,7 @@ public class TimeZone extends BaseLibrary {
         return out;
     }
 
-    protected static BaseVariable createVariable(Pair<String> tuple) {
+    protected static BaseVariable createVariable(SamePair<String> tuple) {
         String varName = tuple.first;
         String value = tuple.second;
         BaseVariable var = new BaseVariable(varName, new TStringVar(varName, value, -1,

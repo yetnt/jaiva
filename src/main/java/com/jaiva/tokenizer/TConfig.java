@@ -1,7 +1,7 @@
 package com.jaiva.tokenizer;
 
 import com.jaiva.Config;
-import com.jaiva.utils.BlockChain;
+import com.jaiva.utils.generic.BlockChain;
 
 
 /**

@@ -15,7 +15,7 @@ import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.*;
 import com.jaiva.tokenizer.tokens.specific.*;
-import com.jaiva.utils.CCol;
+import com.jaiva.utils.generator.CCol;
 
 /**
  * The Primitives class is a utility class that provides methods for resolving

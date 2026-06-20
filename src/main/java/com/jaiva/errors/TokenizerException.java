@@ -1,7 +1,7 @@
 package com.jaiva.errors;
 
 import com.jaiva.tokenizer.tokens.specific.TIfStatement;
-import com.jaiva.utils.CCol;
+import com.jaiva.utils.generator.CCol;
 
 /**
  * Base Syntax Error Exception.

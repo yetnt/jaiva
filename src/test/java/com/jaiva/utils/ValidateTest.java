@@ -3,6 +3,7 @@ package com.jaiva.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.jaiva.utils.generic.SamePair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -42,9 +43,9 @@ public class ValidateTest {
 
     @Test
     void testIsOpInPair() {
-        ArrayList<Pair<Integer>> list = new ArrayList<>(Arrays.asList(
-                new Pair<>(0, 2),
-                new Pair<>(3, 6)));
+        ArrayList<SamePair<Integer>> list = new ArrayList<>(Arrays.asList(
+                new SamePair<>(0, 2),
+                new SamePair<>(3, 6)));
         Assertions.assertEquals(0, Validate.isOpInPair(1, list));
         Assertions.assertEquals(1, Validate.isOpInPair(4, list));
         Assertions.assertEquals(-1, Validate.isOpInPair(8, list));

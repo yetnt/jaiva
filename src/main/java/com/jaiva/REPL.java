@@ -12,7 +12,6 @@ import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.Vfs;
-import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.TConfig;
 import com.jaiva.tokenizer.tokens.Token;
@@ -21,8 +20,8 @@ import com.jaiva.tokenizer.tokens.specific.TExpression;
 import com.jaiva.tokenizer.tokens.specific.TVarRef;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.Tokenizer;
-import com.jaiva.utils.BlockChain;
-import com.jaiva.utils.MultipleLinesOutput;
+import com.jaiva.utils.generic.BlockChain;
+import com.jaiva.utils.generic.MultipleLinesOutput;
 
 /**
  * REPLMode is an enumeration that represents the mode of the REPL

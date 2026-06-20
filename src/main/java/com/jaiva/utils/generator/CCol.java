@@ -1,4 +1,4 @@
-package com.jaiva.utils;
+package com.jaiva.utils.generator;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

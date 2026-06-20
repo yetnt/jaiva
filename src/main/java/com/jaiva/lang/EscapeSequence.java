@@ -5,8 +5,8 @@ import java.util.Arrays;
 
 import com.jaiva.errors.TokenizerException;
 import com.jaiva.utils.Find;
-import com.jaiva.utils.Pair;
-import com.jaiva.utils.Tuple2;
+import com.jaiva.utils.generic.SamePair;
+import com.jaiva.utils.generic.Pair;
 
 /**
  * EscapeSequence class is a utility class that provides methods for escaping
@@ -297,20 +297,20 @@ public class EscapeSequence {
      * @return Line with all jaiva special stuff escaped.
      */
     public static String escapeAll(String line) {
-        ArrayList<Pair<Integer>> pairs = Find.quotationPairs(line);
-        if (pairs.isEmpty())
+        ArrayList<SamePair<Integer>> samePairs = Find.quotationPairs(line);
+        if (samePairs.isEmpty())
             return line;
         StringBuilder b = new StringBuilder();
         // put the substring before the first pair
-        b.append(line.substring(0, pairs.getFirst().first + 1)); // include the first "
-        for (int i = 0; i < pairs.size(); i++) {
-            Tuple2<Integer, Integer> pair = pairs.get(i);
+        b.append(line.substring(0, samePairs.getFirst().first + 1)); // include the first "
+        for (int i = 0; i < samePairs.size(); i++) {
+            Pair<Integer, Integer> pair = samePairs.get(i);
             String sub = line.substring(pair.first + 1, pair.second);
             b.append(toEscape(sub));
             // append " then the rest of the string, and then another "
             b.append(line.substring(
                     pair.second,
-                    i != pairs.size() - 1 ? pairs.get(i + 1).first + 1 : line.length()));
+                    i != samePairs.size() - 1 ? samePairs.get(i + 1).first + 1 : line.length()));
 
         }
 

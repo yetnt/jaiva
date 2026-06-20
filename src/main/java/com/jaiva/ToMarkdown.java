@@ -9,10 +9,9 @@ import com.jaiva.tokenizer.tokens.TVariable;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.*;
-import com.jaiva.utils.CCol;
-import com.jaiva.utils.bucket.Bucket;
+import com.jaiva.utils.generator.CCol;
 import com.jaiva.utils.bucket.Buckets;
-import com.jaiva.utils.MarkDownLiteral;
+import com.jaiva.utils.generator.MarkDownLiteral;
 
 import java.io.File;
 import java.io.FileWriter;

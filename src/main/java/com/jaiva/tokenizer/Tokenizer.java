@@ -13,6 +13,10 @@ import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.utils.*;
 import com.jaiva.utils.Validate.IsValidSymbolName;
+import com.jaiva.utils.generic.BlockChain;
+import com.jaiva.utils.generic.MultipleLinesOutput;
+import com.jaiva.utils.generic.Pair;
+import com.jaiva.utils.generic.SamePair;
 
 /**
  * The Tokenizer class is one of the 3 main classes which handle Jaiva code.
@@ -57,8 +61,8 @@ public class Tokenizer {
     }
 
     private static Object handleBlocks(boolean isComment, String line,
-            MultipleLinesOutput multipleLinesOutput, String entireLine, String t, String[] args,
-            Token<?> blockChain, int lineNumber) {
+                                       MultipleLinesOutput multipleLinesOutput, String entireLine, String t, String[] args,
+                                       Token<?> blockChain, int lineNumber) {
         MultipleLinesOutput m;
         if (multipleLinesOutput != null) {
             // multiple lines output exists. So we need to keep going until we find }
@@ -205,7 +209,7 @@ public class Tokenizer {
         }
         assert output instanceof MultipleLinesOutput;
         MultipleLinesOutput finalMOutput = ((MultipleLinesOutput) output);
-        Tuple2<String, Boolean> formattedPreLine = formatPreline(finalMOutput);
+        Pair<String, Boolean> formattedPreLine = formatPreline(finalMOutput);
         String preLine = formattedPreLine.first;
         ArrayList<Token<?>> nestedTokens = new ArrayList<>();
         config.flags.SKIP_READLINE_TRIM = true;
@@ -356,7 +360,7 @@ public class Tokenizer {
         return tokens;
     }
 
-    private static Tuple2<String, Boolean> formatPreline(MultipleLinesOutput finalMOutput) {
+    private static Pair<String, Boolean> formatPreline(MultipleLinesOutput finalMOutput) {
         boolean isInline = false;
         String preLine = finalMOutput.preLine;
         preLine = preLine.startsWith(Keywords.D_FUNCTION) ? preLine.replaceFirst(Keywords.D_FUNCTION, "") : preLine;
@@ -371,7 +375,7 @@ public class Tokenizer {
         preLine = preLine.substring(0, preLine.lastIndexOf(Chars.BLOCK_CLOSE));
         String[] parts = preLine.split("\n");
         if (parts[0].trim().startsWith(String.valueOf(Chars.COMMENT))) isInline = true;
-        return new Tuple2<>(preLine, isInline);
+        return new Pair<>(preLine, isInline);
     }
 
     /**
@@ -418,7 +422,7 @@ public class Tokenizer {
         }
         int stringStart = line.indexOf(Chars.STRING);
         int stringEnd = Find.closingCharIndex(line, Chars.STRING, Chars.STRING);
-        ArrayList<Pair<Integer>> quotepairs = Find.quotationPairs(line);
+        ArrayList<SamePair<Integer>> quotepairs = Find.quotationPairs(line);
         if (stringStart != -1 && stringEnd != -1 && quotepairs.size() == 1
                 && (line.charAt(line.length() - 1) == Chars.STRING
                         && line.split(Chars.ASSIGNMENT)[1].trim().charAt(0) == Chars.STRING)) {
@@ -512,7 +516,7 @@ public class Tokenizer {
         // "path" <- funcz, funca
         String[] parts = line.split(Chars.ASSIGNMENT);
 
-        ArrayList<Pair<Integer>> quotepairs = Find.quotationPairs(line);
+        ArrayList<SamePair<Integer>> quotepairs = Find.quotationPairs(line);
         if (quotepairs.isEmpty()) {
             throw new MalformedSyntaxException(
                     "Bro, the file to take from has to be surrounded by qutoes.", lineNumber);
@@ -782,7 +786,7 @@ public class Tokenizer {
         if (line.isEmpty())
             return null;
 
-        if (!Find.bracePairs(line).second.isEmpty())
+        if (!Find.bracePairs(line).unclosedBraces().isEmpty())
             throw new MalformedSyntaxException(
                     "Ayo, you got some unclosed braces in your code. Fix that bro wtf.", lineNumber);
 

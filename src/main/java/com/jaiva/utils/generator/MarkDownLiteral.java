@@ -1,4 +1,4 @@
-package com.jaiva.utils;
+package com.jaiva.utils.generator;
 
 import java.util.ArrayList;
 import java.util.ArrayDeque;

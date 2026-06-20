@@ -9,6 +9,8 @@ import com.jaiva.tokenizer.tokens.specific.TIfStatement;
 import com.jaiva.tokenizer.tokens.specific.TTernary;
 import com.jaiva.tokenizer.tokens.specific.TVarRef;
 import com.jaiva.utils.cd.ContextDispatcher;
+import com.jaiva.utils.generic.Pair;
+import com.jaiva.utils.generic.SamePair;
 
 /**
  * Validate class is a utils class where methods which "validate" the
@@ -120,7 +122,7 @@ public class Validate {
 
     /**
      * General method to check whether `opIndex` is within the range of any one of
-     * the Tuple2 pairs in the `list`
+     * the Pair pairs in the `list`
      * <p>
      * Currently used by {@link Validate#isOpInQuotePair(String, int)} and
      * {@link Find#lastIndexOf(String, String)}
@@ -130,17 +132,17 @@ public class Validate {
      * you're looking for cannot also be part of the pair)
      * 
      * @param index The index to search for
-     * @param list  An arraylist of Tuple2 objects containing the pairs of ranges.
+     * @param list  An arraylist of Pair objects containing the pairs of ranges.
      *              Generally you can make this list by calling either
      *              {@link Find#quotationPairs(String)} or
      *              {@link Find#bracePairs(String)}
      * @return The index of the list in which the `index` was found to be in range.
      *          Otherwise `-1`
      */
-    public static int isOpInPair(int index, ArrayList<Pair<Integer>> list) {
+    public static int isOpInPair(int index, ArrayList<SamePair<Integer>> list) {
         for (int i = 0; i < list.size(); i++) {
-            Tuple2<Integer, Integer> tuple2 = list.get(i);
-            if (index > tuple2.first && index < tuple2.second)
+            Pair<Integer, Integer> pair = list.get(i);
+            if (index > pair.first && index < pair.second)
                 return i;
 
         }
@@ -158,8 +160,8 @@ public class Validate {
      *         or -1 if the operator index is not within any quotation pair.
      */
     public static int isOpInQuotePair(String line, int opIndex) {
-        ArrayList<Pair<Integer>> quotePairs = Find.quotationPairs(line);
-        return isOpInPair(opIndex, quotePairs);
+        ArrayList<SamePair<Integer>> quoteSamePairs = Find.quotationPairs(line);
+        return isOpInPair(opIndex, quoteSamePairs);
     }
 
     /**

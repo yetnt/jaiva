@@ -1,4 +1,4 @@
-package com.jaiva.utils;
+package com.jaiva.utils.generic;
 
 /**
  * A generic tuple class that holds two values of potentially different types.
@@ -6,7 +6,7 @@ package com.jaiva.utils;
  * @param <A> the type of the first value in the tuple
  * @param <B> the type of the second value in the tuple
  */
-public class Tuple2<A, B> {
+public class Pair<A, B> {
     /**
      * The first value in the tuple.
      */
@@ -22,7 +22,7 @@ public class Tuple2<A, B> {
      * @param first  the first value in the tuple
      * @param second the second value in the tuple
      */
-    public Tuple2(A first, B second) {
+    public Pair(A first, B second) {
         this.first = first;
         this.second = second;
     }
@@ -36,18 +36,18 @@ public class Tuple2<A, B> {
     }
 
     /**
-     * Returns a string representation of this Tuple2 object.
+     * Returns a string representation of this Pair object.
      * The string includes the values of the first and second elements.
      *
-     * @return a string in the format "Tuple2 [first=..., second=...]"
+     * @return a string in the format "Pair [first=..., second=...]"
      */
     @Override
     public String toString() {
-        return "Tuple2 [first=" + first + ", second=" + second + "]";
+        return "Pair [first=" + first + ", second=" + second + "]";
     }
 
     /**
-     * Computes the hash code for this Tuple2 object.
+     * Computes the hash code for this Pair object.
      * The hash code is calculated based on the hash codes of the {@code first} and
      * {@code second} elements.
      * If either element is {@code null}, its hash code is considered as 0.
@@ -65,7 +65,7 @@ public class Tuple2<A, B> {
 
     /**
      * Indicates whether some other object is "equal to" this one.
-     * Two {@code Tuple2} objects are considered equal if both their {@code first}
+     * Two {@code Pair} objects are considered equal if both their {@code first}
      * and {@code second}
      * elements are equal (or both are null).
      *
@@ -81,7 +81,7 @@ public class Tuple2<A, B> {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Tuple2 other = (Tuple2) obj;
+        Pair other = (Pair) obj;
         if (first == null) {
             if (other.first != null)
                 return false;

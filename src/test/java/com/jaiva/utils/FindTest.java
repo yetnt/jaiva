@@ -3,10 +3,12 @@ package com.jaiva.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.jaiva.utils.generic.MultipleLinesOutput;
+import com.jaiva.utils.generic.SamePair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.jaiva.utils.Find.LeastImportantOperator;
+import com.jaiva.utils.generic.LeastImportantOperator;
 
 public class FindTest {
 
@@ -93,38 +95,38 @@ public class FindTest {
     void testQuotationPairs() {
         // test to mkae sure $" is escaped.
         String inputStr = "\"dd\" - \"$\"32\"";
-        ArrayList<Pair<Integer>> actual = Find.quotationPairs(inputStr);
-        ArrayList<Pair<Integer>> expected = new ArrayList<>(Arrays.asList(
-                new Pair<>(0, 3),
-                new Pair<>(7, 12)));
+        ArrayList<SamePair<Integer>> actual = Find.quotationPairs(inputStr);
+        ArrayList<SamePair<Integer>> expected = new ArrayList<>(Arrays.asList(
+                new SamePair<>(0, 3),
+                new SamePair<>(7, 12)));
         Assertions.assertEquals(expected, actual);
 
         // test to make sure double $$ doesnt trigger escaping the " character.
         inputStr = "\"dd - $$\"\" $\" \"";
         actual = Find.quotationPairs(inputStr);
         expected = new ArrayList<>(Arrays.asList(
-                new Pair<>(inputStr.indexOf('"'), 8),
-                new Pair<>(9, inputStr.lastIndexOf('"'))));
+                new SamePair<>(inputStr.indexOf('"'), 8),
+                new SamePair<>(9, inputStr.lastIndexOf('"'))));
         Assertions.assertEquals(expected, actual);
     }
 
     public static String inputString = "function([function])[2 + 4] - (\"hi hi(\")' + -2-2-2-2";
 
-    public static ArrayList<Pair<Integer>> braces = new ArrayList<>(
+    public static ArrayList<SamePair<Integer>> braces = new ArrayList<>(
             Arrays.asList(
-                    new Pair<>(9, 18),
-                    new Pair<>(8, 19),
-                    new Pair<>(20, 26),
-                    new Pair<>(30, 39)));
-    public static ArrayList<Pair<Integer>> quotes = new ArrayList<>(
+                    new SamePair<>(9, 18),
+                    new SamePair<>(8, 19),
+                    new SamePair<>(20, 26),
+                    new SamePair<>(30, 39)));
+    public static ArrayList<SamePair<Integer>> quotes = new ArrayList<>(
             Arrays.asList(
-                    new Pair<>(31, 38)));
+                    new SamePair<>(31, 38)));
 
     @Test
     void testBracePairs() {
-        ArrayList<Pair<Integer>> actual = Find.bracePairs(inputString).first;
-        for (Pair<Integer> pair : actual) {
-            Assertions.assertNotEquals(-1, braces.indexOf(pair), pair + " does not exist in expected array");
+        ArrayList<SamePair<Integer>> actual = Find.bracePairs(inputString).closedPairs();
+        for (SamePair<Integer> samePair : actual) {
+            Assertions.assertNotEquals(-1, braces.indexOf(samePair), samePair + " does not exist in expected array");
         }
     }
 

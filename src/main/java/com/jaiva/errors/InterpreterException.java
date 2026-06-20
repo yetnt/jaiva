@@ -18,7 +18,7 @@ import com.jaiva.tokenizer.tokens.specific.TThrowError;
 import com.jaiva.tokenizer.tokens.specific.TVarReassign;
 import com.jaiva.tokenizer.tokens.specific.TVarRef;
 import com.jaiva.tokenizer.tokens.specific.TWhileLoop;
-import com.jaiva.utils.CCol;
+import com.jaiva.utils.generator.CCol;
 
 /**
  * Base Interpreter Exception.

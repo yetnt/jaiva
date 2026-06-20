@@ -2,14 +2,14 @@ package com.jaiva.tokenizer.tokens;
 
 import java.util.*;
 
-import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.TokenizerException.*;
 import com.jaiva.errors.TokenizerException;
 import com.jaiva.lang.Chars;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.tokens.specific.*;
-import com.jaiva.utils.Pair;
-import com.jaiva.utils.Tuple2;
+import com.jaiva.utils.generic.BracePairs;
+import com.jaiva.utils.generic.Pair;
+import com.jaiva.utils.generic.SamePair;
 import com.jaiva.utils.cd.ContextDispatcher;
 import com.jaiva.utils.Find;
 import com.jaiva.utils.Validate;
@@ -154,11 +154,11 @@ public record Token<T extends TokenDefault>(T value) {
             // 19, It's a lambda!!
             // f~() : "weee"!
             String lambdaName = "__lambda__ln" + lineNumber  + "__" + UUID.randomUUID();
-            Tuple2<ArrayList<Pair<Integer>>, ArrayList<Tuple2<Integer, Character>>> bracePairs = Find.bracePairs(line);
+            BracePairs bracePairs = Find.bracePairs(line);
             int indexOfCol = line.indexOf(':');
-            if (bracePairs.first.isEmpty()) throw new TokenizerException.MalformedSyntaxException(
+            if (bracePairs.closedPairs().isEmpty()) throw new TokenizerException.MalformedSyntaxException(
                     "So like, are you going to add any parentheses to your lambda or..?", lineNumber);
-            if (bracePairs.first.getFirst().second > indexOfCol) throw new TokenizerException.MalformedSyntaxException(
+            if (bracePairs.closedPairs().getFirst().second > indexOfCol) throw new TokenizerException.MalformedSyntaxException(
                     "How did you add a colon before the lambda's parameter list ends???", lineNumber);
 
             // "f~  (woot, w) : woot - 1" becomes "(woot, w)"

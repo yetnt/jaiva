@@ -18,7 +18,7 @@ import com.jaiva.tokenizer.tokens.TSymbol;
 import com.jaiva.tokenizer.tokens.specific.*;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
-import com.jaiva.utils.Tuple2;
+import com.jaiva.utils.generic.Pair;
 
 /**
  * The Interpreter class is one of the 3 main classes which handle Jaiva code.
@@ -36,8 +36,8 @@ public class Interpreter {
      * whatever needs to be handled
      * <p>
      * For example, we could be deeply nested in a function and some other
-     * constructs and it decides to break, this class helps to keep exiting out of
-     * the nested calls until we are in a loop to break out if, UNLESS we're in the
+     * constructs, and it decides to break. This class helps to keep exiting out of
+     * the nested calls until we are in a loop to break out if. UNLESS we're in the
      * global context then it throws an error.
      */
     public static class ThrowIfGlobalContext {
@@ -279,7 +279,7 @@ public class Interpreter {
                     ));
                 }
 
-                // so hopefully this chanegs the instance and yeah 👍
+                // so hopefully this changes the instance and yeah 👍
             }
             default -> {
                 // here its a primitive being parsed or recursively called
@@ -325,10 +325,10 @@ public class Interpreter {
                     // if we are, then we pause the execution and wait for the user to continue.
                     config.dc.print(token.lineNumber, null, t,  scope);
                 }
-                if (config.dc.stepOver.equals(new Tuple2<>(true, false))) {
+                if (config.dc.stepOver.equals(new Pair<>(true, false))) {
                     config.dc.print(token.lineNumber, null, t, scope);
                     continue;
-                } else if (config.dc.stepOver.equals(new Tuple2<>(false, true))) {
+                } else if (config.dc.stepOver.equals(new Pair<>(false, true))) {
                     config.dc.print(token.lineNumber, null, t, scope);
                 }
             }

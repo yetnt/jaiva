@@ -8,7 +8,7 @@ import com.jaiva.Debugger;
 import com.jaiva.interpreter.*;
 import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.tokenizer.tokens.Token;
-import com.jaiva.utils.Pair;
+import com.jaiva.utils.generic.SamePair;
 
 /**
  * The DebugController class is responsible for actually controllig the
@@ -55,7 +55,7 @@ public class DebugController {
      * code.
      * If true, the debugger will skip the current line and move to the next one.
      */
-    public Pair<Boolean> stepOver = new Pair<>(false, false);
+    public SamePair<Boolean> stepOver = new SamePair<>(false, false);
 
     /**
      * The context trace for the current execution.
@@ -92,11 +92,11 @@ public class DebugController {
         if (active) {
             currentLineNumber = lineNumber;
             if (!stepOver.second && stepOver.first) {
-                stepOver = new Pair<>(false, true);
+                stepOver = new SamePair<>(false, true);
                 this.scope = scope;
             } else {
                 if (!stepOver.first && stepOver.second) {
-                    stepOver = new Pair<>(false, false);
+                    stepOver = new SamePair<>(false, false);
                     System.out.print("On line: " + lineNumber);
                 } else {
                     System.out.print("breakpoint hit on line: " + lineNumber);
