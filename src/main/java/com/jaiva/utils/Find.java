@@ -436,6 +436,7 @@ public class Find {
             String line) {
         ArrayList<SamePair<Integer>> finalArr = new ArrayList<>();
         ArrayList<Pair<Integer, Character>> stack = new ArrayList<>();
+        ArrayList<Pair<Integer, Character>> danglingclose = new ArrayList<>();
 
         for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
@@ -443,6 +444,10 @@ public class Find {
                 stack.add(new Pair<>(i, c));
 
             if ((c == ']' || c == ')') && Validate.isOpInQuotePair(line, i) == -1) {
+                if (stack.isEmpty()) {
+                    danglingclose.add(new Pair<>(i, c));
+                    continue;
+                }
                 Pair<Integer, Character> t = stack.getLast();
                 if ((t.second == '[' && c == ']') || (t.second == '(' && c == ')')) {
                     finalArr.add(new SamePair<>(t.first, i));
@@ -451,7 +456,7 @@ public class Find {
             }
         }
 
-        return new BracePairs(finalArr, stack);
+        return new BracePairs(finalArr, stack, danglingclose);
     }
 
     /**

@@ -12,5 +12,6 @@ import java.util.ArrayList;
  */
 public record BracePairs(
         ArrayList<SamePair<Integer>> closedPairs,
-        ArrayList<Pair<Integer, Character>> unclosedBraces
+        ArrayList<Pair<Integer, Character>> unclosedBraces,
+        ArrayList<Pair<Integer, Character>> danglingClose
 ) {}
