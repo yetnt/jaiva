@@ -565,6 +565,10 @@ public class Primitives {
 
                 checkSymbolAnnotation(function, tFuncCall.lineNumber, scope);
 
+                if (funcName instanceof String && ((String)funcName).contains("a_map")) {
+                    System.out.println("d");
+                }
+
                 ArrayList<Object> args = BaseFunction.resolveParameters(function, tFuncCall, config, scope);
                 Object returnValue = function.call(
                         tFuncCall,

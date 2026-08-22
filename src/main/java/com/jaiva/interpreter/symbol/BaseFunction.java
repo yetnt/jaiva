@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.*;
+import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.tokens.TReference;
@@ -46,6 +47,16 @@ public class BaseFunction extends Symbol {
         super(name, SymbolType.FUNCTION, token);
         this.token = token;
         this.name = name;
+    }
+
+    /**
+     * Constructs a new BaseFunction instance with da specified function builder
+     * @param functionBuilder da builder.
+     */
+    public BaseFunction(FunctionBuilder functionBuilder) {
+        super(functionBuilder.getName(), SymbolType.FUNCTION, functionBuilder.toToken());
+        this.token = functionBuilder.toToken();
+        this.name = functionBuilder.getName();
     }
 
     @Override

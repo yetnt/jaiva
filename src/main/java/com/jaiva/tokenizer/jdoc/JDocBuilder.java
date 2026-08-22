@@ -1,5 +1,7 @@
 package com.jaiva.tokenizer.jdoc;
 
+import com.jaiva.interpreter.libBuilders.func.Argument;
+import com.jaiva.interpreter.libBuilders.func.Arguments;
 import com.jaiva.tokenizer.jdoc.tags.Tag;
 
 import java.util.ArrayList;
@@ -130,5 +132,17 @@ public class JDocBuilder {
      */
     public JDoc build() {
         return new JDoc(tags);
+    }
+
+    public JDocBuilder addParams(Arguments arguments) {
+        for (Argument arg : arguments.getArguments()) {
+            addParam(
+                    arg.name(),
+                    arg.argumentType().getType(),
+                    arg.getDescription(),
+                    arg.isOptional()
+            );
+        }
+        return this;
     }
 }

@@ -8,6 +8,11 @@ import com.jaiva.errors.JaivaException.DebugException;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.libBuilders.func.Argument;
+import com.jaiva.interpreter.libBuilders.func.Arguments;
+import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
+import com.jaiva.interpreter.libBuilders.func.arg.AArgument;
+import com.jaiva.interpreter.libBuilders.func.arg.AVarArgument;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.LibraryType;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -24,23 +29,30 @@ import com.jaiva.tokenizer.tokens.specific.TVarRef;
 
 public class Debug extends BaseLibrary {
     public static String path = "debug";
-    public Debug(IConfig<Object> config) {
+    public Debug() {
         super(LibraryType.LIB, "debug");
-        vfs.put("d_emit", new FEmit(config));
-        vfs.put("d_vfs", new FVfs(config));
+        vfs.put("d_emit", new FEmit());
+        vfs.put("d_vfs", new FVfs());
         vfs.put("d_link", new FLink());
     }
 
     public class FLink extends BaseFunction {
+
         FLink() {
-            super("d_link", new TFunction("d_link", new String[]{"a", "b"}, null, -1,
-                    JDoc.builder()
-                            .addDesc("Links the MapValue instance of 'a' into 'b' such that they hold the same value and if one is edited the other will also have that edit.")
-                            .addParam("a", "idk", "The symbol which holds the MapValue to be linked.", false)
-                            .addParam("b", "idk", "The symbol who's MapValue will either be created or overwritten", false)
-                            .sinceVersion("5.1.0")
-                            .addReturns("idk")
-                            .addNote("""
+            super(
+                    FunctionBuilder.start()
+                            .name("d_link")
+                            .arguments(
+                                    Arguments.getInstance()
+                                            .add(new AArgument("a", "The symbol which holds the MapValue to be linked.", false, Argument.Type.ANY))
+                                            .add(new AArgument("b", "The symbol who's MapValue will either be created or overwritten", false, Argument.Type.ANY))
+                            )
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Links the MapValue instance of 'a' into 'b' such that they hold the same value and if one is edited the other will also have that edit.")
+                                            .sinceVersion("5.0.1")
+                                            .addReturns("idk")
+                                            .addNote("""
                                     A usual (b <- a) syntax would suffice if you'd like to copy the value of a into b.
                                     However when a is changed, b will stay the value you set earlier. This function fixes that where it will
                                     link the exact MapValue from a into b, discarding b's old MapValue. such that editing any one of the symbols
@@ -48,7 +60,7 @@ public class Debug extends BaseLibrary {
                                     
                                     In the case that the "b" parameter does not actually exist in the symbol table, d_link will try to make it, itself.
                                     """)
-                            .addExample("""
+                                            .addExample("""
                                     maak a <- f~() : 10! @ Lambda that returns 10
                                     maak b <- true! @ boolean value true
                                     
@@ -64,8 +76,8 @@ public class Debug extends BaseLibrary {
                                     a <- 100!
                                     khuluma(b)! @ prints 100
                                     """)
-                            .build()
-                    ));
+                            )
+            );
         }
 
         @Override
@@ -74,12 +86,12 @@ public class Debug extends BaseLibrary {
             TokenDefault refA = null;
             TokenDefault refB = null;
 
-            if (tFuncCall.args.getFirst() instanceof Token<?> t)
-                refA = t.value();
+            if (tFuncCall.args.getFirst() instanceof Token<?>(Object value))
+                refA = (TokenDefault) value;
             else if (tFuncCall.args.getFirst() instanceof TokenDefault t)
                 refA = t;
-            if (tFuncCall.args.get(1) instanceof Token<?> t)
-                refB = t.value();
+            if (tFuncCall.args.get(1) instanceof Token<?>(Object value))
+                refB = (TokenDefault) value;
             else  if (tFuncCall.args.get(1) instanceof TokenDefault t)
                 refB = t;
 
@@ -101,17 +113,18 @@ public class Debug extends BaseLibrary {
 
     @SymbolConfig(experimental = true)
     public class FVfs extends BaseFunction {
-        FVfs(IConfig<Object> config) {
-            super("d_vfs", new TFunction("d_vfs", new String[]{}, null, -1,
-                    JDoc.builder()
+        FVfs() {
+            super(FunctionBuilder.start()
+                    .name("d_vfs")
+                    .docs(JDoc.builder()
                             .addDesc("Returns the current context's vfs.")
                             .sinceVersion("4.1.0")
                             .addReturns("A 2d array, first array containing the keys, second array the values.")
                             .addNote("This function does not allow you to edit the current vfs, only to get" +
                                     " everything that is currently within the vfs as an array." +
                                     " Everytime this function is called a new array containing all the stuff is made.")
-                            .build()
-                    ));
+                    )
+            );
             this.freeze();
         }
 
@@ -137,21 +150,26 @@ public class Debug extends BaseLibrary {
     }
 
     public class FEmit extends BaseFunction {
-        FEmit(IConfig<Object> config) {
-            super("d_emit", new TFunction("d_emit", new String[] { "<-arr" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Throws a DebugException to be caught by a Java test class and emits the given variables")
-                            .addParam("arr", "[]", "The array of values to pass to the exception", true)
-                            .addReturns("Physically can't return. As it always throws an error")
-                            .addNote(
-                                    "If you aren't familiar with Java, the language Jaiva is developed in. " +
-                                            "This will essentially forcefully stop the execution of the interpreter, with the intent" +
-                                            " for said error to be caught and dealt with by another Java class. This serves 0 purpose if " +
-                                            " you're just running a Jaiva file."
-                            )
-                            .sinceVersion("1.0.2")
-                            .build()
-            ));
+        FEmit() {
+            super(FunctionBuilder.start()
+                    .name("d_emit")
+                    .arguments(
+                            Arguments.getInstance()
+                                    .addVarArg(new AVarArgument("arr", "The array of values to pass to the exception"))
+                    )
+                    .docs(
+                           JDoc.builder()
+                                   .addDesc("Throws a DebugException to be caught by a Java test class and emits the given variables")
+                                   .addReturns("Physically can't return. As it always throws an error")
+                                   .addNote(
+                                           "If you aren't familiar with Java, the language Jaiva is developed in. " +
+                                                   "This will essentially forcefully stop the execution of the interpreter, with the intent" +
+                                                   " for said error to be caught and dealt with by another Java class. This serves 0 purpose if " +
+                                                   " you're just running a Jaiva file."
+                                   )
+                                   .sinceVersion("1.0.2")
+                    )
+            );
             this.freeze();
         }
 
