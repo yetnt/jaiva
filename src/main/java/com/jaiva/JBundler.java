@@ -43,7 +43,7 @@ public class JBundler {
 
     /**
      * Constructor to make a JBundler instance without a specific path.
-     * @implSpec If using this constructor, you can only use {@link #execute(String, Object)}
+     * @implSpec If using this constructor, you can only use {@link #execute(String, Object, Object)}
      * @param cls The var args of interpreter classes.
      */
     @SafeVarargs
@@ -61,9 +61,10 @@ public class JBundler {
      * @param <T> The type of the interpreter object
      * @throws Exception If anything occurs
      */
-    public <T> void execute(String filePath, T obj) throws Exception {
+    public <T, V> void execute(String filePath, T obj, V jaivaValue) throws Exception {
         ArrayList<Token<?>> tokens = Main.parseTokens(filePath, false);
         IConfig<T> config = new IConfig<>(new ArrayList<>(List.of("jaiva")), filePath, obj);
+        config.add(jaivaValue);
         Scope sc = new Scope((IConfig<Object>) config, classes);
         Interpreter.interpret(tokens, sc, (IConfig<Object>) config);
     }

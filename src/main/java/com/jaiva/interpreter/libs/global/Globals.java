@@ -50,6 +50,7 @@ public class Globals extends BaseLibrary {
         vfs.put("arrLit", new FArrayLiteral());
         vfs.put("neg", new FNeg());
         vfs.put("scope", new FScope());
+        vfs.put("getCallerValue", new FGetCallerValue());
         vfs.putAll(new IOFunctions(config).vfs);
 
 //        if (!config.destroyLibraryCircularDependancy)
@@ -243,6 +244,36 @@ public class Globals extends BaseLibrary {
                                     .addDesc("An array containing jaiva's reserved keywords that you cannot use as symbol names.").build()),
                     new ArrayList<>(Arrays.asList(Keywords.all)));
             this.freeze();
+        }
+    }
+
+    /**
+     * getCallerValue(variable)
+     */
+    class FGetCallerValue extends BaseFunction {
+        FGetCallerValue() {
+            super("getCallerValue", new TFunction("getCallerValue", new String[] { }, null, -1,
+                    JDoc.builder()
+                            .addDesc("Returns the caller value provided to this file if this file was run by another java program.")
+                            .addReturns("The caller value")
+                            .sinceVersion("5.0.2")
+                            .addExample("""
+                                    @ Say we are in J3Engine command
+                                    maak value <- getCallerValue()!
+                                    @ use it
+                                    """)
+                            .build()
+
+            ));
+            this.freeze();
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,
+                           IConfig<Object> config, Scope scope)
+                throws Exception {
+            Object value = config.getCallerValue();
+            return value == null ? Token.voidValue(tFuncCall.lineNumber) : Primitives.toPrimitive(value, false, config, scope);
         }
     }
 

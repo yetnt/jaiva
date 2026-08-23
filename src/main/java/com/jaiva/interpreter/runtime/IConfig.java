@@ -149,4 +149,14 @@ public class IConfig<T extends Object> extends Config {
         this.object = object;
         this.destroyLibraryCircularDependancy = destroyLibraryCircularDependancy;
     }
+
+    private Object callerValue;
+
+    public <V> void add(V callerValue) {
+        this.callerValue = callerValue;
+    }
+
+    public Object getCallerValue() {
+        return callerValue;
+    }
 }
