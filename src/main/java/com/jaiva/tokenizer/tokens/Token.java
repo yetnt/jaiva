@@ -252,7 +252,8 @@ public record Token<T extends TokenDefault>(T value) {
                             return line.substring(2);
                         } else {
                             return new TVarRef(line, lineNumber, line.charAt(line.length() - 1) == '~',
-                                    line.length() - Chars.SPREAD.length() == line.indexOf(Chars.SPREAD)).toToken();
+                                    line.endsWith(Chars.SPREAD)
+                            ).toToken();
                         }
                     }
                 }

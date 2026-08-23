@@ -40,7 +40,7 @@ public class Argument {
     }
 
     public String toTokenString() {
-        return argumentPrefix() + name() + (isOptional() ? "?" : "");
+        return argumentPrefix().getPrefix() + name() + (isOptional() ? "?" : "");
     }
 
     public enum Prefix {
