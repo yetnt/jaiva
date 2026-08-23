@@ -87,6 +87,32 @@ public class BaseFunction extends Symbol {
         return Token.voidValue(tFuncCall.lineNumber);
     }
 
+    public Object call(ArrayList<Object> params,
+                       IConfig<Object> config, Scope scope, TFuncCall originalCall) throws Exception {
+        // inject stuff into scope
+        ArrayList<Object> tokens = new ArrayList<>();
+
+        params.forEach(p -> {
+            switch (p) {
+                case Number t -> tokens.add(t);
+                case String t2 -> tokens.add(t2);
+                case Boolean t3 -> tokens.add(t3);
+                case ArrayList<?> t4 -> tokens.add(t4);
+                default -> tokens.add(p); // TODO: pray.
+            }
+        });
+
+        return call(
+                new TFuncCall(
+                        this.name,
+                        tokens,
+                        originalCall.lineNumber, false, false
+                ),
+                params,
+                config, scope
+        );
+    }
+
     /**
      * Resolves the parameters for a function call, handling spread operators.
      *
