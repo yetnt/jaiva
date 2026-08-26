@@ -857,7 +857,6 @@ public class Tokenizer {
             return tokens;
         }
 
-        // TODO: This token only exists for debugging purposes at the moment.
         if (line.equals(Keywords.UNDEFINED)) {
             tokens.add(new TVoidValue(lineNumber).toToken());
             return tokens;

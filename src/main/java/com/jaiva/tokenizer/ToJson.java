@@ -33,8 +33,10 @@ public class ToJson {
         json.append("{");
         json.append("\"type\": \"").append(type).append("\",");
         json.append("\"name\": \"").append(name).append("\",");
-        json.append("\"exportSymbol\": \"").append(exportSymbol).append("\",");
-        json.append("\"toolTip\": \"").append(tooltip.toString()).append("\",");
+        json.append("\"exportSymbol\": ").append(exportSymbol).append(",");
+        json.append("\"toolTip\": ").append(
+                (tooltip instanceof String ? "\"" + tooltip + "\"" : tooltip.toString())
+        ).append(",");
         json.append("\"lineNumber\": ").append(ln).append(",");
     }
 

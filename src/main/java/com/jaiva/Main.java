@@ -37,7 +37,7 @@ public class Main {
      */
     public static ArrayList<String> replArgs = new ArrayList<>(
             Arrays.asList("--print-tokens", "-p", "--help", "-h", "--version", "-v", "--test", "-t", "--update",
-                    "-u"));
+                    "-u", "--json-stream", "-js" ));
     /**
      * List of command-line arguments that are used when running a Jaiva source
      * file.
@@ -46,7 +46,7 @@ public class Main {
      */
     public static ArrayList<String> tokenArgs = new ArrayList<>(
             Arrays.asList("-s", "-j", "--string", "--json", "-jg", "--json-with-globals", "-d", "--debug", "-is",
-                    "--include-stacks", "--markdown", "-md"));
+                    "--include-stacks", "--markdown", "-md", "-jog", "--json-of-globals"));
     /**
      * Version of the Jaiva programming language interpreter. This is a string
      * variable that holds the version number in the format
@@ -54,7 +54,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "5.0.0";
+    public static String version = "5.0.2";
     /**
      * Author, it's just me.
      */
@@ -119,6 +119,11 @@ public class Main {
             return;
         } else if (replArgs.contains(args[0])) {
             switch (args[0]) {
+                case "--json-stream", "-js" -> {
+                    new Streamer();
+                    System.exit(0);
+                    return;
+                }
                 case "--print-tokens", "-p" -> {// System.out.println("Print token REPL mode.");
                     new REPL(1);
                     System.exit(0);
@@ -156,10 +161,12 @@ public class Main {
                     System.out.println(
                             "Jaiva is a programming language that is designed to be easy to use and understand. (I'm speaking out my ass, I made this cuz i was bored on a random january)");
                     System.out.println("Made with love by: " + author);
+                    System.out.println();
                     System.exit(0);
                 }
                 case "--test", "-t" -> {
                     System.out.println(new Types().toJson());
+                    System.out.println();
 
                     System.exit(0);
                 }
@@ -168,10 +175,12 @@ public class Main {
                     System.out.println(
                             "Because i'm far too lazy to implement an auto upater, you'll have to just reinstall the jaiva folder into your existing one every time you want to update.");
                     System.out.println("I'm not making it easier, you can make a PR on the github though.");
+                    System.out.println();
                     System.exit(0);
                 }
                 default -> {
                     System.out.println("Invalid REPL mode.");
+                    System.out.println();
                     System.exit(-1);
                 }
             }
@@ -179,6 +188,7 @@ public class Main {
         } else if (!args[0].contains(".") && !args[0].contains("jaiva/") && !args[0].contains("jaiva\\")) {
             // this is to catch the case where the user does not provide a file name
             System.out.println("Provide a file name or a cmd flag kau.");
+            System.out.println();
             System.exit(-1);
             return;
         }
@@ -194,9 +204,13 @@ public class Main {
                     debug = true;
             }
             ArrayList<Token<?>> tokens = new ArrayList<>();
-            if (!args[0].startsWith("jaiva/") && !args[0].startsWith("jaiva\\"))
+            List<String> globalsJsonFlag = List.of("-jog", "--json-of-globals");
+            if (!args[0].startsWith("jaiva/") && !args[0].startsWith("jaiva\\") &&
+                    (args.length > 1 && !globalsJsonFlag.contains(args[1]))
+            )
                 tokens = parseTokens(args[0], false);
-            if (tokens.isEmpty() && (args.length > 1 && !args[1].equals("-md") && !args[1].equals("--markdown"))) {
+            if (tokens.isEmpty() && (args.length > 1 && !args[1].equals("-md") && !args[1].equals("--markdown")) &&  (!globalsJsonFlag.contains(args[1]))) {
+                System.out.println();
                 System.exit(0);
                 return;
             }
@@ -221,6 +235,7 @@ public class Main {
                         for (Token<?> t : tokens) {
                             System.out.println(t.toString());
                         }
+                        System.out.println();
                         System.exit(0);
                         return;
                     }
@@ -229,6 +244,7 @@ public class Main {
                             throw new JaivaException.UnknownFileException("You can't print tokens of the built-in jaiva libs.");
                         System.out.println();
                         System.out.print("[");
+                        System.out.print(new Globals(iconfig).returnGlobalsJSON(false));
                         for (int i = 0; i < tokens.size(); i++) {
                             Token<?> token = tokens.get(i);
                             System.out.print(token.value().toJson());
@@ -237,6 +253,7 @@ public class Main {
                             }
                         }
                         System.out.print("]");
+                        System.out.println();
                         System.exit(0);
                         return;
                     }
@@ -254,6 +271,14 @@ public class Main {
                             }
                         }
                         System.out.print("]");
+                        System.out.println();
+                        System.exit(0);
+                        return;
+                    }
+                    case "-jog", "--json-of-globals" -> {
+                        String lib = args[0];
+                        System.out.print(new Globals(iconfig).returnGlobalsOf(lib, iconfig));
+                        System.out.println();
                         System.exit(0);
                         return;
                     }
@@ -273,11 +298,13 @@ public class Main {
                         Path outDir = Path.of(out);
                         new ToMarkdown((ArrayList<Token<?>>) tokens, iconfig, outDir,
                                 args[0].startsWith("jaiva/") || args[0].startsWith("jaiva\\"));
+                        System.out.println();
                         System.exit(0);
                         return;
                     }
                     default -> {
                         System.out.println("Invalid token mode.");
+                        System.out.println();
                         System.exit(-1);
                         return;
                     }
@@ -288,6 +315,7 @@ public class Main {
 
             // if we reached here, everythign went well!
 
+            System.out.println();
             System.exit(0);
 
         } catch (Exception e) {
@@ -299,12 +327,14 @@ public class Main {
                 case InterpreterException interpreterException -> {
                     System.out.println("Error while interpreting code: ");
                     System.out.println(e.getMessage());
+                    System.out.println();
                     System.exit(1);
                 }
                 case TokenizerException tokenizerException -> {
                     System.out.println("Error while parsing code: ");
                     System.out.println(e.getMessage());
 //                    e.printStackTrace(System.out);
+                    System.out.println();
                     System.exit(-1);
                 }
                 case JaivaException jaivaException -> {
@@ -313,6 +343,7 @@ public class Main {
                     System.out.println("Error: ");
                     System.out.println(e.getMessage());
 //                    e.printStackTrace(System.out);
+                    System.out.println();
                     System.exit(-1);
                 }
                 default -> {
@@ -321,6 +352,7 @@ public class Main {
                     System.out.println("\"Something\" went wrong, and it's proabaly not your fault.");
                     System.out.println(e.getMessage());
 //                    e.printStackTrace(System.out);
+                    System.out.println();
                     System.exit(-1);
                 }
             }

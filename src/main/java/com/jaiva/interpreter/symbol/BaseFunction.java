@@ -90,6 +90,7 @@ public class BaseFunction extends Symbol {
     public Object call(ArrayList<Object> params,
                        IConfig<Object> config, Scope scope, TFuncCall originalCall) throws Exception {
         // inject stuff into scope
+        // TODO this is most definitely unsafe. only called when a library function needs to call a function, sorta like composing in java using andThen()
         ArrayList<Object> tokens = new ArrayList<>();
 
         params.forEach(p -> {

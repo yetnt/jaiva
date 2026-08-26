@@ -74,8 +74,10 @@ public class Tag {
     @Override
     public String toString() {
         return "{" +
-                "\"tagType\":\"" + tagType.getTag().getFirst() + "\","
-                + (attributes.containsKey("description") ? "\"description\":\"" + attributes.get("description").toString().replace("\"", "\\\"") + "\"" : "");
+                "\"tagType\":\"" + tagType.getTag().getFirst() + "\"," + (attributes.containsKey("description")
+                ? "\"description\":\"" +
+                attributes.get("description").toString().replace("\"", "\\\"").replace("\n", "\\n") + "\""
+                : "");
     }
 
     /**
@@ -174,8 +176,8 @@ public class Tag {
             st.append("[");
             for (String lin : lines) {
                 String lineOriginal = lin;
-                lin = lin.replace("\n", "\\n").replace("\r", "\\r");
-                lin = lin.replace("\"", "\\\"").replace("\\", "\\\\");
+                lin = lin.replace("\\", "\\\\").replace("\n", "\\n");
+                lin = lin.replace("\"", "\\\"").replace("\r", "\\r");
                 if (lines.getFirst().equals(lineOriginal)) {
                     st.append("\"").append(lin).append("\"");
                 } else {

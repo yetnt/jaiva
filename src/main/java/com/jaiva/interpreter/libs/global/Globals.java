@@ -110,6 +110,33 @@ public class Globals extends BaseLibrary {
         return string.substring(0, string.length() - (removeTrailingComma ? 1 : 0));
     }
 
+    public String returnGlobalsOf(String label, IConfig<Object> i) {
+        Vfs VFS = vfs;
+        if (!label.equals("jaiva/global")) {
+            String label2 = label.replace("jaiva/", "").replace("jaiva\\", "");
+            LibraryLike l = builtInGlobals.get(label2);
+            if (l != null)
+                VFS = l.load(i);
+        }
+        StringBuilder string = new StringBuilder();
+        string.append("{").append("\"version\":\"").append(Main.version).append("\",");
+        string.append("\"tokens\":");
+        string.append("[");
+        VFS.forEach((name, vf) -> {
+            Symbol symbol = (Symbol) ((MapValue) vf).getValue();
+            try {
+                string.append(symbol.token.toJson());
+            } catch (JaivaException e) {
+                throw new RuntimeException(e);
+            }
+            string.append(",");
+        });
+        string.deleteCharAt(string.length() - 1);
+        string.append("]");
+        string.append("}");
+        return string.toString();
+    }
+
     public Vfs getBuiltInGlobal(String name) {
         if (name.startsWith("jaiva/") || name.startsWith("jaiva\\")) {
             name = name.substring(6);

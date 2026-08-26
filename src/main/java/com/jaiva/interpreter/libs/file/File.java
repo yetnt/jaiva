@@ -47,7 +47,7 @@ public class File extends BaseLibrary {
         public VFileName(IConfig<Object> config) {
             super("f_name",
                     new TStringVar("f_name",
-                            config.filePath == null ? "REPL" : config.filePath.getFileName().toString(), -1,
+                            config.filePath == null ? "File" : config.filePath.getFileName().toString(), -1,
                             JDoc.builder()
                                     .addDesc("Variable that holds the current file's name")
                                     .addNote("If you call this within the REPL, or somehow the filePath is null, it holds \"REPL\"")
@@ -59,7 +59,7 @@ public class File extends BaseLibrary {
                                             """)
                                     .build()
                     ),
-                    config.filePath == null ? "REPL" : config.filePath.getFileName().toString());
+                    config.filePath == null ? "File" : config.filePath.getFileName().toString());
             freeze();
 
         }
@@ -79,7 +79,7 @@ public class File extends BaseLibrary {
     public class VDirectory extends BaseVariable {
         public VDirectory(IConfig<Object> config) {
             super("f_dir",
-                    new TStringVar("f_dir", config.fileDirectory == null ? "REPL"
+                    new TStringVar("f_dir", config.fileDirectory == null ? "File"
                             : config.fileDirectory.toAbsolutePath().toString(), -1,
                             JDoc.builder()
                                     .addDesc("Variable that holds the current file's directory.")
@@ -90,7 +90,7 @@ public class File extends BaseLibrary {
                                             """)
                                     .build()
                     ),
-                    config.fileDirectory == null ? "REPL" : config.fileDirectory.toAbsolutePath().toString());
+                    config.fileDirectory == null ? "File" : config.fileDirectory.toAbsolutePath().toString());
             freeze();
         }
     }
@@ -218,8 +218,10 @@ public class File extends BaseLibrary {
             try {
                 fs = new Scanner(f);
             } catch (FileNotFoundException e) {
-                throw new InterpreterException.CatchAllException(new Scope(config),
-                        "Well, the current file doesn't exist??...", -1);
+                ((TArrayVar) this.token).contents = new ArrayList<>();
+                return;
+//                throw new InterpreterException.CatchAllException(new Scope(config),
+//                        "Well, the current file doesn't exist??...", -1);
             }
             ArrayList<String> contents = new ArrayList<>();
             while (fs.hasNextLine())

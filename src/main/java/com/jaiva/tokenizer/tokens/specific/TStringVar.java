@@ -37,7 +37,10 @@ public class TStringVar extends TUnknownScalar<String, TStringVar> {
     @Override
     public String toJson() throws JaivaException {
         json.append("value",
-                value != null ? EscapeSequence.fromEscape((String) value, lineNumber) : value,
+                value != null ? (EscapeSequence.fromEscape((String) value, lineNumber))
+                        .replace("\\", "\\\\").replace("\n", "\\n")
+                        .replace("\"", "\\\"").replace("\r", "\\r")
+                        : value,
                 true);
         return super.toJson();
     }

@@ -150,6 +150,8 @@ public class JDoc {
 
     @Override
     public String toString() {
-        return tags.size() == 1 && tags.getFirst() instanceof Tag.DGeneric ? ((String)tags.getFirst().attributes.get("description")) : tags.toString();
+        return tags.size() == 1 && tags.getFirst() instanceof Tag.DGeneric ?
+                ("\"" + ((String)tags.getFirst().attributes.get("description")) + "\"")
+                : tags.toString();
     }
 }
