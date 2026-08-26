@@ -54,7 +54,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "5.0.2";
+    public static String version = "5.0.3";
     /**
      * Author, it's just me.
      */
@@ -205,8 +205,9 @@ public class Main {
             }
             ArrayList<Token<?>> tokens = new ArrayList<>();
             List<String> globalsJsonFlag = List.of("-jog", "--json-of-globals");
-            if (!args[0].startsWith("jaiva/") && !args[0].startsWith("jaiva\\") &&
-                    (args.length > 1 && !globalsJsonFlag.contains(args[1]))
+            if ((!args[0].startsWith("jaiva/") && !args[0].startsWith("jaiva\\") &&
+                    (args.length > 1 && !globalsJsonFlag.contains(args[1])))
+                    || args.length == 1
             )
                 tokens = parseTokens(args[0], false);
             if (tokens.isEmpty() && (args.length > 1 && !args[1].equals("-md") && !args[1].equals("--markdown")) &&  (!globalsJsonFlag.contains(args[1]))) {

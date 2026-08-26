@@ -1,6 +1,6 @@
 # `globals`
  
-Globals, The set of variables and functions that are always available.
+The set of variables and functions that are available in any scope
  
  
 ## Functions
@@ -91,6 +91,20 @@ khuluma("yo.. again")!
 > [!NOTE]
 > _(Keep in mind this function still has to take your value and turn it into a Java primitive and other things, so the delay might not be exact. If you're looking for accuracy maybe remove x amount of ms till it's accurate.)_
  
+### `F~getCallerValue() -> `_**`any`**_
+ 
+Returns the caller value provided to this file if this file was run by another java program.
+ 
+Returns :
+> _**The caller value**_
+ 
+**Example:**
+```jaiva
+@ Say we are in J3Engine command
+maak value <- getCallerValue()!
+@ use it
+```
+ 
 ### `F~neg(input) -> `_**`number`**_
  
 > [!IMPORTANT]
@@ -171,7 +185,7 @@ af()! @ Errors as the usual deprecation warning is now a fatal error. (Crashes t
     "strict" which toggles "ew" and "constant"
 _
  
-### `F~ask(message) -> `_**`string`**_
+### `F~ask(message) -> `_**`idk`**_
  
 > [!IMPORTANT]
 > _**This symbol is deprecated!**__`This function serves no real purpose. (it doesn't work in most environments)`_

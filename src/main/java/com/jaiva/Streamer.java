@@ -69,6 +69,7 @@ public class Streamer {
                     toJsonError(e, ErrorType.OH_FUCK)
             );
             System.out.println();
+            new Streamer(); // try again.
         }
     }
 

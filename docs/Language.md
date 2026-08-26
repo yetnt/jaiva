@@ -880,7 +880,7 @@ Where
 This ones a bit weird.
 
 ```jiv
-colonize (variable init) | (condition) | (increment) ->
+colonize ((variable init) | (condition) | (increment)) ->
     @ block to execute
 <~
 ```
@@ -896,7 +896,7 @@ Where
 > and the `|` is the separator between the three parts of the for loop.
 
 ```jiv
-colonize i <- 0 | i <= 10 | + ->
+colonize (i <- 0 | i <= 10 | +) ->
     khuluma(i)! @ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 <~
 ```
@@ -904,7 +904,7 @@ colonize i <- 0 | i <= 10 | + ->
 ### colonize with (for each)
 
 ```jiv
-colonize (variable name) with (array) ->
+colonize ((variable name) with (array)) ->
     @ block
 <~
 ```
@@ -916,7 +916,7 @@ Where
 > `array` is the array to loop through.
 
 ```jiv
-colonize word with reservedKeywords ->
+colonize (word with reservedKeywords) ->
     khuluma(word)! @ prints all the reserved keywords
 <~
 ```
@@ -935,7 +935,7 @@ nikhil (a = 10) ->
 To skip to the next iteration of a loop, use the `nevermind` keyword.
 
 ```jiv
-colonize i <- 0 | i <= 10 | + ->
+colonize (i <- 0 | i <= 10 | +) ->
     if (i = 5) ->
         nevermind! @ this will skip the rest of the loop and go to the next iteration.
     <~

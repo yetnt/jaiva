@@ -26,7 +26,7 @@ kwenza *a_remove(arr, n) ->
         cima <== "a_remove()'s second argument must be a non-negative number"!
     <~
     maak returnValue <-|!
-    colonize i <- 0 | i < arr~ - n | + ->
+    colonize (i <- 0 | i < arr~ - n | +) ->
         @ Pre v5 code
 @         returnValue <- flat(returnValue, arrLit(arr[i]))!
         returnValue <- arrLit(returnValue:::, arr[i])!
@@ -83,7 +83,7 @@ kwenza *a_pushAll(<-params) ->
         cima <== "a_pushAll() only works on arrays"!
     <~
     maak returnArr <- arr!
-    colonize i <- 1 | i < params~ | + ->
+    colonize (i <- 1 | i < params~ | +) ->
         returnArr <- arrLit(returnArr:::, params[i])!
     <~
     khutla returnArr!
@@ -126,7 +126,7 @@ kwenza *a_shift(arr, n) ->
         cima <== "a_shift()'s second argument must be a non-negative number"!
     <~
     maak returnValue <-|!
-    colonize i <- 0 | i < arr~ | + ->
+    colonize (i <- 0 | i < arr~ | +) ->
         if (n > i) ->
             nevermind!
         <~
@@ -154,7 +154,7 @@ kwenza *a_filter(arr, F~predicate) ->
         cima <== "a_filter()'s second argument must be a function"!
     <~
     maak empty <-|!
-    colonize element with arr ->
+    colonize (element with arr) ->
         if (predicate(element) = true) ->
 @             empty <- flat(empty, arrLit(element))!
         empty <- arrLit(empty:::, element)!
@@ -183,7 +183,7 @@ kwenza *a_replace(arr, i, el) ->
         cima <== "a_replace()'s second argument must be a valid index " + str!
     <~
     maak newArr <-|!
-    colonize index <- 0 | index < arr~ | + ->
+    colonize (index <- 0 | index < arr~ | +) ->
         if (index = i) ->
 @             newArr <- flat(newArr, arrLit(el))!
             newArr <- arrLit(newArr:::, el)!
@@ -215,7 +215,7 @@ kwenza *a_delete(arr, i) ->
         cima <== "a_delete()'s second argument must be a valid index " + str!
     <~
     maak newArr <-|!
-    colonize index <- 0 | index < arr~ | + ->
+    colonize (index <- 0 | index < arr~ | +) ->
         if (index = i) ->
             nevermind!
         <~ mara ->
@@ -241,7 +241,7 @@ kwenza *a_indexOf(arr, el) ->
     if (typeOf(arr) != "array") ->
         cima <== "a_indexOf() only works on arrays"!
     <~
-    colonize index <- 0 | index < arr~ | + ->
+    colonize (index <- 0 | index < arr~ | +) ->
         if (arr[index] = el) ->
             khutla index!
         <~
@@ -263,7 +263,7 @@ kwenza *a_reverse(arr) ->
         cima <== "a_reverse() only works on arrays"!
     <~
     maak newArr <-|!
-    colonize i <- arr~ - 1 | i >= 0 | - ->
+    colonize (i <- arr~ - 1 | i >= 0 | -) ->
 @         newArr <- flat(newArr, arrLit(arr[i]))!
         newArr <- arrLit(newArr:::, arr[i])!
     <~
@@ -293,7 +293,7 @@ kwenza *a_reduce(arr, F~reducer, initial?) ->
         cima <== "a_reduce()'s second argument must be a function"!
     <~
     maak accumulator <- initial!
-    colonize element with arr ->
+    colonize (element with arr) ->
         if (accumulator = idk) ->
             accumulator <- element!
             nevermind!
@@ -321,7 +321,7 @@ kwenza *a_map(arr, F~mapperFunction) ->
         cima <== "a_reduce()'s second argument must be a function"!
     <~
     maak new <-|!
-    colonize el with arr ->
+    colonize (el with arr) ->
 @         new <- flat(new, arrLit(mapperFunction(el)))!
         new <- arrLit(new:::, mapperFunction(el))!
     <~
@@ -355,7 +355,7 @@ kwenza *a_from(input, split?) ->
 
     if (typeOf(split) = "number") ->
         @ here we split at that index, splitting into an array of 2 elements
-        colonize i <- 0 | i < input~ | + ->
+        colonize (i <- 0 | i < input~ | +) ->
             if (i != split) ->
                 current <- current + input[i]!
             <~ mara ->
@@ -368,7 +368,7 @@ kwenza *a_from(input, split?) ->
 
     split <- t_str(split)! @ Whatever it is, convert to string first.
 
-    colonize part with input ->
+    colonize (part with input) ->
         if (part != split) ->
             current <- current + part!
         <~ mara ->

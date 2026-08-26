@@ -54,6 +54,11 @@ public class Tokenizer {
         // make sure the closing ) is actually the outmost pair.
         int closingCharIndex = Find.closingCharIndex(line, Chars.STATEMENT_OPEN, Chars.STATEMENT_CLOSE);
 
+        if (closingCharIndex == -1)
+            throw new MalformedSyntaxException("i dont know what the hell to tell you because like this error"
+            + "is suppsoed to show up like WAY earlier. idk something about braces man. Ugh why do you even "
+                    + "bother coding in Jaiva?", lineNumber);
+
         String inbetween = construct.equals(Keywords.FOR) ? ""
                 : line.substring(closingCharIndex + 1, line.indexOf(Chars.BLOCK_OPEN)).trim();
         if (!inbetween.isEmpty())
@@ -107,61 +112,65 @@ public class Tokenizer {
      * @return The arguments for the given type.
      */
     private static String[] handleArgs(String type, String line, int lineNumber) throws TokenizerException {
-        switch (type) {
-            case "mara if": {
-                checkForMalformedConstruct(type, line, lineNumber);
-                // mara condition ->
-                // mara (i < 10) ->
-                return new String[] {
-                        line.substring(line.indexOf(Chars.STATEMENT_OPEN) + 1, line.lastIndexOf(Chars.STATEMENT_CLOSE)),
-                        "" };
-            }
-            case "if": {
-                checkForMalformedConstruct(type, line, lineNumber);
-                // if (condition) ->
-                // if (variable != 100) ->
-                return new String[] {
-                        line.substring(line.indexOf(Chars.STATEMENT_OPEN), line.lastIndexOf(Chars.STATEMENT_CLOSE)),
-                        "" };
-            }
-            case "nikhil": {
-                checkForMalformedConstruct(type, line, lineNumber);
-                // nikhil (condition) ->
-                // nikhil (i < 10) ->
-                return new String[] {
-                        line.substring(line.indexOf(Chars.STATEMENT_OPEN) + 1, line.lastIndexOf(Chars.STATEMENT_CLOSE)),
-                        "" };
-            }
-            case "colonize": {
-                checkForMalformedConstruct(type, line, lineNumber);
-                // colonize declaration | condition | increment ->
-                // colonize variableName with array name ->
+        try {
+            switch (type) {
+                case "mara if": {
+                    checkForMalformedConstruct(type, line, lineNumber);
+                    // mara condition ->
+                    // mara (i < 10) ->
+                    return new String[] {
+                            line.substring(line.indexOf(Chars.STATEMENT_OPEN) + 1, line.lastIndexOf(Chars.STATEMENT_CLOSE)),
+                            "" };
+                }
+                case "if": {
+                    checkForMalformedConstruct(type, line, lineNumber);
+                    // if (condition) ->
+                    // if (variable != 100) ->
+                    return new String[] {
+                            line.substring(line.indexOf(Chars.STATEMENT_OPEN), line.lastIndexOf(Chars.STATEMENT_CLOSE)),
+                            "" };
+                }
+                case "nikhil": {
+                    checkForMalformedConstruct(type, line, lineNumber);
+                    // nikhil (condition) ->
+                    // nikhil (i < 10) ->
+                    return new String[] {
+                            line.substring(line.indexOf(Chars.STATEMENT_OPEN) + 1, line.lastIndexOf(Chars.STATEMENT_CLOSE)),
+                            "" };
+                }
+                case "colonize": {
+                    checkForMalformedConstruct(type, line, lineNumber);
+                    // colonize declaration | condition | increment ->
+                    // colonize variableName with array name ->
 
-                // colonize i <- 0 | i <= 10 | + ->
-                // colonize pointer with arr ->
+                    // colonize i <- 0 | i <= 10 | + ->
+                    // colonize pointer with arr ->
 
-                if (line.contains(Character.toString(Chars.FOR_SEPARATOR))) {
-                    String[] parts = line.split(Keywords.FOR)[1].trim().split(Chars.BLOCK_OPEN)[0].split("\\|");
-                    return new String[] { parts[0].trim(), parts[1].trim(), parts[2].trim() };
-                } else {
-                    String[] parts = line.split(Keywords.FOR)[1].trim().split(Chars.BLOCK_OPEN)[0]
-                            .split(Keywords.FOR_EACH);
-                    return new String[] { parts[0].trim(), parts[1].trim(), Keywords.FOR_EACH };
+                    if (line.contains(Character.toString(Chars.FOR_SEPARATOR))) {
+                        String[] parts = line.split(Keywords.FOR)[1].trim().split(Chars.BLOCK_OPEN)[0].split("\\|");
+                        return new String[] { parts[0].trim(), parts[1].trim(), parts[2].trim() };
+                    } else {
+                        String[] parts = line.split(Keywords.FOR)[1].trim().split(Chars.BLOCK_OPEN)[0]
+                                .split(Keywords.FOR_EACH);
+                        return new String[] { parts[0].trim(), parts[1].trim(), Keywords.FOR_EACH };
+                    }
+                }
+                case "kwenza": {
+                    checkForMalformedConstruct(type, line, lineNumber);
+                    // kwenza function_name(...args) ->
+                    // kwenza addition(param1, param2) ->
+                    String[] parts = line.split(Keywords.D_FUNCTION)[1].trim().split(Chars.BLOCK_OPEN);
+                    String functionName = parts[0].substring(0, parts[0].indexOf(Chars.STATEMENT_OPEN));
+                    String args = parts[0].substring(parts[0].indexOf(Chars.STATEMENT_OPEN) + 1,
+                            parts[0].indexOf(Chars.STATEMENT_CLOSE));
+                    return new String[] { functionName, args };
+                }
+                default: {
+                    return new String[] { "" };
                 }
             }
-            case "kwenza": {
-                checkForMalformedConstruct(type, line, lineNumber);
-                // kwenza function_name(...args) ->
-                // kwenza addition(param1, param2) ->
-                String[] parts = line.split(Keywords.D_FUNCTION)[1].trim().split(Chars.BLOCK_OPEN);
-                String functionName = parts[0].substring(0, parts[0].indexOf(Chars.STATEMENT_OPEN));
-                String args = parts[0].substring(parts[0].indexOf(Chars.STATEMENT_OPEN) + 1,
-                        parts[0].indexOf(Chars.STATEMENT_CLOSE));
-                return new String[] { functionName, args };
-            }
-            default: {
-                return new String[] { "" };
-            }
+        } catch (Exception e) {
+            throw new MalformedSyntaxException("SOMETHINg is fishy about this line big twan.....", lineNumber);
         }
     }
 

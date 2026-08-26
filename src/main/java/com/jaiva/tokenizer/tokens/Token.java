@@ -202,6 +202,9 @@ public record Token<T extends TokenDefault>(T value) {
             String params = line.substring(index + 1, line.lastIndexOf(")")).trim();
 
             ArrayList<String> args = new ArrayList<>(Token.splitByTopLevelComma(params));
+//            if (args.size() == 1 && args.getFirst().isBlank()) {
+//                args.removeFirst();
+//            }
             ArrayList<Object> parsedArgs = new ArrayList<>();
             args.forEach(arg -> {
                 try {
