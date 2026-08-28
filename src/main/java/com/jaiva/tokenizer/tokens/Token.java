@@ -8,8 +8,6 @@ import com.jaiva.lang.Chars;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.tokens.specific.*;
 import com.jaiva.utils.generic.BracePairs;
-import com.jaiva.utils.generic.Pair;
-import com.jaiva.utils.generic.SamePair;
 import com.jaiva.utils.cd.ContextDispatcher;
 import com.jaiva.utils.Find;
 import com.jaiva.utils.Validate;
@@ -235,7 +233,7 @@ public record Token<T extends TokenDefault>(T value) {
             // if it fails, return TVarRef
             // if it succeeds, return the primitive type
             try {
-                return parseIntegerLiteral(line);
+                return parseNumberLiteral(line);
             } catch (NumberFormatException e) {
                 try {
                     return Double.parseDouble(line);
@@ -311,14 +309,15 @@ public record Token<T extends TokenDefault>(T value) {
      * @return the parsed integer value
      * @throws NumberFormatException if the input is not a valid integer literal
      */
-    public static int parseIntegerLiteral(String input) throws NumberFormatException {
+    public static Number parseNumberLiteral(String input) throws NumberFormatException {
         input = input.trim();
         if (input.isBlank())
             throw new NumberFormatException();
         boolean negation = input.charAt(0) == '-';
         input = negation ? input.substring(1) : input; // remove the negation
         String prefix = input.length() > 1 ? input.substring(0, 2) : null;
-        if (new ArrayList<>(Arrays.asList("0x", "0X", "0b", "0B", "0c", "0C")).contains(prefix)) {
+        String end = input.substring(input.length() - 1);
+        if (Arrays.asList("0x", "0X", "0b", "0B", "0c", "0C").contains(prefix)) {
             String literal = (negation ? "-" : "") + input.substring(2);
             switch (prefix) {
                 case "0x", "0X":
@@ -327,6 +326,15 @@ public record Token<T extends TokenDefault>(T value) {
                     return Integer.parseInt(literal, 2);
                 case "0c", "0C":
                     return Integer.parseInt(literal, 8);
+            }
+        }
+        if (Arrays.asList("L", "d").contains(end)) {
+            String literal = (negation ? "-" : input.charAt(0)) + input.substring(1);
+            switch (end) {
+                case "L":
+                    return Long.parseLong(literal.substring(0, literal.length() - 1));
+                case "d":
+                    return Double.parseDouble(literal.substring(0, literal.length() - 1));
             }
         }
         return Integer.parseInt(negation ? "-" + input : input); // allows this method to throw.

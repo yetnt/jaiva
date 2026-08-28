@@ -55,8 +55,6 @@ public class BaseFunction extends Symbol {
      */
     public BaseFunction(FunctionBuilder functionBuilder) {
         super(functionBuilder.getName(), SymbolType.FUNCTION, functionBuilder.toToken());
-        this.token = functionBuilder.toToken();
-        this.name = functionBuilder.getName();
     }
 
     @Override

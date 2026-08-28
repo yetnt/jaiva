@@ -1,10 +1,7 @@
 package com.jaiva.interpreter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 import com.jaiva.errors.*;
 import com.jaiva.errors.InterpreterException.*;
@@ -57,202 +54,6 @@ public class Primitives {
                 );
             }
         }
-    }
-
-    /**
-     * Handles arithmetic operations between two numeric operands (Integer or
-     * Double).
-     * Supports the following operators: "+", "-", "*", "/", "%", and "^".
-     * The method performs type checking and applies the operation according to the
-     * types of the operands.
-     * If both operands are integers, integer arithmetic is used except for "^"
-     * (power), which returns a double.
-     * If either operand is a double, the operation is performed in double
-     * precision.
-     * Throws a CatchAllException for invalid operators.
-     * Returns a void value if operands are not numeric.
-     *
-     * @param op         The arithmetic operator as a string ("+", "-", "*", "/",
-     *                   "%", "^").
-     * @param lhs        The left-hand side operand (Integer or Double).
-     * @param rhs        The right-hand side operand (Integer or Double).
-     * @param lineNumber The line number for error reporting.
-     * @param scope Context Trace
-     * @return The result of the arithmetic operation, or a void value if operands
-     *         are not numeric.
-     * @throws InterpreterException If an invalid operator is provided or another
-     *            interpreter error occurs.
-     */
-    private static Object handleNumOperations(String op, Object lhs, Object rhs, int lineNumber, Scope scope)
-            throws InterpreterException {
-        Object result = switch (lhs) {
-            case Integer iLhs when rhs instanceof Integer iRhs ->
-                // Because the ^ returns a double, we use 2 variables, so that if yopu dont use
-                // the ^ operator you dont receive a double output.
-                    switch (op) {
-                        case "+" -> iLhs + iRhs;
-                        case "-" -> iLhs - iRhs;
-                        case "*" -> iLhs * iRhs;
-                        case "/" -> iLhs / iRhs;
-                        case "%" -> iLhs % iRhs;
-                        case "^" -> Math.pow(iLhs, iRhs);
-                        case "&" -> iLhs & iRhs;
-                        case "|" -> iLhs | iRhs;
-                        case "<<" -> // bitshift left
-                                iLhs << iRhs;
-                        case ">>" -> // bitshift right
-                                iLhs >> iRhs;
-                        case "<x" -> // hexshift left
-                                iLhs << (iRhs * 4);
-                        case ">x" -> // hexshift right
-                                iLhs >> (iRhs * 4);
-                        default -> throw new CatchAllException(scope, "Invalid operator given", lineNumber);
-                    };
-            case Double iLhs when rhs instanceof Double iRhs -> switch (op) {
-                case "+" -> iLhs + iRhs;
-                case "-" -> iLhs - iRhs;
-                case "*" -> iLhs * iRhs;
-                case "/" -> iLhs / iRhs;
-                case "%" -> iLhs % iRhs;
-                case "^" -> Math.pow(iLhs, iRhs);
-                default -> throw new CatchAllException(scope, "Invalid operator given", lineNumber);
-            };
-            case Double iLhs when rhs instanceof Integer iRhs -> switch (op) {
-                case "+" -> iLhs + iRhs;
-                case "-" -> iLhs - iRhs;
-                case "*" -> iLhs * iRhs;
-                case "/" -> iLhs / iRhs;
-                case "%" -> iLhs % iRhs;
-                case "^" -> Math.pow(iLhs, iRhs);
-                default -> throw new CatchAllException(scope, "Invalid operator given", lineNumber);
-            };
-            case Integer iLhs when rhs instanceof Double iRhs -> switch (op) {
-                case "+" -> iLhs + iRhs;
-                case "-" -> iLhs - iRhs;
-                case "*" -> iLhs * iRhs;
-                case "/" -> iLhs / iRhs;
-                case "%" -> iLhs % iRhs;
-                case "^" -> Math.pow(iLhs, iRhs);
-                default -> throw new CatchAllException(scope, "Invalid operator given", lineNumber);
-            };
-            case null, default -> Token.voidValue(lineNumber);
-        };
-
-        // Return int if the double is whole.
-        if (result instanceof Double res) {
-            double d = res;
-            if (d == Math.rint(d)) {
-                return (int) d;
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Resolves string operations between two operands (lhs and rhs) based on the
-     * specified operator (op).
-     * <p>
-     * This method handles various string operations, including concatenation,
-     * substring extraction, and comparison.
-     *
-     * @param lhs The left-hand side operand.
-     * @param rhs The right-hand side operand.
-     * @param op  The operator to be applied.
-     * @param ts  The TStatement object associated with the operation.
-     * @param scope Context Trace.
-     * @return The result of the string operation.
-     * @throws JaivaException If an error occurs during
-     *                        string calculation.
-     */
-    public static Object resolveStringOperations(Object lhs, Object rhs, String op, TExpression ts, Scope scope)
-            throws JaivaException {
-        String I = Integer.class.getSimpleName().charAt(0) + "";
-        String S = String.class.getSimpleName().charAt(0) + "";
-        String D = Double.class.getSimpleName().charAt(0) + "";
-        String B = Boolean.class.getSimpleName().charAt(0) + "";
-
-        String leftHandSide = lhs instanceof String ? S
-                : lhs instanceof Integer ? I
-                        : lhs instanceof Double ? D
-                                : lhs instanceof Boolean ? B : "idk";
-
-        String rightHandSide = rhs instanceof String ? S
-                : rhs instanceof Integer ? I
-                        : rhs instanceof Double ? D
-                                : rhs instanceof Boolean ? B : "idk";
-        if (rhs instanceof String) {
-            rhs = EscapeSequence.fromEscape((String) rhs, ts.lineNumber);
-        }
-        if (lhs instanceof String) {
-            lhs = EscapeSequence.fromEscape((String) lhs, ts.lineNumber);
-        }
-        String switchTing = leftHandSide + rightHandSide;
-
-        ArrayList<String> IS = new ArrayList<>(Arrays.asList("+", "-", "*", "/", "=", "!="));
-        ArrayList<String> SS = new ArrayList<>(Arrays.asList("+", "-", "=", "!=", "/", "?"));
-        ArrayList<String> idk = new ArrayList<>(Arrays.asList("+", "=", "!="));
-
-        try {
-            switch (switchTing) {
-                case "idkS":
-                    // case "idkI":
-                    // case "idkD":
-                    // case "idkB":
-                    if (!idk.contains(op))
-                        throw new StringCalcException(scope, ts);
-                    return op.equals("=") ? false : op.equals("!=") ? true : "idk" + rhs;
-                case "Sidk":
-                    // case "Iidk":
-                    // case "Didk":
-                    // case "Bidk":
-                    if (!idk.contains(op))
-                        throw new StringCalcException(scope, ts);
-                    return op.equals("=") ? false : op.equals("!=") ? true : lhs + "idk";
-                case "IS":
-                    if (!IS.contains(op))
-                        throw new StringCalcException(scope, ts);
-                    return op.equals("+") ? ((Integer) lhs) + ((String) rhs)
-                            : op.equals("-") ? ((String) rhs).substring(
-                                    ((Integer) lhs))
-                                    : op.equals("*") ? ((String) rhs).repeat((Integer) lhs)
-                                            : op.equals("/")
-                                                    ? ((String) rhs)
-                                                            .substring(((String) rhs).length() / ((Integer) lhs))
-                                                    : op.equals("=") ? false : op.equals("!=") ? true : ((String) rhs);
-                case "SI":
-                    if (!IS.contains(op))
-                        throw new StringCalcException(scope, ts);
-                    return op.equals("+") ? ((String) lhs) + ((Integer) rhs)
-                            : op.equals("-") ? ((String) lhs).substring(0, ((String) lhs).length() - ((Integer) rhs))
-                                    : op.equals("*") ? ((String) lhs).repeat((Integer) rhs)
-                                            : op.equals("/")
-                                                    ? ((String) lhs)
-                                                            .substring(0, ((String) lhs).length() / ((Integer) rhs))
-                                                    : op.equals("=") ? false : op.equals("!=") ? true : ((String) lhs);
-                case "SS":
-                    if (!SS.contains(op))
-                        throw new StringCalcException(scope, ts);
-                    return op.equals("+") ? (String) lhs + (String) rhs
-                            : op.equals("-")
-                                    ? ((String) lhs).replaceFirst(Pattern.quote((String) rhs),
-                                            Matcher.quoteReplacement(""))
-                                    : op.equals("/")
-                                            ? ((String) lhs).replaceAll(Pattern.quote((String) rhs),
-                                                    Matcher.quoteReplacement(""))
-                                            : op.equals("=") ? ((String) lhs).equals((String) rhs)
-                                                    : op.equals("!=") ? !((String) lhs).equals((String) rhs)
-                                                            : op.equals("?") ? ((String) lhs).contains((String) rhs)
-                                                                    : ((String) lhs);
-            }
-        } catch (StringIndexOutOfBoundsException e) {
-            // too big or too small of a number
-            throw new StringCalcException(scope, ts, e);
-        } catch (IllegalArgumentException e) {
-            // something received a negative number, when it shouldn't have.
-            throw new StringCalcException(scope, ts, e);
-        }
-        return void.class;
     }
 
     /**
@@ -310,25 +111,25 @@ public class Primitives {
                 String op = tExpression.op;
                 Object rhs = toPrimitive(tExpression.rHandSide, false, config, scope);
 
-                Object sTuff = resolveStringOperations(lhs, rhs, op, tExpression, scope);
+                Object sTuff = PrimitivesMath.resolveStringOperations(lhs, rhs, op, tExpression, scope);
                 if (sTuff != void.class)
                     return sTuff;
 
                 // Check the input type, where input 1 is arithmatic, and 0 is boolean.
                 if (tExpression.statementType == 1 || (op.equals("|") || op.equals("&"))) {
                     // check input first of all
-                    if (!(lhs instanceof Integer) && !(lhs instanceof Double))
+                    if (!(lhs instanceof Integer) && !(lhs instanceof Double) && !(lhs instanceof Long))
                         throw new TExpressionResolutionException(scope,
                                 tExpression, "left hand side",
                                 lhs.toString());
-                    if (!(rhs instanceof Integer) && !(rhs instanceof Double))
+                    if (!(rhs instanceof Integer) && !(rhs instanceof Double) && !(lhs instanceof Long))
                         throw new TExpressionResolutionException(scope,
                                 tExpression, "right hand side",
                                 rhs.toString());
 
                     // For the following if, thanks to the above condition
                     // if one is an integer then the other is an integer too
-                    Object v = handleNumOperations(op, lhs, rhs, tExpression.lineNumber, scope);
+                    Object v = PrimitivesMath.handleNumOperations(op, lhs, rhs, tExpression.lineNumber, scope);
                     if (!(v instanceof TVoidValue)) {
                         return v;
                     }
@@ -357,44 +158,8 @@ public class Primitives {
                             }
                         }
                         case ">=", "<=", "<", ">" -> {
-                            // however if its these the input is a number or a double
-                            // check input first of all
-                            if (!(lhs instanceof Integer) && !(lhs instanceof Double))
-                                throw new TExpressionResolutionException(scope,
-                                        tExpression, "left hand side",
-                                        lhs.toString());
-                            if (!(rhs instanceof Integer) && !(rhs instanceof Double))
-                                throw new TExpressionResolutionException(scope,
-                                        tExpression, "right hand side",
-                                        rhs.toString());
-
-                            if (lhs instanceof Integer) {
-                                // handle ints
-                                assert rhs instanceof Integer;
-                                switch (op) {
-                                    case ">=":
-                                        return ((Integer) lhs) >= ((Integer) rhs);
-                                    case "<=":
-                                        return ((Integer) lhs) <= ((Integer) rhs);
-                                    case "<":
-                                        return ((Integer) lhs) < ((Integer) rhs);
-                                    case ">":
-                                        return ((Integer) lhs) > ((Integer) rhs);
-                                }
-                            } else {
-                                // handle doubles
-                                assert rhs instanceof Double;
-                                switch (op) {
-                                    case ">=":
-                                        return ((Double) lhs) >= ((Double) rhs);
-                                    case "<=":
-                                        return ((Double) lhs) <= ((Double) rhs);
-                                    case "<":
-                                        return ((Double) lhs) < ((Double) rhs);
-                                    case ">":
-                                        return ((Double) lhs) > ((Double) rhs);
-                                }
-                            }
+                            Object lhs1 = PrimitivesMath.compareStuff(scope, tExpression, lhs, rhs, op);
+                            if (lhs1 != null) return lhs1;
                         }
                         case "=", "!=" -> {
                             // here, the inputs can be either a
@@ -403,13 +168,13 @@ public class Primitives {
                             // TODO: This is literally just anything that can be input. Fix
                             if (!(lhs instanceof Integer) && !(lhs instanceof Double) && !(lhs instanceof Boolean)
                                     && !(lhs instanceof String) && !(lhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
-                                    && !(lhs instanceof BaseFunction))
+                                    && !(lhs instanceof BaseFunction) && !(lhs instanceof Float))
                                 throw new TExpressionResolutionException(scope,
                                         tExpression, "left hand side",
                                         lhs.toString());
                             if (!(rhs instanceof Integer) && !(rhs instanceof Double) && !(rhs instanceof Boolean)
                                     && !(rhs instanceof String) && !(rhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
-                                    && !(lhs instanceof BaseFunction))
+                                    && !(lhs instanceof BaseFunction) && !(lhs instanceof Float))
                                 throw new TExpressionResolutionException(scope,
                                         tExpression, "right hand side",
                                         rhs.toString());
@@ -598,6 +363,7 @@ public class Primitives {
                 return switch (token) {
                     case String s -> EscapeSequence.fromEscape(s, -1);
                     case Integer i -> i;
+                    case Long l -> l;
                     case Double d -> {
                         double val = d;
                         if (val == Math.rint(val)) {
@@ -606,6 +372,8 @@ public class Primitives {
                             yield d;
                         }
                     }
+                    case Boolean b -> b;
+                    case BaseFunction f -> f;
                     case ArrayList a -> {
                         ArrayList<Object> parsedArr = new ArrayList<>();
                         for (Object o : a) {

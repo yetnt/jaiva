@@ -23,9 +23,9 @@ public class TimeZone extends BaseLibrary {
         super(LibraryType.LIB, "time/zone");
 
         BaseVariable getAll = new BaseVariable(
-                "tz_all",
+                "tz_getAll",
                 new TArrayVar(
-                        "tz_all",
+                        "tz_getAll",
                         new ArrayList<>(zoneIds.stream().map(SamePair::getSecond).toList()),
                         -1,
                         JDoc.builder()

@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.jaiva.interpreter.Vfs;
+import com.jaiva.interpreter.libBuilders.func.Argument;
+import com.jaiva.interpreter.libBuilders.func.Arguments;
+import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
+import com.jaiva.interpreter.libBuilders.func.arg.AArgument;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.LibraryLike;
 import com.jaiva.interpreter.libs.LibraryType;
@@ -47,6 +51,7 @@ public class Globals extends BaseLibrary {
         vfs.put("flat", new FFlat());
         vfs.put("sleep", new FSleep());
         vfs.put("typeOf", new FTypeOf());
+        vfs.put("typeOfNumber", new FTypeOfNumber());
         vfs.put("arrLit", new FArrayLiteral());
         vfs.put("neg", new FNeg());
         vfs.put("scope", new FScope());
@@ -465,6 +470,59 @@ public class Globals extends BaseLibrary {
         }
     }
 
+    class FTypeOfNumber extends BaseFunction {
+        FTypeOfNumber() {
+            super(FunctionBuilder.start()
+                    .name("typeOfNumber")
+                    .arguments(
+                            Arguments.getInstance()
+                                    .add(new AArgument(
+                                            "input",
+                                            "The input to check the type against",
+                                            true,
+                                            Argument.Type.ANY
+                                    ))
+                    )
+                    .docs(
+                            JDoc.builder()
+                                    .addDesc("Returns the type of a given number input. which in Java terms is either an integer, double or long")
+                                    .addReturns("Returns the string form of the type, which could be \"integer\", \"double\", \"long\", or the primitive idk.")
+                                    .sinceVersion("5.0.4")
+                                    .addExample("""
+                                    maak b <- 100!
+                                    
+                                    khuluma(typeOf(b))!                   @ "integer"
+                                    khuluma(typeOf(0.34))!                @ "double"
+                                    khuluma(typeOf(0.34d))!               @ "double"
+                                    khuluma(typeOf())!                    @ idk
+                                    khuluma(typeOf(82936741648236817L))!  @ "long"
+                                    """)
+                    )
+            );
+            this.freeze();
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
+                           Scope scope)
+                throws Exception {
+
+            this.checkParams(tFuncCall, scope);
+            if (params.isEmpty())
+                return Token.voidValue(tFuncCall.lineNumber);
+            Object val = Primitives.toPrimitive(params.getFirst(), false, config,
+                    scope);
+
+            return switch (val) {
+                case Integer ignored2 -> "integer";
+                case Double ignored1 -> "double";
+                case Long ignored -> "long";
+                case null, default ->
+// there is no other type to possibly check for.
+                        Token.voidValue(tFuncCall.lineNumber);
+            };
+        }
+    }
 
     class FTypeOf extends BaseFunction {
         FTypeOf() {
@@ -472,7 +530,8 @@ public class Globals extends BaseLibrary {
                     JDoc.builder()
                             .addDesc("Returns the type of any given input.")
                             .addParam("input", "idk", "The input to check the type against", true)
-                            .addReturns("Returns the string form of the typ, which could be \"array\", \"string\", \"boolean\", \"number\", \"function\", or the primitive idk.")
+                            .addReturns("Returns the string form of the typ, which could be \"array\", \"string\", \"boolean\", \"number\", \"function\", or the primitive idk. "
+                            + " If you require a more precise answer than number use typeOfNumber")
                             .sinceVersion("3.0.0")
                             .addExample("""
                                     maak b <- 100!

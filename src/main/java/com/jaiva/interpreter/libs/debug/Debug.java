@@ -34,10 +34,10 @@ public class Debug extends BaseLibrary {
         vfs.put("d_emit", new FEmit());
         vfs.put("d_vfs", new FVfs());
         vfs.put("d_link", new FLink());
+        vfs.put("d_getScope", new FGetScope());
     }
 
     public class FLink extends BaseFunction {
-
         FLink() {
             super(
                     FunctionBuilder.start()
@@ -50,7 +50,7 @@ public class Debug extends BaseLibrary {
                             .docs(
                                     JDoc.builder()
                                             .addDesc("Links the MapValue instance of 'a' into 'b' such that they hold the same value and if one is edited the other will also have that edit.")
-                                            .sinceVersion("5.0.1")
+                                            .sinceVersion("5.0.4")
                                             .addReturns("idk")
                                             .addNote("""
                                     A usual (b <- a) syntax would suffice if you'd like to copy the value of a into b.
@@ -197,6 +197,23 @@ public class Debug extends BaseLibrary {
                 throw new DebugException(e);
             }
             throw new DebugException(components, scope, config, tFuncCall.lineNumber);
+        }
+    }
+
+    public class FGetScope extends BaseFunction {
+        public FGetScope() {
+            super(FunctionBuilder.start()
+                    .name("d_getScope")
+                    .docs(JDoc.builder()
+                            .sinceVersion("5.0.4")
+                            .addDesc("gets the scope. wahtd you expect")
+                            .addReturns("the scope string"))
+            );
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
+            return scope.toString();
         }
     }
 }

@@ -472,7 +472,7 @@ public class Tokenizer {
             return new TStringVar(parts[0], parts[1], lineNumber).toToken();
         } else {
             try {
-                return new TNumberVar(parts[0], Token.parseIntegerLiteral(parts[1]), lineNumber).toToken();
+                return new TNumberVar(parts[0], Token.parseNumberLiteral(parts[1]), lineNumber).toToken();
             } catch (NumberFormatException e) {
                 try {
                     return new TNumberVar(parts[0], Double.parseDouble(parts[1]), lineNumber).toToken();
