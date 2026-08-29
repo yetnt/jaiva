@@ -64,6 +64,7 @@ public class DefinedFunction extends BaseFunction {
                     // if found, createFunction aq copy of that MapValue, and name it to instead this new
                     // name and add to the vfs.
                     if (value instanceof TLambda) wrappedValue = Primitives.toPrimitive(value, false, config, scope);
+                    else if (value instanceof BaseFunction f) wrappedValue = f;
                     if ((value instanceof Token<?> && ((Token<?>) value).value() instanceof TVarRef tVarRef)) {
                         MapValue v = scope.vfs.get(tVarRef.varName);
                         if (v == null)

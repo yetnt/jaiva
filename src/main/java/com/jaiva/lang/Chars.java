@@ -165,7 +165,7 @@ public class Chars {
         /**
          * Bitwise operations
          */
-        public static final List<String> Bitwise = Arrays.asList("&", "|");
+        public static final List<String> Bitwise = Arrays.asList("&", "|", "#");
 
         /**
          * Comparison operators
@@ -188,7 +188,7 @@ public class Chars {
         /**
          * Logical operators
          */
-        public static final List<String> Logical = Arrays.asList("||", "&&", "'");
+        public static final List<String> Logical = Arrays.asList("||", "&&", "'", ";");
 
         // /**
         // * List of boolean operators.

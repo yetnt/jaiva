@@ -204,13 +204,9 @@ public record Token<T extends TokenDefault>(T value) {
 //                args.removeFirst();
 //            }
             ArrayList<Object> parsedArgs = new ArrayList<>();
-            args.forEach(arg -> {
-                try {
-                    parsedArgs.add(processContext((String) arg, lineNumber));
-                } catch (TokenizerException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            for (String arg : args) {
+                parsedArgs.add(processContext((String) arg, lineNumber));
+            }
             return new TFuncCall(processContext(simplifyIdentifier(name, "F~"), lineNumber), parsedArgs,
                     lineNumber, line.charAt(line.length() - 1) == Chars.LENGTH_CHAR,
                     line.length() - Chars.SPREAD.length() == line.indexOf(Chars.SPREAD)).toToken();

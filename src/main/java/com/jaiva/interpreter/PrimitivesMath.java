@@ -11,7 +11,16 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// class whre i put the long depressing code for number pair operations
+// cuz java doesnt FUCKING allow you to just FUCKING compare generic FUCKING number.
+// is there a better way? probably. i couldnt care less tho
+
 public class PrimitivesMath {
+
+    private static String err(String op, Object lhs, Object rhs) {
+        return "You cannot apply the " + op + " operator to a " + lhs.getClass().getSimpleName() + "(lhs) " +
+                rhs.getClass().getSimpleName() + "(rhs) combination operation.";
+    }
     /**
      * Handles arithmetic operations between two numeric operands (Integer or
      * Double).
@@ -36,7 +45,7 @@ public class PrimitivesMath {
      * @throws InterpreterException If an invalid operator is provided or another
      *            interpreter error occurs.
      */
-    static Object handleNumOperations(String op, Object lhs, Object rhs, int lineNumber, Scope scope)
+    public static Object handleNumOperations(String op, Object lhs, Object rhs, int lineNumber, Scope scope)
             throws InterpreterException {
         Object result = switch (lhs) {
             case Integer iLhs when rhs instanceof Integer iRhs ->
@@ -59,7 +68,8 @@ public class PrimitivesMath {
                                 iLhs << (iRhs * 4);
                         case ">x" -> // hexshift right
                                 iLhs >> (iRhs * 4);
-                        default -> throw new InterpreterException.CatchAllException(scope, "Invalid operator given", lineNumber);
+                        case "#" -> iLhs ^ iRhs;
+                        default -> throw new InterpreterException.CatchAllException(scope, "Invalid operator given. " + err(op, lhs, rhs), lineNumber);
                     };
             case Double iLhs when rhs instanceof Double iRhs -> switch (op) {
                 case "+" -> iLhs + iRhs;
@@ -68,7 +78,7 @@ public class PrimitivesMath {
                 case "/" -> iLhs / iRhs;
                 case "%" -> iLhs % iRhs;
                 case "^" -> Math.pow(iLhs, iRhs);
-                default -> throw new InterpreterException.CatchAllException(scope, "Invalid operator given", lineNumber);
+                default -> throw new InterpreterException.WtfAreYouDoingException(scope, "Invalid operator given. " + err(op, lhs, rhs), lineNumber);
             };
             case Double iLhs when rhs instanceof Integer iRhs -> switch (op) {
                 case "+" -> iLhs + iRhs;
@@ -77,7 +87,7 @@ public class PrimitivesMath {
                 case "/" -> iLhs / iRhs;
                 case "%" -> iLhs % iRhs;
                 case "^" -> Math.pow(iLhs, iRhs);
-                default -> throw new InterpreterException.CatchAllException(scope, "Invalid operator given", lineNumber);
+                default -> throw new InterpreterException.WtfAreYouDoingException(scope, "Invalid operator given. " + err(op, lhs, rhs), lineNumber);
             };
             case Integer iLhs when rhs instanceof Double iRhs -> switch (op) {
                 case "+" -> iLhs + iRhs;
@@ -86,7 +96,7 @@ public class PrimitivesMath {
                 case "/" -> iLhs / iRhs;
                 case "%" -> iLhs % iRhs;
                 case "^" -> Math.pow(iLhs, iRhs);
-                default -> throw new InterpreterException.CatchAllException(scope, "Invalid operator given", lineNumber);
+                default -> throw new InterpreterException.WtfAreYouDoingException(scope, "Invalid operator given. " + err(op, lhs, rhs), lineNumber);
             };
             case Long nLhs when rhs instanceof Integer nRhs ->  switch (op) {
                 case "+" -> nLhs + nRhs;
@@ -103,7 +113,8 @@ public class PrimitivesMath {
                         nLhs << (nRhs * 4);
                 case ">x" -> // hexshift right
                         nLhs >> (nRhs * 4);
-                default -> throw new InterpreterException.CatchAllException(scope, "Invalid operator given", lineNumber);
+                case "#" -> nLhs ^ nRhs;
+                default -> throw new InterpreterException.WtfAreYouDoingException(scope, "Invalid operator given. " + err(op, lhs, rhs), lineNumber);
             };
             case Integer nLhs when rhs instanceof Long nRhs ->  switch (op) {
                 case "+" -> nLhs + nRhs;
@@ -120,7 +131,8 @@ public class PrimitivesMath {
                         nLhs << (nRhs * 4);
                 case ">x" -> // hexshift right
                         nLhs >> (nRhs * 4);
-                default -> throw new InterpreterException.CatchAllException(scope, "Invalid operator given", lineNumber);
+                case "#" -> nLhs ^ nRhs;
+                default -> throw new InterpreterException.WtfAreYouDoingException(scope, "Invalid operator given. " + err(op, lhs, rhs), lineNumber);
             };
             case Long nLhs when rhs instanceof Double nRhs ->  switch (op) {
                 case "+" -> nLhs + nRhs;
@@ -129,7 +141,7 @@ public class PrimitivesMath {
                 case "/" -> nLhs / nRhs;
                 case "%" -> nLhs % nRhs;
                 case "^" -> Math.pow(nLhs, nRhs);
-                default -> throw new InterpreterException.CatchAllException(scope, "Invalid operator given", lineNumber);
+                default -> throw new InterpreterException.WtfAreYouDoingException(scope, "Invalid operator given. " + err(op, lhs, rhs), lineNumber);
             };
             case Double nLhs when rhs instanceof Long nRhs ->  switch (op) {
                 case "+" -> nLhs + nRhs;
@@ -138,7 +150,7 @@ public class PrimitivesMath {
                 case "/" -> nLhs / nRhs;
                 case "%" -> nLhs % nRhs;
                 case "^" -> Math.pow(nLhs, nRhs);
-                default -> throw new InterpreterException.CatchAllException(scope, "Invalid operator given", lineNumber);
+                default -> throw new InterpreterException.WtfAreYouDoingException(scope, "Invalid operator given. " + err(op, lhs, rhs), lineNumber);
             };
             case Long nLhs when rhs instanceof Long nRhs ->  switch (op) {
                 case "+" -> nLhs + nRhs;
@@ -157,7 +169,8 @@ public class PrimitivesMath {
                         nLhs << (nRhs * 4);
                 case ">x" -> // hexshift right
                         nLhs >> (nRhs * 4);
-                default -> throw new InterpreterException.CatchAllException(scope, "Invalid operator given", lineNumber);
+                case "#" -> nLhs ^ nRhs;
+                default -> throw new InterpreterException.WtfAreYouDoingException(scope, "Invalid operator given. " + err(op, lhs, rhs), lineNumber);
             };
             case null, default -> Token.voidValue(lineNumber);
         };

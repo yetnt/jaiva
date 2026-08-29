@@ -206,7 +206,7 @@ maak b <- "String$n"!
 Table of escape characters
 
 | character              | escape sequence |
-| ---------------------- | --------------- |
+|------------------------|-----------------|
 | `=`                    | `$=`            |
 | `,`                    | `$,`            |
 | `!`                    | `$!`            |
@@ -244,32 +244,55 @@ khuluma(func())! @ Prints idk, as the parameter t did not get a value.
 
 ## Operators
 
-| operation                       | operator |
-| ------------------------------- | -------- |
-| modulu                          | `%`      |
-| power                           | `^`      |
-| division                        | `/`      |
-| multiplication                  | `*`      |
-| addition                        | `+`      |
-| subtraction                     | `-`      |
-| unary minus                     | `-`      |
-| is equal to (not double equals) | `=`      |
-| is not equal to                 | `!=`     |
-| greater than (and equal to)     | `>` `>=` |
-| less than (and equal to)        | `<` `<=` |
-| logical AND                     | `&&`     |
-| logical OR                      | `\|\|`   |
-| Logical NOT (Negation)          | `'`      |
-| bitwise AND                     | `&`      |
-| bitwise OR                      | `\|`     |
-| braces for ordering             | `(` `)`  |
-| bitshift left                   | `<<`     |
-| bitshift right                  | `>>`     |
-| hexshift left                   | `<x`     |
-| hexshift right                  | `>x`     |
+| operation                                          | operator |
+|----------------------------------------------------|----------|
+| modulu                                             | `%`      |
+| exponentiate                                       | `^`      |
+| division                                           | `/`      |
+| multiplication                                     | `*`      |
+| addition                                           | `+`      |
+| subtraction                                        | `-`      |
+| unary minus                                        | `-`      |
+| is equal to (not double equals)                    | `=`      |
+| is not equal to                                    | `!=`     |
+| greater than (and equal to)                        | `>` `>=` |
+| less than (and equal to)                           | `<` `<=` |
+| logical AND                                        | `&&`     |
+| logical OR                                         | `\|\|`   |
+| Logical NOT (Negation)                             | `'`      |
+| Logical Identity (Returns the same value as input) | `;`      |
+| bitwise AND                                        | `&`      |
+| bitwise OR                                         | `\|`     |
+| bitwise XOR                                        | `#`      |
+| braces for ordering                                | `(` `)`  |
+| bitshift left                                      | `<<`     |
+| bitshift right                                     | `>>`     |
+| hexshift left                                      | `<x`     |
+| hexshift right                                     | `>x`     |
+| String containment check/[idk](#idk) check         | `?`      |
+
 
 > [!NOTE]
 > Where other languages use `!` as logical NOT as a prefix to the expression. Jaiva uses `'` as a logical NOT as a `post`fix expression. Where a normal language would right `!(var != 3)` in Jaiva the equivalent is `(var != 3)'`
+
+> [!NOTE]
+> Similarly. Jaiva uses `^` for exponentiation. and `#` for XOR
+
+### Special Operators
+
+This is just a list of operators which resolve to something specific
+
+| Operation        | Input Value | Parsed As       |
+|------------------|-------------|-----------------|
+| Unary Minus      | `-value`    | `-1 * value`    |
+| idk check*       | `value?`    | `value = idk`   |
+| Logical NOT      | `value'`    | `value = false` |
+| Logical Identity | `value;`    | `value = true`  |
+
+> [!NOTE]
+> The idk check only works if there is no right hand side input. If there is, then it
+> works as the `?` operator defined in [String operations](#string-operations). A containment
+> check.
 
 ### Order of Operations
 
@@ -283,7 +306,7 @@ All Operations follow this exact order:
 6. Comparisons
 7. Logical Operators (Lowest precedence)
 
-Use `(`braces`)` to change the order however you wish.
+Use `(`braces`)` to change the order however you wish. (Espeically since sometimes this shit doesnt wanna work)
 
 ## Blocks
 

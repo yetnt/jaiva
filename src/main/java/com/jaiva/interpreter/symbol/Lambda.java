@@ -28,6 +28,7 @@ public class Lambda extends DefinedFunction {
     private ArrayList<Object> prepareParams(ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
         ArrayList<Object> preparedParams = new ArrayList<>();
         for (Object param : params) {
+            if (param == null && params.size() == 1) return preparedParams;
             preparedParams.add(Primitives.toPrimitive(param, false, config, scope));
         }
         return preparedParams;

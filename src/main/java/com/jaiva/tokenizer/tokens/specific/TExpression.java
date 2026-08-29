@@ -61,13 +61,34 @@ public class TExpression extends TokenDefault<TExpression> implements TAtomicVal
      * @param s The statement to handle.
      * @return The handled statement.
      */
-    public static Object handleNegatives(Object s) {
+    public static Object handleNegatives(Object s) throws TokenizerException.MalformedSyntaxException {
         if (s instanceof TExpression statement) {
-            if (statement.lHandSide == null && statement.op.equals("-")) {
+            if (statement.rHandSide == null && statement.op.equals("?")) {
+                statement.rHandSide = Token.voidValue(statement.lineNumber);
+                statement.op = "=";
+            } else if (statement.lHandSide == null && statement.op.equals("-")) {
+                // turns a statement like [-rhs] into [-1 * rhs] (since rhs can be anything even if its a number already)
                 statement.lHandSide = -1;
                 statement.op = "*";
+            } else if (statement.op.equals("'")) {
+                // turns a statement like [lhs'] into [lhs = false] (which negates whatever lhs resolves to)
+                if (statement.rHandSide != null)
+                    throw new TokenizerException.MalformedSyntaxException(
+                            "So like brother. ' means logical NOT. its not supposed to have a right hand side brother.",
+                            statement.lineNumber);
+                statement.rHandSide = false;
+                statement.op = "=";
+            } else if (statement.op.equals(";")) {
+                // turns a statement like [lhs;] into [lhs = true] (Fuck you C)
+                if (statement.rHandSide != null)
+                    throw new TokenizerException.MalformedSyntaxException(
+                            "Okay so. ; is actually the opposite of logical NOT. It's an operator. Not a line terminator. "
+                            + "How could you possibly think that??",
+                            statement.lineNumber
+                    );
+                statement.rHandSide = true;
+                statement.op = "=";
             }
-            // handled by the interpreter
 
             return statement;
         }

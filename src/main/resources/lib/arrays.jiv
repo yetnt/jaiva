@@ -6,6 +6,9 @@ scope("strict")! @ This freezes all the functions, and elevates all warnings to 
     An example : Moving away from constant flat() calls to using v5 spread syntax for arrays, which is more concise
     readable, efficient, and easier to use. Also a very functional way of working with arrays.
     Another example : JDoc "example" tags being used to provide clear examples of how to use each function.
+
+    v5.0.4: Adding braces in colonize loops (before it was optional, now its required)
+    v5.1.0: Replacing (val = true) with (val;) and replacing (val = idk) with val?
 }
 
 @* Remove n elements from the end of an array
@@ -27,8 +30,6 @@ kwenza *a_remove(arr, n) ->
     <~
     maak returnValue <-|!
     colonize (i <- 0 | i < arr~ - n | +) ->
-        @ Pre v5 code
-@         returnValue <- flat(returnValue, arrLit(arr[i]))!
         returnValue <- arrLit(returnValue:::, arr[i])!
     <~
     khutla returnValue!
@@ -64,8 +65,6 @@ kwenza *a_push(arr, element) ->
     if (typeOf(arr) != "array") ->
         cima <== "a_push() only works on arrays"!
     <~
-    @ Pre v5
-@     khutla flat(arr, arrLit(element))!
     khutla arrLit(arr:::, element)!
 <~
 
@@ -102,7 +101,6 @@ kwenza *a_unshift(arr, element) ->
     if (typeOf(arr) != "array") ->
         cima <== "a_unshift() only works on arrays"!
     <~
-@     khutla flat(arrLit(element), arr)!
     khutla arrLit(element, arr:::)!
 <~
 
@@ -130,7 +128,6 @@ kwenza *a_shift(arr, n) ->
         if (n > i) ->
             nevermind!
         <~
-@         returnValue <- flat(returnValue, arrLit(arr[i]))!
         returnValue <- arrLit(returnValue:::, arr[i])!
     <~
     khutla returnValue!
@@ -155,9 +152,8 @@ kwenza *a_filter(arr, F~predicate) ->
     <~
     maak empty <-|!
     colonize (element with arr) ->
-        if (predicate(element) = true) ->
-@             empty <- flat(empty, arrLit(element))!
-        empty <- arrLit(empty:::, element)!
+        if (predicate(element);) ->
+            empty <- arrLit(empty:::, element)!
         <~
     <~
 
@@ -177,18 +173,14 @@ kwenza *a_replace(arr, i, el) ->
     if (typeOf(arr) != "array") ->
         cima <== "a_replace() only works on arrays"!
     <~ mara if (typeOf(i) != "number" || i < 0 || i >= arr~) ->
-        @ The following constructs a string that explains why the index is invalid
-        @ (e.g., "i < 0", "i >= arr~", or "i != number")
         maak str <- (typeOf(i) = "number" => ( i >= arr~ => "i >= arr~" however "i < 0" ) however "i != number")!
         cima <== "a_replace()'s second argument must be a valid index " + str!
     <~
     maak newArr <-|!
     colonize (index <- 0 | index < arr~ | +) ->
         if (index = i) ->
-@             newArr <- flat(newArr, arrLit(el))!
             newArr <- arrLit(newArr:::, el)!
         <~ mara ->
-@             newArr <- flat(newArr, arrLit(arr[index]))!
             newArr <- arrLit(newArr:::, arr[index])!
         <~
     <~
@@ -209,8 +201,6 @@ kwenza *a_delete(arr, i) ->
     if (typeOf(arr) != "array") ->
         cima <== "a_delete() only works on arrays"!
     <~ mara if (typeOf(i) != "number" || i < 0 || i >= arr~) ->
-        @ The following constructs a string that explains why the index is invalid
-        @ (e.g., "i < 0", "i >= arr~", or "i != number")
         maak str <- (typeOf(i) = "number" => ( i >= arr~ => "i >= arr~" however "i < 0" ) however "i != number")!
         cima <== "a_delete()'s second argument must be a valid index " + str!
     <~
@@ -219,7 +209,6 @@ kwenza *a_delete(arr, i) ->
         if (index = i) ->
             nevermind!
         <~ mara ->
-@             newArr <- flat(newArr, arrLit(arr[index]))!
             newArr <- arrLit(newArr:::, arr[index])!
         <~
     <~
@@ -264,7 +253,6 @@ kwenza *a_reverse(arr) ->
     <~
     maak newArr <-|!
     colonize (i <- arr~ - 1 | i >= 0 | -) ->
-@         newArr <- flat(newArr, arrLit(arr[i]))!
         newArr <- arrLit(newArr:::, arr[i])!
     <~
     khutla newArr!
@@ -294,7 +282,7 @@ kwenza *a_reduce(arr, F~reducer, initial?) ->
     <~
     maak accumulator <- initial!
     colonize (element with arr) ->
-        if (accumulator = idk) ->
+        if (accumulator?) ->
             accumulator <- element!
             nevermind!
         <~ mara ->
@@ -316,13 +304,12 @@ kwenza *a_reduce(arr, F~reducer, initial?) ->
 @*          $> khuluma(a_map(arr, square))! @ Returns [1, 4, 9, 16]
 kwenza *a_map(arr, F~mapperFunction) ->
     if (typeOf(arr) != "array") ->
-        cima <== "a_reduce() only works on arrays"!
+        cima <== "a_map() only works on arrays"!
     <~ mara if (typeOf(mapperFunction) != "function") ->
-        cima <== "a_reduce()'s second argument must be a function"!
+        cima <== "a_map()'s second argument must be a function"!
     <~
     maak new <-|!
     colonize (el with arr) ->
-@         new <- flat(new, arrLit(mapperFunction(el)))!
         new <- arrLit(new:::, mapperFunction(el))!
     <~
     khutla new!
@@ -334,7 +321,7 @@ kwenza *a_map(arr, F~mapperFunction) ->
 @* returns  $> An array created from the input string, split by the specified delimiter or index.
 @* since    $> 5.0.0
 @* devn     $> Throws if the input is not a string. Also, this function imports jaiva/types for type
-@*          $> conversions. A perfomance hit may be observed the first time this function is called.
+@*          $> conversions. A performance hit may be observed the first time this function is called.
 @* example  $> khuluma(a_from("hello"))! @ Returns ["h", "e", "l", "l", "o"]
 @*          $> khuluma(a_from("apple,banana,cherry", ","))! @ Returns ["apple", "banana", "cherry"]
 @*          $> khuluma(a_from("abcdef", 3))! @ Returns ["abc", "def"]
@@ -378,4 +365,72 @@ kwenza *a_from(input, split?) ->
     <~
 
     khutla arrLit(arr:::, current)! @ Add the last part
+<~
+
+
+@* Applies the given function to each element in the array
+@* p        $> arr <- [] The original array to go over.
+@* p        $> function <- F~any A function that takes one element and shouldn't return really.
+@* returns  $> idk
+@* since    $> 5.1.0
+@* devn     $> The function must take in 1 parameter (the element).
+@*          $> Throws if the first argument is not an array or if the second argument is not a function.
+@* example  $> maak arr <-| 1, 2, 3, 4!
+@*          $> maak square <- f~(num) : khuluma(num * num)! @ A lambda function to print the square a number
+@*          $> a_forEach(arr, square)! @ Will print the squares.
+kwenza *a_forEach(arr, F~function) ->
+    if (typeOf(arr) != "array") ->
+        cima <== "a_forEach() only works on arrays"!
+    <~ mara if (typeOf(function) != "function") ->
+        cima <== "a_forEach()'s second argument must be a function"!
+    <~
+    colonize (el with arr) ->
+        function(el)!
+    <~
+    @ No khutla, implicity returns idk anyways.
+<~
+
+@* Applies the supplied function(s) to a given input array. In this case, the first element is the input array
+@* and every other subsequent element is expected to be a function reference. If the supplied function returns
+@* an array then the a_apply function will relace the original with that returned array, otherwise it gets
+@* treated as side-effects.
+@* p        $> params <- [] Var args parameter. Input any amount of parameters, however the first parameter
+@*          $> must be an array and everything else a function.
+@* returns  $> The transformed array, or the original array if no functions were given or no functions returned any
+@*          $> arrays
+@* since    $> 5.1.0
+@* example  $> maak arr <-| 1, 2, 3, 4!
+@*          $> @
+@*          $> a_apply(arr)!
+@*          $> @ Returns [1, 2, 3, 4]
+@*          $> a_apply(arr, f~(a) : a_map(a, f~(num) : num * 3))
+@*          $> @ Returns [3, 6, 9, 12]
+@*          $> a_apply(arr, a_reverse, f~(a) : a_map(a, f~(num) : num * 3))
+@*          $> @ Returns [12, 9, 6, 3]
+@*          $> a_apply(arr, khuluma)
+@*          $> @ Returns [1, 2, 3, 4] (khuluma returns idk)
+@* devn     $> Just like normal function, it can take a function reference or lambda, which is itself
+@*          $> technically a function reference
+kwenza *a_apply(<-params) ->
+    if (params~ = 0) ->
+        cima <== "a_apply() needs an input array as it's first argument"!
+    <~
+    maak arr <- params[0]!
+    if (typeOf(arr) != "array") ->
+        cima <== "a_apply() only works on arrays"!
+    <~
+
+    colonize (i <- 1 | i < params~ | +) ->
+        maak function <- params[i]!
+        if (typeOf(function) != "function") ->
+            cima <== function + " should be a function to apply to the array!"!
+        <~
+        maak out <- function(arr)!
+        if ((out?)') ->
+            arr <- typeOf(out) = "array" => out however arr!
+        <~
+    <~
+
+    khutla arr!
+
 <~

@@ -168,13 +168,13 @@ public class Primitives {
                             // TODO: This is literally just anything that can be input. Fix
                             if (!(lhs instanceof Integer) && !(lhs instanceof Double) && !(lhs instanceof Boolean)
                                     && !(lhs instanceof String) && !(lhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
-                                    && !(lhs instanceof BaseFunction) && !(lhs instanceof Float))
+                                    && !(lhs instanceof BaseFunction) && !(lhs instanceof Long))
                                 throw new TExpressionResolutionException(scope,
                                         tExpression, "left hand side",
                                         lhs.toString());
                             if (!(rhs instanceof Integer) && !(rhs instanceof Double) && !(rhs instanceof Boolean)
                                     && !(rhs instanceof String) && !(rhs instanceof TVoidValue) && !(lhs instanceof ArrayList)
-                                    && !(lhs instanceof BaseFunction) && !(lhs instanceof Float))
+                                    && !(lhs instanceof BaseFunction) && !(lhs instanceof Long))
                                 throw new TExpressionResolutionException(scope,
                                         tExpression, "right hand side",
                                         rhs.toString());
@@ -372,6 +372,7 @@ public class Primitives {
                             yield d;
                         }
                     }
+                    case TVoidValue v -> v;
                     case Boolean b -> b;
                     case BaseFunction f -> f;
                     case ArrayList a -> {
@@ -427,7 +428,7 @@ public class Primitives {
             assert condition != null;
             assert c != null;
             throw new TExpressionResolutionException(scope,
-                    t, ((TExpression) c),
+                    t, c instanceof Token c2 ? (TExpression) c2.value() : ((TExpression) c),
                     "boolean", condition.getClass().getName());
         }
 
