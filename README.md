@@ -1,18 +1,16 @@
 <h1> <img src="images/jaiva-full-logo.png" width="50"> Jaiva!</h1>
 
-(Current) Version : **_5.0.4_**
+(Current) Version : **_5.1.0_**
 
-[//]: # ()
-[//]: # (![isTen]&#40;./images/isTen.png&#41;)
+![img_1.png](images/img_1.png)
 
-[//]: # ()
-[//]: # (![screenshot of the testType.jiv program]&#40;./images/testType.png&#41;)
+![img.png](images/img.png)
 
-<!-- ![sc](./images/game.png) -->
+![img_2.png](images/img_2.png)
 
 ---
 
-A functional esoteric programming language made with Java on a random January in 2025. What is the goal? idk.
+A (semi-)functional esoteric programming language made with Java on a random January in 2025. What is the goal? idk.
 
 This is for the most part _supposed_ to be a functional programming language.
 
@@ -42,3 +40,4 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
 
 - Jaiva Highlight.js Repo [highlightjs-jaiva](https://github.com/yetnt/highlightjs-jaiva)
 - Jaiva Highlight.js NPM [highlightjs-jaiva](https://www.npmjs.com/package/highlightjs-jaiva)
+- Jaiva VSCode Extension [vscode](https://github.com/yetnt/jaiva-vscode)

@@ -77,6 +77,8 @@ public class IOFunctions extends BaseLibrary {
             Object o = !params.isEmpty() ? params.getFirst() : null;
             Object newO = o;
             if (o == null || o instanceof TVoidValue) {
+                if (config.isStreamer())
+                    return Token.voidValue(tFuncCall.lineNumber);
                 System.out.println();
                 return Token.voidValue(tFuncCall.lineNumber);
             }
@@ -109,6 +111,8 @@ public class IOFunctions extends BaseLibrary {
 
             String isJustStr = newO instanceof String && config.printStacks ? "\"" : "";
 
+            if (config.isStreamer())
+                return Token.voidValue(tFuncCall.lineNumber);
             if (v instanceof Boolean && (Boolean) v) {
                 System.out.print(
                         isJustStr + EscapeSequence.fromEscape(output, tFuncCall.lineNumber) + isJustStr);
@@ -161,6 +165,8 @@ public class IOFunctions extends BaseLibrary {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params,
                            IConfig<Object> config, Scope scope)
                 throws Exception {
+            if (config.isStreamer())
+                return Token.voidValue(tFuncCall.lineNumber);
 
             return config.resources.consoleIn.nextLine();
         }
@@ -205,6 +211,8 @@ public class IOFunctions extends BaseLibrary {
                 Scope scope)
                 throws Exception {
             checkParams(tFuncCall, scope);
+            if (config.isStreamer())
+                return Token.voidValue(tFuncCall.lineNumber);
             return JOptionPane.showInputDialog(params.getFirst());
         }
     }
@@ -250,6 +258,8 @@ public class IOFunctions extends BaseLibrary {
                 Scope scope)
                 throws InterpreterException {
             // Clear the console using ANSI escape codes.
+            if (config.isStreamer())
+                return Token.voidValue(tFuncCall.lineNumber);
             System.out.print("\033[H\033[2J");
             System.out.flush();
             return Token.voidValue(tFuncCall.lineNumber);

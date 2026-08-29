@@ -8,7 +8,7 @@ arr <- flat(arr, new)!
 khuluma("testType()$t|$tt_of()")!
 khuluma("-------$t$t|$t-----")!
 
-colonize v with arr ->
+colonize (v with arr) ->
     maak out <- testType(v)!
     khuluma(out + ((out != idk => out~ however 6) <= 7 => "$t$t|$t" however "$t|$t") + typeOf(v))!
 <~

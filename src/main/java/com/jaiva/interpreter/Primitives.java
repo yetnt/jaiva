@@ -31,7 +31,7 @@ public class Primitives {
      *
      * @param s The {@link Symbol} to check for annotations.
      */
-    private static void checkSymbolAnnotation(Symbol s, int lineNumber, Scope scope) throws NoWarningsException {
+    private static void checkSymbolAnnotation(Symbol s, int lineNumber, Scope scope, IConfig<Object> config) throws NoWarningsException {
         if (s == null) return;
         Class<?> actual = s.getClass();
         SymbolConfig c = actual.getAnnotation(SymbolConfig.class);
@@ -43,14 +43,14 @@ public class Primitives {
                 Warnings.println(
                         lineNumber,
                         s.name + " is deprecated. " + CCol.printInline(depStr, CCol.FONT.BOLD, CCol.FONT.UNDERLINE, CCol.FONT.ITALIC),
-                        scope
+                        scope, config
                 );
             }
             if (!Objects.isNull(c) && c.experimental()) {
                 Warnings.println(
                         lineNumber,
                         s.name + " is marked as experimental. Be careful!!",
-                        scope
+                        scope, config
                 );
             }
         }
@@ -122,7 +122,7 @@ public class Primitives {
                         throw new TExpressionResolutionException(scope,
                                 tExpression, "left hand side",
                                 lhs.toString());
-                    if (!(rhs instanceof Integer) && !(rhs instanceof Double) && !(lhs instanceof Long))
+                    if (!(rhs instanceof Integer) && !(rhs instanceof Double) && !(rhs instanceof Long))
                         throw new TExpressionResolutionException(scope,
                                 tExpression, "right hand side",
                                 rhs.toString());
@@ -237,7 +237,7 @@ public class Primitives {
                                 tVarRef.lineNumber);
                     }
                 }
-                checkSymbolAnnotation(variable, tVarRef.lineNumber, scope);
+                checkSymbolAnnotation(variable, tVarRef.lineNumber, scope, config);
                 if (index != null && (variable.variableType == VariableType.ARRAY
                         || variable.variableType == VariableType.A_FUCKING_AMALGAMATION
                         || tVarRef.varName instanceof TVarRef)) {
@@ -328,11 +328,7 @@ public class Primitives {
                 }
                 function = function != null ? function : (BaseFunction) v.getValue();
 
-                checkSymbolAnnotation(function, tFuncCall.lineNumber, scope);
-
-                if (funcName instanceof String && ((String)funcName).contains("a_map")) {
-                    System.out.println("d");
-                }
+                checkSymbolAnnotation(function, tFuncCall.lineNumber, scope, config);
 
                 ArrayList<Object> args = BaseFunction.resolveParameters(function, tFuncCall, config, scope);
                 Object returnValue = function.call(

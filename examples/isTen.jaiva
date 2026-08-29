@@ -18,9 +18,9 @@ kwenza errorFunc() ->
     print("$nThat shit aint 10??$n")!
 <~
 
-colonize value with values ->
+colonize (value with values) ->
     maak bool <- isTen(value, errorFunc)!
-    if (bool = true) ->
+    if (bool;) ->
         print(bool)!
     <~
 <~

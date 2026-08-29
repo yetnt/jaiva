@@ -273,7 +273,7 @@ public class Interpreter {
                     }
                 } else if (var instanceof BaseFunction && Primitives.isPrimitive(o)) {
                     // create BaseVariable instead
-                    Warnings.println(tVarReassign.lineNumber, "Reassigning what once was a function to a variable can cause token errors and confusion. Avoid doing this.", scope);
+                    Warnings.println(tVarReassign.lineNumber, "Reassigning what once was a function to a variable can cause token errors and confusion. Avoid doing this.", scope, config);
                     mapValue.setValue(BaseVariable.create(tVarReassign.name, tVarReassign,
                             o instanceof ArrayList<?> a ? (ArrayList<Object>) a : new ArrayList<>(List.of(o)), false
                     ));

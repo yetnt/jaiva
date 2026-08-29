@@ -1,6 +1,10 @@
 package com.jaiva;
 
+import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.JaivaException;
+import com.jaiva.interpreter.Interpreter;
+import com.jaiva.interpreter.Scope;
+import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.tokens.Token;
 
 import java.io.BufferedReader;
@@ -47,7 +51,29 @@ public class Streamer {
                 } else {
                     // pray its just a file input
                     try {
-                        ArrayList<Token<?>> tokens = Main.parseTokens(line, false);
+                        String l = line;
+                        String arg = null;
+                        if (line.contains("#")) {
+                            String[] parts = line.split("#");
+                            l = parts[0].trim();
+                            arg = parts[1].trim();
+                        }
+                        ArrayList<Token<?>> tokens = Main.parseTokens(l, false);
+
+                        if (arg != null && arg.equals("INTERP")) {
+                            IConfig<Object> iconfig = new IConfig<>(line.split("#"), l, null);
+                            iconfig.streamer();
+                            try {
+                                Interpreter.interpret(tokens, new Scope(iconfig), iconfig);
+                            } catch (InterpreterException e) {
+                                System.out.println(toJsonError(e, ErrorType.INTERP));
+                            } catch (Exception e) {
+                                System.out.println(toJsonError(e, ErrorType.INTERP_DIED));
+                            }
+                            System.out.println();
+                            continue;
+                        }
+
                         System.out.print("[");
                         for (int i = 0; i < tokens.size(); i++) {
                             Token<?> token = tokens.get(i);
@@ -74,7 +100,7 @@ public class Streamer {
     }
 
     enum ErrorType {
-        JAIVA, OH_FUCK
+        JAIVA, OH_FUCK, INTERP, INTERP_DIED
     }
 
     private static String jsonEscape(String s) {

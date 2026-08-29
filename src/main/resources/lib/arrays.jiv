@@ -387,7 +387,7 @@ kwenza *a_forEach(arr, F~function) ->
     colonize (el with arr) ->
         function(el)!
     <~
-    @ No khutla, implicity returns idk anyways.
+    @ No khutla, implicit returns idk anyways.
 <~
 
 @* Applies the supplied function(s) to a given input array. In this case, the first element is the input array

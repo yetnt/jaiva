@@ -158,7 +158,7 @@ kwenza drive() ->
 <~
 
 kwenza main() ->
-    nikhil (true = yebo) ->
+    nikhil (true;) ->
         clear()!
         listOptions()!
         maak input <- mamela()!
@@ -173,7 +173,7 @@ kwenza main() ->
             loan()!
         <~ mara if (input = "SHOP") ->
             maak s <- shop()!
-            if (s = yebo) ->
+            if (s;) ->
                 khuluma("wow. you won. crazy work.")!
                 khuluma("Total Kilomtres driven:" + totalKm)!
                 khutla idk!

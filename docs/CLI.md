@@ -3,8 +3,8 @@
 Simple CLI Ngl.
 
 ```sh
-> jaiva [-p | -h | -v | -t | -u]
-> jaiva <filePath> [-j | -jg | -s]
+> jaiva [-p | -h | -v | -t | -u | -js]
+> jaiva <filePath> [-j | -jg | -s | -jog]
 ```
 
 1. (No flags) launches interactive REPL.

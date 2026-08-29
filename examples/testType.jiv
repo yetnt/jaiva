@@ -26,6 +26,6 @@ kwenza *testType(input) ->
 
 maak *arr <-| 130, 23, "sss", idk, yebo, true, idk, aowa, false, 0x10FC!
 
-colonize v with arr ->
+colonize (v with arr) ->
     khuluma(testType(v))!
 <~

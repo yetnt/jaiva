@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.jaiva.Config;
 import com.jaiva.Main;
+import com.jaiva.errors.Warnings;
 
 /**
  * The IConfig class provides configuration settings for the interpreter
@@ -158,5 +159,25 @@ public class IConfig<T extends Object> extends Config {
 
     public Object getCallerValue() {
         return callerValue;
+    }
+
+    private boolean streamer = false;
+
+    public void streamer() {
+        streamer = true;
+    }
+
+    public boolean isStreamer() {
+        return streamer;
+    }
+
+    private ArrayList<Warnings.Warning> warnings = new ArrayList<>();
+
+    public void addWarning(Warnings.Warning warning) {
+        warnings.add(warning);
+    }
+
+    public ArrayList<Warnings.Warning> getWarnings() {
+        return warnings;
     }
 }
