@@ -26,7 +26,7 @@ import com.jaiva.utils.generator.CCol;
 public class InterpreterException extends JaivaException {
 
     private static final long serialVersionUID = 1L;
-    public Scope cTrace;
+    public Scope scopeTrace;
 
     /**
      * Returns a user-friendly name for a given class or type name.
@@ -102,6 +102,18 @@ public class InterpreterException extends JaivaException {
      */
     public InterpreterException(Scope ct, int lineNumber, String message) {
         super(CCol.print(message, CCol.TEXT.RED) + "\n" + CCol.print(ct.toString(), CCol.TEXT.YELLOW), lineNumber);
+        scopeTrace = ct;
+    }
+
+    public Scope getScopeTrace() {
+        return scopeTrace;
+    }
+
+    public static class StreamerSuccess extends InterpreterException {
+        private static final long serialVersionUID = 1L;
+        public StreamerSuccess(String message, int lineNumber, Scope scope) {
+            super(scope, lineNumber, message);
+        }
     }
 
     /**

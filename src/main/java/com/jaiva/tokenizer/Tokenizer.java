@@ -541,7 +541,7 @@ public class Tokenizer {
             path = path.substring(0, path.lastIndexOf(".") + 1) + "jiv";
         // add .jiv extension if not available already. (All globals end with .jiv, if
         // improting relatie file assume it ends in .jiv)
-        if (!path.endsWith(".jiv"))
+        if (!path.endsWith(".jiv") && !(path.endsWith(".jaiva") || path.endsWith(".jva")))
             path += ".jiv";
 
         Path pObj = Path.of(path);

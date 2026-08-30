@@ -22,6 +22,63 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>release-cli</id>
+
+            <build>
+                <plugins>
+
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+
+                        <executions>
+
+                            <execution>
+                                <id>prepare-cli</id>
+                                <phase>package</phase>
+
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+
+                                <configuration>
+                                    <target>
+
+                                        <delete file="${project.basedir}/jaiva-cli/${project.artifactId}.jar"/>
+                                        <delete file="${project.basedir}/jaiva-cli/${project.artifactId}-sources.jar"/>
+                                        <delete file="${project.basedir}/jaiva-cli/${project.artifactId}.zip"/>
+
+                                        <copy
+                                                file="${project.build.directory}/${project.artifactId}-${project.version}.jar"
+                                                tofile="${project.basedir}/jaiva-cli/${project.artifactId}.jar"/>
+
+                                        <copy
+                                                file="${project.build.directory}/${project.artifactId}-${project.version}-sources.jar"
+                                                tofile="${project.basedir}/jaiva-cli/${project.artifactId}-sources.jar"/>
+
+                                        <zip
+                                                destfile="${project.basedir}/jaiva-cli/${project.artifactId}.zip"
+                                                basedir="${project.basedir}/jaiva-cli">
+
+                                            <exclude name="${project.artifactId}.zip"/>
+
+                                        </zip>
+
+                                    </target>
+                                </configuration>
+                            </execution>
+
+                        </executions>
+
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 <build>
     <pluginManagement>
 <!--        <plugins>-->

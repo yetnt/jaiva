@@ -5,6 +5,7 @@ import java.util.*;
 
 import com.jaiva.Main;
 import com.jaiva.errors.InterpreterException.*;
+import com.jaiva.errors.JaivaException;
 import com.jaiva.errors.JaivaException.DebugException;
 import com.jaiva.errors.Warnings;
 import com.jaiva.interpreter.libs.global.Globals;
@@ -355,7 +356,13 @@ public class Interpreter {
 
                     importPath = importPath.toAbsolutePath();
 
-                    ArrayList<Token<?>> tks = Main.parseTokens(importPath.toString(), true);
+                    ArrayList<Token<?>> tks = null;
+                    try {
+                        tks = Main.parseTokens(importPath.toString(), true);
+                    } catch (JaivaException e) {
+                        e.setLineNumber(tImport.lineNumber);
+                        throw e;
+                    }
 
                     if (tks.isEmpty())
                         continue; // Nohing to import.
@@ -365,8 +372,13 @@ public class Interpreter {
 
                     newConfig.importVfs = new ImportVfs(true, tImport.symbols); // This tells the interpreter to only parse exported symbols. (Functions
                                                 // and variables)
-// TODO: Vfs from file when adding removes built ins. jsut add a putAll call here from the previous
-                    vfsFromFile = ((Vfs) Interpreter.interpret(tks, new Scope(Context.IMPORT, token, scope), newConfig));
+
+                    try {
+                        vfsFromFile = ((Vfs) Interpreter.interpret(tks, new Scope(Context.IMPORT, token, scope), newConfig));
+                    } catch (JaivaException e) {
+                        e.setLineNumber(tImport.lineNumber);
+                        throw e;
+                    }
 
                     if ((vfsFromFile == null)) {
                         // error? maybe not yet but throw.

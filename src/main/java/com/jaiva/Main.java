@@ -120,7 +120,7 @@ public class Main {
         } else if (replArgs.contains(args[0])) {
             switch (args[0]) {
                 case "--json-stream", "-js" -> {
-                    new Streamer();
+                    new Streamer(args);
                     System.exit(0);
                     return;
                 }
@@ -156,7 +156,7 @@ public class Main {
                     System.exit(0);
                 }
                 case "--version", "-v" -> {
-                    System.out.println(ASCII);
+//                    System.out.println(ASCII);
                     System.out.println("Jaiva! " + version);
                     System.out.println(
                             "Jaiva is a programming language that is designed to be easy to use and understand. (I'm speaking out my ass, I made this cuz i was bored on a random january)");

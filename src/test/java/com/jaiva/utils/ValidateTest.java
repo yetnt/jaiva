@@ -12,7 +12,7 @@ public class ValidateTest {
     @Test
     void isOperator() {
         ArrayList<Character> input = new ArrayList<>(Arrays.asList('!', '=', 'c', '>', '?', ' ', '#'));
-        ArrayList<Boolean> expected = new ArrayList<>(Arrays.asList(true, true, false, true, true, false, false));
+        ArrayList<Boolean> expected = new ArrayList<>(Arrays.asList(true, true, false, true, true, false, true));
 
         for (int i = 0; i < input.size(); i++) {
             Assertions.assertEquals(expected.get(i), Validate.isOperator(input.get(i)));

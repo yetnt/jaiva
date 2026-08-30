@@ -207,7 +207,9 @@ public class Debug extends BaseLibrary {
                     .docs(JDoc.builder()
                             .sinceVersion("5.0.4")
                             .addDesc("gets the scope. wahtd you expect")
-                            .addReturns("the scope string"))
+                            .addReturns("the scope string")
+                            .addNote("This is the exact same scope string that an error outputs")
+                    )
             );
         }
 

@@ -13,6 +13,7 @@ import com.jaiva.utils.generator.CCol;
 public class JaivaException extends Exception {
     private static final long serialVersionUID = 1L;
     private final String rawMessage;
+    private int lineNumber;
 
     /**
      * Constructor for child classes that extend of JaivaException to print with a
@@ -24,16 +25,21 @@ public class JaivaException extends Exception {
     public JaivaException(String message, int lineNumber) {
         super(CCol.print("[line " + lineNumber + "]", CCol.FONT.UNDERLINE, CCol.FONT.BOLD, CCol.BG.BRIGHT_BLACK)+" " + message);
         this.rawMessage = "[line " + lineNumber + "]" + " " +message;
+        this.lineNumber = lineNumber;
     }
 
-    /**
-     * Default Constructor
-     * 
-     * @param message
-     */
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    public void setLineNumber(int lineNumber) {
+        this.lineNumber = lineNumber;
+    }
+
     public JaivaException(String message) {
         super(CCol.print(message, CCol.TEXT.RED, CCol.FONT.ITALIC));
         this.rawMessage = message;
+        this.lineNumber = -1;
     }
 
     /**

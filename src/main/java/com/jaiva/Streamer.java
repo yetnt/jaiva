@@ -8,7 +8,6 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.tokens.Token;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -40,8 +39,33 @@ public class Streamer {
         return result.toString();
     }
 
-    Streamer() {
+    private void printTokens(ArrayList<Token<?>> tokens) throws JaivaException {
+        System.out.print("[");
+        for (int i = 0; i < tokens.size(); i++) {
+            Token<?> token = tokens.get(i);
+            System.out.print(token.value().toJson());
+            if (i != tokens.size() - 1) {
+                System.out.print(",");
+            }
+        }
+        System.out.print("]");
+        System.out.println();
+    }
+
+    Streamer(String[] args) {
         try {
+
+            if (args.length > 2) {
+                String arg3 = args[1]; // some flag
+                String arg4 = args[2]; // the file to parse
+
+                if (arg3.equals("-e") || arg3.equals("--exit")) {
+                    ArrayList<Token<?>> tokens = Main.parseTokens(arg4, false);
+                    printTokens(tokens);
+                    return;
+                }
+            }
+
             while (run) {
                 String line = reader.readLine();
                 if (line == null || line.equals("EXIT") || line.isEmpty()) {
@@ -64,43 +88,38 @@ public class Streamer {
                             IConfig<Object> iconfig = new IConfig<>(line.split("#"), l, null);
                             iconfig.streamer();
                             try {
-                                Interpreter.interpret(tokens, new Scope(iconfig), iconfig);
+                                Scope scope = new Scope(iconfig);
+                                Interpreter.interpret(tokens, scope, iconfig);
+                                // if we make it here, cool
+                                System.out.println(toJsonError(iconfig, new InterpreterException.StreamerSuccess("Success", -1, scope), Type.INTERP_SUCCESS));
                             } catch (InterpreterException e) {
-                                System.out.println(toJsonError(e, ErrorType.INTERP));
+                                System.out.println(toJsonError(iconfig, e, Type.ERR_INTERP));
                             } catch (Exception e) {
-                                System.out.println(toJsonError(e, ErrorType.INTERP_DIED));
+                                System.out.println(toJsonError(iconfig, e, Type.ERR_INTERP_DIED));
                             }
                             System.out.println();
                             continue;
                         }
 
-                        System.out.print("[");
-                        for (int i = 0; i < tokens.size(); i++) {
-                            Token<?> token = tokens.get(i);
-                            System.out.print(token.value().toJson());
-                            if (i != tokens.size() - 1) {
-                                System.out.print(",");
-                            }
-                        }
-                        System.out.print("]");
-                        System.out.println();
+                        printTokens(tokens);
                     } catch (JaivaException e) {
-                        System.out.println(toJsonError(e, ErrorType.JAIVA));
+                        System.out.println(toJsonError(null, e, Type.ERR_TOKENS));
                         System.out.println();
                     }
                 }
             }
         } catch (Exception e) {
             System.out.println(
-                    toJsonError(e, ErrorType.OH_FUCK)
+                    toJsonError(null, e, Type.ERR_STREAMER)
             );
             System.out.println();
-            new Streamer(); // try again.
+	    if (args.length < 2)
+            new Streamer(args); // try again.
         }
     }
 
-    enum ErrorType {
-        JAIVA, OH_FUCK, INTERP, INTERP_DIED
+    enum Type {
+        ERR_TOKENS, ERR_STREAMER, ERR_INTERP, ERR_INTERP_DIED, INTERP_SUCCESS
     }
 
     private static String jsonEscape(String s) {
@@ -112,7 +131,24 @@ public class Streamer {
                 .replace("\t", "\\t");
     }
 
-    public String toJsonError(Exception e, ErrorType type) {
-        return "{\"err\":\"" + jsonEscape(removeCCol(e.getMessage())) + "\", \"type\":\"" + type.toString() + "\"}";
+    public String toJsonError(IConfig<Object> config, Exception e, Type type) {
+        String str =  "{\"streamer\":true,\"message\":\"" + jsonEscape(removeCCol(e.getMessage())) +
+                "\",\"lineNumber\":"
+                + ((e instanceof JaivaException j) ? j.getLineNumber() : -1)
+                +",\"type\":\"" + type.toString() + "\"";
+        if (config != null && e instanceof InterpreterException interpreterException) {
+            String warnings = config.getWarnings().stream().reduce(
+                    " ",
+                    (s, w) ->
+                            s + "{\"message\":\"" + jsonEscape(removeCCol(w.getMessage())) + "\",\"lineNumber\":" + w.getLineNumber() + "},"
+                    ,
+                    (s, s2) -> s + s2
+            );
+            String scopeStr = interpreterException.getScopeTrace().toString();
+            str = str.replace("\\n" + scopeStr, "");
+            return str + ",\"scope\":\""+scopeStr+"\", \"warnings\":[" + warnings.substring(0, warnings.length()-1) + "]}";
+        } else {
+            return str + "}";
+        }
     }
 }
