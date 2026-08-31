@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Function;
 
 public class ToMarkdown {
 
@@ -132,6 +133,11 @@ public class ToMarkdown {
      */
     private void printSymbolToFile(char option, TokenDefault symbol) throws TokenizerException.CatchAllException {
         // .title(option == 'n' ? 3 : 4)
+        printToFile(
+                new MarkDownLiteral(new MarkDownLiteral(symbol.name).toString())
+                        .title(MarkDownLiteral.Title.SECTION)
+                        .toString()
+        );
         if (symbol instanceof TFunction f) {
             String type = askForUserInput("What does " +
                     CCol.print(f.name.startsWith("F~") ? f.name.substring(2) : f.name, CCol.FONT.BOLD, CCol.FONT.ITALIC)
@@ -140,17 +146,18 @@ public class ToMarkdown {
                 case "" -> "idk";
                 case "bool" -> "boolean";
                 case "array" -> "[]";
-                case "int", "integer", "double" -> "number";
+                case "d", "doub" -> "double";
+                case "int" -> "integer";
+                case "l", "long" -> "long";
+                case "num" -> "number";
                 default -> type; // For custom types. It's the users job to explain what they mean
                                 // e.g. All functions within "jaiva/file" array
                                 // are documented to return a "[array]". Which the markdown file explains
                                 // that it's a structure of a normal array special to this library.
             };
             printToFile(
-                    new MarkDownLiteral(new MarkDownLiteral(f.toDefinitionString() + " -> ").inlineCode().toString() +
-                            new MarkDownLiteral(type).inlineCode().bold().italics().toString())
-                            .title(MarkDownLiteral.Title.SECTION)
-                            .toString()
+                    new MarkDownLiteral(f.toDefinitionString() + " -> ").inlineCode().toString() +
+                            new MarkDownLiteral(type).inlineCode().bold().italics().toString()
             );
         } else  {
             // otherwise, it's just a variable.
@@ -165,7 +172,6 @@ public class ToMarkdown {
             printToFile(
                     new MarkDownLiteral(new MarkDownLiteral(symbol.name + " <- ").inlineCode().toString() +
                             new MarkDownLiteral(type).inlineCode().bold().italics().toString())
-                            .title(MarkDownLiteral.Title.SECTION)
                             .toString()
             );
         }
@@ -178,16 +184,23 @@ public class ToMarkdown {
 
         if (!jDoc.getDependencies().isEmpty()) {
             printToFile();
-            printToFile(
-                    new MarkDownLiteral("Please properly link the dependencies. Thank you! :)").comment().toString()
-            );
+            Function<List<String>, String> reducer = (arr) -> {
+                List<String> newList = arr
+                        .stream()
+                        .map(m -> new MarkDownLiteral(m).linkTo("#f"+m).toString())
+                        .toList();
+                return String.join(", ",  newList);
+            };
+//            printToFile(
+//                    new MarkDownLiteral("Please properly link the dependencies. Thank you! :)").comment().toString()
+//            );
             printToFile();
             printToFile(
                     MarkDownLiteral.GithubBlockQuote(
                             MarkDownLiteral.GithubBlockQuote.WARNING,
                             new MarkDownLiteral(
                                     "This symbol depends on: " +
-                                    new MarkDownLiteral(String.join(", ", jDoc.getDependencies())).italics().toString() +
+                                    new MarkDownLiteral(reducer.apply(jDoc.getDependencies())).italics().toString() +
                                             ". It may fail if all of these symbols aren't imported!"
                             ).bold().toString()
                     )
