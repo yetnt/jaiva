@@ -227,11 +227,11 @@ public class ToMarkdown {
             for (Tag.DParameter p : jDoc.getParameters()) {
                 MarkDownLiteral param = new MarkDownLiteral(p.varName + (p.optional ? "?" : "")).inlineCode();
                 params.add(
-                        (p.optional ? param.italics() : param.bold()).toString() +
+                        (p.optional ? param.italics() : param.bold()) +
                                 " <- " +
-                                new MarkDownLiteral("\""+p.type+"\"").inlineCode().toString() +
+                                new MarkDownLiteral(p.type).inlineCode() +
                                 " : " +
-                                new MarkDownLiteral(p.desc).italics().toString()
+                                new MarkDownLiteral(p.desc).italics()
                 );
             }
             printToFile(MarkDownLiteral.asList(params));

@@ -10,6 +10,7 @@ import com.jaiva.interpreter.libBuilders.func.Argument;
 import com.jaiva.interpreter.libBuilders.func.Arguments;
 import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
 import com.jaiva.interpreter.libBuilders.func.arg.AArgument;
+import com.jaiva.interpreter.libBuilders.func.arg.AVarArgument;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.LibraryLike;
 import com.jaiva.interpreter.libs.LibraryType;
@@ -151,22 +152,26 @@ public class Globals extends BaseLibrary {
 
     class FScope extends BaseFunction {
         FScope() {
-            super("scope", new TFunction("scope", new String[] {"<-strings"}, null, -1,
-                    JDoc.builder()
-                            .sinceVersion("4.1.1")
-                            .addDesc("Configures the current scope to whichever settings provided.")
-                            .addParam("strings", "[]", "variable amount of strings to input.", true)
-                            .addReturns("idk")
-                            .addNote(
-                                    """
-                                    The following are accepted strings:\s
-                                        "sw" to suppress all warnings.\s
-                                        "ew" to elevate all warnings.\s
-                                        "constant" to make all symbols given constant. and\s
-                                        "strict" which toggles "ew" and "constant"
-                                    """
+            super(
+                    FunctionBuilder.start()
+                            .name("scope")
+                            .arguments(
+                                    Arguments.getInstance()
+                                            .addVarArg(new AVarArgument("string", "variable amount of strings to input."))
                             )
-                            .addExample("""
+                            .docs(
+                                    JDoc.builder()
+                                            .addReturns("idk")
+                                            .addNote(
+                                                    """
+                                                    The following are accepted strings:\s
+                                                        "sw" to suppress all warnings.\s
+                                                        "ew" to elevate all warnings.\s
+                                                        "constant" to make all symbols given constant. and\s
+                                                        "strict" which toggles "ew" and "constant"
+                                                    """
+                                            )
+                                            .addExample("""
                                     scope("freezeAll")!
                                     kwenza af(a) ->
                                         khutla a!
@@ -182,8 +187,9 @@ public class Globals extends BaseLibrary {
                                     <~
                                     af()! @ Errors as the usual deprecation warning is now a fatal error. (Crashes the interpreter)
                                     """)
-                            .build()
-                    ));
+                                            .sinceVersion("4.1.1")
+                            )
+            );
             this.freeze();
         }
 
@@ -216,20 +222,27 @@ public class Globals extends BaseLibrary {
      */
     class FGetVarClass extends BaseFunction {
         FGetVarClass() {
-            super("getVarClass", new TFunction("getVarClass", new String[] { "var" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Attempts to return the symbol's corresponding Java class in string form. If you're using this then you def don't know what you're doing.")
-                            .addParam("var", "idk", "The value to return it's token symbol for", false)
-                            .addReturns("The .toString() class representation of the given variable's token")
-                            .sinceVersion("1.0.0-beta.0")
-                            .addExample("""
+            super(
+                    FunctionBuilder.start()
+                            .name("getVarClass")
+                            .arguments(
+                                    Arguments.getInstance()
+                                            .add(
+                                                    new AArgument("var", "The value to return it's token symbol for", false, Argument.Type.ANY)
+                                            )
+                            )
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Attempts to return the symbol's corresponding Java class in string form. If you're using this then you def don't know what you're doing.")
+                                            .addReturns("The .toString() class representation of the given variable's token")
+                                            .sinceVersion("1.0.0-beta.0")
+                                            .addExample("""
                                     maak name <- "ayo!"!
                                     khuluma(getVarClass(name))! @ Prints com.jaiva.tokenizer.tokens.Token$TStringVar@(hashcode)
                                     khuluma(getVarClass(reservedKeywords))! @ Prints com.jaiva.tokenizer.tokens.Token$TArrayVar@(hashcode)
                                     """)
-                            .build()
-
-            ));
+                            )
+            );
             this.freeze();
         }
 
@@ -284,19 +297,21 @@ public class Globals extends BaseLibrary {
      */
     class FGetCallerValue extends BaseFunction {
         FGetCallerValue() {
-            super("getCallerValue", new TFunction("getCallerValue", new String[] { }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Returns the caller value provided to this file if this file was run by another java program.")
-                            .addReturns("The caller value")
-                            .sinceVersion("5.0.2")
-                            .addExample("""
+            super(
+                    FunctionBuilder.start()
+                            .name("getCallerValue")
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Returns the caller value provided to this file if this file was run by another java program.")
+                                            .addReturns("The caller value")
+                                            .sinceVersion("5.0.2")
+                                            .addExample("""
                                     @ Say we are in J3Engine command
                                     maak value <- getCallerValue()!
                                     @ use it
                                     """)
-                            .build()
-
-            ));
+                            )
+            );
             this.freeze();
         }
 
@@ -333,20 +348,26 @@ public class Globals extends BaseLibrary {
      */
     class FFlat extends BaseFunction {
         FFlat() {
-            super("flat", new TFunction("flat", new String[] { "<-arrays" }, null, -1,
-                    JDoc.builder()
-                            .addDesc( "Attempts to flatten (at the top level) the given arrays array1 and array2 into 1 single array.")
-                            .addParam("arrays", "[]", "Variable amount of arrays to input", true)
-                            .addNote("If there are any type mismatches in array1, it will be ignored and the same check is done to array2 and so on. Therefore this function will **always** return an array, whether or not it was successful.")
-                            .sinceVersion("1.0.0-beta.2")
-                            .addExample("""
+            super(
+                    FunctionBuilder.start()
+                            .name("flat")
+                            .arguments(
+                                    Arguments.getInstance()
+                                            .addVarArg(new AVarArgument("arrays", "Variable amount of arrays to input"))
+                            )
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc( "Attempts to flatten (at the top level) the given arrays array1 and array2 into 1 single array.")
+                                            .addNote("If there are any type mismatches in array1, it will be ignored and the same check is done to array2 and so on. Therefore this function will **always** return an array, whether or not it was successful.")
+                                            .sinceVersion("1.0.0-beta.2")
+                                            .addExample("""
                                     maak array1 <-| 1, 2, 3!
                                     maak array2 <-| 4, 5, 6!
                                     maak array3 <- flat(array1, array2)! @ Flattens the two arrays into a new one.
                                     khuluma(array3)! @ Prints [1, 2, 3, 4, 5, 6]
                                     """)
-                            .build()
-            ));
+                            )
+            );
             this.freeze();
         }
 
@@ -404,19 +425,25 @@ public class Globals extends BaseLibrary {
      */
     class FSleep extends BaseFunction {
         FSleep() {
-            super("sleep", new TFunction("sleep", new String[] { "milliseconds" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Pause execution of the interpreter for n amount of milliseconds.")
-                            .addParam("milliseconds", "number", "The amount of milliseconds to sleep for", false)
-                            .addNote("(Keep in mind this function still has to take your value and turn it into a Java primitive and other things, so the delay might not be exact. If you're looking for accuracy maybe remove x amount of ms till it's accurate.)")
-                            .sinceVersion("1.0.0")
-                            .addExample("""
+            super(
+                    FunctionBuilder.start()
+                            .name("sleep")
+                            .arguments(
+                                    Arguments.getInstance()
+                                            .add(new AArgument("milliseconds", "The amount of milliseconds to sleep for", false, Argument.Type.NUMBER))
+                            )
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Pause execution of the interpreter for n amount of milliseconds.")
+                                            .addNote("(Keep in mind this function still has to take your value and turn it into a Java primitive and other things, so the delay might not be exact. If you're looking for accuracy maybe remove x amount of ms till it's accurate.)")
+                                            .sinceVersion("1.0.0")
+                                            .addExample("""
                                     khuluma("yo")!
                                     sleep(1000)! @ pause for 1 second.
                                     khuluma("yo.. again")!
                                     """)
-                            .build()
-            ));
+                            )
+            );
             this.freeze();
         }
 
@@ -440,13 +467,21 @@ public class Globals extends BaseLibrary {
     @SymbolConfig(deprecated = true)
     class FNeg extends BaseFunction {
         FNeg() {
-            super("neg", new TFunction("neg", new String[] { "input" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Negates the given number. This is because my unary minus shit isnt working so i had to make this.")
-                            .addParam("input", "number", "The input to negate", false)
-                            .markDeprecated("Unary minus works now. Use it or multiply by -1")
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("neg")
+                            .arguments(
+                                    Arguments.getInstance()
+                                            .add(
+                                                    new AArgument("input", "The input to negate", false, Argument.Type.NUMBER)
+                                            )
+                            )
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Negates the given number. This is because my unary minus shit isnt working so i had to make this.")
+                                            .markDeprecated("Unary minus works now. Use it or multiply by -1")
+                            )
+            );
             this.freeze();
         }
 
@@ -464,6 +499,7 @@ public class Globals extends BaseLibrary {
             return switch (num) {
                 case Integer i -> -i;
                 case Double d -> -d;
+                case Long l -> -l;
                 default -> throw new InterpreterException.CatchAllException(scope, "we checked for number but didnt receive a number?", tFuncCall.lineNumber);
             };
 
