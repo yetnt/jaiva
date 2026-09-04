@@ -560,6 +560,8 @@ public class Globals extends BaseLibrary {
         }
     }
 
+    //todo: continue refactor of manual to use function builder
+
     class FTypeOf extends BaseFunction {
         FTypeOf() {
             super("typeOf", new TFunction("typeOf", new String[] { "input?" }, null, -1,
