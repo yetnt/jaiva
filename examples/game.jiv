@@ -12,21 +12,21 @@ tsea "jaiva/math"!
         7. Upgrades.                            DONE
 }
 
-maak money <- 500!
+maak money <- 500L!
 maak fuelAmt <- 100!
 maak maxFuel <- 100!
 
-maak monPerFuel <- 1000! @ Amount to refuel.
+maak monPerFuel <- 1000L! @ Amount to refuel.
 
-maak fuelPerKm <- 10! @ 10 fuel is spent while driving for every kilometre.
+maak fuelPerKm <- 10L! @ 10 fuel is spent while driving for every kilometre.
 maak loanAmt <- 3e6! @ Total amount of money they can take out. when this reaches 0 they cannot take any more.
 maak SLEEP_TIME <- 500! @ While driving, it will decrease in fuel every 2 seconds.
 maak WIN <- 1e6!
 maak totalKm <- 0!
 
-maak carLvl <- 1!
-maak earnings <- 100!
-maak upgradePrice <- 10!
+maak carLvl <- 1L!
+maak earnings <- 100L!
+maak upgradePrice <- 10L!
 
 @* List all the options
 kwenza listOptions() ->

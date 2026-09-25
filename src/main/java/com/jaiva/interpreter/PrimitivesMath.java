@@ -233,6 +233,14 @@ public class PrimitivesMath {
         ArrayList<String> SS = new ArrayList<>(Arrays.asList("+", "-", "=", "!=", "/", "?"));
         ArrayList<String> idk = new ArrayList<>(Arrays.asList("+", "=", "!="));
 
+        if (op.equals("+")) {
+            if (lhs instanceof String l) {
+                return l + rhs;
+            } else if (rhs instanceof String r) {
+                return lhs + r;
+            }
+        }
+
         try {
             switch (switchTing) {
                 case "idkS" -> {

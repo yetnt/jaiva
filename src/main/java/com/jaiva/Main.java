@@ -225,7 +225,7 @@ public class Main {
                         break;
                     }
                     case "-d", "--debug" -> {
-                        if (args[0].contains("jaiva/") || args[0].contains("jaiva\\"))
+                        if (args[0].startsWith("jaiva/") || args[0].startsWith("jaiva\\"))
                             throw new JaivaException.UnknownFileException("You can't debug the built-in jaiva libs.");
                         new Debugger(iconfig, tokens, args[1].equals("-d"));
                         return;

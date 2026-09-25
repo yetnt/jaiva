@@ -221,8 +221,8 @@ public class Debugger {
                         }
                     }
                     case "vfs" -> {
-                        String sub = parts.length > 1 ? parts[1] : null;
-                        String arg = parts.length > 2 ? parts[2] : null;
+                        String sub = parts.length > 1 ? parts[1] : "";
+                        String arg = parts.length > 2 ? parts[2] : "";
 
                         switch (sub) {
                             case "dump" -> {
@@ -255,6 +255,15 @@ public class Debugger {
                                 } else {
                                     System.out.println("Usage: vfs get <variable_name>");
                                 }
+                            }
+                            default -> {
+                                config.dc.scope.vfs.forEach((name, value) -> {
+                                    Symbol s = value.getValue();
+                                    if (value.getValue() instanceof DefinedFunction
+                                            || value.getValue() instanceof DefinedVariable) {
+                                        System.out.println("\t" + name + " <- " + s.toDebugString());
+                                    }
+                                });
                             }
                         }
                     }
