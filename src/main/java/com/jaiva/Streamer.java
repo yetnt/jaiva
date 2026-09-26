@@ -15,7 +15,7 @@ public class Streamer {
     private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     private boolean run = true;
 
-    public static String removeCCol(String rawMessage) {
+    public static String removeAnsiColour(String rawMessage) {
         StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < rawMessage.length(); i++) {
@@ -132,7 +132,7 @@ public class Streamer {
     }
 
     public String toJsonError(IConfig<Object> config, Exception e, Type type) {
-        String str =  "{\"streamer\":true,\"message\":\"" + jsonEscape(removeCCol(e.getMessage())) +
+        String str =  "{\"streamer\":true,\"message\":\"" + jsonEscape(removeAnsiColour(e.getMessage())) +
                 "\",\"lineNumber\":"
                 + ((e instanceof JaivaException j) ? j.getLineNumber() : -1)
                 +",\"type\":\"" + type.toString() + "\"";
@@ -140,7 +140,7 @@ public class Streamer {
             String warnings = config.getWarnings().stream().reduce(
                     " ",
                     (s, w) ->
-                            s + "{\"message\":\"" + jsonEscape(removeCCol(w.getMessage())) + "\",\"lineNumber\":" + w.getLineNumber() + "},"
+                            s + "{\"message\":\"" + jsonEscape(removeAnsiColour(w.getMessage())) + "\",\"lineNumber\":" + w.getLineNumber() + "},"
                     ,
                     (s, s2) -> s + s2
             );

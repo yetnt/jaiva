@@ -13,7 +13,7 @@ import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.interpreter.symbol.DefinedFunction;
 import com.jaiva.interpreter.symbol.BaseVariable.DefinedVariable;
 import com.jaiva.tokenizer.tokens.Token;
-import com.jaiva.utils.generic.SamePair;
+import com.yetnt.utils.tuple.SamePair;
 
 /**
  * The Debugger class is responsible for managing the debugging environment

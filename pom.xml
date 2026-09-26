@@ -6,19 +6,33 @@
 
     <groupId>com.jaiva</groupId>
     <artifactId>jaiva</artifactId>
-    <version>5.1.0</version>
+    <version>5.1.0-alpha.0</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.9.3</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.yetnt</groupId>
+            <artifactId>ytils</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 

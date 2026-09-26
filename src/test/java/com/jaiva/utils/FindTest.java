@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.jaiva.utils.generic.MultipleLinesOutput;
-import com.jaiva.utils.generic.SamePair;
+import com.yetnt.utils.tuple.SamePair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

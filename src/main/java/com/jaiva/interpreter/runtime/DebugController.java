@@ -1,5 +1,6 @@
 package com.jaiva.interpreter.runtime;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
@@ -8,7 +9,7 @@ import com.jaiva.Debugger;
 import com.jaiva.interpreter.*;
 import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.tokenizer.tokens.Token;
-import com.jaiva.utils.generic.SamePair;
+import com.yetnt.utils.tuple.SamePair;
 
 /**
  * The DebugController class is responsible for actually controllig the
@@ -91,11 +92,11 @@ public class DebugController {
     public void print(int lineNumber, Symbol s, Token<?> t, Scope scope) {
         if (active) {
             currentLineNumber = lineNumber;
-            if (!stepOver.second && stepOver.first) {
+            if (!stepOver.getSecond() && stepOver.getFirst()) {
                 stepOver = new SamePair<>(false, true);
                 this.scope = scope;
             } else {
-                if (!stepOver.first && stepOver.second) {
+                if (!stepOver.getFirst() && stepOver.getSecond()) {
                     stepOver = new SamePair<>(false, false);
                     System.out.print("On line: " + lineNumber);
                 } else {
@@ -122,7 +123,7 @@ public class DebugController {
      * to exit.
      * <p>
      * This method is called by
-     * {@link Interpreter#interpret(java.util.ArrayList, Scope, IConfig<Object>)}
+     * {@link Interpreter#interpret(ArrayList, Scope, IConfig)}
      * when the end of the file is reached, indicating that
      * there are no more lines to interpret.
      * 

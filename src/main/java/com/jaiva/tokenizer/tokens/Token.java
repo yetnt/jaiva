@@ -156,7 +156,7 @@ public record Token<T extends TokenDefault>(T value) {
             int indexOfCol = line.indexOf(':');
             if (bracePairs.closedPairs().isEmpty()) throw new TokenizerException.MalformedSyntaxException(
                     "So like, are you going to add any parentheses to your lambda or..?", lineNumber);
-            if (bracePairs.closedPairs().getFirst().second > indexOfCol) throw new TokenizerException.MalformedSyntaxException(
+            if (bracePairs.closedPairs().getFirst().getSecond() > indexOfCol) throw new TokenizerException.MalformedSyntaxException(
                     "How did you add a colon before the lambda's parameter list ends???", lineNumber);
 
             // "f~  (woot, w) : woot - 1" becomes "(woot, w)"

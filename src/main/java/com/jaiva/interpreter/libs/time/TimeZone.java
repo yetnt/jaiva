@@ -6,7 +6,7 @@ import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.specific.TArrayVar;
 import com.jaiva.tokenizer.tokens.specific.TStringVar;
-import com.jaiva.utils.generic.SamePair;
+import com.yetnt.utils.tuple.SamePair;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -84,8 +84,8 @@ public class TimeZone extends BaseLibrary {
     }
 
     protected static BaseVariable createVariable(SamePair<String> tuple) {
-        String varName = tuple.first;
-        String value = tuple.second;
+        String varName = tuple.getFirst();
+        String value = tuple.getSecond();
         BaseVariable var = new BaseVariable(varName, new TStringVar(varName, value, -1,
                 JDoc.builder()
                         .addDesc(value + " zone constant.")

@@ -19,7 +19,7 @@ import com.jaiva.tokenizer.tokens.TSymbol;
 import com.jaiva.tokenizer.tokens.specific.*;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
-import com.jaiva.utils.generic.Pair;
+import com.yetnt.utils.tuple.Pair;
 
 /**
  * The Interpreter class is one of the 3 main classes which handle Jaiva code.

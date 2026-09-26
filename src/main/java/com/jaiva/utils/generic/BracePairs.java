@@ -1,6 +1,8 @@
 package com.jaiva.utils.generic;
 
 import com.jaiva.utils.Find;
+import com.yetnt.utils.tuple.Pair;
+import com.yetnt.utils.tuple.SamePair;
 
 import java.util.ArrayList;
 

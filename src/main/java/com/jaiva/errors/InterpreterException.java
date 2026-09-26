@@ -18,7 +18,7 @@ import com.jaiva.tokenizer.tokens.specific.TThrowError;
 import com.jaiva.tokenizer.tokens.specific.TVarReassign;
 import com.jaiva.tokenizer.tokens.specific.TVarRef;
 import com.jaiva.tokenizer.tokens.specific.TWhileLoop;
-import com.jaiva.utils.generator.CCol;
+import com.yetnt.utils.builders.AnsiColour;
 
 /**
  * Base Interpreter Exception.
@@ -101,7 +101,7 @@ public class InterpreterException extends JaivaException {
      * @param message    Message to send.
      */
     public InterpreterException(Scope ct, int lineNumber, String message) {
-        super(CCol.print(message, CCol.TEXT.RED) + "\n" + CCol.print(ct.toString(), CCol.TEXT.YELLOW), lineNumber);
+        super(AnsiColour.print(message, AnsiColour.FORE.RED) + "\n" + AnsiColour.print(ct.toString(), AnsiColour.FORE.YELLOW), lineNumber);
         scopeTrace = ct;
     }
 

@@ -2,7 +2,7 @@ package com.jaiva.errors;
 
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.runtime.IConfig;
-import com.jaiva.utils.generator.CCol;
+import com.yetnt.utils.builders.AnsiColour;
 
 public final class Warnings {
 
@@ -14,6 +14,7 @@ public final class Warnings {
             this.scope = scope;
             this.message = message;
             this.lineNumber = lineNumber;
+            
         }
 
         public Scope getScope() {
@@ -39,7 +40,7 @@ public final class Warnings {
             throw new InterpreterException.NoWarningsException(scope, ln, message);
         else {
             if (!config.isStreamer()) {
-                System.out.println(CCol.print("[WARNING: line " + ln + "]", CCol.FONT.BOLD, CCol.BG.BRIGHT_WHITE, CCol.TEXT.YELLOW) + " " + CCol.print(message, CCol.TEXT.YELLOW));
+                System.out.println(AnsiColour.print("[WARNING: line " + ln + "]", AnsiColour.FONT.BOLD, AnsiColour.BACK.BRIGHT_WHITE, AnsiColour.FORE.YELLOW) + " " + AnsiColour.print(message, AnsiColour.FORE.YELLOW));
             }
             config.addWarning(
                     new Warning(

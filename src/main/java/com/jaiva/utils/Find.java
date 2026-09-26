@@ -9,6 +9,8 @@ import com.jaiva.lang.Chars.Operators;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.TTernary;
 import com.jaiva.utils.generic.*;
+import com.yetnt.utils.tuple.Pair;
+import com.yetnt.utils.tuple.SamePair;
 
 /**
  * This class provides utility methods for finding specific characters or
@@ -291,9 +293,9 @@ public class Find {
 
                 if (group == -1) {
                     group = i;
-                    indexes2.add(new Pair<String, Integer>(op, opIndex));
+                    indexes2.add(new Pair<>(op, opIndex));
                 } else if (group == Operators.getType(op)) {
-                    indexes2.add(new Pair<String, Integer>(op, opIndex));
+                    indexes2.add(new Pair<>(op, opIndex));
                 }
             }
         }
@@ -304,7 +306,7 @@ public class Find {
         Pair<String, Integer> ipair = indexes2.getLast();
 
         return new LeastImportantOperator(
-                ipair.first, ipair.second,
+                ipair.getFirst(), ipair.getSecond(),
                 group);
     }
 
@@ -449,8 +451,8 @@ public class Find {
                     continue;
                 }
                 Pair<Integer, Character> t = stack.getLast();
-                if ((t.second == '[' && c == ']') || (t.second == '(' && c == ')')) {
-                    finalArr.add(new SamePair<>(t.first, i));
+                if ((t.getSecond() == '[' && c == ']') || (t.getSecond() == '(' && c == ')')) {
+                    finalArr.add(new SamePair<>(t.getFirst(), i));
                     stack.removeLast();
                 }
             }

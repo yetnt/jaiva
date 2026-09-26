@@ -1,7 +1,7 @@
 package com.jaiva.errors;
 
 import com.jaiva.tokenizer.tokens.specific.TIfStatement;
-import com.jaiva.utils.generator.CCol;
+import com.yetnt.utils.builders.AnsiColour;
 
 /**
  * Base Syntax Error Exception.
@@ -15,7 +15,7 @@ public class TokenizerException extends JaivaException {
      * @param message THe message.
      */
     public TokenizerException(int lineNumber, String message) {
-        super(CCol.print(message, CCol.FONT.BOLD, CCol.FONT.ITALIC, CCol.TEXT.RED), lineNumber);
+        super(AnsiColour.print(message, AnsiColour.FONT.BOLD, AnsiColour.FONT.ITALIC, AnsiColour.FORE.RED), lineNumber);
     }
 
     /**

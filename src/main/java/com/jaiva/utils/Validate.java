@@ -9,8 +9,8 @@ import com.jaiva.tokenizer.tokens.specific.TIfStatement;
 import com.jaiva.tokenizer.tokens.specific.TTernary;
 import com.jaiva.tokenizer.tokens.specific.TVarRef;
 import com.jaiva.utils.cd.ContextDispatcher;
-import com.jaiva.utils.generic.Pair;
-import com.jaiva.utils.generic.SamePair;
+import com.yetnt.utils.tuple.Pair;
+import com.yetnt.utils.tuple.SamePair;
 
 /**
  * Validate class is a utils class where methods which "validate" the
@@ -142,7 +142,7 @@ public class Validate {
     public static int isOpInPair(int index, ArrayList<SamePair<Integer>> list) {
         for (int i = 0; i < list.size(); i++) {
             Pair<Integer, Integer> pair = list.get(i);
-            if (index > pair.first && index < pair.second)
+            if (index > pair.getFirst() && index < pair.getSecond())
                 return i;
 
         }

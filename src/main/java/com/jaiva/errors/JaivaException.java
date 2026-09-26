@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.runtime.IConfig;
-import com.jaiva.utils.generator.CCol;
+import com.yetnt.utils.builders.AnsiColour;
 
 /**
  * Base class for any exceptions we run into while trying to parse or run jaiva
@@ -23,7 +23,7 @@ public class JaivaException extends Exception {
      * @param lineNumber the line number
      */
     public JaivaException(String message, int lineNumber) {
-        super(CCol.print("[line " + lineNumber + "]", CCol.FONT.UNDERLINE, CCol.FONT.BOLD, CCol.BG.BRIGHT_BLACK)+" " + message);
+        super(AnsiColour.print("[line " + lineNumber + "]", AnsiColour.FONT.UNDERLINE, AnsiColour.FONT.BOLD, AnsiColour.BACK.BRIGHT_BLACK)+" " + message);
         this.rawMessage = "[line " + lineNumber + "]" + " " +message;
         this.lineNumber = lineNumber;
     }
@@ -37,7 +37,7 @@ public class JaivaException extends Exception {
     }
 
     public JaivaException(String message) {
-        super(CCol.print(message, CCol.TEXT.RED, CCol.FONT.ITALIC));
+        super(AnsiColour.print(message, AnsiColour.FORE.RED, AnsiColour.FONT.ITALIC));
         this.rawMessage = message;
         this.lineNumber = -1;
     }

@@ -5,8 +5,8 @@ import java.util.Arrays;
 
 import com.jaiva.errors.TokenizerException;
 import com.jaiva.utils.Find;
-import com.jaiva.utils.generic.SamePair;
-import com.jaiva.utils.generic.Pair;
+import com.yetnt.utils.tuple.Pair;
+import com.yetnt.utils.tuple.SamePair;
 
 /**
  * EscapeSequence class is a utility class that provides methods for escaping
@@ -302,15 +302,15 @@ public class EscapeSequence {
             return line;
         StringBuilder b = new StringBuilder();
         // put the substring before the first pair
-        b.append(line.substring(0, samePairs.getFirst().first + 1)); // include the first "
+        b.append(line.substring(0, samePairs.getFirst().getFirst() + 1)); // include the first "
         for (int i = 0; i < samePairs.size(); i++) {
             Pair<Integer, Integer> pair = samePairs.get(i);
-            String sub = line.substring(pair.first + 1, pair.second);
+            String sub = line.substring(pair.getFirst() + 1, pair.getSecond());
             b.append(toEscape(sub));
             // append " then the rest of the string, and then another "
             b.append(line.substring(
-                    pair.second,
-                    i != samePairs.size() - 1 ? samePairs.get(i + 1).first + 1 : line.length()));
+                    pair.getSecond(),
+                    i != samePairs.size() - 1 ? samePairs.get(i + 1).getFirst() + 1 : line.length()));
 
         }
 

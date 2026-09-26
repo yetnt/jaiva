@@ -15,8 +15,8 @@ import com.jaiva.utils.*;
 import com.jaiva.utils.Validate.IsValidSymbolName;
 import com.jaiva.utils.generic.BlockChain;
 import com.jaiva.utils.generic.MultipleLinesOutput;
-import com.jaiva.utils.generic.Pair;
-import com.jaiva.utils.generic.SamePair;
+import com.yetnt.utils.tuple.Pair;
+import com.yetnt.utils.tuple.SamePair;
 
 /**
  * The Tokenizer class is one of the 3 main classes which handle Jaiva code.
@@ -219,10 +219,10 @@ public class Tokenizer {
         assert output instanceof MultipleLinesOutput;
         MultipleLinesOutput finalMOutput = ((MultipleLinesOutput) output);
         Pair<String, Boolean> formattedPreLine = formatPreline(finalMOutput);
-        String preLine = formattedPreLine.first;
+        String preLine = formattedPreLine.getFirst();
         ArrayList<Token<?>> nestedTokens = new ArrayList<>();
         config.flags.SKIP_READLINE_TRIM = true;
-        Object stuff = readLine(preLine, (formattedPreLine.second == true ? null : ""), null, null, finalMOutput.lineNumber + 1, config);
+        Object stuff = readLine(preLine, (formattedPreLine.getSecond() == true ? null : ""), null, null, finalMOutput.lineNumber + 1, config);
 //        line = Comments.decimate(line);
         try {
             if (stuff instanceof ArrayList) {

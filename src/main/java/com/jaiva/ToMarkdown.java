@@ -9,9 +9,9 @@ import com.jaiva.tokenizer.tokens.TVariable;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.*;
-import com.jaiva.utils.generator.CCol;
-import com.jaiva.utils.bucket.Buckets;
-import com.jaiva.utils.generator.MarkDownLiteral;
+import com.yetnt.utils.builders.AnsiColour;
+import com.yetnt.utils.builders.MarkDownLiteral;
+import com.yetnt.utils.collection.buckets.Buckets;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -45,7 +45,7 @@ public class ToMarkdown {
                 .toList();
 
         if (exportables.isEmpty()) {
-            printToConsole(CCol.print("Found no exported symbols to document. Early exit.", CCol.TEXT.YELLOW));
+            printToConsole(AnsiColour.print("Found no exported symbols to document. Early exit.", AnsiColour.FORE.YELLOW));
             return;
         }
 
@@ -53,7 +53,7 @@ public class ToMarkdown {
         printToFile(
                 new MarkDownLiteral(i.filePath.getFileName().toString()).inlineCode().title(MarkDownLiteral.Title.TITLE).toString()
         );
-        printToConsole("Documentation for:" + CCol.print(i.filePath.getFileName().toString(), CCol.FONT.UNDERLINE));
+        printToConsole("Documentation for:" + AnsiColour.print(i.filePath.getFileName().toString(), AnsiColour.FONT.UNDERLINE));
 
         printToFile();
 
@@ -94,7 +94,7 @@ public class ToMarkdown {
                 }
             }
         } else {
-            printToConsole(CCol.print("Invalid input. Either Y or N", CCol.TEXT.RED));
+            printToConsole(AnsiColour.print("Invalid input. Either Y or N", AnsiColour.FORE.RED));
             reader.close();
             return;
         }
@@ -111,9 +111,9 @@ public class ToMarkdown {
             boolean created = out.createNewFile();
             if (created) {
                 out.setWritable(true);
-                printToConsole(CCol.print("File " + out.getAbsolutePath() + " has been created.", CCol.TEXT.GREEN));
+                printToConsole(AnsiColour.print("File " + out.getAbsolutePath() + " has been created.", AnsiColour.FORE.GREEN));
             } else {
-                printToConsole(CCol.print("File " + out.getAbsolutePath() + " and will be overwritten.", CCol.TEXT.YELLOW));
+                printToConsole(AnsiColour.print("File " + out.getAbsolutePath() + " and will be overwritten.", AnsiColour.FORE.YELLOW));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -140,7 +140,7 @@ public class ToMarkdown {
         );
         if (symbol instanceof TFunction f) {
             String type = askForUserInput("What does " +
-                    CCol.print(f.name.startsWith("F~") ? f.name.substring(2) : f.name, CCol.FONT.BOLD, CCol.FONT.ITALIC)
+                    AnsiColour.print(f.name.startsWith("F~") ? f.name.substring(2) : f.name, AnsiColour.FONT.BOLD, AnsiColour.FONT.ITALIC)
                     + " return? [leave blank if \"idk\"]:", "idk").toLowerCase();
             type = switch (type) {
                 case "" -> "idk";

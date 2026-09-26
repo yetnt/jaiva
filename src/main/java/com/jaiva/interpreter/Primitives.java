@@ -12,7 +12,7 @@ import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.*;
 import com.jaiva.tokenizer.tokens.specific.*;
-import com.jaiva.utils.generator.CCol;
+import com.yetnt.utils.builders.AnsiColour;
 
 /**
  * The Primitives class is a utility class that provides methods for resolving
@@ -42,7 +42,7 @@ public class Primitives {
             if (!depStr.isEmpty() || (!Objects.isNull(c) && c.deprecated())) {
                 Warnings.println(
                         lineNumber,
-                        s.name + " is deprecated. " + CCol.printInline(depStr, CCol.FONT.BOLD, CCol.FONT.UNDERLINE, CCol.FONT.ITALIC),
+                        s.name + " is deprecated. " + AnsiColour.printInline(depStr, AnsiColour.FONT.BOLD, AnsiColour.FONT.UNDERLINE, AnsiColour.FONT.ITALIC),
                         scope, config
                 );
             }
