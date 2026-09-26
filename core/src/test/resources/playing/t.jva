@@ -1,0 +1,7 @@
+tsea "jaiva/arrays"!
+
+kwenza length(a) ->
+    khutla a~!
+<~
+
+khuluma(a_map(reservedKeywords, length))!

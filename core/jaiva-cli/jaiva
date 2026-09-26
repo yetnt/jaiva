@@ -1,0 +1,5 @@
+#!/bin/sh
+# Determine the directory where this script is located.
+SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+# Execute the JAR with any passed arguments.
+java -jar "$SCRIPT_DIR/jaiva.jar" "$@"

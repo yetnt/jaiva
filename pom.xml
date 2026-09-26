@@ -5,15 +5,20 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.jaiva</groupId>
-    <artifactId>jaiva</artifactId>
-    <version>5.1.0-alpha.0</version>
+    <artifactId>jaiva-parent</artifactId>
+    <version>6.0.0-alpha.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>core</module>
+        <module>jaiva-libjson-plugin</module>
+    </modules>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
 
     <repositories>
         <repository>
@@ -21,191 +26,4 @@
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.9.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.yetnt</groupId>
-            <artifactId>ytils</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-    </dependencies>
-
-    <profiles>
-        <profile>
-            <id>release-cli</id>
-
-            <build>
-                <plugins>
-
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>3.1.0</version>
-
-                        <executions>
-
-                            <execution>
-                                <id>prepare-cli</id>
-                                <phase>package</phase>
-
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-
-                                <configuration>
-                                    <target>
-
-                                        <delete file="${project.basedir}/jaiva-cli/${project.artifactId}.jar"/>
-                                        <delete file="${project.basedir}/jaiva-cli/${project.artifactId}-sources.jar"/>
-                                        <delete file="${project.basedir}/jaiva-cli/${project.artifactId}.zip"/>
-
-                                        <copy
-                                                file="${project.build.directory}/${project.artifactId}-${project.version}.jar"
-                                                tofile="${project.basedir}/jaiva-cli/${project.artifactId}.jar"/>
-
-                                        <copy
-                                                file="${project.build.directory}/${project.artifactId}-${project.version}-sources.jar"
-                                                tofile="${project.basedir}/jaiva-cli/${project.artifactId}-sources.jar"/>
-
-                                        <zip
-                                                destfile="${project.basedir}/jaiva-cli/${project.artifactId}.zip"
-                                                basedir="${project.basedir}/jaiva-cli">
-
-                                            <exclude name="${project.artifactId}.zip"/>
-
-                                        </zip>
-
-                                    </target>
-                                </configuration>
-                            </execution>
-
-                        </executions>
-
-                    </plugin>
-
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
-<build>
-    <pluginManagement>
-<!--        <plugins>-->
-<!--            <plugin>-->
-<!--                <groupId>org.panteleyev</groupId>-->
-<!--                <artifactId>jpackage-maven-plugin</artifactId>-->
-<!--                <version>1.6.0</version>-->
-<!--                <configuration>-->
-<!--                    &lt;!&ndash; Empty config to make IDE happy &ndash;&gt;-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-<!--        </plugins>-->
-    </pluginManagement>
-    <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>3.2.2</version>
-            <configuration>
-                <archive>
-                    <manifest>
-                        <mainClass>com.jaiva.Main</mainClass>
-                    </manifest>
-                </archive>
-            </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.13.0</version>
-            <configuration>
-                <source>21</source>
-                <target>21</target>
-            </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <version>3.3.0</version>
-            <executions>
-                <execution>
-                    <id>attach-sources</id>
-                    <goals>
-                        <goal>jar</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
-<!--        <plugin>-->
-<!--            <groupId>org.panteleyev</groupId>-->
-<!--            <artifactId>jpackage-maven-plugin</artifactId>-->
-<!--            <version>1.6.0</version>-->
-<!--            <executions>-->
-<!--                <execution>-->
-<!--                    <phase>package</phase>-->
-<!--                    <goals>-->
-<!--                        <goal>jpackage</goal>-->
-<!--                    </goals>-->
-<!--                    <configuration>-->
-<!--                        <name>Jaiva</name>-->
-<!--                        <appVersion>${project.version}</appVersion>-->
-<!--                        <icon>src/main/resources/jaiva.ico</icon>-->
-<!--                        <description>Jaiva! Tokenizer &amp; Interpreter</description>-->
-<!--                        <vendor>yetnt</vendor>-->
-<!--                        <mainClass>com.jaiva.Main</mainClass>-->
-<!--                        <mainJar>${project.build.finalName}.jar</mainJar>-->
-<!--&lt;!&ndash;                        <runtimeImage>${java.home}</runtimeImage>&ndash;&gt;-->
-
-<!--                        <resourceDir>src/main/resources</resourceDir>-->
-<!--                        <type>MSI</type>-->
-<!--                        <winConsole>true</winConsole>-->
-<!--                        <installDir></installDir>-->
-<!--                        -->
-
-<!--                        <input>${project.build.directory}</input>-->
-<!--                        <destination>${project.build.directory}/jpackage</destination>-->
-<!--                        <fileAssociations>-->
-<!--                            <fileAssociation>src/main/resources/file-assoc-jaiva.properties</fileAssociation>-->
-<!--                            <fileAssociation>src/main/resources/file-assoc-jva.properties</fileAssociation>-->
-<!--                            <fileAssociation>src/main/resources/file-assoc-jiv.properties</fileAssociation>-->
-<!--                        </fileAssociations>-->
-<!--                        <winPerUserInstall>false</winPerUserInstall>-->
-<!--                        <aboutUrl>https://github.com/yetnt/jaiva</aboutUrl>-->
-<!--                    </configuration>-->
-<!--                </execution>-->
-<!--            </executions>-->
-<!--        </plugin>-->
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-resources-plugin</artifactId>
-            <version>3.3.1</version>
-            <executions>
-                <execution>
-                    <id>copy-icon</id>
-                    <phase>process-resources</phase>
-                    <goals>
-                        <goal>copy-resources</goal>
-                    </goals>
-                    <configuration>
-                        <outputDirectory>${project.build.directory}</outputDirectory>
-                        <resources>
-                            <resource>
-                                <directory>src/main/resources</directory>
-                                <includes>
-                                    <include>jaiva.ico</include>
-                                </includes>
-                            </resource>
-                        </resources>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
-    </plugins>
-</build>
-
 </project>
