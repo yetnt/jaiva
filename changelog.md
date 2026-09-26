@@ -7,3 +7,4 @@
 - `a_apply` function in `jaiva/arrays`
 - Fix broken Long support from v5.0.4
 - Fix broken string concat
+- Change some `JBundler` API to be private

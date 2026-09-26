@@ -165,7 +165,7 @@ public class Interpreter {
     public static Object handleVariables(Object t, IConfig<Object> config, Scope scope)
             throws Exception {
         // fast path
-        if (t instanceof TSymbol && config.importVfs.active && !config.importVfs.shouldImport(((TokenDefault)t).name.replace("F~", ""))) {
+        if (t instanceof TSymbol && config.importVfs.active && !config.importVfs.shouldImport(((TokenDefault<?>)t).name.replace("F~", ""))) {
             return null;
         }
         switch (t) {
@@ -174,7 +174,7 @@ public class Interpreter {
                 if (number instanceof TThrowError) {
                     throwIfGlobalContext(scope, number, tNumberVar.lineNumber);
                 }
-                BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
+                BaseVariable var = BaseVariable.create(((TokenDefault<?>) t).name, (TokenDefault<?>) t,
                         new ArrayList<>(Collections.singletonList(number)), false);
                 freezeIfScopeConfig(var, scope);
                 scope.vfs.put(tNumberVar.name, var);
@@ -185,7 +185,7 @@ public class Interpreter {
                 if (bool instanceof TThrowError) {
                     throwIfGlobalContext(scope, bool, tBooleanVar.lineNumber);
                 }
-                BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
+                BaseVariable var = BaseVariable.create(((TokenDefault<?>) t).name, (TokenDefault<?>) t,
                         new ArrayList<>(Collections.singletonList(bool)), false);
                 freezeIfScopeConfig(var, scope);
                 scope.vfs.put(tBooleanVar.name, var);
@@ -195,7 +195,7 @@ public class Interpreter {
                 if (string instanceof TThrowError) {
                     throwIfGlobalContext(scope, string, tStringVar.lineNumber);
                 }
-                    BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
+                    BaseVariable var = BaseVariable.create(((TokenDefault<?>) t).name, (TokenDefault<?>) t,
                         new ArrayList<>(Collections.singletonList(string)), false);
                 freezeIfScopeConfig(var, scope);
                 scope.vfs.put(tStringVar.name, var);
@@ -210,7 +210,7 @@ public class Interpreter {
                     // this assigns
                     var = (Symbol) something;
                 else
-                    var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t,
+                    var = BaseVariable.create(((TokenDefault<?>) t).name, (TokenDefault<?>) t,
                             something instanceof ArrayList ? (ArrayList) something
                                     : new ArrayList<>(Collections.singletonList(something)),
                             false);
@@ -233,7 +233,7 @@ public class Interpreter {
                         throw new RuntimeException(e);
                     }
                 });
-                BaseVariable var = BaseVariable.create(((TokenDefault) t).name, (TokenDefault) t, arr, true);
+                BaseVariable var = BaseVariable.create(((TokenDefault<?>) t).name, (TokenDefault<?>) t, arr, true);
                 freezeIfScopeConfig(var, scope);
                 scope.vfs.put(tArrayVar.name, var);
             }
@@ -319,7 +319,7 @@ public class Interpreter {
 
         // Step 2: go throguh eahc token
         for (Token<?> t : tokens) {
-            TokenDefault token = t.value();
+            TokenDefault<?> token = t.value();
             // first check if we're in a debug environment
             if (config.dc.active) {
                 if (config.dc.getBreakpoints().contains(token.lineNumber)) {
@@ -448,8 +448,7 @@ public class Interpreter {
                 } else {
                     // check for else branches first
                     boolean runElseBlock = true;
-                    for (Object e : ifStatement.elseIfs) {
-                        TIfStatement elseIf = (TIfStatement) e;
+                    for (TIfStatement elseIf : ifStatement.elseIfs) {
                         if (!(elseIf.condition instanceof TExpression))
                             throw new WtfAreYouDoingException(scope,
                                     "Okay well idk how i will check for true in " + elseIf, token.lineNumber);
@@ -479,12 +478,9 @@ public class Interpreter {
                 // for loop
                 handleVariables(tForLoop.variable, config, scope);
                 Object vObject = scope.vfs.get(tForLoop.variable.name).getValue();
-                if (!(vObject instanceof BaseVariable))
+                if (!(vObject instanceof BaseVariable v))
                     throw new WtfAreYouDoingException(scope, vObject, BaseVariable.class,
                             tForLoop.lineNumber);
-                BaseVariable v = (BaseVariable) vObject;
-                // if (!(v.s_get() instanceof Integer))
-                // throw new WtfAreYouDoingException("");
                 if (tForLoop.array != null && tForLoop.increment == null && tForLoop.condition == null) {
                     // for each
                     MapValue mapValue = scope.vfs.get(tForLoop.array.varName);
@@ -559,9 +555,8 @@ public class Interpreter {
                         if (g.c instanceof Keywords
                                 || isVariableToken(g.c)) {
                             return throwIfGlobalContext(scope, out, g.lineNumber);
-                        } else if (g.c instanceof TThrowError) {
+                        } else if (g.c instanceof TThrowError err) {
                             Token<?> tContainer = new Token<>(null);
-                            TThrowError err = (TThrowError) g.c;
                             scope.vfs.put(varName,
                                     BaseVariable.create(
                                             varName,
@@ -592,7 +587,7 @@ public class Interpreter {
                                     new TStringVar(
                                             varName, e.getMessage(),
                                             throwError.catchBlock.lineNumber),
-                                    new ArrayList<>(Arrays.asList(
+                                    new ArrayList<>(Collections.singletonList(
                                             e.getMessage())),
                                     false));
                     Object out2 = Interpreter.interpret(throwError.catchBlock.lines,

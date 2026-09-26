@@ -20,12 +20,12 @@ import java.util.List;
  * them.
  */
 public class JBundler {
-    public static int instances = 0;
-    public int instanceNum;
+    protected static int instances = 0;
+    public final int instanceNum;
 
-    public String filePath;
-    public ArrayList<Token<?>> tokens = new ArrayList<>();
-    public List<Class<? extends BaseLibrary>> classes;
+    private final String filePath;
+    private ArrayList<Token<?>> tokens = new ArrayList<>();
+    private final List<Class<? extends BaseLibrary>> classes;
 
     /**
      * Default Constructor for JBundler
@@ -69,8 +69,13 @@ public class JBundler {
         Interpreter.interpret(tokens, sc, (IConfig<Object>) config);
     }
 
-    public void tokenize() throws Exception {
+    public ArrayList<Token<?>> getTokens() {
+        return new ArrayList<>(tokens);
+    }
+
+    public ArrayList<Token<?>> tokenize() throws Exception {
         tokens = Main.parseTokens(filePath, false);
+        return getTokens();
     }
 
     public <T> void  interpret(T obj) throws Exception {
@@ -85,4 +90,7 @@ public class JBundler {
         interpret(obj);
     }
 
+    public static int getInstances() {
+        return instances;
+    }
 }

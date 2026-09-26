@@ -36,6 +36,8 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
 - To setup, see [Install.md](docs/Install.md)
 - To run, see [CLI.md](docs/CLI.md)
 - To learn, see [Language.md](docs/Language.md)
+- To build Jaiva project, see [Build.md](docs/Build.md)
+- To embed Jaiva in a Host java app, see [Hosting.md](docs/Hosting.md)
 - For a list of variables and functions you have available, see [Libraries.md](docs/Libraries.md)
 
 ---

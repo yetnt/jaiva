@@ -4,9 +4,11 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.*;
 
+import com.jaiva.Main;
 import com.jaiva.errors.TokenizerException.*;
 import com.jaiva.errors.TokenizerException;
 import com.jaiva.lang.*;
+import com.jaiva.tokenizer.tokens.TSymbol;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.*;
 import com.jaiva.tokenizer.jdoc.JDoc;
@@ -26,7 +28,7 @@ import com.yetnt.utils.tuple.SamePair;
  * single or multiple tokens, or sometimes a class which tells he outer instance
  * to do something before sending the next line.
  */
-public class Tokenizer {
+public final class Tokenizer {
 
     /**
      * Method to check whether a given block construct contains an opening and a
@@ -203,12 +205,11 @@ public class Tokenizer {
         args = multipleLinesOutput == null ? args : multipleLinesOutput.b_args;
         int newLineNumber = multipleLinesOutput == null ? lineNumber : multipleLinesOutput.lineNumber;
         Object output = handleBlocks(isComment, line + "\n",
-//        Object output = handleBlocks(isComment, Comments.decimate(line) + "\n",
-                (MultipleLinesOutput) multipleLinesOutput,
+                multipleLinesOutput,
                 tokenizerLine, type, args, multipleLinesOutput != null ? multipleLinesOutput.specialArg : blockChain,
                 newLineNumber);
         if (output == null)
-            return output;
+            return null;
 
         if (output instanceof MultipleLinesOutput) {
             int endCount = ((MultipleLinesOutput) output).endCount;
@@ -297,7 +298,7 @@ public class Tokenizer {
                 String cond = args[0].replaceFirst(Pattern.quote(Character.toString(Chars.STATEMENT_OPEN)),
                         Matcher.quoteReplacement(" ")).trim();
                 if (!args[2].equals(Keywords.FOR_EACH)) {
-                    TokenDefault var = (TokenDefault) ((ArrayList<Token<?>>) Objects.requireNonNull(readLine(
+                    TokenDefault var = ((ArrayList<Token<?>>) Objects.requireNonNull(readLine(
                             Keywords.D_VAR + " "
                                     + cond
                                     + Chars.END_LINE,
@@ -486,8 +487,7 @@ public class Tokenizer {
                                 lineNumber).toToken();
                     } else {
                         Object object = Token.dispatchContext(parts[1], lineNumber);
-                        if (object instanceof Token<?> t) {
-                            TokenDefault g = ((Token<?>) object).value();
+                        if (object instanceof Token<?>(TokenDefault<?> g)) {
                             if (g.name.equals("TStatement")) {
                                 return ((TExpression) g).statementType == 0
                                         ? new TBooleanVar(parts[0], object,
@@ -584,21 +584,84 @@ public class Tokenizer {
 
     /**
      * The BIG BOY!
-     * 
+     * <p>
      * This method is the method. The method which reads a line and will return
      * either:
+     * </p>
+     * <ul>
+     *     <li>
+     *         A single {@link Token}
+     *     </li>
+     *     <li>
+     *         An {@link ArrayList} of Tokens. if the line (or lines) contain multiple tokens
+     *     </li>
+     *     <li>
+     *         A {@link MultipleLinesOutput} if we read an opening -> and need to find the closing
+     *      <~ before parsing anything
+     *     </li>
+     *     <li>
+     *         A {@link BlockChain} if we read a block of code that needs to be chained to its
+     *      original token (such as if else chains)
+     *     </li>
+     *     <li>
+     *         {@code void.class} if this is so obscure that no other exception even caught it.
+     *     </li>
+     * </ul>
+     *
+     * @implNote
+     *     This method has a branch within it, which is almost perfectly identical
+     *     tp {@link Main#parseTokens(String, boolean)} (purposefully so). Although it's intended use is for nested block
+     *     structures, if this method is given a single string split by multiple new lines, it acts the exact same as
+     *     calling {@link Main#parseTokens(String, boolean)}, i dont fucking know how i just know it works.
+     *     Although, that means implementing all the plumbing required to handle all 4 different return types
+     *     and simultaneously keeping track of documentation comments to consume them to the next token
+     *     with the specific semantics. {@link Main#parseTokens(String, boolean)} allows you to avoid all that
+     *     with the caveat that it takes a file input and not a line/lines input
+     * @implSpec
+     * if you're planning on hand rolling a handler for this. bless your soul. It's very stateful
+     * and you'd need to handle the following cases:
+     *
      * <p>
-     * <p>
-     * - A single token.
-     * <p>
-     * - An ArrayList of tokens, if the line contains multiple tokens
-     * <p>
-     * - MultipleLinesOutput, if we read an opening -> and need to find the closing
-     * <~ before parsing anything
-     * <p>
-     * - BlockChain, if we read a block of code that needs to be chained to its
-     * original token (such as if else chains)
-     * <p>
+     *     <ol>
+     *         <li>
+     *             If it returns a {@link MultipleLinesOutput}, store it, and on the next pass, pass the stored instance
+     *               back into the call.
+     *         </li>
+     * <li>
+     *     If it returns a {@link BlockChain}, the caller must retain the chain as
+     *     the current source of subsequent lines rather than immediately consuming
+     *     another line from its normal input source. The next line must be obtained
+     *     from {@link BlockChain#currentLine()} and passed back through this method
+     *     with the chain supplied as the {@code blockChain} argument. Once the chain
+     *     returns control by producing a non-{@link BlockChain} result, normal source
+     *     consumption may resume.
+     * </li>
+     *         <li>
+     *             If it returns multiple a {@link Token} and that token is a {@link TDocsComment} and the previously emitted token
+     *             happens to be one that implements {@link TSymbol} interface
+     *             <p>
+     *                 You call:
+     *                 <pre>{@code
+     *                 JDoc doc = new JDoc(lineNum, comment.trim());
+     *                 t.tooltip = doc;
+     *                 t.json.removeKey("toolTip");
+     *                 t.json.append("toolTip", doc, true);
+     *                 }</pre>
+     *             </p>
+     *             Effectively consuming the {@link TDocsComment}
+     *         </li>
+     *         <li>
+     *             if it returns an {@link ArrayList} of {@link Token} but that list happens to contain a single element, being a
+     *             {@link TDocsComment} and the previous emitted token happens to be one that implements the {@link TSymbol}
+     *             interface? You know the drill.
+     *         </li>
+     *         <li>
+     *             Otherwise, a normal {@link Token} can be added to your tokens list, and a normal
+     *             {@link ArrayList} of tokens, can be added via {@link ArrayList#addAll(Collection)}
+     *         </li>
+     *     </ol>
+     * </p>
+     *
      * 
      * @param line                The line to read.
      * @param previousLine        The previous line to read.
@@ -609,6 +672,8 @@ public class Tokenizer {
      * @return The token for the given line.
      * @throws Exception If the line is invalid or if
      *                   there is an error parsing the token
+     *
+     * @author Lehlogonolo Poole
      */
     @SuppressWarnings("unchecked")
     public static Object readLine(String line, String previousLine, Object multipleLinesOutput, BlockChain blockChain,
@@ -732,7 +797,7 @@ public class Tokenizer {
                                 + ((TDocsComment) token.value()).comment;
                     }
                     case Token<?> token -> {
-                        TokenDefault t = ((TokenDefault) token.value());
+                        TokenDefault<?> t = token.value();
                         t.tooltip = comment != null ? comment : t.tooltip;
 
                         if (comment != null
@@ -772,7 +837,7 @@ public class Tokenizer {
             return type == null
                     ? processBlockLines(isComment, line, (MultipleLinesOutput) multipleLinesOutput,
                             tokenizerLine,
-                            tokens, type,
+                            tokens, null,
                             new String[] { "" }, null, lineNumber, config)
                     : processBlockLines(
                             isComment, line, (MultipleLinesOutput) multipleLinesOutput, tokenizerLine,
