@@ -36,12 +36,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jaiva-cli
-          path: target/jaiva-*.jar
+          path: core/target/jaiva-*.jar
           if-no-files-found: error
 
       - name: Upload surefire reports
         uses: actions/upload-artifact@v4
         with:
           name: surefire-reports
-          path: target/surefire-reports/**
+          path: core/target/surefire-reports/**
           retention-days: 7
