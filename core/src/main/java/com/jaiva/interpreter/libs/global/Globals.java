@@ -36,6 +36,7 @@ import com.jaiva.interpreter.symbol.*;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.specific.*;
+import com.yetnt.utils.tuple.Pair;
 
 /**
  * Globals class holds all the global symbols that are injected into the
@@ -113,6 +114,19 @@ public class Globals extends BaseLibrary {
         }
     }
 
+
+    public Globals(IConfig<Object> config, List<Pair<String, BaseLibrary>> external, boolean d) throws InterpreterException {
+        super();
+
+        putGlobals(config);
+
+        for (Pair<String, BaseLibrary> ext : external) {
+            LibraryLike lk = LibraryLike.of(ext.getSecond());
+            builtInGlobals.put(ext.getFirst(), lk);
+            externalLibraries.add(lk);
+        }
+    }
+
     public ArrayList<LibraryLike> getExternalLibraries() {
         return new ArrayList<>(externalLibraries);
     }
@@ -136,6 +150,7 @@ public class Globals extends BaseLibrary {
         });
         return string.substring(0, string.length() - (removeTrailingComma ? 1 : 0));
     }
+
 
     public String returnGlobalsOf(String label, IConfig<Object> i) {
         Vfs VFS = vfs;

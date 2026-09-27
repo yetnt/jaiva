@@ -7,18 +7,18 @@
 <parent>
 <groupId>com.jaiva</groupId>
 <artifactId>jaiva-parent</artifactId>
-<version>5.1.0-alpha.0</version>
+<version>6.0.0-alpha.0</version>
 </parent>
 
 <artifactId>jaiva-libjson-plugin</artifactId>
 <packaging>maven-plugin</packaging>
 
 <dependencies>
-<dependency>
-    <groupId>com.jaiva</groupId>
-    <artifactId>core</artifactId>
-    <version>${project.version}</version>
-</dependency>
+    <dependency>
+        <groupId>io.github.classgraph</groupId>
+        <artifactId>classgraph</artifactId>
+        <version>4.8.165</version>
+    </dependency>
 <dependency>
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-plugin-api</artifactId>
@@ -40,6 +40,12 @@
     <artifactId>maven-core</artifactId>
     <version>3.9.6</version>
 </dependency>
+    <dependency>
+        <groupId>com.jaiva</groupId>
+        <artifactId>core</artifactId>
+        <version>${project.version}</version>
+        <scope>compile</scope>
+    </dependency>
 </dependencies>
 
 <build>

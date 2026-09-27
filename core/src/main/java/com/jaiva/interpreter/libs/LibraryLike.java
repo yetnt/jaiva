@@ -18,6 +18,9 @@ public class LibraryLike {
     private LibraryLike(Class<? extends BaseLibrary> lib) {
         this.lib = lib;
     }
+    private LibraryLike(BaseLibrary lib) {
+        this.lib = lib;
+    }
     private LibraryLike(String libName) {
         this.lib = libName;
     }
@@ -26,11 +29,16 @@ public class LibraryLike {
         return new LibraryLike(lib);
     }
 
+    public static LibraryLike of(BaseLibrary fuckYouReflection) {
+        return new LibraryLike(fuckYouReflection);
+    }
+
     public static LibraryLike of(String libName) {
         return new LibraryLike(libName);
     }
 
     public BaseLibrary loadClassLibrary(IConfig<Object> i) {
+        if (lib instanceof BaseLibrary b) return b;
         if (!(lib instanceof Class<?> c)) throw new RuntimeException(
                 "The object stored by this lazily initializer is not a class."
         );
@@ -57,17 +65,22 @@ public class LibraryLike {
     }
 
     public Vfs load(IConfig<Object> i) {
-        if (lib instanceof Class<?>) {
-            return loadClassLibrary(i).vfs;
-        } else if (lib instanceof String s) {
-            try {
-                ExternalLibraryLoader loader = new ExternalLibraryLoader();
-                return loader.loadLibrary(s, i);
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to load library: " + s, e);
+        switch (lib) {
+            case Class<?> ignored -> {
+                return loadClassLibrary(i).vfs;
             }
-        } else {
-            throw new IllegalStateException("Invalid library type: " + lib.getClass().getName());
+            case BaseLibrary r -> {
+                return r.vfs;
+            }
+            case String s -> {
+                try {
+                    ExternalLibraryLoader loader = new ExternalLibraryLoader();
+                    return loader.loadLibrary(s, i);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to load library: " + s, e);
+                }
+            }
+            default -> throw new IllegalStateException("Invalid library type: " + lib.getClass().getName());
         }
     }
 }

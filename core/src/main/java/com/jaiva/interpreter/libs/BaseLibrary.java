@@ -1,6 +1,8 @@
 package com.jaiva.interpreter.libs;
 
+import com.jaiva.Main;
 import com.jaiva.errors.JaivaException;
+import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.libs.annotation.PublicLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -41,6 +43,27 @@ public class BaseLibrary {
     public BaseLibrary(IConfig<Object> config) {
         // This is just for reflection purposes.
         // Libraries should not use this constructor.
+    }
+
+    public static String toolingJSONof(BaseLibrary baseLibrary) {
+        Vfs VFS = baseLibrary.vfs;
+        StringBuilder string = new StringBuilder();
+        string.append("{").append("\"version\":\"").append(Main.version).append("\",");
+        string.append("\"tokens\":");
+        string.append("[");
+        VFS.forEach((name, vf) -> {
+            Symbol symbol = (Symbol) ((MapValue) vf).getValue();
+            try {
+                string.append(symbol.token.toJson());
+            } catch (JaivaException e) {
+                throw new RuntimeException(e);
+            }
+            string.append(",");
+        });
+        string.deleteCharAt(string.length() - 1);
+        string.append("]");
+        string.append("}");
+        return string.toString();
     }
 
     /**

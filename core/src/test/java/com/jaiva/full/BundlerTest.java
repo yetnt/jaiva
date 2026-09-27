@@ -4,6 +4,7 @@ import com.jaiva.JBundler;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.annotation.PublicLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
@@ -19,10 +20,10 @@ import java.util.ArrayList;
 
 import static com.jaiva.full.Files.BUNDLER_JIV;
 
+@PublicLibrary(path = "customPath")
 class CustomLib extends BaseLibrary {
-    public static String path = "customPath";
+
     public CustomLib(IConfig<Object> config) {
-        super("customPath");
         vfs.put("echo", new FEcho());
         vfs.put("poop", new VVar());
     }
