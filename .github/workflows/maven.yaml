@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jaiva-cli
-          path: core/target/jaiva-*.jar
+          path: core/target/core-*.jar
           if-no-files-found: error
 
       - name: Upload surefire reports
