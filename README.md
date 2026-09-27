@@ -4,6 +4,8 @@ Version : **_5.1.0-alpha.0_**
 
 (Current Stable) Version : **_5.0.4_**
 
+[![](https://jitpack.io/v/yetnt/jaiva.svg)](https://jitpack.io/#yetnt/jaiva)
+
 ![img_1.png](images/img_1.png)
 
 ![img.png](images/img.png)
