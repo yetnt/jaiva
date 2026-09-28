@@ -45,10 +45,10 @@ public class LibraryLike {
     public Vfs load(IConfig<Object> i, Globals globals) {
         switch (lib) {
             case Class<?> ignored -> {
-                return loadClassLibrary(i, globals).vfs;
+                return loadClassLibrary(i, globals).getVfs();
             }
             case BaseLibrary r -> {
-                return r.vfs;
+                return r.getVfs();
             }
             case String s -> {
                 try {

@@ -45,9 +45,9 @@ public class TimeZone extends BaseLibrary {
                                 .build()
                 ), new ArrayList<>(zoneIds.stream().map(SamePair::getSecond).toList()));
         getAll.freeze();
-        vfs.put("tz_getAll", getAll);
+        add(getAll);
 
-        zoneIds.stream().map(TimeZone::createVariable).forEach(var -> vfs.put(var.name, var));
+        zoneIds.stream().map(TimeZone::createVariable).forEach(this::add);
 
     }
 

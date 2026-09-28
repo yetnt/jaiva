@@ -54,7 +54,7 @@ public class Scope {
         this.parent = null;
         try {
             this.globals = new Globals(iconfig);
-            this.vfs = this.globals.vfs;
+            this.vfs = this.globals.getVfs();
         } catch (InterpreterException e) {
             throw new RuntimeException(e);
         }
@@ -73,7 +73,7 @@ public class Scope {
         this.parent = null;
         try {
             this.globals = new Globals(iconfig, globals);
-            this.vfs = this.globals.vfs;
+            this.vfs = this.globals.getVfs();
         } catch (InterpreterException e) {
             throw new RuntimeException(e);
         }

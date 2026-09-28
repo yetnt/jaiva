@@ -30,10 +30,7 @@ import java.util.List;
 public class Debug extends BaseLibrary {
 
     public Debug() {
-        vfs.put("d_emit", new FEmit());
-        vfs.put("d_vfs", new FVfs());
-        vfs.put("d_link", new FLink());
-        vfs.put("d_getScope", new FGetScope());
+        add(new FEmit(), new FVfs(), new FLink(), new FGetScope());
     }
 
     public class FLink extends BaseFunction {

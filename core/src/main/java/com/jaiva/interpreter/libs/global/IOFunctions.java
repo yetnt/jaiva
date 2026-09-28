@@ -9,7 +9,6 @@ import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
-import com.jaiva.interpreter.symbol.SymbolConfig;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.Token;
@@ -31,12 +30,9 @@ public class IOFunctions extends BaseLibrary {
      */
     public IOFunctions(IConfig<Object> config) {
         super();
-        vfs.put("khuluma", new FKhuluma());
-        vfs.put("mamela", new FMamela());
-        vfs.put("ask", new FAsk());
-        vfs.put("clear", new FClear());
-        vfs.put("args", new VArgs(config));
-        vfs.put("uargs", new VUArgs(config));
+        add(
+                new FKhuluma(), new FMamela(), new FClear(), new VArgs(config), new VUArgs(config)
+        );
     }
 
     /**
@@ -167,51 +163,6 @@ public class IOFunctions extends BaseLibrary {
                 return Token.voidValue(tFuncCall.lineNumber);
 
             return config.resources.consoleIn.nextLine();
-        }
-    }
-
-    /**
-     * Represents the "ask" function, which prompts the user for input via a UI
-     * dialog.
-     * <p>
-     * This function displays a dialog box with a message provided as a parameter
-     * and
-     * returns the user's input as a string.
-     * </p>
-     *
-     * <p>
-     * Usage: <code>ask("Enter your name:")</code>
-     * </p>
-     *
-     * @see javax.swing.JOptionPane#showInputDialog(Object)
-     */
-    @SymbolConfig(deprecated = true)
-    class FAsk extends BaseFunction {
-        FAsk() {
-            super("ask", new TFunction("ask", new String[] { "message" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Prompts the user for input via a UI dialog.")
-                            .addParam("message", "string", "The message to display in the dialog.", false)
-                            .addReturns("The user's input as a string.")
-                            .sinceVersion("1.0.0")
-                            .addExample("""
-                                    maak name <- ask("what's ur name cuh?")! @ Reads input from the user and stores it in the variable name.
-                                    khuluma("Hello, " + name + "!")!
-                                    """)
-                            .markDeprecated("This function serves no real purpose. (it doesn't work in most environments)")
-                            .build()
-            ));
-            this.freeze();
-        }
-
-        @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,  IConfig<Object> config,
-                Scope scope)
-                throws Exception {
-            checkParams(tFuncCall, scope);
-            if (config.isStreamer())
-                return Token.voidValue(tFuncCall.lineNumber);
-            return JOptionPane.showInputDialog(params.getFirst());
         }
     }
 

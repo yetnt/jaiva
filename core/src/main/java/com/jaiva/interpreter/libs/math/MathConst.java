@@ -18,10 +18,7 @@ public class MathConst extends BaseLibrary {
     public MathConst() {
         super();
         // This is a container class for the MathBase class, so prefix everything with "m_"
-        vfs.put("m_e", new MapValue(new VE()));
-        vfs.put("m_pi", new MapValue(new VPi()));
-        vfs.put("m_tau", new MapValue(new VTau()));
-        vfs.put("m_phi", new MapValue(new VPhi()));
+        add(new VE(), new VPi(), new VTau(),new VPhi());
     }
 
     /**

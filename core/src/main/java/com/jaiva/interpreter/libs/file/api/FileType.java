@@ -1,4 +1,4 @@
-package com.jaiva.interpreter.libs.file;
+package com.jaiva.interpreter.libs.file.api;
 
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.Scope;

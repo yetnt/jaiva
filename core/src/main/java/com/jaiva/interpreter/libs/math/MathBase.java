@@ -23,15 +23,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MathBase extends BaseLibrary {
 
     public MathBase() {
-        vfs.put("m_random", new FRandom());
-        vfs.put("m_round", new FRound());
-        vfs.put("m_abs", new FAbs());
-        vfs.put("m_sqrt", new FSqrt());
-        vfs.put("m_floor", new FFloor());
-        vfs.put("m_ceil", new FCeil());
-        vfs.put("m_log", new FLog());
-        vfs.put("m_gcd", new FGcd());
-        vfs.put("m_lcm", new FLcm());
+        add(
+                new FRandom(), new FRound(), new FAbs(), new FSqrt(), new FFloor(),
+                new FCeil(), new FLog(), new FGcd(), new FLcm()
+        );
     }
 
     /**

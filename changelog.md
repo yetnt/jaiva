@@ -10,6 +10,7 @@ Remove functions which have been deprecated for quite some time now.
 
 - `f_bin` from the files library. Deprecated since `v4.0.0`
 - `neg` from the global scope. Deprecated since `v1.0.1`
+- `ask` from the global scope. Deprecated since kingdom come (idk when)
 
 ### Library Location Changes
 
@@ -109,7 +110,11 @@ public class Shii extends BaseLibrary {
     
     public Shii() {
         super(LibraryType.LIB, "shii");
+        
+        vfs.put("aliasName", new FFunction());
     }
+    
+    public class FFunction extends BaseFunction {...}
 }
 ```
 
@@ -120,7 +125,9 @@ import com.jaiva.interpreter.libs.annotation.PublicLibrary;
 
 @PublicLibrary(path = "shii")
 public class Shii extends BaseLibrary {
-    // No Constructor needed, unless you need IConfig<Object>, still no super call required.
+    public Shii() {
+        add(new FFunction());
+    }
 }
 ```
 

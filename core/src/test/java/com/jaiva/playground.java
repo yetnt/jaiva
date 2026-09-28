@@ -11,7 +11,7 @@ import java.util.List;
 
 public class playground {
     public static void main(String[] args) {
-        Vfs vfs = new TimeZone().vfs;
+        Vfs vfs = new TimeZone().getVfs();
         ArrayList<MapValue> sorted = vfs.sortKeys(
                 (a, b) -> a.substring(3).compareTo(b.substring(3)),
                 true

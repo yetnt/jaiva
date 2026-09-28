@@ -24,8 +24,8 @@ import static com.jaiva.full.Files.BUNDLER_JIV;
 class CustomLib extends BaseLibrary {
 
     public CustomLib(IConfig<Object> config) {
-        vfs.put("echo", new FEcho());
-        vfs.put("poop", new VVar());
+        add(new FEcho());
+        add(new VVar());
     }
 
     static class FEcho extends BaseFunction {

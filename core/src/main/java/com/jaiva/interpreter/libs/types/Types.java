@@ -45,8 +45,8 @@ import java.util.ArrayList;
 public class Types extends BaseLibrary {
     public Types() {
         // the import will be "jaiva/types.jiv"
-        vfs.put("t_num", new FNum());
-        vfs.put("t_str", new FStr());
+        add(new FNum());
+        add(new FStr());
     }
 
     /**

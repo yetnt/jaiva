@@ -17,15 +17,11 @@ import java.util.ArrayList;
 public class MathTrig extends BaseLibrary {
     public MathTrig() {
         // This is a container class for the MathBase class, so prefix everything with "m_"
-        vfs.put("m_sin", new FSin());
-        vfs.put("m_cos", new FCos());
-        vfs.put("m_tan", new FTan());
-        vfs.put("m_asin", new FAsin());
-        vfs.put("m_acos", new FAcos());
-        vfs.put("m_atan", new FAtan());
-        vfs.put("m_toRad", new FToRad());
-        vfs.put("m_toDeg", new FToDeg());
-        vfs.put("m_atan2", new FAtan2());
+        // TODO: one day maybe use reflection instead.
+        add(
+                new FSin(), new FCos(), new FTan(), new FAsin(), new FAcos(),
+                new FAtan(), new FToRad(), new FToDeg(), new FAtan2()
+        );
     }
 
     /**

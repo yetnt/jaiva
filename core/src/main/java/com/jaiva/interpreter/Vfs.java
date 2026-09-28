@@ -6,6 +6,7 @@ import com.jaiva.tokenizer.tokens.Token;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -29,7 +30,7 @@ import java.util.function.BiFunction;
  * <p>
  * So much documentation, might as well call this an accumulation. HMM, bars.
  */
-public class Vfs extends HashMap<String, MapValue> {
+public class Vfs extends LinkedHashMap<String, MapValue> {
     /**
      * This is used to keep track of every Vfs instance created and copied. Why? idk.
      */
@@ -162,5 +163,9 @@ public class Vfs extends HashMap<String, MapValue> {
         }
         this.clear();
         this.putAll(sorted);
+    }
+
+    public void putAsSymbolName(Symbol symbol) {
+        put(symbol.name, symbol);
     }
 }

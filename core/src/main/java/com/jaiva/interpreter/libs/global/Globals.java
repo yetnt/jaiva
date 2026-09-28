@@ -71,7 +71,7 @@ public class Globals extends BaseLibrary {
 
     public ArrayList<LibraryLike> putGlobals(IConfig<Object> config) throws InterpreterException {
 
-        vfs.putAll(new GlobalFunctions(config).vfs);
+        add(new GlobalFunctions(config).getSymbols());
 
 //        if (!config.destroyLibraryCircularDependancy)
         builtInGlobals.put("arrays", LibraryLike.of("arrays.jiv"));
@@ -152,7 +152,7 @@ public class Globals extends BaseLibrary {
      */
     public String returnGlobalsJSON(boolean removeTrailingComma) {
         StringBuilder string = new StringBuilder();
-        vfs.forEach((name, vf) -> {
+        getVfs().forEach((name, vf) -> {
             Symbol symbol = vf.getValue();
             try {
                 string.append(symbol.token.toJson());
@@ -165,7 +165,7 @@ public class Globals extends BaseLibrary {
     }
 
     public String returnGlobalsOf(String label, IConfig<Object> i) {
-        Vfs VFS = vfs;
+        Vfs VFS = getVfs();
         if (!label.equals("jaiva/global")) {
             String label2 = label.replace("jaiva/", "").replace("jaiva\\", "");
             LibraryLike l = builtInGlobals.get(label2);

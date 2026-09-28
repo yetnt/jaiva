@@ -24,9 +24,7 @@ import java.util.ArrayList;
 @JaivaLibrary(path = "time/api")
 public class TimeApi extends BaseLibrary {
     public TimeApi(IConfig<Object> config) {
-        vfs.put("t_now", new FNow());
-        vfs.put("t_msToSec", new FMsToSec());
-        vfs.put("t_parseDate", new FParseDate());
+        add(new FNow(), new FMsToSec(), new FParseDate());
     }
 
     public static class FNow extends BaseFunction {

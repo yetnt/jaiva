@@ -22,8 +22,6 @@ import com.jaiva.utils.generic.MultipleLinesOutput;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -297,7 +295,7 @@ public class Main {
                         if (args[0].startsWith("jaiva/") || args[0].startsWith("jaiva\\")) {
                             // The user is trying to output markdown for the built-in jaiva libs. Why not give it to them.
                             Vfs vfs = args[0].endsWith("globals")  // edge case for globals lib.
-                                    ? new Globals(new IConfig<>(null)).vfs
+                                    ? new Globals(new IConfig<>(null)).getVfs()
                                     : new Globals(new IConfig<>(null)).getBuiltInGlobal(args[0]);
                             if (vfs == null)
                                 throw new JaivaException.UnknownFileException("You can't output markdown for the built-in jaiva libs that don't exist.");

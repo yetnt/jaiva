@@ -5,6 +5,7 @@ import com.jaiva.errors.JaivaException;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.libs.annotation.Exports;
+import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.libs.annotation.Library;
 import com.jaiva.interpreter.libs.annotation.PublicLibrary;
 import com.jaiva.interpreter.libs.global.Globals;
@@ -15,6 +16,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -22,15 +24,14 @@ import java.util.stream.Collectors;
  */
 public class BaseLibrary {
 
-    /**
-     * The type of the BaseGlobal container.
-     */
-    public LibraryType type;
+    private final ArrayList<Symbol> symbols = new ArrayList<>();
 
     /**
-     * Variable functions store
+     * These are any symbols encountered via {@link #add(Symbol...)}.
+     * This means this symbol is unique to this library. If this library's child class has
+     * {@link Exports} annotation, then {@link #symbols} will hold more values from the exported symbols.
      */
-    public Vfs vfs = new Vfs();
+    private final ArrayList<Symbol> uniqueSymbols = new ArrayList<>();
 
     /**
      * Default Constructor.
@@ -38,21 +39,36 @@ public class BaseLibrary {
     public BaseLibrary() {
     }
 
-    /**
-     * Constructor for holder classes that need to be imported.
-     *
-     * @param p The "filename" (without the extension)
-     */
-    public BaseLibrary(String p) {
-    }
-
     public BaseLibrary(IConfig<Object> config) {
         // This is just for reflection purposes.
-        // Libraries should not use this constructor.
     }
 
+    protected void add(Symbol ...syms) {
+        for (Symbol symbol : syms) {
+            symbols.add(symbol);
+            uniqueSymbols.add(symbol);
+        }
+    }
+
+    protected void add(ArrayList<Symbol> syms) {
+        for (Symbol symbol : syms) {
+            symbols.add(symbol);
+            uniqueSymbols.add(symbol);
+        }
+    }
+
+    protected void addFromExport(ArrayList<Symbol> syms) {
+        symbols.addAll(syms);
+    }
+//
+//    protected void add(String alias, Symbol symbol) {
+//        symbols.add(symbol);
+//        vfs.put(alias, symbol);
+//        uniqueSymbols.add(symbol);
+//    }
+
     public String toToolingJSON() {
-        Vfs VFS = this.vfs;
+        Vfs VFS = getVfs();
         StringBuilder string = new StringBuilder();
         string.append("{").append("\"version\":\"").append(Main.version).append("\",");
         string.append("\"tokens\":");
@@ -70,6 +86,29 @@ public class BaseLibrary {
         string.append("]");
         string.append("}");
         return string.toString();
+    }
+
+    /**
+     * Variable functions store
+     */
+    public Vfs getVfs() {
+        Vfs vfs = new Vfs();
+        symbols.forEach(vfs::putAsSymbolName);
+        return vfs;
+    }
+
+    public Optional<String> getPath() {
+        JaivaLibrary library = this.getClass().getAnnotation(JaivaLibrary.class);
+        if (library != null) return Optional.of(library.path());
+
+        PublicLibrary library2 = this.getClass().getAnnotation(PublicLibrary.class);
+        if (library2 != null) return Optional.of(library2.path());
+
+        return Optional.empty();
+    }
+
+    public ArrayList<Symbol> getUniqueSymbols() {
+        return new ArrayList<>(uniqueSymbols);
     }
 
     protected static BaseLibrary instantiate(
@@ -116,11 +155,15 @@ public class BaseLibrary {
                     .collect(Collectors.toCollection(ArrayList::new));
 
             for (BaseLibrary baseLibrary : fromExportList) {
-                libraryInstance.vfs.putAll(baseLibrary.vfs);
+                libraryInstance.addFromExport(baseLibrary.getSymbols());
             }
         }
 
         return libraryInstance;
+    }
+
+    public ArrayList<Symbol> getSymbols() {
+        return new ArrayList<>(symbols);
     }
 
     /**
@@ -134,7 +177,7 @@ public class BaseLibrary {
      */
     public String toJson() {
         StringBuilder str = new StringBuilder();
-        vfs.forEach((key, value) -> {
+        getVfs().forEach((key, value) -> {
             // Example: append key and value to the string builder
             Symbol sym = (Symbol) value.getValue();
             try {

@@ -5,6 +5,7 @@ import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
+import com.jaiva.interpreter.libs.file.api.FileType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.jdoc.JDoc;
@@ -27,13 +28,8 @@ import java.util.ArrayList;
  */
 @JaivaLibrary(path = "file/query")
 public class FileQuery extends BaseLibrary {
-    public FileQuery(IConfig<Object> config) {
-        super();
-
-        vfs.put("f_nameOf", new FNameOf());
-        vfs.put("f_dirOf", new FDirOf());
-        vfs.put("f_contentOf", new FContentOf());
-        vfs.put("f_permsOf", new FPermsOf());
+    public FileQuery() {
+        add(new FNameOf(), new FDirOf(), new FContentOf(), new FPermsOf());
     }
 
     public static class FNameOf extends BaseFunction {

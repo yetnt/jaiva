@@ -8,6 +8,8 @@ import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
+import com.jaiva.interpreter.libs.file.api.FileCreator;
+import com.jaiva.interpreter.libs.file.api.FileType;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
@@ -33,11 +35,7 @@ import java.util.Scanner;
 public class FileApi extends BaseLibrary {
 
     public FileApi(IConfig<Object> config) throws InterpreterException {
-        vfs.put("f_name", new VFileName(config));
-        vfs.put("f_dir", new VDirectory(config));
-        vfs.put("f_this", new VThis(config));
-        vfs.put("f_file", new FFile(config));
-        vfs.put("f_new", new FNew(config));
+        add(new VFileName(config), new VDirectory(config), new VThis(config), new FFile(config), new FNew(config));
     }
 
     /**

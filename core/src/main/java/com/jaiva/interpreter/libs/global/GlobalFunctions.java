@@ -15,7 +15,6 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.Symbol;
-import com.jaiva.interpreter.symbol.SymbolConfig;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.Token;
@@ -32,18 +31,12 @@ import java.util.Arrays;
 public class GlobalFunctions extends BaseLibrary {
 
     public GlobalFunctions(IConfig<Object> config) throws InterpreterException {
-        vfs.put("getVarClass", new FGetVarClass());
-        vfs.put("reservedKeywords", new VReservedKeywords());
-        vfs.put("version", new VJaivaVersion());
-        vfs.put("flat", new FFlat());
-        vfs.put("sleep", new FSleep());
-        vfs.put("typeOf", new FTypeOf());
-        vfs.put("typeOfNumber", new FTypeOfNumber());
-        vfs.put("arrLit", new FArrayLiteral());
-        vfs.put("neg", new FNeg());
-        vfs.put("scope", new FScope());
-        vfs.put("getCallerValue", new FGetCallerValue());
-        vfs.putAll(new IOFunctions(config).vfs);
+        add(
+                new FGetVarClass(), new VReservedKeywords(), new VJaivaVersion(), new FFlat(),
+                new FSleep(), new FTypeOf(), new FTypeOfNumber(), new FArrayLiteral(),
+                new FScope(), new FGetCallerValue()
+        );
+        add(new IOFunctions(config).getSymbols());
     }
 
     class FScope extends BaseFunction {
@@ -357,48 +350,6 @@ public class GlobalFunctions extends BaseLibrary {
             Thread.sleep(integer);
 
             return Token.voidValue(tFuncCall.lineNumber);
-        }
-    }
-
-    @SymbolConfig(deprecated = true)
-    class FNeg extends BaseFunction {
-        FNeg() {
-            super(
-                    FunctionBuilder.start()
-                            .name("neg")
-                            .arguments(
-                                    Arguments.getInstance()
-                                            .add(
-                                                    new AArgument("input", "The input to negate", false, Argument.Type.NUMBER)
-                                            )
-                            )
-                            .docs(
-                                    JDoc.builder()
-                                            .addDesc("Negates the given number. This is because my unary minus shit isnt working so i had to make this.")
-                                            .markDeprecated("Unary minus works now. Use it or multiply by -1")
-                            )
-            );
-            this.freeze();
-        }
-
-        @Override
-        public Object call(TFuncCall tFuncCall, ArrayList<Object> params,  IConfig<Object> config,
-                           Scope scope)
-                throws Exception {
-            checkParams(tFuncCall, scope);
-            Object val = Primitives.toPrimitive(params.getFirst(),  false, config,
-                    scope);
-            if (!(val instanceof Number num))
-                throw new InterpreterException.WtfAreYouDoingException(scope, "Bruv, you can't just like, pls put number",
-                        tFuncCall.lineNumber);
-
-            return switch (num) {
-                case Integer i -> -i;
-                case Double d -> -d;
-                case Long l -> -l;
-                default -> throw new InterpreterException.CatchAllException(scope, "we checked for number but didnt receive a number?", tFuncCall.lineNumber);
-            };
-
         }
     }
 
