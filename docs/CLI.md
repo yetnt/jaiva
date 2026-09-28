@@ -1,5 +1,11 @@
 # CLI
 
+## `jaiva.cmd` (batch) / `jaiva` (bash)
+
+This simply runs the actual `jaiva.jar`
+
+See [Install](./Install.md) for install instructions
+
 Simple CLI Ngl.
 
 ```sh
@@ -7,7 +13,7 @@ Simple CLI Ngl.
 > jaiva <filePath> [-j | -jg | -s | -jog]
 ```
 
-1. (No flags) launches interactive REPL.
+1. (No flags) launches the REPL.
 
     ```sh
     > jaiva
@@ -41,18 +47,25 @@ Simple CLI Ngl.
     > jaiva --test
     ```
 
-6. Get update instructions.
+6. Get update instructions. (will direct you to [jaiva-cmd](#jaivacmd-batch--jaiva-bash))
 
     ```sh
     > jaiva -u
     > jaiva --update
     ```
 
-## File Shenanigans
+7. Enter JSON Streamer Mode. See [Streamer Mode](#streamer-mode)
 
-This command will attempt to find `<filePath>` and execute the jaiva code.
+   > ```shell
+   > jaiva -js
+   > jaiva --json-stream
+   > ```
 
-1. Read file, (No flags.)
+### `jaiva path`
+
+`<filePath>` isn't necessarily a file path for every single output. it depends which
+
+1. Run Jaiva file, (No flags.)
     ```sh
     > jaiva <filePath>
     ```
@@ -61,35 +74,65 @@ This command will attempt to find `<filePath>` and execute the jaiva code.
     > jaiva <filePath> -s
     > jaiva <filePath> --string
     ```
-3. Return tokens in JSON format.
+3. Return tokens of the given file in JSON format.
 
     ```sh
     > jaiva <filePath> -j
     > jaiva <filePath> --json
     ```
+   
+   > [!NOTE]
+   > This JSON output is after the interpreter is ran, so it includes the JSON of the global
+   > symbols too at the top level.
 
-4. Return tokens in JSON format including globals.
+4. Return tokens of the global scope in JSON format
 
     ```sh
     > jaiva <filePath> -jg
     > jaiva <filePath> --json-with-globals
     ```
+   
+   > [!NOTE]
+   > I might remove this later... it's functionally identical to the above but it ignores the file
+   > and only uses the global scope symbols in the JSON. Not sure where this is needed...
 
-5. Read the file and throw Java errors with stack traces if any.
+5. Return tokens of the given library file in JSON format
+
+    ```sh
+    > jaiva <filePath> -jog
+    > jaiva <filePath> --json-of-globals
+    ```
+   
+   where `<filePath>` is the full qualified jaiva import path like `jaiva jaiva/arrays -jog`
+
+   > [!NOTE]
+   > Running `jaiva globals -jog` is functionally identical to running `jaiva <filePath> -jg`
+
+   > [!NOTE]
+   > unlike the other JSON outputs which are a top level array, this one returns an object
+   > with 2 properties:
+   > ```json5
+   > {
+   >    "version": "string", // The version of jaiva this was exported with
+   >    "tokens" : [] // The actual tokens list.
+   > }
+   > ```
+
+6. Run Jaiva file (No flags.), however if there are any errors, throw the entire Java stack trace
 
     ```sh
     > jaiva <filePath> -is
     > jaiva <filePath> --include-stacks
     ```
 
-6. Enable debugging mode.
+7. Enable debugging mode. See [Debugger Commands](#debugger-commands)
 
     ```sh
     > jaiva <filePath> -d
     > jaiva <filePath> --debug
     ```
 
-7. Export library as Markdown documentation
+8. Export library as Markdown documentation
 
    > ```sh
    > jaiva <filePath> --markdown <outputFolder>
@@ -97,6 +140,8 @@ This command will attempt to find `<filePath>` and execute the jaiva code.
    > ```
 
 ## Debugger Commands
+
+Good luck getting the debugger to work reliably. It's pretty buggy.
 
 The debugger commands are available when the `-d` or `--debug` flag is used. The following commands are available:
 
@@ -175,3 +220,176 @@ _Subcommands:_
 - st
 - scope
 ```
+
+## Streamer Mode
+
+This mode of the CLI is mostly used in the backend by the [Jaiva VSCode Extension](https://github.com/yetnt/jaiva-vscode)
+to enable a continuous talk with Jaiva.
+
+Once enabled, the CLI will always wait for input on what to do. Even if it itself fails it 
+will continue to wait until a new line is printed or `EXIT` is printed.
+
+The whole purpose is tooling so it's responses are in JSON.
+
+There is not specific syntax or arguments, rather it's just input the CLI takes so the following
+example are after you've run the command to enable the mode.
+
+### Continuous
+
+This simply means, the streamer was run with no args and hence will be continuous
+
+1. File Input
+
+   ```shell
+   C:/Users/Acer/...
+   ```
+   
+   This simply provides the tokens of the file, unlike the other token providers, this is the
+   actual tokens produced before interpreting
+
+2. File Input & Interpretation
+
+   ```shell
+   C:/Users/Acer/...#INTERP
+   ```
+
+   This will further interpret the given file. The JSON output depends on the succession
+   of the interpreter.
+
+3. Exit
+
+   ```shell
+   EXIT
+   ```
+   
+   or
+   
+   ```shell
+   (empty line input)
+   ```
+   
+   Exits the streamer.
+
+### One-shot
+
+One-shot simply means the streamer will immediately exit.
+
+There is only a single one-shot input
+
+```shell
+jaiva --json-stream --exit <filePath>
+```
+
+Which returns the tokens of a file, without running the interpreter. The actual
+tokens discovered.
+
+This is just convenience for things such as importing in the VSCode Extension which cant go through
+the same async/sync messy path.
+
+### Streamer Output
+
+1. Tokens Output
+   ```
+   {...}
+   ```
+   
+2. Successful interpreter output
+
+   ```json5
+   {
+      streamer: true,
+      message: "", // doesnt matter in this case
+      lineNumber: -1,
+      warnings: [
+        {
+          "message": "", // The message of the warning encountered
+          "lineNumber": 0 // The line numebr where this warning was encountered
+        }
+      ],
+      scope: "scope string",
+      type: "INTERP_SUCCESS"
+   }
+   ```
+
+3. The Interpreter ran into an error (User-facing)
+
+   ```json5
+   {
+      streamer: true,
+      message: "Error Message",
+      lineNumer: 0, // the error line number
+      warnings: [
+         {
+            "message": "", // The message of the warning encountered
+            "lineNumber": 0 // The line numebr where this warning was encountered
+         }
+      ],
+      scope: "scope string",
+      type: "ERR_INTERP"
+   }
+   ```
+
+4. The interpreter fucking died 
+
+
+   ```json5
+   {
+      streamer: true,
+      message: "Error Message",
+      lineNumer: 0, // the error line number
+      warnings: [
+         {
+            "message": "", // The message of the warning encountered
+            "lineNumber": 0 // The line numebr where this warning was encountered
+         }
+      ],
+      type: "ERR_INTERP_DIED"
+   }
+   ```
+
+5. The streamer itself somehow died
+
+   ```json5
+   {
+      streamer: true,
+      lineNumer: 0, // the error line number
+      message: "",
+      type: "ERR_STREAMER"
+   }
+   ```
+
+6. The Tokeniser encountered an error
+
+The streamer itself somehow died
+
+   ```json5
+   {
+      streamer: true,
+      lineNumer: 0, // the error line number
+      message: "",
+      type: "ERR_TOKENS"
+   }
+   ```
+
+## `jaiva-update.cmd` (batch) / `jaiva` (bash)
+
+Simple command on both windows and unix based systems
+
+1. No Args
+
+   ```shell
+   jaiva-update
+   ```
+   
+   This will query the github for the latest release, and if your current version
+   is not the same, will update for you.
+
+
+2. Explicit version
+
+   ```shell
+   jaiva-update 4.0.0
+   ```
+   
+   Will update/downgrade to that specific version of jaiva if the version exists and there is
+   a valid `jaiva.zip` artefact available.

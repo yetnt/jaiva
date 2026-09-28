@@ -143,14 +143,30 @@ rm -f "$ZIP"
 #
 # Remove old Jaiva files
 #
+#echo "Removing old Jaiva files..."
+#for FILE in "$DIR"/* "$DIR"/.*; do
+#    [ -f "$FILE" ] || continue
+#    if printf '%s' "${FILE##*/}" | grep -qi "jaiva-install"; then
+#        continue
+#    fi
+#    rm -f "$FILE"
+#done
+
 echo "Removing old Jaiva files..."
-for FILE in "$DIR"/* "$DIR"/.*; do
-    [ -f "$FILE" ] || continue
-    if printf '%s' "${FILE##*/}" | grep -qi "jaiva-install"; then
-        continue
-    fi
+
+for FILE in \
+    "$DIR/jaiva" \
+    "$DIR/jaiva.cmd" \
+    "$DIR/jaiva-sources.jar" \
+    "$DIR/jaiva.jar" \
+    "$DIR/version" \
+    "$DIR/jaiva-src.cmd" \
+    "$DIR/jaiva-src"
+do
     rm -f "$FILE"
 done
+
+rm -rf "$DIR/lib"
 
 #
 # Install new Jaiva files
@@ -161,6 +177,8 @@ if ! cp -R "$EXTRACT_DIR"/. "$DIR"/; then
     rm -rf "$EXTRACT_DIR"
     exit 1
 fi
+
+chmod +x "$DIR/jaiva"
 
 #
 # Cleanup
