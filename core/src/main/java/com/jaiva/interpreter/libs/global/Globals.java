@@ -18,7 +18,8 @@ import com.jaiva.interpreter.libs.annotation.GlobalsLib;
 import com.jaiva.interpreter.libs.debug.Debug;
 import com.jaiva.interpreter.libs.file.File;
 import com.jaiva.interpreter.libs.math.MathUtils;
-import com.jaiva.interpreter.libs.time.Time;
+import com.jaiva.interpreter.libs.time.TimeApi;
+import com.jaiva.interpreter.libs.time.TimeExports;
 import com.jaiva.interpreter.libs.time.TimeZone;
 import com.jaiva.interpreter.libs.types.Types;
 import com.jaiva.interpreter.symbol.SymbolConfig;
@@ -36,7 +37,6 @@ import com.jaiva.interpreter.symbol.*;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.specific.*;
-import com.yetnt.utils.tuple.Pair;
 
 /**
  * Globals class holds all the global symbols that are injected into the
@@ -45,12 +45,13 @@ import com.yetnt.utils.tuple.Pair;
 @GlobalsLib
 public class Globals extends BaseLibrary {
 
+    private final ArrayList<LibraryLike> allClassLibraries = new ArrayList<>();
     private final ArrayList<LibraryLike> externalLibraries = new ArrayList<>();
     // public Vfs vfs = new HashMap<>();
 
     public HashMap<String, LibraryLike> builtInGlobals = new HashMap<>();
 
-    public void putGlobals(IConfig<Object> config) throws InterpreterException {
+    public ArrayList<LibraryLike> putGlobals(IConfig<Object> config) throws InterpreterException {
         vfs.put("getVarClass", new FGetVarClass());
         vfs.put("reservedKeywords", new VReservedKeywords());
         vfs.put("version", new VJaivaVersion());
@@ -67,14 +68,15 @@ public class Globals extends BaseLibrary {
 //        if (!config.destroyLibraryCircularDependancy)
         builtInGlobals.put("arrays", LibraryLike.of("arrays.jiv"));
 
-        putClassGlobal(
-                Types.class, Math.class, File.class,
-                Debug.class, Time.class, TimeZone.class, MathUtils.class
+        return putClassGlobal(
+                Types.class, Math.class, File.class, TimeExports.class,
+                Debug.class, TimeApi.class, TimeZone.class, MathUtils.class
         );
     }
 
     @SafeVarargs
-    private void putClassGlobal(Class<? extends BaseLibrary> ...libs) {
+    private ArrayList<LibraryLike> putClassGlobal(Class<? extends BaseLibrary> ...libs) {
+        ArrayList<LibraryLike> libraries = new ArrayList<>();
         for (Class<? extends BaseLibrary> lib : libs) {
             JaivaLibrary library = lib.getAnnotation(JaivaLibrary.class);
             if (library == null) {
@@ -82,8 +84,11 @@ public class Globals extends BaseLibrary {
             }
             String path = library.path();
 
-            builtInGlobals.put(path, LibraryLike.of(lib));
+            LibraryLike l = LibraryLike.of(lib);
+            libraries.add(l);
+            builtInGlobals.put(path, l);
         }
+        return libraries;
     }
 
     /**
@@ -93,7 +98,7 @@ public class Globals extends BaseLibrary {
      */
     public Globals(IConfig<Object> config) throws InterpreterException {
         super();
-        putGlobals(config);
+        allClassLibraries.addAll(putGlobals(config));
     }
 
     /**
@@ -104,27 +109,19 @@ public class Globals extends BaseLibrary {
     public Globals(IConfig<Object> config, List<Class<? extends BaseLibrary>> external) throws InterpreterException {
         super();
 
-        putGlobals(config);
+        allClassLibraries.addAll(putGlobals(config));
 
         for (Class<? extends BaseLibrary> ext : external) {
-            String path = BaseLibrary.requirePublicAnnotation(ext);
+            String path = BaseLibrary.externalLibraryRequirements(ext);
             LibraryLike lk = LibraryLike.of(ext);
             builtInGlobals.put(path, lk);
+            allClassLibraries.add(lk);
             externalLibraries.add(lk);
         }
     }
 
-
-    public Globals(IConfig<Object> config, List<Pair<String, BaseLibrary>> external, boolean d) throws InterpreterException {
-        super();
-
-        putGlobals(config);
-
-        for (Pair<String, BaseLibrary> ext : external) {
-            LibraryLike lk = LibraryLike.of(ext.getSecond());
-            builtInGlobals.put(ext.getFirst(), lk);
-            externalLibraries.add(lk);
-        }
+    public ArrayList<LibraryLike> getAllClassLibraries() {
+        return new ArrayList<>(allClassLibraries);
     }
 
     public ArrayList<LibraryLike> getExternalLibraries() {
@@ -140,7 +137,7 @@ public class Globals extends BaseLibrary {
     public String returnGlobalsJSON(boolean removeTrailingComma) {
         StringBuilder string = new StringBuilder();
         vfs.forEach((name, vf) -> {
-            Symbol symbol = (Symbol) ((MapValue) vf).getValue();
+            Symbol symbol = vf.getValue();
             try {
                 string.append(symbol.token.toJson());
             } catch (JaivaException e) {
@@ -158,7 +155,7 @@ public class Globals extends BaseLibrary {
             String label2 = label.replace("jaiva/", "").replace("jaiva\\", "");
             LibraryLike l = builtInGlobals.get(label2);
             if (l != null)
-                VFS = l.load(i);
+                VFS = l.load(i, this);
         }
         StringBuilder string = new StringBuilder();
         string.append("{").append("\"version\":\"").append(Main.version).append("\",");
@@ -183,7 +180,7 @@ public class Globals extends BaseLibrary {
         if (name.startsWith("jaiva/") || name.startsWith("jaiva\\")) {
             name = name.substring(6);
         }
-        return builtInGlobals.get(name).load(new IConfig<Object>(true, null));
+        return builtInGlobals.get(name).load(new IConfig<Object>(true, null), this);
     }
 
     class FScope extends BaseFunction {

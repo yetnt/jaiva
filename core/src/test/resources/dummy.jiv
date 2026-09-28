@@ -1,7 +1,7 @@
 tsea "jaiva/arrays"!
 tsea "jaiva/types"!
 tsea "jaiva/debug" <- d_getScope!
-tsea "jaiva/time/zone"!
+tsea "jaiva/time"!
 
 @* this fuc should proly go in arrs
 kwenza *a_find(arr, F~func) ->
@@ -76,7 +76,6 @@ kwenza *unsafeCast(class1, convertTo) ->
 <~
 
 kwenza *newClass(name, fields, methods, accessor?) ->
-    tsea "jaiva/time" <- t_now!
     maak more <- arrLit(methods:::, method("this", f~(<-i) : i[0]))!
     maak props <-| t_now() - 100 << 3, name, accessor!
     khutla arrLit(props, fields, more)!

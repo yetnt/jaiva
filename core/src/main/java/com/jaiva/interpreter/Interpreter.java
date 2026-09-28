@@ -344,7 +344,7 @@ public class Interpreter {
                 Vfs vfsFromFile;
 
                 if (g.builtInGlobals.containsKey(tImport.fileName) && tImport.isLib)
-                    vfsFromFile = g.builtInGlobals.get(tImport.fileName).load(config);
+                    vfsFromFile = g.builtInGlobals.get(tImport.fileName).load(config, g);
                 else {
 
                     // Check if the path is not absolute

@@ -6,12 +6,12 @@
 
     <groupId>com.jaiva</groupId>
     <artifactId>jaiva-parent</artifactId>
-    <version>6.0.0-beta.2</version>
+    <version>6.0.0-beta.3</version>
     <packaging>pom</packaging>
 
     <modules>
         <module>core</module>
-        <module>jaiva-libjson-plugin</module>
+        <module>lib-tooling-plugin</module>
     </modules>
 
     <properties>

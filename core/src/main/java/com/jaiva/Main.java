@@ -54,7 +54,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "6.0.0-beta.2";
+    public static String version = getVersion();
     /**
      * Author, it's just me.
      */
@@ -484,4 +484,15 @@ public class Main {
         return tokens;
     }
 
+    public static String getVersion() {
+        try (InputStream input = Main.class.getClassLoader()
+                .getResourceAsStream("META-INF/maven/com.example/myapp/pom.properties")) {
+            if (input == null) return "UNKNOWN";
+            Properties props = new Properties();
+            props.load(input);
+            return props.getProperty("version", "UNKNOWN");
+        } catch (IOException e) {
+            return "UNKNOWN";
+        }
+    }
 }

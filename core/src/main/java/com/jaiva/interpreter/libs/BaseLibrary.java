@@ -4,12 +4,16 @@ import com.jaiva.Main;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Vfs;
-import com.jaiva.interpreter.libs.annotation.PublicLibrary;
+import com.jaiva.interpreter.libs.annotation.*;
+import com.jaiva.interpreter.libs.global.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.Symbol;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Base class for global holder classes.
@@ -45,8 +49,8 @@ public class BaseLibrary {
         // Libraries should not use this constructor.
     }
 
-    public static String toolingJSONof(BaseLibrary baseLibrary) {
-        Vfs VFS = baseLibrary.vfs;
+    public String toToolingJSON() {
+        Vfs VFS = this.vfs;
         StringBuilder string = new StringBuilder();
         string.append("{").append("\"version\":\"").append(Main.version).append("\",");
         string.append("\"tokens\":");
@@ -64,6 +68,57 @@ public class BaseLibrary {
         string.append("]");
         string.append("}");
         return string.toString();
+    }
+
+    protected static BaseLibrary instantiate(
+            Class<?> clazz,
+            IConfig<Object> config,
+            Globals globals
+    ) throws Exception {
+        BaseLibrary libraryInstance;
+        try {
+            try {
+                Constructor<? extends BaseLibrary> constructor = (Constructor<? extends BaseLibrary>) clazz.getConstructor(IConfig.class);
+                constructor.setAccessible(true); // In case the constructor is not public
+                libraryInstance = constructor.newInstance(config);
+            } catch (Exception e) {
+                try {
+                    Constructor<? extends BaseLibrary> constructor = (Constructor<? extends BaseLibrary>) clazz.getConstructor();
+                    constructor.setAccessible(true); // In case the constructor is not public
+                    libraryInstance = constructor.newInstance();
+                } catch (Exception ex) {
+                    throw new RuntimeException("Failed to instantiate library: " + clazz.getName(), ex);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load library: " + clazz.getName(), e);
+        }
+
+        // check for Exports annotation
+
+        Exports exportsAnnot = clazz.getAnnotation(Exports.class);
+        if (exportsAnnot != null) {
+            // get all the classes which matches the given export list
+            ArrayList<Class<? extends BaseLibrary>> exportList = new ArrayList<>(List.of(exportsAnnot.value()));
+
+            if (exportList.contains(clazz)) {
+                throw new RuntimeException(clazz.getCanonicalName() + " attempts to export itself");
+            }
+
+            ArrayList<BaseLibrary> fromExportList = globals
+                    .getAllClassLibraries()
+                    .stream()
+                    .filter(LibraryLike::hasClass)
+                    .filter(libl -> exportList.contains(libl.getLibClass()))
+                    .map(libl -> libl.loadClassLibrary(config, globals))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            for (BaseLibrary baseLibrary : fromExportList) {
+                libraryInstance.vfs.putAll(baseLibrary.vfs);
+            }
+        }
+
+        return libraryInstance;
     }
 
     /**
@@ -99,13 +154,28 @@ public class BaseLibrary {
      * @return the value of the "path" field
      * @throws IllegalStateException if the field is not found, not public static String, or null/blank
      */
-    public static String requirePublicAnnotation(Class<?> clazz) {
-            PublicLibrary library = clazz.getAnnotation(PublicLibrary.class);
-            if (library != null) {
-                return library.path();
+    public static String externalLibraryRequirements(Class<?> clazz) {
+        boolean publicLibAnnotFound = false;
+        boolean isPublic = false;
+        for (Annotation annotation : clazz.getAnnotations()) {
+            if (publicLibAnnotFound) break;
+            Library j = annotation.annotationType().getAnnotation(Library.class);
+            if (j != null) {
+                publicLibAnnotFound = true;
+                isPublic = j.libType() == LibraryType.LIB;
             }
-            throw new IllegalStateException(clazz.getName()
-                    + " must have the PublicLibrary annotation!");
+        }
 
+        if (!publicLibAnnotFound)
+            throw new RuntimeException(clazz.getCanonicalName() + " has no library annotation (use @PublicLibrary)");
+        if (!isPublic)
+            throw new IllegalStateException("External classes cannot have library annotations which aren't @PublicLibrary!");
+
+        PublicLibrary library = clazz.getAnnotation(PublicLibrary.class);
+        if (library != null) {
+            return library.path();
+        }
+        throw new IllegalStateException(clazz.getName()
+                + " must have the PublicLibrary annotation!");
     }
 }

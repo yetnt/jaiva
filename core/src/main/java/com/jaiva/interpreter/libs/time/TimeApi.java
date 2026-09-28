@@ -18,13 +18,12 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-@JaivaLibrary(path = "time")
-public class Time extends BaseLibrary {
-    public Time(IConfig<Object> config) {
+@JaivaLibrary(path = "time/api")
+public class TimeApi extends BaseLibrary {
+    public TimeApi(IConfig<Object> config) {
         vfs.put("t_now", new FNow());
         vfs.put("t_msToSec", new FMsToSec());
         vfs.put("t_parseDate", new FParseDate());
-
     }
 
     public static class FNow extends BaseFunction {

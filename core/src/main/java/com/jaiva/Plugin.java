@@ -1,9 +1,9 @@
 package com.jaiva;
 
 import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.LibraryLike;
+import com.jaiva.interpreter.libs.global.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
-
-import java.lang.reflect.Constructor;
 
 public final class Plugin {
 
@@ -31,11 +31,18 @@ public final class Plugin {
             Class<? extends BaseLibrary> libraryClass =
                     rawClass.asSubclass(BaseLibrary.class);
 
+
+            BaseLibrary.externalLibraryRequirements(libraryClass);
+
             IConfig<Object> config = new IConfig<>(null);
 
-            BaseLibrary library = instantiate(libraryClass, config);
+            Globals globals = new Globals(config);
 
-            return BaseLibrary.toolingJSONof(library);
+            LibraryLike lib = LibraryLike.of(libraryClass);
+
+            BaseLibrary library = lib.loadClassLibrary(config, globals);
+
+            return library.toToolingJSON();
 
         } catch (Exception e) {
             throw new RuntimeException(
@@ -45,26 +52,4 @@ public final class Plugin {
         }
     }
 
-    private static BaseLibrary instantiate(
-            Class<? extends BaseLibrary> libraryClass,
-            IConfig<Object> config
-    ) throws Exception {
-
-        try {
-            Constructor<? extends BaseLibrary> constructor =
-                    libraryClass.getDeclaredConstructor(IConfig.class);
-
-            constructor.setAccessible(true);
-
-            return constructor.newInstance(config);
-
-        } catch (NoSuchMethodException ignored) {
-            Constructor<? extends BaseLibrary> constructor =
-                    libraryClass.getDeclaredConstructor();
-
-            constructor.setAccessible(true);
-
-            return constructor.newInstance();
-        }
-    }
 }
