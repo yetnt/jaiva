@@ -26,6 +26,8 @@
     </repositories>
 
     <dependencies>
+
+        <!-- For tests -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -33,17 +35,27 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- My custom common utilities. Such as tuples and more function arities-->
+
         <dependency>
             <groupId>com.github.yetnt</groupId>
             <artifactId>ytils</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <!-- Specifically for loading internal jaiva libraries so we don't have to define it everytime -->
+
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+            <version>4.8.174</version>
+        </dependency>
+
     </dependencies>
 
     <profiles>
         <profile>
             <id>release-cli</id>
-
             <build>
                 <plugins>
 
