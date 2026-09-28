@@ -104,6 +104,7 @@ but here's an example and how it goes into JBundler and how a jaiva script can i
 
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.libs.annotation.PublicLibrary;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.libBuilders.func.*;
 import com.jaiva.interpreter.libs.BaseLibrary;
@@ -116,13 +117,10 @@ import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 
 import java.util.ArrayList;
 
+@PublicLibrary(path = "namespace/reflective")
 public class ReflectiveLib extends BaseLibrary {
 
-    public static String path = "namespace/reflective"; // my reflection will scream at u without this
-
     public ReflectiveLib() {
-        super(LibraryType.LIB, "namespace/reflective");
-        
         vfs.put("r_fName", new FFunctionName()); // register the function within the library's vfs.
     }
 
@@ -204,7 +202,7 @@ public class JBundlerExample {
 then in `file.jiv`
 
 ```jiv
-tsea "jaiva/namespace/reflective"! @ Still haas jaiva/ appended before it.
+tsea "jaiva/namespace/reflective"! @ Still has jaiva/ appended before it.
 
 maak print <- khuluma!
 
