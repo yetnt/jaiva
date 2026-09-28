@@ -1,16 +1,18 @@
 package com.jaiva.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.jaiva.lang.Chars;
 import com.jaiva.lang.Chars.Operators;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.TTernary;
-import com.jaiva.utils.generic.*;
+import com.jaiva.utils.generic.BracePairs;
+import com.jaiva.utils.generic.LeastImportantOperator;
+import com.jaiva.utils.generic.MultipleLinesOutput;
 import com.yetnt.utils.tuple.Pair;
 import com.yetnt.utils.tuple.SamePair;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class provides utility methods for finding specific characters or

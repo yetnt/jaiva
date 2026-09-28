@@ -1,8 +1,5 @@
 package com.jaiva.interpreter;
 
-import java.nio.file.Path;
-import java.util.*;
-
 import com.jaiva.Main;
 import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.errors.JaivaException;
@@ -11,15 +8,23 @@ import com.jaiva.errors.Warnings;
 import com.jaiva.interpreter.libs.global.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.runtime.ImportVfs;
-import com.jaiva.interpreter.symbol.*;
+import com.jaiva.interpreter.symbol.BaseFunction;
+import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
+import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.tokens.TAtomicValue;
 import com.jaiva.tokenizer.tokens.TSymbol;
-import com.jaiva.tokenizer.tokens.specific.*;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
+import com.jaiva.tokenizer.tokens.specific.*;
 import com.yetnt.utils.tuple.Pair;
+
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The Interpreter class is one of the 3 main classes which handle Jaiva code.

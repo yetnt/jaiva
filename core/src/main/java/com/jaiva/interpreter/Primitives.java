@@ -1,18 +1,20 @@
 package com.jaiva.interpreter;
 
-import java.util.ArrayList;
-import java.util.Objects;
-
-import com.jaiva.errors.*;
 import com.jaiva.errors.InterpreterException.*;
+import com.jaiva.errors.Warnings;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.*;
 import com.jaiva.interpreter.symbol.BaseVariable.VariableType;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.jdoc.JDoc;
-import com.jaiva.tokenizer.tokens.*;
+import com.jaiva.tokenizer.tokens.TConditional;
+import com.jaiva.tokenizer.tokens.Token;
+import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.*;
 import com.yetnt.utils.builders.AnsiColour;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * The Primitives class is a utility class that provides methods for resolving

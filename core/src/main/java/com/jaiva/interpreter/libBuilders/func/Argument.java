@@ -1,8 +1,5 @@
 package com.jaiva.interpreter.libBuilders.func;
 
-import com.jaiva.tokenizer.jdoc.JDoc;
-import com.jaiva.tokenizer.jdoc.JDocBuilder;
-
 public class Argument {
 
     private final String name;

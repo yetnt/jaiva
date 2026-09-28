@@ -1,17 +1,17 @@
 package com.jaiva.interpreter.libs.math;
 
-import java.util.ArrayList;
-
-import com.jaiva.interpreter.Scope;
+import com.jaiva.errors.InterpreterException.FunctionParametersException;
 import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.jdoc.JDoc;
-import com.jaiva.errors.InterpreterException.FunctionParametersException;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 import com.jaiva.tokenizer.tokens.specific.TFunction;
+
+import java.util.ArrayList;
 
 @JaivaLibrary(path = "math/trig")
 public class MathTrig extends BaseLibrary {

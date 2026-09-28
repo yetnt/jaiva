@@ -1,20 +1,20 @@
 package com.jaiva.interpreter.libs.types;
 
-import java.util.ArrayList;
-
 import com.jaiva.errors.InterpreterException.FunctionParametersException;
 import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
-import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.lang.Keywords;
+import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 import com.jaiva.tokenizer.tokens.specific.TFunction;
 import com.jaiva.tokenizer.tokens.specific.TVoidValue;
-import com.jaiva.tokenizer.jdoc.JDoc;
+
+import java.util.ArrayList;
 
 /**
  * The {@code Conversions} class provides global conversion functions for the

@@ -1,7 +1,5 @@
 package com.jaiva.utils;
 
-import java.util.ArrayList;
-
 import com.jaiva.lang.Chars;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
@@ -11,6 +9,8 @@ import com.jaiva.tokenizer.tokens.specific.TVarRef;
 import com.jaiva.utils.cd.ContextDispatcher;
 import com.yetnt.utils.tuple.Pair;
 import com.yetnt.utils.tuple.SamePair;
+
+import java.util.ArrayList;
 
 /**
  * Validate class is a utils class where methods which "validate" the

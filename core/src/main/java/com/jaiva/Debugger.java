@@ -1,19 +1,19 @@
 package com.jaiva;
 
+import com.jaiva.interpreter.Interpreter;
+import com.jaiva.interpreter.MapValue;
+import com.jaiva.interpreter.Scope;
+import com.jaiva.interpreter.runtime.DebugController;
+import com.jaiva.interpreter.runtime.IConfig;
+import com.jaiva.interpreter.symbol.BaseVariable.DefinedVariable;
+import com.jaiva.interpreter.symbol.DefinedFunction;
+import com.jaiva.interpreter.symbol.Symbol;
+import com.jaiva.tokenizer.tokens.Token;
+import com.yetnt.utils.tuple.SamePair;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-
-import com.jaiva.interpreter.Scope;
-import com.jaiva.interpreter.Interpreter;
-import com.jaiva.interpreter.MapValue;
-import com.jaiva.interpreter.runtime.DebugController;
-import com.jaiva.interpreter.runtime.IConfig;
-import com.jaiva.interpreter.symbol.Symbol;
-import com.jaiva.interpreter.symbol.DefinedFunction;
-import com.jaiva.interpreter.symbol.BaseVariable.DefinedVariable;
-import com.jaiva.tokenizer.tokens.Token;
-import com.yetnt.utils.tuple.SamePair;
 
 /**
  * The Debugger class is responsible for managing the debugging environment

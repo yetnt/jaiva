@@ -1,6 +1,5 @@
 package com.jaiva.interpreter.libs.annotation;
 
-import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.global.Globals;
 
 import java.lang.annotation.ElementType;

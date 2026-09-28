@@ -1,11 +1,11 @@
 package com.jaiva.interpreter.runtime;
 
-import java.nio.file.Path;
-import java.util.ArrayList;
-
 import com.jaiva.Config;
 import com.jaiva.Main;
 import com.jaiva.errors.Warnings;
+
+import java.nio.file.Path;
+import java.util.ArrayList;
 
 /**
  * The IConfig class provides configuration settings for the interpreter

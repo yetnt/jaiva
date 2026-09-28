@@ -1,23 +1,31 @@
 package com.jaiva;
 
-import java.io.*;
-import java.nio.file.Path;
-import java.util.*;
-
-import com.jaiva.errors.*;
-import com.jaiva.errors.JaivaException.*;
-import com.jaiva.interpreter.*;
-import com.jaiva.interpreter.libs.types.Types;
+import com.jaiva.errors.InterpreterException;
+import com.jaiva.errors.JaivaException;
+import com.jaiva.errors.JaivaException.UnknownFileException;
+import com.jaiva.errors.TokenizerException;
+import com.jaiva.interpreter.Interpreter;
+import com.jaiva.interpreter.Scope;
+import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.libs.global.Globals;
+import com.jaiva.interpreter.libs.types.Types;
 import com.jaiva.interpreter.runtime.IConfig;
-import com.jaiva.tokenizer.*;
+import com.jaiva.tokenizer.TConfig;
+import com.jaiva.tokenizer.Tokenizer;
+import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.TSymbol;
 import com.jaiva.tokenizer.tokens.Token;
-import com.jaiva.tokenizer.tokens.specific.TDocsComment;
-import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.TokenDefault;
+import com.jaiva.tokenizer.tokens.specific.TDocsComment;
 import com.jaiva.utils.generic.BlockChain;
 import com.jaiva.utils.generic.MultipleLinesOutput;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.util.*;
 
 /**
  * The Main class serves as the entry point for the Jaiva programming language
@@ -54,7 +62,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = getVersion();
+    public static String version = "6.0.0-beta.3";
     /**
      * Author, it's just me.
      */
@@ -482,17 +490,5 @@ public class Main {
         scanner.close();
 
         return tokens;
-    }
-
-    public static String getVersion() {
-        try (InputStream input = Main.class.getClassLoader()
-                .getResourceAsStream("META-INF/maven/com.example/myapp/pom.properties")) {
-            if (input == null) return "UNKNOWN";
-            Properties props = new Properties();
-            props.load(input);
-            return props.getProperty("version", "UNKNOWN");
-        } catch (IOException e) {
-            return "UNKNOWN";
-        }
     }
 }

@@ -1,8 +1,8 @@
 package com.jaiva.utils.generic;
 
-import java.util.Arrays;
-
 import com.jaiva.tokenizer.tokens.Token;
+
+import java.util.Arrays;
 
 /**
  * 

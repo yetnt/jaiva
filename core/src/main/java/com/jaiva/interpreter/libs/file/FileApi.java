@@ -1,24 +1,33 @@
 package com.jaiva.interpreter.libs.file;
 
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
-
 import com.jaiva.errors.InterpreterException;
-import com.jaiva.errors.InterpreterException.*;
-import com.jaiva.interpreter.Scope;
+import com.jaiva.errors.InterpreterException.CatchAllException;
+import com.jaiva.errors.InterpreterException.FunctionParametersException;
+import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
 import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
-import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.TArrayVar;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 import com.jaiva.tokenizer.tokens.specific.TFunction;
 import com.jaiva.tokenizer.tokens.specific.TStringVar;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Scanner;
 
 @JaivaLibrary(path = "file/api")
 public class FileApi extends BaseLibrary {

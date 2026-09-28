@@ -1,7 +1,6 @@
 package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.tokenizer.tokens.TAtomicValue;
-import com.jaiva.tokenizer.tokens.TokenDefault;
 
 import java.util.ArrayList;
 import java.util.List;

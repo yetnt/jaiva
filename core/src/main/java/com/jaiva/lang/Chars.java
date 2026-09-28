@@ -1,11 +1,11 @@
 package com.jaiva.lang;
 
+import com.jaiva.utils.Find;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-
-import com.jaiva.utils.Find;
 
 /**
  * The Chars class defines a set of constants and utility methods for tokenizing

@@ -1,28 +1,30 @@
 package com.jaiva.interpreter.libs.global;
 
 // To scan for all the internal libraries isntead of having to renference everytime
+
 import com.jaiva.JBundler;
+import com.jaiva.Main;
 import com.jaiva.Plugin;
+import com.jaiva.errors.InterpreterException;
+import com.jaiva.errors.JaivaException;
+import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.Scope;
+import com.jaiva.interpreter.Vfs;
+import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.LibraryLike;
 import com.jaiva.interpreter.libs.annotation.Exports;
+import com.jaiva.interpreter.libs.annotation.GlobalsLib;
+import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.libs.annotation.PublicLibrary;
+import com.jaiva.interpreter.runtime.IConfig;
+import com.jaiva.interpreter.symbol.Symbol;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
 
-import java.util.*;
-
-import com.jaiva.interpreter.Vfs;
-import com.jaiva.interpreter.libs.BaseLibrary;
-import com.jaiva.interpreter.libs.LibraryLike;
-import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
-import com.jaiva.interpreter.libs.annotation.GlobalsLib;
-import com.jaiva.Main;
-import com.jaiva.errors.InterpreterException;
-import com.jaiva.errors.JaivaException;
-import com.jaiva.interpreter.MapValue;
-import com.jaiva.interpreter.runtime.IConfig;
-import com.jaiva.interpreter.symbol.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Globals class has 2 pretty signifact jobs lol

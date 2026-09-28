@@ -1,25 +1,24 @@
 package com.jaiva.interpreter.libs.global;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import javax.swing.JOptionPane;
-
 import com.jaiva.errors.InterpreterException;
-import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Interpreter;
-import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Interpreter.ThrowIfGlobalContext;
+import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.SymbolConfig;
 import com.jaiva.lang.EscapeSequence;
-import com.jaiva.tokenizer.tokens.specific.*;
+import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
-import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.specific.*;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * IOFunctions class holds the functions that are used for input and output in

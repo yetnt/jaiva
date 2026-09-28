@@ -1,14 +1,12 @@
 package com.jaiva.tokenizer.jdoc;
 
 import com.jaiva.errors.TokenizerException;
-import com.jaiva.errors.TokenizerException.*;
+import com.jaiva.errors.TokenizerException.MalformedJDocException;
 import com.jaiva.lang.Chars;
 import com.jaiva.tokenizer.jdoc.tags.Tag;
 import com.jaiva.tokenizer.jdoc.tags.TagType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 

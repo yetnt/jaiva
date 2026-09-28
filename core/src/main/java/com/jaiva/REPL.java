@@ -1,5 +1,20 @@
 package com.jaiva;
 
+import com.jaiva.errors.InterpreterException;
+import com.jaiva.interpreter.Interpreter;
+import com.jaiva.interpreter.Scope;
+import com.jaiva.interpreter.Vfs;
+import com.jaiva.interpreter.runtime.IConfig;
+import com.jaiva.tokenizer.TConfig;
+import com.jaiva.tokenizer.Tokenizer;
+import com.jaiva.tokenizer.tokens.Token;
+import com.jaiva.tokenizer.tokens.TokenDefault;
+import com.jaiva.tokenizer.tokens.specific.TExpression;
+import com.jaiva.tokenizer.tokens.specific.TFuncCall;
+import com.jaiva.tokenizer.tokens.specific.TVarRef;
+import com.jaiva.utils.generic.BlockChain;
+import com.jaiva.utils.generic.MultipleLinesOutput;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,21 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-
-import com.jaiva.errors.InterpreterException;
-import com.jaiva.interpreter.Scope;
-import com.jaiva.interpreter.Interpreter;
-import com.jaiva.interpreter.Vfs;
-import com.jaiva.interpreter.runtime.IConfig;
-import com.jaiva.tokenizer.TConfig;
-import com.jaiva.tokenizer.tokens.Token;
-import com.jaiva.tokenizer.tokens.specific.TFuncCall;
-import com.jaiva.tokenizer.tokens.specific.TExpression;
-import com.jaiva.tokenizer.tokens.specific.TVarRef;
-import com.jaiva.tokenizer.tokens.TokenDefault;
-import com.jaiva.tokenizer.Tokenizer;
-import com.jaiva.utils.generic.BlockChain;
-import com.jaiva.utils.generic.MultipleLinesOutput;
 
 /**
  * REPLMode is an enumeration that represents the mode of the REPL

@@ -1,12 +1,12 @@
 package com.jaiva.interpreter.symbol;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.libs.file.FileApi;
 import com.jaiva.tokenizer.tokens.TokenDefault;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * BaseVariable class is a base class for all variables in Jaiva.

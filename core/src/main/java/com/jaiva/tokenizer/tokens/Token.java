@@ -1,18 +1,22 @@
 package com.jaiva.tokenizer.tokens;
 
-import java.util.*;
-
-import com.jaiva.errors.TokenizerException.*;
 import com.jaiva.errors.TokenizerException;
+import com.jaiva.errors.TokenizerException.CatchAllException;
+import com.jaiva.errors.TokenizerException.MalformedSyntaxException;
 import com.jaiva.lang.Chars;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.tokens.specific.*;
-import com.jaiva.utils.generic.BracePairs;
-import com.jaiva.utils.cd.ContextDispatcher;
 import com.jaiva.utils.Find;
 import com.jaiva.utils.Validate;
+import com.jaiva.utils.cd.ContextDispatcher;
 import com.jaiva.utils.cd.ContextDispatcher.To;
 import com.jaiva.utils.cd.ReservedCases;
+import com.jaiva.utils.generic.BracePairs;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * The Token class represents a generic token that holds a value of type T.

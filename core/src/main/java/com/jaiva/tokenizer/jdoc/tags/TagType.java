@@ -2,7 +2,6 @@ package com.jaiva.tokenizer.jdoc.tags;
 
 import com.jaiva.lang.Keywords;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 

@@ -1,13 +1,10 @@
 package com.jaiva.interpreter.libs.debug;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.JaivaException.DebugException;
 import com.jaiva.interpreter.MapValue;
-import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.libBuilders.func.Argument;
 import com.jaiva.interpreter.libBuilders.func.Arguments;
 import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
@@ -25,6 +22,9 @@ import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 import com.jaiva.tokenizer.tokens.specific.TVarRef;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @JaivaLibrary(path = "debug")
 public class Debug extends BaseLibrary {

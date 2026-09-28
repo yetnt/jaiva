@@ -1,15 +1,17 @@
 package com.jaiva.interpreter.runtime;
 
+import com.jaiva.Debugger;
+import com.jaiva.interpreter.Context;
+import com.jaiva.interpreter.Interpreter;
+import com.jaiva.interpreter.Scope;
+import com.jaiva.interpreter.symbol.Symbol;
+import com.jaiva.tokenizer.tokens.Token;
+import com.yetnt.utils.tuple.SamePair;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
-
-import com.jaiva.Debugger;
-import com.jaiva.interpreter.*;
-import com.jaiva.interpreter.symbol.Symbol;
-import com.jaiva.tokenizer.tokens.Token;
-import com.yetnt.utils.tuple.SamePair;
 
 /**
  * The DebugController class is responsible for actually controllig the

@@ -1,16 +1,21 @@
 package com.jaiva.interpreter.symbol;
 
-import java.util.*;
-
 import com.jaiva.errors.InterpreterException;
-import com.jaiva.interpreter.*;
+import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.tokenizer.tokens.TReference;
-import com.jaiva.tokenizer.tokens.TokenDefault;
-import com.jaiva.tokenizer.tokens.specific.*;
 import com.jaiva.tokenizer.tokens.Token;
+import com.jaiva.tokenizer.tokens.TokenDefault;
+import com.jaiva.tokenizer.tokens.specific.TFuncCall;
+import com.jaiva.tokenizer.tokens.specific.TFunction;
+import com.jaiva.tokenizer.tokens.specific.TVoidValue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * BaseFunction class is a base class for all functions in Jaiva.

@@ -1,24 +1,34 @@
 package com.jaiva.tokenizer;
 
-import java.nio.file.Path;
-import java.util.*;
-import java.util.regex.*;
-
 import com.jaiva.Main;
-import com.jaiva.errors.TokenizerException.*;
 import com.jaiva.errors.TokenizerException;
-import com.jaiva.lang.*;
+import com.jaiva.errors.TokenizerException.CatchAllException;
+import com.jaiva.errors.TokenizerException.FileOrDirectoryNotFoundException;
+import com.jaiva.errors.TokenizerException.MalformedSyntaxException;
+import com.jaiva.errors.TokenizerException.TypeMismatchException;
+import com.jaiva.lang.Chars;
+import com.jaiva.lang.Comments;
+import com.jaiva.lang.EscapeSequence;
+import com.jaiva.lang.Keywords;
+import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.TSymbol;
 import com.jaiva.tokenizer.tokens.Token;
-import com.jaiva.tokenizer.tokens.specific.*;
-import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.TokenDefault;
-import com.jaiva.utils.*;
+import com.jaiva.tokenizer.tokens.specific.*;
+import com.jaiva.utils.Find;
+import com.jaiva.utils.Validate;
 import com.jaiva.utils.Validate.IsValidSymbolName;
 import com.jaiva.utils.generic.BlockChain;
 import com.jaiva.utils.generic.MultipleLinesOutput;
 import com.yetnt.utils.tuple.Pair;
 import com.yetnt.utils.tuple.SamePair;
+
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The Tokenizer class is one of the 3 main classes which handle Jaiva code.

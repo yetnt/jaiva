@@ -1,10 +1,10 @@
 package com.jaiva.errors;
 
-import java.util.ArrayList;
-
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.yetnt.utils.builders.AnsiColour;
+
+import java.util.ArrayList;
 
 /**
  * Base class for any exceptions we run into while trying to parse or run jaiva

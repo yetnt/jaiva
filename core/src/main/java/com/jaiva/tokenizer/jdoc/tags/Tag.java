@@ -2,7 +2,6 @@ package com.jaiva.tokenizer.jdoc.tags;
 
 import com.jaiva.errors.TokenizerException;
 import com.jaiva.lang.Chars;
-import com.jaiva.lang.EscapeSequence;
 
 import java.util.ArrayList;
 import java.util.Arrays;

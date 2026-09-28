@@ -10,11 +10,13 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.runtime.ImportVfs;
 import com.jaiva.interpreter.runtime.ResourceLoader;
 import com.jaiva.tokenizer.TConfig;
-import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.Tokenizer;
+import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.TImport;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class ExternalLibraryLoader {
     private static final String LIB_DIR = "lib/";

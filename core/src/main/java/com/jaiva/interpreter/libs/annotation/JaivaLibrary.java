@@ -1,6 +1,5 @@
 package com.jaiva.interpreter.libs.annotation;
 
-import com.jaiva.JBundler;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.LibraryType;
 
@@ -8,6 +7,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
 /**
  * Annotation that marks an external {@link BaseLibrary} class as one within the actual core
  * Jaiva classes. e.g. It's part of Jaiva.

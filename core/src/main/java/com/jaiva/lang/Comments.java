@@ -1,9 +1,9 @@
 package com.jaiva.lang;
 
+import com.jaiva.tokenizer.tokens.specific.TDocsComment;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.jaiva.tokenizer.tokens.specific.TDocsComment;
 
 /**
  * Comments class is a utility class that provides methods for processing and

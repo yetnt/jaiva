@@ -1,24 +1,17 @@
 package com.jaiva.errors;
 
-import java.util.HashMap;
-
-import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
+import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
-import com.jaiva.interpreter.symbol.Symbol;
-import com.jaiva.interpreter.symbol.DefinedFunction;
 import com.jaiva.interpreter.symbol.BaseVariable.DefinedVariable;
+import com.jaiva.interpreter.symbol.DefinedFunction;
+import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.tokenizer.tokens.TokenDefault;
-import com.jaiva.tokenizer.tokens.specific.TFuncCall;
-import com.jaiva.tokenizer.tokens.specific.TFunction;
-import com.jaiva.tokenizer.tokens.specific.TIfStatement;
-import com.jaiva.tokenizer.tokens.specific.TExpression;
-import com.jaiva.tokenizer.tokens.specific.TThrowError;
-import com.jaiva.tokenizer.tokens.specific.TVarReassign;
-import com.jaiva.tokenizer.tokens.specific.TVarRef;
-import com.jaiva.tokenizer.tokens.specific.TWhileLoop;
+import com.jaiva.tokenizer.tokens.specific.*;
 import com.yetnt.utils.builders.AnsiColour;
+
+import java.util.HashMap;
 
 /**
  * Base Interpreter Exception.
