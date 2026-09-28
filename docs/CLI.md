@@ -47,7 +47,7 @@ Simple CLI Ngl.
     > jaiva --test
     ```
 
-6. Get update instructions. (will direct you to [jaiva-cmd](#jaivacmd-batch--jaiva-bash))
+6. Get update instructions. (will direct you to [jaiva-install](#jaiva-installcmd-batch--jaiva-install-bash))
 
     ```sh
     > jaiva -u
@@ -317,7 +317,7 @@ the same async/sync messy path.
    {
       streamer: true,
       message: "Error Message",
-      lineNumer: 0, // the error line number
+      lineNumber: 0, // the error line number
       warnings: [
          {
             "message": "", // The message of the warning encountered
@@ -336,7 +336,7 @@ the same async/sync messy path.
    {
       streamer: true,
       message: "Error Message",
-      lineNumer: 0, // the error line number
+      lineNumber: 0, // the error line number
       warnings: [
          {
             "message": "", // The message of the warning encountered
@@ -352,7 +352,7 @@ the same async/sync messy path.
    ```json5
    {
       streamer: true,
-      lineNumer: 0, // the error line number
+      lineNumber: 0, // the error line number
       message: "",
       type: "ERR_STREAMER"
    }
@@ -371,14 +371,14 @@ The streamer itself somehow died
    }
    ```
 
-## `jaiva-update.cmd` (batch) / `jaiva` (bash)
+## `jaiva-install.cmd` (batch) / `jaiva-install` (bash)
 
 Simple command on both windows and unix based systems
 
 1. No Args
 
    ```shell
-   jaiva-update
+   jaiva-install
    ```
    
    This will query the github for the latest release, and if your current version
@@ -388,7 +388,7 @@ Simple command on both windows and unix based systems
 2. Explicit version
 
    ```shell
-   jaiva-update 4.0.0
+   jaiva-instal 4.0.0
    ```
    
    Will update/downgrade to that specific version of jaiva if the version exists and there is

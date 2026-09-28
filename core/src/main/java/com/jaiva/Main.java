@@ -8,7 +8,6 @@ import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.libs.global.Globals;
-import com.jaiva.interpreter.libs.types.Types;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.TConfig;
 import com.jaiva.tokenizer.Tokenizer;
@@ -19,6 +18,7 @@ import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.TDocsComment;
 import com.jaiva.utils.generic.BlockChain;
 import com.jaiva.utils.generic.MultipleLinesOutput;
+import com.yetnt.utils.builders.AnsiColour;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -60,11 +60,11 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "6.0.0-beta.3";
+    public static String version = "6.0.0-beta.4";
     /**
      * Author, it's just me.
      */
-    public static String author = "@yetnt or @prod.yetnt on some socials";
+    public static String author = "Lehlogonolo Poole (@yetnt on some socials) https://github.com/yetnt";
     /**
      * ASCII art representation of the Jaiva logo. This is a multi-line string
      */
@@ -115,9 +115,8 @@ public class Main {
                .+$$x+:.              ..;+X$$x;.            &.              x$. :&; .+$$$X: .&;
                    .:+xX$$$&&&&&&$$$XXx;.                  &.              x$.  :$$+:::::;x&x.
                                                            &.              x$.     .;+++;.
-                        """;
+                       \s""";
 
-    @SuppressWarnings("unchecked")
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
             new REPL(0);
@@ -163,15 +162,15 @@ public class Main {
                 }
                 case "--version", "-v" -> {
 //                    System.out.println(ASCII);
-                    System.out.println("Jaiva! " + version);
-                    System.out.println(
-                            "Jaiva is a programming language that is designed to be easy to use and understand. (I'm speaking out my ass, I made this cuz i was bored on a random january)");
+                    System.out.println(AnsiColour.print("Jaiva! " + version, AnsiColour.FONT.BOLD, AnsiColour.FONT.ITALIC));
+//                    System.out.println(
+//                            "Jaiva is a programming language that is designed to be easy to use and understand. (I'm speaking out my ass, I made this cuz i was bored on a random january)");
                     System.out.println("Made with love by: " + author);
                     System.out.println();
                     System.exit(0);
                 }
                 case "--test", "-t" -> {
-                    System.out.println(new Types().toJson());
+                    System.out.println(AnsiColour.print(ASCII, AnsiColour.FONT.BOLD));
                     System.out.println();
 
                     System.exit(0);
@@ -179,8 +178,8 @@ public class Main {
                 case "--update", "-u" -> {
                     System.out.println();
                     System.out.println(
-                            "Because i'm far too lazy to implement an auto upater, you'll have to just reinstall the jaiva folder into your existing one every time you want to update.");
-                    System.out.println("I'm not making it easier, you can make a PR on the github though.");
+                            "There is an update script in your "+ AnsiColour.print("/<jaiva location>/", AnsiColour.FONT.BOLD) + " folder.");
+                    System.out.println("If you're on windows you can run " + AnsiColour.print("jaiva-install", AnsiColour.FONT.BOLD) + " to update if any is available. Unix like systems may need to configure the alias to the script");
                     System.out.println();
                     System.exit(0);
                 }
@@ -290,21 +289,20 @@ public class Main {
                         return;
                     }
                     case "-md", "--markdown" -> {
-                        if (args.length != 3)
-                            throw new JaivaException.TooLittleArgsException("Markdown output needs an output directory!");
-                        if (args[0].startsWith("jaiva/") || args[0].startsWith("jaiva\\")) {
-                            // The user is trying to output markdown for the built-in jaiva libs. Why not give it to them.
-                            Vfs vfs = args[0].endsWith("globals")  // edge case for globals lib.
-                                    ? new Globals(new IConfig<>(null)).getVfs()
-                                    : new Globals(new IConfig<>(null)).getBuiltInGlobal(args[0]);
-                            if (vfs == null)
-                                throw new JaivaException.UnknownFileException("You can't output markdown for the built-in jaiva libs that don't exist.");
-                            tokens = vfs.toTokenList();
-                        }
-                        String out = args[2];
-                        Path outDir = Path.of(out);
-                        new ToMarkdown((ArrayList<Token<?>>) tokens, iconfig, outDir,
-                                args[0].startsWith("jaiva/") || args[0].startsWith("jaiva\\"));
+//                        if (args.length != 3)
+//                            throw new JaivaException.TooLittleArgsException("Markdown output needs an output directory!");
+//                        if (args[0].startsWith("jaiva/") || args[0].startsWith("jaiva\\")) {
+//                            // The user is trying to output markdown for the built-in jaiva libs. Why not give it to them.
+//                            Vfs vfs = args[0].endsWith("globals")  // edge case for globals lib.
+//                                    ? new Globals(new IConfig<>(null)).getVfs()
+//                                    : new Globals(new IConfig<>(null)).getBuiltInGlobal(args[0]);
+//                            if (vfs == null)
+//                                throw new JaivaException.UnknownFileException("You can't output markdown for the built-in jaiva libs that don't exist.");
+//                            tokens = vfs.toTokenList();
+//                        }
+//                        String out = args[2];
+//                        Path outDir = Path.of(out);
+                        new ToMarkdown();
                         System.out.println();
                         System.exit(0);
                         return;
@@ -427,7 +425,7 @@ public class Main {
                     ArrayList<Token<?>> tks = (ArrayList<Token<?>>) ((ArrayList<Token<?>>) something).clone();
                     if (tks.size() == 1) {
                         for (Token<?> t : ((ArrayList<Token<?>>) something)) {
-                            TokenDefault l = t.value();
+                            TokenDefault<?> l = t.value();
                             if (returnVfs && !l.exportSymbol) {
                                 // clean.
                                 tks.remove(t);
@@ -456,7 +454,7 @@ public class Main {
                             + ((TDocsComment) token1.value()).comment;
                 }
                 case Token<?> token -> {
-                    TokenDefault t = token.value();
+                    TokenDefault<?> t = token.value();
                     if (returnVfs && !t.exportSymbol) {
                         // dont do anythin.
                     } else if (comment != null

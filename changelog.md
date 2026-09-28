@@ -96,6 +96,55 @@ As the inclusion of [a new plugin](#jaiva-libjson-plugin), The actual `jaiva`
 project is now the `core` module. The output target directory of importance
 is now `.../jaiva/core/target/`.
 
+Old `pom.xml` (assuming you already have `jitpack` as a repository)
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.app</groupId>
+    <artifactId>App</artifactId>
+    <version>1.0.0</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.yetnt</groupId>
+            <artifactId>jaiva</artifactId>
+            <version>5.0.2</version>
+        </dependency>
+    </dependencies>
+
+</project>
+```
+
+New `pom.xml`
+
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.app</groupId>
+    <artifactId>App</artifactId>
+    <version>1.0.0</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.yetnt.jaiva</groupId>
+            <artifactId>core</artifactId>
+            <version>5.0.2</version>
+        </dependency>
+    </dependencies>
+
+</project>
+```
+
 ### `BaseLibrary`
 
 BaseLibrary, now no longer takes in any types in it's constructor at all, and instead fully relies on new
@@ -117,7 +166,7 @@ public class Shii extends BaseLibrary {
         vfs.put("aliasName", new FFunction());
     }
     
-    public class FFunction extends BaseFunction {...}
+    public class FFunction extends BaseFunction {}
 }
 ```
 
@@ -134,7 +183,7 @@ public class Shii extends BaseLibrary {
         add(new FFunction());
     }
 
-    public class FFunction extends BaseFunction {...}
+    public class FFunction extends BaseFunction {}
 }
 ```
 
@@ -144,6 +193,19 @@ For Container libraries, you explicitly do not annotate them. So you can remove 
 completely. It just needs to extends `BaseLibrary`
 
 ## New Features
+
+### `jaiva-install` script
+
+The `jaiva.zip` now comes pre-packed with a script (both windows and unix, however
+unix might need to also apply a new alias for this script), which allows you to
+Install newer AND older versions of jaiva.
+
+And the script will stay in place, so you can install `1.0.0` then immediately
+go back to `6.0.0` and see why theres so many java versions.
+
+(all versions (without the `v` prefix), that expose a `jaiva.zip` archive work.)
+
+See [jaiva-install on CLI](./docs/CLI.md#jaiva-installcmd-batch--jaiva-install-bash)
 
 ### Language Features
 
