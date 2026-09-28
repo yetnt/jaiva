@@ -53,7 +53,7 @@ public class TImport extends TokenDefault<TImport> implements TStatement {
      * Constructor for TImport
      *
      * @param file     The file path.
-     * @param fileName File name
+     * @param fileName FileApi name
      * @param isLib    Whther its a libaray import
      * @param names    The imported symbols.
      * @param ln       The line number.

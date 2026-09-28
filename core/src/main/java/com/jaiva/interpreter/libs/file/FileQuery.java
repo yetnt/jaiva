@@ -4,6 +4,7 @@ import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.jdoc.JDoc;
@@ -24,8 +25,9 @@ import java.util.ArrayList;
  * This class simply provides a way to organize these functions within the library system.
  * </p>
  */
-public class JaivaFile extends BaseLibrary {
-    public JaivaFile(IConfig<Object> config) {
+@JaivaLibrary(path = "file/query")
+public class FileQuery extends BaseLibrary {
+    public FileQuery(IConfig<Object> config) {
         super();
 
         vfs.put("f_nameOf", new FNameOf());

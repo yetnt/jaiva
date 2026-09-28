@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.jdoc.JDoc;
@@ -12,9 +13,10 @@ import com.jaiva.errors.InterpreterException.FunctionParametersException;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 import com.jaiva.tokenizer.tokens.specific.TFunction;
 
-public class Trig extends BaseLibrary {
-    public Trig() {
-        // This is a container class for the Math class, so prefix everything with "m_"
+@JaivaLibrary(path = "math/trig")
+public class MathTrig extends BaseLibrary {
+    public MathTrig() {
+        // This is a container class for the MathBase class, so prefix everything with "m_"
         vfs.put("m_sin", new FSin());
         vfs.put("m_cos", new FCos());
         vfs.put("m_tan", new FTan());
@@ -23,6 +25,7 @@ public class Trig extends BaseLibrary {
         vfs.put("m_atan", new FAtan());
         vfs.put("m_toRad", new FToRad());
         vfs.put("m_toDeg", new FToDeg());
+        vfs.put("m_atan2", new FAtan2());
     }
 
     /**
@@ -344,6 +347,45 @@ public class Trig extends BaseLibrary {
             // Convert radians to degrees
             double radians = ((Number) value).doubleValue();
             return java.lang.Math.toDegrees(radians);
+        }
+    }
+
+    class FAtan2 extends BaseFunction {
+        FAtan2() {
+            super("m_atan2", new TFunction(
+                    "m_atan2",
+                    new String[] {"y", "x"},
+                    null,
+                    -1,
+                    JDoc.builder()
+                            .addDesc("Returns the angle in radians between the positive x-axis and the point (x, y).")
+                            .addParam("y", "number", "The y-coordinate.", false)
+                            .addParam("x", "number", "The x-coordinate.", false)
+                            .addReturns("The angle in radians from the positive x-axis to the point (x, y).")
+                            .sinceVersion("6.0.0-alpha.3")
+                            .build()
+            ));
+            this.freeze();
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config,
+                           Scope scope)
+                throws Exception {
+            checkParams(tFuncCall, scope);
+            Object v = Primitives.toPrimitive(params.getFirst(), false, config, scope);
+            Object v2 = Primitives.toPrimitive(params.get(1), false, config, scope);
+            // Ensure the first parameter is a number
+            if (!(v instanceof Number)) {
+                throw new FunctionParametersException(scope, this, "1", v, Number.class, tFuncCall.lineNumber);
+            }
+            if (!(v2 instanceof Number)) {
+                throw new FunctionParametersException(scope, this, "2", v, Number.class, tFuncCall.lineNumber);
+            }
+            // Calculate the arctangent of the number
+            double value = ((Number) v).doubleValue();
+            double value2 = ((Number)v2).doubleValue();
+            return java.lang.Math.atan2(value, value2);
         }
     }
 }

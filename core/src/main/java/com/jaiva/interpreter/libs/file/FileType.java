@@ -11,9 +11,9 @@ import java.util.ArrayList;
  * <p>
  *     This class extends ArrayList to hold file data and metadata.
  *     [
- *     "filename.txt",          // File name
- *     "/p/t/o/",          // File path
- *     ["line1", "line2"], // File content as list of lines
+ *     "filename.txt",          // FileApi name
+ *     "/p/t/o/",          // FileApi path
+ *     ["line1", "line2"], // FileApi content as list of lines
  *     [canRead, canWrite, canExecute] // Permissions as booleans
  *     [sizeInBytes, lastModifiedTimestamp] // Additional metadata (Not implemented yet)
  *     ]

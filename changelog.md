@@ -4,6 +4,13 @@
 
 ## Jaiva Scripts
 
+### Deprecated removal
+
+Remove functions which have been deprecated for quite some time now.
+
+- `f_bin` from the files library. Deprecated since `v4.0.0`
+- `neg` from the global scope. Deprecated since `v1.0.1`
+
 ### Library Location Changes
 
 Due to internal changes [See nerd corner block](#baselibrary-metadata-as-annotations)
@@ -54,9 +61,8 @@ tsea "jaiva/math/trig"! @ For everything trigonometry related
                         @ So m_sin, m_cos, m_atan2, etc...
 tsea "jaiva/math/const"! @ For every mathematical constant
                          @ m_e, m_pi, m_phi, etc...
-tsea "jaiva/math/util"! @ Same as before
-
 tsea "jaiva/math/base"! @ For generic functions like sqrt, floor, ceil
+                        @ math/utils is now part of base and no longer exists.
 
 tsea "jaiva/math"! @ For EVERYTHING
 ```
@@ -172,6 +178,7 @@ c? @ True, as c is set to idk, idk = idk, which is true.
 
 - `a_forEach` function in `jaiva/arrays`
 - `a_apply` function in `jaiva/arrays`
+- `m_atan2` function in `jaiva/math/trig`
 
 ```jaiva
 tsea "jaiva/arrays" <- a_forEach! @ only need for a_forEach

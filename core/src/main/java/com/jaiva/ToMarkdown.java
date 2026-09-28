@@ -111,9 +111,9 @@ public class ToMarkdown {
             boolean created = out.createNewFile();
             if (created) {
                 out.setWritable(true);
-                printToConsole(AnsiColour.print("File " + out.getAbsolutePath() + " has been created.", AnsiColour.FORE.GREEN));
+                printToConsole(AnsiColour.print("FileApi " + out.getAbsolutePath() + " has been created.", AnsiColour.FORE.GREEN));
             } else {
-                printToConsole(AnsiColour.print("File " + out.getAbsolutePath() + " and will be overwritten.", AnsiColour.FORE.YELLOW));
+                printToConsole(AnsiColour.print("FileApi " + out.getAbsolutePath() + " and will be overwritten.", AnsiColour.FORE.YELLOW));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

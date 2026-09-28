@@ -33,7 +33,7 @@ public class IConfig<T extends Object> extends Config {
     public String[] args = new String[] {};
     /**
      * The sanitised arguments list stores the command-line arguments without
-     * arguments used by jaiva. It removes the first argument (File path) and
+     * arguments used by jaiva. It removes the first argument (FileApi path) and
      * possibly second argument (which is sometimes the debug flag).
      * This is useful for processing the arguments in a more user-friendly way.
      */

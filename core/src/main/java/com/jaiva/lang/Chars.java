@@ -13,7 +13,7 @@ import com.jaiva.utils.Find;
  * block delimiters, assignment operators, and sets of arithmetic and boolean
  * operators.
  * <p>
- * Constants:
+ * MathConst:
  * - COMMENT: Character used to denote a comment.
  * - COMMENT_OPEN: Character used to open a comment block.
  * - COMMENT_CLOSE: Character used to close a comment block.

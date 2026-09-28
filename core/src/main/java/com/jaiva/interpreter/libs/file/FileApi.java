@@ -13,7 +13,6 @@ import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
-import com.jaiva.interpreter.symbol.SymbolConfig;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.specific.TArrayVar;
@@ -21,17 +20,15 @@ import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 import com.jaiva.tokenizer.tokens.specific.TFunction;
 import com.jaiva.tokenizer.tokens.specific.TStringVar;
 
-@JaivaLibrary(path = "file")
-public class File extends BaseLibrary {
+@JaivaLibrary(path = "file/api")
+public class FileApi extends BaseLibrary {
 
-    public File(IConfig<Object> config) throws InterpreterException {
+    public FileApi(IConfig<Object> config) throws InterpreterException {
         vfs.put("f_name", new VFileName(config));
         vfs.put("f_dir", new VDirectory(config));
-        vfs.put("f_bin", new VBinaryDirectory(config)); // Deprecated.
         vfs.put("f_this", new VThis(config));
         vfs.put("f_file", new FFile(config));
         vfs.put("f_new", new FNew(config));
-        vfs.putAll(new JaivaFile(config).vfs); // Functions such as f_nameOf f_dirOf etc.
     }
 
     /**
@@ -47,7 +44,7 @@ public class File extends BaseLibrary {
         public VFileName(IConfig<Object> config) {
             super("f_name",
                     new TStringVar("f_name",
-                            config.filePath == null ? "File" : config.filePath.getFileName().toString(), -1,
+                            config.filePath == null ? "FileApi" : config.filePath.getFileName().toString(), -1,
                             JDoc.builder()
                                     .addDesc("Variable that holds the current file's name")
                                     .addNote("If you call this within the REPL, or somehow the filePath is null, it holds \"REPL\"")
@@ -59,7 +56,7 @@ public class File extends BaseLibrary {
                                             """)
                                     .build()
                     ),
-                    config.filePath == null ? "File" : config.filePath.getFileName().toString());
+                    config.filePath == null ? "FileApi" : config.filePath.getFileName().toString());
             freeze();
 
         }
@@ -79,7 +76,7 @@ public class File extends BaseLibrary {
     public class VDirectory extends BaseVariable {
         public VDirectory(IConfig<Object> config) {
             super("f_dir",
-                    new TStringVar("f_dir", config.fileDirectory == null ? "File"
+                    new TStringVar("f_dir", config.fileDirectory == null ? "FileApi"
                             : config.fileDirectory.toAbsolutePath().toString(), -1,
                             JDoc.builder()
                                     .addDesc("Variable that holds the current file's directory.")
@@ -90,36 +87,7 @@ public class File extends BaseLibrary {
                                             """)
                                     .build()
                     ),
-                    config.fileDirectory == null ? "File" : config.fileDirectory.toAbsolutePath().toString());
-            freeze();
-        }
-    }
-
-    /**
-     * Represents a variable that holds the directory path where the Jaiva binary
-     * (jaiva.jar) can be found.
-     * <p>
-     *     As of v4.0.0 we cant know where, so this has been deprecated
-     * </p>
-     */
-    @SymbolConfig(deprecated = true)
-    public class VBinaryDirectory extends BaseVariable {
-        public VBinaryDirectory(IConfig<Object> config) {
-            super("f_bin", new TStringVar("f_bin", "/eish/my/boizin/this/variable/is/deprecated", 0,
-                    JDoc.builder()
-                            .addDesc("Variable that holds the directory where you can find jaiva.jar")
-                            .markDeprecated(
-                                    "As of (one of the versions), the jaiva-cli sh and windows command " +
-                                    "no longer exist. (This was only used to locate where the /lib/ folder was, however" +
-                                    " now the lib folder lives within jaiva.jar itself, deprecating the need for locating jaiva.jar)")
-                            .sinceVersion("1.0.0")
-                            .addExample("""
-                                    @ Now. I would give an example for this.
-                                    @ However, why should I if it's deprecated?
-                                    """)
-                            .build()
-                    ),
-                    "/eish/my/boizin/this/variable/is/deprecated");
+                    config.fileDirectory == null ? "FileApi" : config.fileDirectory.toAbsolutePath().toString());
             freeze();
         }
     }
@@ -134,7 +102,7 @@ public class File extends BaseLibrary {
      *   "fileName",                // Name of the current file, or "REPL" if not in a file context
      *   "fileDir",                 // Directory of the current file, or void value if not in a file context
      *   [contents],                // List of lines in the file, or a default list in REPL mode
-     *   [canRead?, canWrite?, canExecute?] // File permission flags, or defaults in REPL mode
+     *   [canRead?, canWrite?, canExecute?] // FileApi permission flags, or defaults in REPL mode
      * ]
      * </pre>
      * <p>
@@ -179,7 +147,7 @@ public class File extends BaseLibrary {
                             .addExample("""
                                     f_this[0]! @ holds the file name
                                     f_this[1]! @ holds the file directory
-                                    khuluma("File contents: " + f_this[2])! @ holds the file contents as an array
+                                    khuluma("FileApi contents: " + f_this[2])! @ holds the file contents as an array
                                     khuluma("Can we write to this file? " + f_this[3][1])! @ holds the file permissions
                                     """)
                             .build()
@@ -264,8 +232,8 @@ public class File extends BaseLibrary {
                             .addReturns("Returns an array containing the properties of the file at the given `path` \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]")
                             .addExample("""
                                     maak file <- f_file("data/myFile.txt")!
-                                    khuluma("File name: " + file[0])!
-                                    khuluma("File directory: " + file[1])!
+                                    khuluma("FileApi name: " + file[0])!
+                                    khuluma("FileApi directory: " + file[1])!
                                     """)
                             .sinceVersion("1.0.1")
                             .build()
@@ -297,7 +265,7 @@ public class File extends BaseLibrary {
 
             java.io.File file = filePath.toFile();
             if (!file.exists())
-                throw new WtfAreYouDoingException(new Scope(config), "File does not exist: " + filePath,
+                throw new WtfAreYouDoingException(new Scope(config), "FileApi does not exist: " + filePath,
                         tFuncCall.lineNumber);
 
             ArrayList<String> contents = new ArrayList<>();
@@ -357,7 +325,7 @@ public class File extends BaseLibrary {
                             .addExample("""
                                     maak success <- f_new("data/newFile.txt", arrLit("Hello, World!", "This is a new file."), true, true, false)!
                                     if (success) ->
-                                        khuluma("File created successfully!")!
+                                        khuluma("FileApi created successfully!")!
                                     <~ else ->
                                         khuluma("Failed to createFunction file.")!
                                     <~

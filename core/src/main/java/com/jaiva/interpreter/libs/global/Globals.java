@@ -210,6 +210,7 @@ public class Globals extends BaseLibrary {
             for (var ci : candidates) {
                 @SuppressWarnings("unchecked")
                 Class<? extends BaseLibrary> cls = (Class<? extends BaseLibrary>) ci.loadClass();
+                if (cls == Globals.class) continue;
                 result.add(cls);
             }
             return result;

@@ -2,6 +2,7 @@ package com.jaiva.interpreter.libs.math;
 
 import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.specific.TNumberVar;
@@ -9,13 +10,14 @@ import com.jaiva.tokenizer.tokens.specific.TNumberVar;
 /**
  * Container class for mathematical constants.
  */
-public class Constants extends BaseLibrary {
+@JaivaLibrary(path = "math/const")
+public class MathConst extends BaseLibrary {
     /**
      * Default Constructor
      */
-    public Constants() {
+    public MathConst() {
         super();
-        // This is a container class for the Math class, so prefix everything with "m_"
+        // This is a container class for the MathBase class, so prefix everything with "m_"
         vfs.put("m_e", new MapValue(new VE()));
         vfs.put("m_pi", new MapValue(new VPi()));
         vfs.put("m_tau", new MapValue(new VTau()));
@@ -34,7 +36,7 @@ public class Constants extends BaseLibrary {
             super("m_pi", new TNumberVar("m_pi", java.lang.Math.PI, -1,
                             JDoc.builder()
                                     .addDesc("The mathematical constant π (pi)")
-                                    .addNote("It's just java.lang.Math.PI")
+                                    .addNote("It's just java.lang.MathBase.PI")
                                     .build()
                     ),
                     java.lang.Math.PI);
@@ -55,7 +57,7 @@ public class Constants extends BaseLibrary {
                     new TNumberVar("m_e", java.lang.Math.E, -1,
                             JDoc.builder()
                                     .addDesc("The mathematical constant e (Euler's number)")
-                                    .addNote("Just java.lang.Math.E")
+                                    .addNote("Just java.lang.MathBase.E")
                                     .addExample("""
                                             khuluma(2 ^ m_e)! @ approximately 7.38905609893065
                                             """)
@@ -78,7 +80,7 @@ public class Constants extends BaseLibrary {
             super("m_tau", new TNumberVar("m_tau", java.lang.Math.TAU, -1,
                             JDoc.builder()
                                     .addDesc("The mathematical constant τ (tau), which is equal to 2π")
-                                    .addNote("Just java.lang.Math.TAU")
+                                    .addNote("Just java.lang.MathBase.TAU")
                                     .addExample("""
                                             @ Using tau to calculate the circumference of a circle with radius 5
                                             maak radius <- 5!
