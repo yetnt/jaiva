@@ -1,0 +1,181 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+#
+# Configuration
+#
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+VERSION_FILE="$DIR/version"
+REMOTE_VERSION_URL="https://raw.githubusercontent.com/yetnt/jaiva/main/core/jaiva-cli/version"
+
+#
+# Helpers
+#
+
+# Download a URL to a file using the first available tool.
+download() {
+    local url="$1"
+    local out="$2"
+
+    if command -v curl >/dev/null 2>&1; then
+        curl -fsSL "$url" -o "$out"
+    elif command -v wget >/dev/null 2>&1; then
+        wget -q "$url" -O "$out"
+    else
+        echo "No download tool found (curl or wget is required)." >&2
+        return 1
+    fi
+}
+
+# Extract a ZIP archive into a directory using the first available tool.
+extract_zip() {
+    local zip="$1"
+    local dest="$2"
+
+    mkdir -p "$dest" || return 1
+
+    if command -v unzip >/dev/null 2>&1; then
+        unzip -o -q "$zip" -d "$dest"
+    elif command -v python3 >/dev/null 2>&1; then
+        python3 -c 'import sys, zipfile; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])' "$zip" "$dest"
+    else
+        echo "No extraction tool found (unzip or python3 is required)." >&2
+        return 1
+    fi
+}
+
+# Read the first line of a file, trimming any trailing carriage return.
+read_version() {
+    local file="$1"
+    local line=""
+
+    IFS= read -r line < "$file" || true
+    printf '%s' "${line%$'\r'}"
+}
+
+#
+# Explicit version installation
+#
+# Usage:
+#     jaiva-update 6.0.0-beta.0
+#
+# This skips the latest-version check and installs the
+# specified release directly.
+#
+if [ -n "${1:-}" ]; then
+    REMOTE_VERSION="$1"
+    echo "Installing Jaiva $REMOTE_VERSION..."
+else
+    #
+    # Check local version
+    #
+    LOCAL_VERSION="NO-VERSION"
+    if [ -f "$VERSION_FILE" ]; then
+        # echo "No version file found. Will install latest."
+        LOCAL_VERSION="$(read_version "$VERSION_FILE")"
+        # exit 1
+    fi
+    echo "Checking for Jaiva updates..."
+    if [ -z "$LOCAL_VERSION" ]; then
+        echo "The local version file is empty."
+        exit 1
+    fi
+
+    #
+    # Fetch latest version
+    #
+    TEMP_VERSION="$(mktemp "${TMPDIR:-/tmp}/jaiva-remote-version-XXXXXX")"
+    if ! download "$REMOTE_VERSION_URL" "$TEMP_VERSION"; then
+        echo "Failed to fetch the latest Jaiva version."
+        rm -f "$TEMP_VERSION"
+        exit 1
+    fi
+    REMOTE_VERSION="$(read_version "$TEMP_VERSION")"
+    rm -f "$TEMP_VERSION"
+    if [ -z "$REMOTE_VERSION" ]; then
+        echo "The remote version file is empty."
+        exit 1
+    fi
+
+    #
+    # Compare versions
+    #
+    echo "Installed version: $LOCAL_VERSION"
+    echo "Latest version: $REMOTE_VERSION"
+    if [ "$LOCAL_VERSION" = "$REMOTE_VERSION" ]; then
+        echo
+        echo "Jaiva is already up to date."
+        exit 0
+    fi
+    echo
+    echo "Updating Jaiva from $LOCAL_VERSION to $REMOTE_VERSION..."
+fi
+
+#
+# Download release
+#
+# This is also the validation for an explicit version:
+# if the tag does not exist, or the release does not expose
+# jaiva.zip, the download fails.
+#
+ZIP="${TMPDIR:-/tmp}/jaiva-$REMOTE_VERSION.zip"
+ZIP_URL="https://github.com/yetnt/jaiva/releases/download/v$REMOTE_VERSION/jaiva.zip"
+EXTRACT_DIR="$(mktemp -d "${TMPDIR:-/tmp}/jaiva-update-XXXXXX")"
+
+if ! download "$ZIP_URL" "$ZIP"; then
+    echo
+    echo "Could not find Jaiva release $REMOTE_VERSION or its jaiva.zip artifact."
+    rm -f "$ZIP"
+    exit 1
+fi
+
+#
+# Extract release
+#
+if ! extract_zip "$ZIP" "$EXTRACT_DIR"; then
+    echo "Failed to extract Jaiva $REMOTE_VERSION."
+    rm -f "$ZIP"
+    rm -rf "$EXTRACT_DIR"
+    exit 1
+fi
+rm -f "$ZIP"
+
+#
+# Remove old Jaiva files
+#
+echo "Removing old Jaiva files..."
+for FILE in "$DIR"/* "$DIR"/.*; do
+    [ -f "$FILE" ] || continue
+    if printf '%s' "${FILE##*/}" | grep -qi "jaiva-install"; then
+        continue
+    fi
+    rm -f "$FILE"
+done
+
+#
+# Install new Jaiva files
+#
+echo "Installing Jaiva $REMOTE_VERSION..."
+if ! cp -R "$EXTRACT_DIR"/. "$DIR"/; then
+    echo "Failed to copy the updated Jaiva files."
+    rm -rf "$EXTRACT_DIR"
+    exit 1
+fi
+
+#
+# Cleanup
+#
+rm -rf "$EXTRACT_DIR"
+
+#
+# Done
+#
+echo
+echo "Jaiva has been updated to $REMOTE_VERSION."
+echo
+echo "Please restart your terminal and any processes currently using Jaiva."
+if ! printf '%s\n' "$REMOTE_VERSION" > "$VERSION_FILE"; then
+    echo "Failed to write the version file: $VERSION_FILE" >&2
+    exit 1
+fi
+exit 0
