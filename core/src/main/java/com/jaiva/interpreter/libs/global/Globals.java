@@ -71,7 +71,7 @@ public class Globals extends BaseLibrary {
 
     public ArrayList<LibraryLike> putGlobals(IConfig<Object> config) throws InterpreterException {
 
-        add(new GlobalFunctions(config).getSymbols());
+        add(new GlobalFunctions(config));
 
 //        if (!config.destroyLibraryCircularDependancy)
         builtInGlobals.put("arrays", LibraryLike.of("arrays.jiv"));

@@ -83,7 +83,7 @@ tsea "jaiva/file"! @ For all file related things
 ```jaiva
 tsea "jaiva/file/query"! @ For all stuff that query a file array
                         @ e.g. f_getName, f_getPermissions, etc...
-tsea "jaiva/file/io"! @ For actuall creating or deleting files
+tsea "jaiva/file/api"! @ For actual creating or deleting files
 
 tsea "jaiva/file"! @ Aggregates both.
 ```
@@ -105,6 +105,9 @@ field requirement is no more.
 #### Old
 
 ```java
+import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.symbol.BaseFunction;
+
 public class Shii extends BaseLibrary {
     public static String path = "shii"; // accesible in jaiva via jaiva/shii
     
@@ -122,12 +125,16 @@ public class Shii extends BaseLibrary {
 
 ```java
 import com.jaiva.interpreter.libs.annotation.PublicLibrary;
+import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.symbol.BaseFunction;
 
 @PublicLibrary(path = "shii")
 public class Shii extends BaseLibrary {
     public Shii() {
         add(new FFunction());
     }
+
+    public class FFunction extends BaseFunction {...}
 }
 ```
 

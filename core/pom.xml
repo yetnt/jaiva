@@ -87,6 +87,10 @@
                                                 file="${project.build.directory}/${project.artifactId}-${project.version}-sources.jar"
                                                 tofile="${project.basedir}/jaiva-cli/jaiva-sources.jar"/>
 
+                                        <echo file="${project.basedir}/jaiva-cli/version">
+                                            ${project.version}
+                                        </echo>
+
                                         <zip
                                                 destfile="${project.basedir}/jaiva-cli/jaiva.zip"
                                                 basedir="${project.basedir}/jaiva-cli">

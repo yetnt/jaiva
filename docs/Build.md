@@ -31,6 +31,9 @@ and create the packaged JAR in the `target/` directory.
 If you wish to package with the `release-cli` profile, you need to create the following
 folder/files first:
 
+(since v6 the folder and files come pre-commited within `jaiva/core`, so you need not create them and can just run
+the profile without worry.)
+
 (inside `../jaiva/` directory)
 
 ```shell

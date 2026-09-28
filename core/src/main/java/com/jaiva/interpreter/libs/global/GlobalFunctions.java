@@ -36,7 +36,7 @@ public class GlobalFunctions extends BaseLibrary {
                 new FSleep(), new FTypeOf(), new FTypeOfNumber(), new FArrayLiteral(),
                 new FScope(), new FGetCallerValue()
         );
-        add(new IOFunctions(config).getSymbols());
+        add(new IOFunctions(config));
     }
 
     class FScope extends BaseFunction {

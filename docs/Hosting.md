@@ -25,8 +25,8 @@ example pom
 
     <dependencies>
         <dependency>
-            <groupId>com.github.yetnt</groupId>
-            <artifactId>jaiva</artifactId>
+            <groupId>com.github.yetnt.jaiva</groupId>
+            <artifactId>core</artifactId>
             <version>5.0.2</version> @ Or another version.
         </dependency>
     </dependencies>
@@ -121,7 +121,7 @@ import java.util.ArrayList;
 public class ReflectiveLib extends BaseLibrary {
 
     public ReflectiveLib() {
-        vfs.put("r_fName", new FFunctionName()); // register the function within the library's vfs.
+        add(new FFunctionName()); // register the function within the library's vfs.
     }
 
     /**

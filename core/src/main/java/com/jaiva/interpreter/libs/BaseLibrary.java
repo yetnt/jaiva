@@ -50,8 +50,8 @@ public class BaseLibrary {
         }
     }
 
-    protected void add(ArrayList<Symbol> syms) {
-        for (Symbol symbol : syms) {
+    protected void add(BaseLibrary bis) {
+        for (Symbol symbol : bis.getSymbols()) {
             symbols.add(symbol);
             uniqueSymbols.add(symbol);
         }
