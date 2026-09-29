@@ -1,6 +1,5 @@
 package com.jaiva.interpreter.libs.math;
 
-import com.jaiva.interpreter.MapValue;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.symbol.BaseVariable;

@@ -5,6 +5,7 @@ import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.annotation.Exports;
 import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
@@ -16,31 +17,7 @@ import com.jaiva.tokenizer.tokens.specific.TVoidValue;
 
 import java.util.ArrayList;
 
-/**
- * The {@code Conversions} class provides global conversion functions for the
- * Jaiva interpreter.
- * <p>
- * It extends {@link BaseLibrary} and registers utility functions for converting
- * between
- * strings and numbers, such as {@code stringToNum} and {@code numToString},
- * into the vfs.
- * </p>
- *
- * <ul>
- * <li>{@code stringToNum}: Converts a string representation of a number into an
- * actual numeric type (Integer or Double).</li>
- * <li>{@code numToString}: Converts a numeric value or boolean into its string
- * representation.</li>
- * </ul>
- *
- * <p>
- * If conversion fails, these functions throw a {@link WtfAreYouDoingException}
- * with a descriptive error message.
- * </p>
- *
- * @see BaseLibrary
- * @see WtfAreYouDoingException
- */
+@Exports(Numbers.class)
 @JaivaLibrary(path = "types")
 public class Types extends BaseLibrary {
     public Types() {

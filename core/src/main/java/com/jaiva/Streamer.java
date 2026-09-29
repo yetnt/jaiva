@@ -6,6 +6,7 @@ import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.tokenizer.tokens.Token;
+import com.yetnt.utils.builders.AnsiColour;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -15,29 +16,29 @@ public class Streamer {
     private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     private boolean run = true;
 
-    public static String removeAnsiColour(String rawMessage) {
-        StringBuilder result = new StringBuilder();
-
-        for (int i = 0; i < rawMessage.length(); i++) {
-            if (rawMessage.charAt(i) == '\u001B'
-                    && i + 1 < rawMessage.length()
-                    && rawMessage.charAt(i + 1) == '[') {
-
-                i += 2;
-
-                // Skip until the terminating 'm'
-                while (i < rawMessage.length() && rawMessage.charAt(i) != 'm') {
-                    i++;
-                }
-
-                continue;
-            }
-
-            result.append(rawMessage.charAt(i));
-        }
-
-        return result.toString();
-    }
+//    public static String removeAnsiColour(String rawMessage) {
+//        StringBuilder result = new StringBuilder();
+//
+//        for (int i = 0; i < rawMessage.length(); i++) {
+//            if (rawMessage.charAt(i) == '\u001B'
+//                    && i + 1 < rawMessage.length()
+//                    && rawMessage.charAt(i + 1) == '[') {
+//
+//                i += 2;
+//
+//                // Skip until the terminating 'm'
+//                while (i < rawMessage.length() && rawMessage.charAt(i) != 'm') {
+//                    i++;
+//                }
+//
+//                continue;
+//            }
+//
+//            result.append(rawMessage.charAt(i));
+//        }
+//
+//        return result.toString();
+//    }
 
     private void printTokens(ArrayList<Token<?>> tokens) throws JaivaException {
         System.out.print("[");
@@ -132,7 +133,7 @@ public class Streamer {
     }
 
     public String toJsonError(IConfig<Object> config, Exception e, Type type) {
-        String str =  "{\"streamer\":true,\"message\":\"" + jsonEscape(removeAnsiColour(e.getMessage())) +
+        String str =  "{\"streamer\":true,\"message\":\"" + jsonEscape(AnsiColour.remove(e.getMessage())) +
                 "\",\"lineNumber\":"
                 + ((e instanceof JaivaException j) ? j.getLineNumber() : -1)
                 +",\"type\":\"" + type.toString() + "\"";
@@ -140,7 +141,7 @@ public class Streamer {
             String warnings = config.getWarnings().stream().reduce(
                     " ",
                     (s, w) ->
-                            s + "{\"message\":\"" + jsonEscape(removeAnsiColour(w.getMessage())) + "\",\"lineNumber\":" + w.getLineNumber() + "},"
+                            s + "{\"message\":\"" + jsonEscape(AnsiColour.remove(w.getMessage())) + "\",\"lineNumber\":" + w.getLineNumber() + "},"
                     ,
                     (s, s2) -> s + s2
             );

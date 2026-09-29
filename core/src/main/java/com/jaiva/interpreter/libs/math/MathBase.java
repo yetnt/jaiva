@@ -5,6 +5,10 @@ import com.jaiva.errors.InterpreterException.FunctionParametersException;
 import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Scope;
+import com.jaiva.interpreter.libBuilders.func.Argument;
+import com.jaiva.interpreter.libBuilders.func.Arguments;
+import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
+import com.jaiva.interpreter.libBuilders.func.arg.AArgument;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -41,17 +45,24 @@ public class MathBase extends BaseLibrary {
      */
     class FAbs extends BaseFunction {
         FAbs() {
-            super("m_abs", new TFunction("m_abs", new String[] { "value" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Returns the absolute value of a number.")
-                            .addParam("value", "number", "The value to return the value of.", false)
-                            .addReturns("A positive value.")
-                            .addExample("""
-                                    khuluma("The absolute value of -5 is: " + m_abs(-5))!
-                                    """)
-                            .sinceVersion("1.0.2")
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("m_abs")
+                            .arguments(
+                                    Arguments.getInstance()
+                                            .add(
+                                                    new AArgument("value", "The value to return the value of.", false, Argument.Type.NUMBER)
+                                            )
+                            ).docs(
+                                    JDoc.builder()
+                                            .addDesc("Returns the absolute value of a number.")
+                                            .addReturns("A positive value.")
+                                            .addExample("""
+                                            khuluma("The absolute value of -5 is: " + m_abs(-5))!
+                                            """)
+                                            .sinceVersion("1.0.2")
+                            )
+            );
             this.freeze();
         }
 
@@ -433,7 +444,7 @@ public class MathBase extends BaseLibrary {
 
             ArrayList<Integer> nums = toIntegerList(params, "gcd", this, config, scope, tFuncCall.lineNumber);
 
-            int gcd = nums.get(0);
+            int gcd = nums.getFirst();
             for (int i = 1; i < nums.size(); i++) {
                 gcd = computeGCD(gcd, nums.get(i));
                 if (gcd == 1) {
@@ -471,7 +482,7 @@ public class MathBase extends BaseLibrary {
 
             ArrayList<Integer> nums = toIntegerList(params, "lcm", this, config, scope, tFuncCall.lineNumber);
 
-            int lcm = nums.get(0);
+            int lcm = nums.getFirst();
             for (int i = 1; i < nums.size(); i++) {
                 int num = nums.get(i);
                 lcm = (lcm * num) / computeGCD(lcm, num);
