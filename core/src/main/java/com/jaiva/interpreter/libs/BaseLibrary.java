@@ -11,27 +11,26 @@ import com.jaiva.interpreter.libs.annotation.PublicLibrary;
 import com.jaiva.interpreter.libs.global.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.Symbol;
+import com.yetnt.utils.collection.HashMultiMap;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
- * Base class for global holder classes.
+ * A library. im not documenting bro this has so many shits
  */
 public class BaseLibrary {
 
-    private final ArrayList<LibrarySymbol> symbols = new ArrayList<>();
+    // this base library was imported from something else
+    private ImportChain importChain;
 
-    /**
-     * These are any symbols encountered via {@link #add(Symbol...)}.
-     * This means this symbol is unique to this library. If this library's child class has
-     * {@link Exports} annotation, then {@link #symbols} will hold more values from the exported symbols.
-     */
-    private final ArrayList<LibrarySymbol> uniqueSymbols = new ArrayList<>();
+    // Promise that this vbase library will import something else
+    private final ArrayList<ImportPromise> importPromises = new ArrayList<>();
+
+    private final ArrayList<LibrarySymbol> symbols = new ArrayList<>();
 
     /**
      * Default Constructor.
@@ -43,73 +42,94 @@ public class BaseLibrary {
         // This is just for reflection purposes.
     }
 
+    private void addToImportChain(ImportChain existing, Class<? extends BaseLibrary> incident) {
+        importChain = new ImportChain(incident, importChain == null ? Optional.empty() : Optional.of(existing));
+    }
+
+    private void addImportPromise(ImportPromise importPromise/*, ImportChain importChain*/) {
+        importPromises.add(importPromise);
+    }
+
     protected void add(Symbol ...syms) {
         for (Symbol symbol : syms) {
             LibrarySymbol ls = new LibrarySymbol(symbol);
             symbols.add(ls);
-            uniqueSymbols.add(ls);
         }
     }
 
     protected void add(BaseLibrary bis) {
         for (LibrarySymbol ls : bis.getSymbols()) {
             symbols.add(ls);
-            uniqueSymbols.add(ls);
         }
     }
 
-    protected void addFromExport(ArrayList<LibrarySymbol> syms) {
-        symbols.addAll(syms);
-    }
+//    protected void addFromExport(ArrayList<LibrarySymbol> syms) {
+//        symbols.addAll(syms);
+//    }
 
     protected void addWithAliases(Symbol symbol, String... aliases) {
         LibrarySymbol ls = new LibrarySymbol(symbol, aliases);
         symbols.add(ls);
-        uniqueSymbols.add(ls);
-    }
-
-    public String toToolingJSON() {
-        Vfs VFS = getVfs();
-        StringBuilder string = new StringBuilder();
-        string.append("{").append("\"version\":\"").append(Main.version).append("\",");
-        string.append("\"tokens\":");
-        string.append("[");
-        VFS.forEach((name, vf) -> {
-            Symbol symbol = (Symbol) ((MapValue) vf).getValue();
-            try {
-                string.append(symbol.token.toJson());
-            } catch (JaivaException e) {
-                throw new RuntimeException(e);
-            }
-            string.append(",");
-        });
-        string.deleteCharAt(string.length() - 1);
-        string.append("]");
-        string.append("}");
-        return string.toString();
     }
 
     /**
      * Variable functions store
      */
-    public Vfs getVfs() {
+    public Vfs getVfs(IConfig<Object> config, Globals globals) {
         Vfs vfs = new Vfs();
         symbols.forEach(vfs::putAsSymbolName);
+        if (importPromises.isEmpty()) {
+            return vfs;
+        }
+
+        HashMultiMap<Class<? extends BaseLibrary>, ImportPromise> exportClaims = new HashMultiMap<>();
+
+        exportClaims.put(this.getClass(), importPromises);
+
+        for (ImportPromise importPromise : importPromises) {
+            // Get the promised import class to import
+            Class<? extends BaseLibrary> toImport = importPromise.classToImportFrom();
+            // check this current if the lib is in there
+            if (importChain != null && importChain.getClassesInChain().contains(toImport))
+                throw new RuntimeException(
+                        "Circular dependency caught within " + toImport.getSimpleName() + " and " + this.getClass().getSimpleName()
+                );
+
+            BaseLibrary lib;
+            try {
+                lib =  instantiate(toImport, config, globals);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            ArrayList<ImportPromise> libImportPromises = lib.getImportPromises();
+            AtomicReference<HashSet<Class<? extends BaseLibrary>>> intersected = new AtomicReference<>();
+
+            Class<? extends BaseLibrary> alreadyExported = exportClaims.findFirstKeyWhere(
+                    (ArrayList<ImportPromise> values) -> {
+                        HashSet<Class<? extends BaseLibrary>> i
+                                = ImportPromise.intersect(this.importPromises, libImportPromises);
+                        if (i.isEmpty()) return false;
+                        intersected.set(i);
+                        return true;
+                    }
+            );
+
+            if (alreadyExported != null) {
+                HashSet<Class<? extends BaseLibrary>> interseciton = intersected.get();
+                throw new RuntimeException(
+                        toImport.getSimpleName() + " attempted to export " +  interseciton.toString()
+                        + " however it has already been exported by " + alreadyExported.getSimpleName()
+                );
+            }
+
+            exportClaims.put(toImport, libImportPromises);
+
+            lib.addToImportChain(importChain, this.getClass());
+            // otherwise, get the vfs
+            vfs.putAll(lib.getVfs(config, globals));
+        }
+
         return vfs;
-    }
-
-    public Optional<String> getPath() {
-        JaivaLibrary library = this.getClass().getAnnotation(JaivaLibrary.class);
-        if (library != null) return Optional.of(library.path());
-
-        PublicLibrary library2 = this.getClass().getAnnotation(PublicLibrary.class);
-        if (library2 != null) return Optional.of(library2.path());
-
-        return Optional.empty();
-    }
-
-    public ArrayList<LibrarySymbol> getUniqueSymbols() {
-        return new ArrayList<>(uniqueSymbols);
     }
 
     protected static BaseLibrary instantiate(
@@ -147,24 +167,59 @@ public class BaseLibrary {
                 throw new RuntimeException(clazz.getCanonicalName() + " attempts to export itself");
             }
 
-            ArrayList<BaseLibrary> fromExportList = globals
+            ArrayList<Class<? extends BaseLibrary>> fromExportList = globals
                     .getAllClassLibraries()
                     .stream()
                     .filter(LibraryLike::hasClass)
-                    .filter(libl -> exportList.contains(libl.getLibClass()))
-                    .map(libl -> libl.loadClassLibrary(config, globals))
+                    .map(LibraryLike::getLibClass)
+                    .filter(exportList::contains)
                     .collect(Collectors.toCollection(ArrayList::new));
 
-            for (BaseLibrary baseLibrary : fromExportList) {
-                libraryInstance.addFromExport(baseLibrary.getSymbols());
+            for (Class<? extends BaseLibrary> importFrom : fromExportList) {
+                libraryInstance.addImportPromise(new ImportPromise(importFrom));
             }
         }
 
         return libraryInstance;
     }
 
+    public String toToolingJSON(IConfig<Object> config, Globals globals) {
+        Vfs VFS = getVfs(config, globals);
+        StringBuilder string = new StringBuilder();
+        string.append("{").append("\"version\":\"").append(Main.version).append("\",");
+        string.append("\"tokens\":");
+        string.append("[");
+        VFS.forEach((name, vf) -> {
+            Symbol symbol = (Symbol) ((MapValue) vf).getValue();
+            try {
+                string.append(symbol.token.toJson());
+            } catch (JaivaException e) {
+                throw new RuntimeException(e);
+            }
+            string.append(",");
+        });
+        string.deleteCharAt(string.length() - 1);
+        string.append("]");
+        string.append("}");
+        return string.toString();
+    }
+
+    public Optional<String> getPath() {
+        JaivaLibrary library = this.getClass().getAnnotation(JaivaLibrary.class);
+        if (library != null) return Optional.of(library.path());
+
+        PublicLibrary library2 = this.getClass().getAnnotation(PublicLibrary.class);
+        if (library2 != null) return Optional.of(library2.path());
+
+        return Optional.empty();
+    }
+
     public ArrayList<LibrarySymbol> getSymbols() {
         return new ArrayList<>(symbols);
+    }
+
+    public ArrayList<ImportPromise> getImportPromises() {
+        return importPromises;
     }
 
     /**
@@ -176,9 +231,9 @@ public class BaseLibrary {
      *
      * @return a JSON array string representing the tokens of all symbols in the vfs
      */
-    public String toJson() {
+    public String toJson(IConfig<Object> config, Globals globals) {
         StringBuilder str = new StringBuilder();
-        getVfs().forEach((key, value) -> {
+        getVfs(config, globals).forEach((key, value) -> {
             // Example: append key and value to the string builder
             Symbol sym = (Symbol) value.getValue();
             try {

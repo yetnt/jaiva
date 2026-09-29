@@ -2,4 +2,4 @@
 # Determine the directory where this script is located.
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 # Execute the JAR with any passed arguments.
-java --sun-misc-unsafe-memory-access=allow -jar "$SCRIPT_DIR/jaiva.jar" "$@"
+java -jar "$SCRIPT_DIR/jaiva.jar" "$@"

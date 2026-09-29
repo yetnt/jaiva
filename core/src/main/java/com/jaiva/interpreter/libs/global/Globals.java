@@ -150,9 +150,9 @@ public class Globals extends BaseLibrary {
      * @param removeTrailingComma Remove the trailing comma
      * @return string with the JSON representation of the global tokens.
      */
-    public String returnGlobalsJSON(boolean removeTrailingComma) {
+    public String returnGlobalsJSON(IConfig<Object> config, boolean removeTrailingComma) {
         StringBuilder string = new StringBuilder();
-        getVfs().forEach((name, vf) -> {
+        getVfs(config, this).forEach((name, vf) -> {
             Symbol symbol = vf.getValue();
             try {
                 string.append(symbol.token.toJson());
@@ -165,7 +165,7 @@ public class Globals extends BaseLibrary {
     }
 
     public String returnGlobalsOf(String label, IConfig<Object> i) {
-        Vfs VFS = getVfs();
+        Vfs VFS = getVfs(i, this);
         if (!label.equals("jaiva/global")) {
             String label2 = label.replace("jaiva/", "").replace("jaiva\\", "");
             LibraryLike l = builtInGlobals.get(label2);

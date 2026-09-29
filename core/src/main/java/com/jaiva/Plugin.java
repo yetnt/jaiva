@@ -42,7 +42,7 @@ public final class Plugin {
 
             BaseLibrary library = lib.loadClassLibrary(config, globals);
 
-            return library.toToolingJSON();
+            return library.toToolingJSON(config, globals);
 
         } catch (Exception e) {
             throw new RuntimeException(

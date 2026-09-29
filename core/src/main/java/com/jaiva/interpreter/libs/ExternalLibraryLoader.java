@@ -73,7 +73,7 @@ public class ExternalLibraryLoader {
                 new TImport(path, name, true, -1), new Scope(config)), newConfig));
 
         Globals g = new Globals(config);
-        ArrayList<String> keys = new ArrayList<>(g.getVfs().keySet());
+        ArrayList<String> keys = new ArrayList<>(g.getVfs(config, g).keySet());
 
         for (String key : keys)
             vfsFromFile.remove(key);

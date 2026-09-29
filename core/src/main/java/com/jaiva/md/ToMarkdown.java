@@ -1,4 +1,4 @@
-package com.jaiva;
+package com.jaiva.md;
 
 import com.jaiva.errors.TokenizerException;
 

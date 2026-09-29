@@ -6,9 +6,9 @@ import com.jaiva.errors.JaivaException.UnknownFileException;
 import com.jaiva.errors.TokenizerException;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.Scope;
-import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.libs.global.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
+import com.jaiva.md.ToMarkdown;
 import com.jaiva.tokenizer.TConfig;
 import com.jaiva.tokenizer.Tokenizer;
 import com.jaiva.tokenizer.jdoc.JDoc;
@@ -22,7 +22,6 @@ import com.yetnt.utils.builders.AnsiColour;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -60,7 +59,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "6.0.0-beta.5";
+    public static String version = "6.0.0-beta.6";
     /**
      * Author, it's just me.
      */
@@ -250,7 +249,7 @@ public class Main {
                             throw new JaivaException.UnknownFileException("You can't print tokens of the built-in jaiva libs.");
                         System.out.println();
                         System.out.print("[");
-                        System.out.print(new Globals(iconfig).returnGlobalsJSON(false));
+                        System.out.print(new Globals(iconfig).returnGlobalsJSON(iconfig, false));
                         for (int i = 0; i < tokens.size(); i++) {
                             Token<?> token = tokens.get(i);
                             System.out.print(token.value().toJson());
@@ -268,7 +267,7 @@ public class Main {
                             throw new JaivaException.UnknownFileException("The globals (built-in) will be included with the given file's tokens automatically.");
                         System.out.println();
                         System.out.print("[");
-                        System.out.print(new Globals(iconfig).returnGlobalsJSON(false));
+                        System.out.print(new Globals(iconfig).returnGlobalsJSON(iconfig, false));
                         for (int i = 0; i < tokens.size(); i++) {
                             Token<?> token = tokens.get(i);
                             System.out.print(token.value().toJson());
