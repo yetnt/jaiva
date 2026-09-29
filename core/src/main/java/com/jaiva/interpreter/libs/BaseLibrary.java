@@ -24,14 +24,14 @@ import java.util.stream.Collectors;
  */
 public class BaseLibrary {
 
-    private final ArrayList<Symbol> symbols = new ArrayList<>();
+    private final ArrayList<LibrarySymbol> symbols = new ArrayList<>();
 
     /**
      * These are any symbols encountered via {@link #add(Symbol...)}.
      * This means this symbol is unique to this library. If this library's child class has
      * {@link Exports} annotation, then {@link #symbols} will hold more values from the exported symbols.
      */
-    private final ArrayList<Symbol> uniqueSymbols = new ArrayList<>();
+    private final ArrayList<LibrarySymbol> uniqueSymbols = new ArrayList<>();
 
     /**
      * Default Constructor.
@@ -45,27 +45,28 @@ public class BaseLibrary {
 
     protected void add(Symbol ...syms) {
         for (Symbol symbol : syms) {
-            symbols.add(symbol);
-            uniqueSymbols.add(symbol);
+            LibrarySymbol ls = new LibrarySymbol(symbol);
+            symbols.add(ls);
+            uniqueSymbols.add(ls);
         }
     }
 
     protected void add(BaseLibrary bis) {
-        for (Symbol symbol : bis.getSymbols()) {
-            symbols.add(symbol);
-            uniqueSymbols.add(symbol);
+        for (LibrarySymbol ls : bis.getSymbols()) {
+            symbols.add(ls);
+            uniqueSymbols.add(ls);
         }
     }
 
-    protected void addFromExport(ArrayList<Symbol> syms) {
+    protected void addFromExport(ArrayList<LibrarySymbol> syms) {
         symbols.addAll(syms);
     }
-//
-//    protected void add(String alias, Symbol symbol) {
-//        symbols.add(symbol);
-//        vfs.put(alias, symbol);
-//        uniqueSymbols.add(symbol);
-//    }
+
+    protected void addWithAliases(Symbol symbol, String... aliases) {
+        LibrarySymbol ls = new LibrarySymbol(symbol, aliases);
+        symbols.add(ls);
+        uniqueSymbols.add(ls);
+    }
 
     public String toToolingJSON() {
         Vfs VFS = getVfs();
@@ -107,7 +108,7 @@ public class BaseLibrary {
         return Optional.empty();
     }
 
-    public ArrayList<Symbol> getUniqueSymbols() {
+    public ArrayList<LibrarySymbol> getUniqueSymbols() {
         return new ArrayList<>(uniqueSymbols);
     }
 
@@ -162,7 +163,7 @@ public class BaseLibrary {
         return libraryInstance;
     }
 
-    public ArrayList<Symbol> getSymbols() {
+    public ArrayList<LibrarySymbol> getSymbols() {
         return new ArrayList<>(symbols);
     }
 

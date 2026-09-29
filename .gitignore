@@ -1,6 +1,7 @@
 # Release vers
-/jaiva-cli
-/core/jaiva-cli
+/core/jaiva-cli/jaiva.jar
+/core/jaiva-cli/jaiva.zip
+/core/jaiva-cli/jaiva-sources.jar
 /src/test/java/com/jaiva/playground.java
 /src/test/java/com/jaiva/playground2.java
 /src/test/resources/dummy.jiv

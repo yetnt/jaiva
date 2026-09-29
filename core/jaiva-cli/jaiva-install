@@ -178,6 +178,20 @@ if ! cp -R "$EXTRACT_DIR"/. "$DIR"/; then
     exit 1
 fi
 
+#
+# Perms
+#
+
+#for FILE in \
+#    "$DIR/jaiva" \
+#    "$DIR/jaiva.jar" \
+#    "$DIR/lib" \
+#    "$DIR/lib/arrays." \
+#    "$DIR/jaiva-src"
+#do
+#    rm -f "$FILE"
+#done
+
 chmod +x "$DIR/jaiva"
 
 #

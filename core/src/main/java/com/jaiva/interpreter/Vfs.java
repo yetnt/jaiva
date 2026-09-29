@@ -1,6 +1,8 @@
 package com.jaiva.interpreter;
 
 import com.jaiva.interpreter.libs.BaseLibrary;
+import com.jaiva.interpreter.libs.LibrarySymbol;
+import com.jaiva.interpreter.libs.annotation.Library;
 import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.tokenizer.tokens.Token;
 
@@ -165,7 +167,7 @@ public class Vfs extends LinkedHashMap<String, MapValue> {
         this.putAll(sorted);
     }
 
-    public void putAsSymbolName(Symbol symbol) {
-        put(symbol.name, symbol);
+    public void putAsSymbolName(LibrarySymbol symbol) {
+        symbol.aliases().forEach(alias -> put(alias, symbol.symbol()));
     }
 }

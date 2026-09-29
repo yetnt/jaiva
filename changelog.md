@@ -187,6 +187,34 @@ public class Shii extends BaseLibrary {
 }
 ```
 
+#### Aliases
+
+Previously, due to having direct `vfs` access, aliases creation was quite verbose
+
+```java
+public class Shii extends BaseLibrary {
+    public Shii() {
+        vfs.put("alias1", new Symbol1());
+        vfs.put("alias2", new Symbol());
+    }
+}
+```
+
+now its much cleaner
+
+```java
+public class Shii extends BaseLibrary {
+    public Shii() {
+        addWithAliases(new Symbol1(), "alias1", "alias2");
+    }
+}
+```
+
+> [!NOTE]
+> Keep in mind, the symbol name itself, is still also an alias. But the class will add the symbol name as an alias
+> for you if you didn't already.
+
+
 #### Container Libraries
 
 For Container libraries, you explicitly do not annotate them. So you can remove all their constructor stuff
