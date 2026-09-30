@@ -18,7 +18,7 @@ import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 
 import java.util.ArrayList;
 
-@JaivaLibrary(path="types/numbers")
+@JaivaLibrary(path="types/numbers", description = "More complicated converters")
 public class Numbers extends BaseLibrary {
     public Numbers() {
         add(
@@ -27,25 +27,26 @@ public class Numbers extends BaseLibrary {
         );
     }
 
-    @SymbolConfig(experimental = true)
     public static class FDoubleToIEE754Long extends BaseFunction {
         public FDoubleToIEE754Long() {
             super(
                     FunctionBuilder.start()
                             .name("t_dToIEEE754Long")
                             .arguments(
-                                    Arguments.getInstance()
-                                            .add(
-                                                    new AArgument(
-                                                            "double",
-                                                            "The double to convert",
-                                                            false,
-                                                            Argument.Type.NUMBER
-                                                    )
+                                    Arguments.getInstance().add(
+                                            new AArgument(
+                                                    "double", "The double to get the bits off",
+                                                    false, Argument.Type.NUMBER
                                             )
+                                    )
                             )
                             .docs(
                                     JDoc.builder()
+                                            .addDesc(
+                                                    "Returns the representation of the given double, as a long, where it's bits "
+                                                    + "correspond to the IEEE 754 floating-point \"double format\" bit layout."
+                                            )
+                                            .addReturns("the bits that represent the double")
                                             .sinceVersion("6.0.0-beta.5")
                             )
             );
@@ -67,25 +68,26 @@ public class Numbers extends BaseLibrary {
         }
     }
 
-    @SymbolConfig(experimental = true)
     public static class FLongToIEEE754Double extends BaseFunction {
         public FLongToIEEE754Double() {
             super(
                     FunctionBuilder.start()
                             .name("t_lToIEEE754Double")
                             .arguments(
-                                    Arguments.getInstance()
-                                            .add(
-                                                    new AArgument(
-                                                            "long",
-                                                            "The long integer to convert",
-                                                            false,
-                                                            Argument.Type.NUMBER
-                                                    )
+                                    Arguments.getInstance().add(
+                                            new AArgument(
+                                                    "long", "The representation of the double as a long",
+                                                    false, Argument.Type.NUMBER
                                             )
+                                    )
                             )
                             .docs(
                                     JDoc.builder()
+                                            .addDesc(
+                                                    "Returns the double value of which this long is assumed to be a representation of "
+                                                    + "the IEEE 754 floating-point \"double format\" bit layout."
+                                            )
+                                            .addReturns("the double this long's bits represent.")
                                             .sinceVersion("6.0.0-beta.5")
                             )
             );
