@@ -11,6 +11,7 @@ import com.jaiva.interpreter.libs.annotation.PublicLibrary;
 import com.jaiva.interpreter.libs.global.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.Symbol;
+import com.jaiva.interpreter.symbol.SymbolType;
 import com.yetnt.utils.collection.HashMultiMap;
 
 import java.lang.annotation.Annotation;
@@ -136,6 +137,8 @@ public class BaseLibrary {
             Class<?> clazz,
             IConfig<Object> config,
             Globals globals
+//            ,
+//            ClassLoader cl
     ) throws Exception {
         BaseLibrary libraryInstance;
         try {
@@ -189,10 +192,25 @@ public class BaseLibrary {
         string.append("{").append("\"version\":\"").append(Main.version).append("\",");
         string.append("\"tokens\":");
         string.append("[");
+        HashMap<Symbol, String> jsonMap = new HashMap<>();
         VFS.forEach((name, vf) -> {
             Symbol symbol = (Symbol) ((MapValue) vf).getValue();
             try {
-                string.append(symbol.token.toJson());
+                if (jsonMap.containsKey(symbol)) {
+                    String symJson = jsonMap.get(symbol);
+                    if (symbol.symbolType == SymbolType.FUNCTION) {
+                        // TFunction token adds F~ syntax to name
+                        symJson = symJson.replace("\"name\": \""+symbol.token.name+"\"", "\"name\": \"F~"+name+"\"");
+                    } else {
+                        symJson = symJson.replace("\"name\": \""+symbol.token.name+"\"", "\"name\": \""+name+"\"");
+                    }
+                    string.append(symJson);
+                }
+                else {
+                    String json = symbol.token.toJson();
+                    string.append(json);
+                    jsonMap.put(symbol, json);
+                }
             } catch (JaivaException e) {
                 throw new RuntimeException(e);
             }
@@ -222,31 +240,31 @@ public class BaseLibrary {
         return importPromises;
     }
 
-    /**
-     * Converts the contents of the vfs to a JSON array string.
-     * Each entry in the vfs is expected to have a value containing a Symbol object,
-     * whose token is serialized to JSON using its toJson() method.
-     * The resulting JSON array contains the serialized tokens of all symbols in the
-     * vfs.
-     *
-     * @return a JSON array string representing the tokens of all symbols in the vfs
-     */
-    public String toJson(IConfig<Object> config, Globals globals) {
-        StringBuilder str = new StringBuilder();
-        getVfs(config, globals).forEach((key, value) -> {
-            // Example: append key and value to the string builder
-            Symbol sym = (Symbol) value.getValue();
-            try {
-                str.append(sym.token.toJson());
-            } catch (JaivaException e) {
-                // Handle the exception, e.g., log or append an error message
-                throw new RuntimeException(e);
-            }
-            str.append(",");
-        });
-        // Remove trailing comma and space if needed
-        return "[" + str.substring(0, str.toString().length() - 1) + "]";
-    }
+//    /**
+//     * Converts the contents of the vfs to a JSON array string.
+//     * Each entry in the vfs is expected to have a value containing a Symbol object,
+//     * whose token is serialized to JSON using its toJson() method.
+//     * The resulting JSON array contains the serialized tokens of all symbols in the
+//     * vfs.
+//     *
+//     * @return a JSON array string representing the tokens of all symbols in the vfs
+//     */
+//    public String toJson(IConfig<Object> config, Globals globals) {
+//        StringBuilder str = new StringBuilder();
+//        getVfs(config, globals).forEach((key, value) -> {
+//            // Example: append key and value to the string builder
+//            Symbol sym = (Symbol) value.getValue();
+//            try {
+//                str.append(sym.token.toJson());
+//            } catch (JaivaException e) {
+//                // Handle the exception, e.g., log or append an error message
+//                throw new RuntimeException(e);
+//            }
+//            str.append(",");
+//        });
+//        // Remove trailing comma and space if needed
+//        return "[" + str.substring(0, str.toString().length() - 1) + "]";
+//    }
 
     /**
      * Uses reflection to get the public static String field named "path" from the given class.

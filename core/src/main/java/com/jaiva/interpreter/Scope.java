@@ -72,7 +72,7 @@ public class Scope {
         this.lineNumber = 0;
         this.parent = null;
         try {
-            this.globals = new Globals(iconfig, globals);
+            this.globals = new Globals(iconfig, Scope.class.getClassLoader(), globals);
             this.vfs = this.globals.getVfs(iconfig, this.globals);
         } catch (InterpreterException e) {
             throw new RuntimeException(e);

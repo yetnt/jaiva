@@ -69,7 +69,48 @@ public class Globals extends BaseLibrary {
 
     public HashMap<String, LibraryLike> builtInGlobals = new HashMap<>();
 
-    public ArrayList<LibraryLike> putGlobals(IConfig<Object> config) throws InterpreterException {
+    /**
+     * Default Constructor. This constructor is used when creating a new global {@link Scope}
+     * in normal Jaiva scripts. This also initialises what Globals actually holds.
+     * @implNote Since this is mostly decoupled form the actual execution, you can find it being
+     * instantiated purely for tooling purposes other than actually executing.
+     *
+     * @param config The interpreter config
+     *
+     * @throws InterpreterException if something goes wrong lol
+     */
+    public Globals(IConfig<Object> config) throws InterpreterException {
+        this(config, Globals.class.getClassLoader(), new ArrayList<>());
+    }
+
+    public Globals(IConfig<Object> config, ClassLoader classLoader) throws InterpreterException {
+        this(config, classLoader, new ArrayList<>());
+    }
+
+    /**
+     * Constructor used when creating a new global {@link Scope} but specifically via {@link JBundler}
+     * or {@link Plugin} (Although not used) to also instantiate and store external libraries in the same position as jaiva
+     * built in libraries, making it seem to the user that it's apart of Jaiva when really the host provided custom
+     * libraries
+     * @param config The interpreter config
+     * @param classLoader The class loader to use when loading external classes. usually this shouldnt apply hence passing
+     *                    null will default to {@link Globals}'s class loader instead.
+     * @param external The list of external classes to store
+     * @throws InterpreterException if something goes wrong lol
+     */
+    public Globals(IConfig<Object> config, ClassLoader classLoader, List<Class<? extends BaseLibrary>> external) throws InterpreterException {
+        super();
+        allClassLibraries.addAll(putGlobals(config, classLoader == null ? Globals.class.getClassLoader() : classLoader));
+        for (Class<? extends BaseLibrary> ext : external) {
+            String path = BaseLibrary.externalLibraryRequirements(ext);
+            LibraryLike lk = LibraryLike.of(ext);
+            builtInGlobals.put(path, lk);
+            allClassLibraries.add(lk);
+            externalLibraries.add(lk);
+        }
+    }
+
+    public ArrayList<LibraryLike> putGlobals(IConfig<Object> config, ClassLoader cl) throws InterpreterException {
 
         add(new GlobalFunctions(config));
 
@@ -77,7 +118,7 @@ public class Globals extends BaseLibrary {
         builtInGlobals.put("arrays", LibraryLike.of("arrays.jiv"));
 
         return putJaivaLibraries(
-                findInternalLibraries()
+                findInternalLibraries(cl)
         );
     }
 
@@ -98,42 +139,6 @@ public class Globals extends BaseLibrary {
             builtInGlobals.put(path, l);
         }
         return libraries;
-    }
-
-    /**
-     * Default Constructor. This constructor is used when creating a new global {@link Scope}
-     * in normal Jaiva scripts. This also initialises what Globals actually holds.
-     * @implNote Since this is mostly decoupled form the actual execution, you can find it being
-     * instantiated purely for tooling purposes other than actually executing.
-     *
-     * @param config The interpreter config
-     *
-     * @throws InterpreterException if something goes wrong lol
-     */
-    public Globals(IConfig<Object> config) throws InterpreterException {
-        super();
-        allClassLibraries.addAll(putGlobals(config));
-    }
-
-
-    /**
-     * Constructor used when creating a new global {@link Scope} but specifically via {@link JBundler}
-     * or {@link Plugin} (Although not used) to also instantiate and store external libraries in the same position as jaiva
-     * built in libraries, making it seem to the user that it's apart of Jaiva when really the host provided custom
-     * libraries
-     * @param config The interpreter config
-     * @param external The list of external classes to store
-     * @throws InterpreterException if something goes wrong lol
-     */
-    public Globals(IConfig<Object> config, List<Class<? extends BaseLibrary>> external) throws InterpreterException {
-        this(config);
-        for (Class<? extends BaseLibrary> ext : external) {
-            String path = BaseLibrary.externalLibraryRequirements(ext);
-            LibraryLike lk = LibraryLike.of(ext);
-            builtInGlobals.put(path, lk);
-            allClassLibraries.add(lk);
-            externalLibraries.add(lk);
-        }
     }
 
     public ArrayList<LibraryLike> getAllClassLibraries() {
@@ -198,9 +203,12 @@ public class Globals extends BaseLibrary {
         return builtInGlobals.get(name).load(new IConfig<Object>(true, null), this);
     }
 
-    public static List<Class<? extends BaseLibrary>> findInternalLibraries() {
+    public static List<Class<? extends BaseLibrary>> findInternalLibraries(
+            ClassLoader cl
+    ) {
         try (ScanResult scan = new ClassGraph()
                 .enableClassInfo()
+                .overrideClassLoaders(cl)
                 .enableAnnotationInfo()
                 .acceptPackages("com.jaiva.interpreter.libs")
                 .scan()) {
