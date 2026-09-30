@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  * @author Lehlogonolo Poole
  */
 @Retention(RetentionPolicy.RUNTIME)
-@JaivaLibrary(path="global")
+@JaivaLibrary(path="global", description = "The globals, These functions and variables are available in any scope.")
 @Target(ElementType.TYPE)
 public @interface GlobalsLib {
 }

@@ -26,14 +26,14 @@ import com.jaiva.tokenizer.tokens.specific.TVarRef;
 import java.util.ArrayList;
 import java.util.List;
 
-@JaivaLibrary(path = "debug")
+@JaivaLibrary(path = "debug", description = "Random stuff you should not be working with. These aren't related to the CLI debugger.")
 public class Debug extends BaseLibrary {
 
     public Debug() {
         add(new FEmit(), new FVfs(), new FLink(), new FGetScope());
     }
 
-    public class FLink extends BaseFunction {
+    static class FLink extends BaseFunction {
         FLink() {
             super(
                     FunctionBuilder.start()
@@ -49,29 +49,29 @@ public class Debug extends BaseLibrary {
                                             .sinceVersion("5.0.4")
                                             .addReturns("idk")
                                             .addNote("""
-                                    A usual (b <- a) syntax would suffice if you'd like to copy the value of a into b.
-                                    However when a is changed, b will stay the value you set earlier. This function fixes that where it will
-                                    link the exact MapValue from a into b, discarding b's old MapValue. such that editing any one of the symbols
-                                    via the reassignment syntax will update the linked variable.
-                                    
-                                    In the case that the "b" parameter does not actually exist in the symbol table, d_link will try to make it, itself.
-                                    """)
-                                            .addExample("""
-                                    maak a <- f~() : 10! @ Lambda that returns 10
-                                    maak b <- true! @ boolean value true
-                                    
-                                    @ With normal reassignment syntax, setting b to a then changing b does not update a
-                                    b <- a!
-                                    b <- 10!
-                                    khuluma(a)! @ prints the lambda signature and not 10.
-                                    
-                                    @ With d_link, the exact MapValue held by that alias is copied.
-                                    d_link(a, b)!
-                                    b <- 10!
-                                    khuluma(a)! @ prints 10
-                                    a <- 100!
-                                    khuluma(b)! @ prints 100
-                                    """)
+                                            A usual (b <- a) syntax would suffice if you'd like to copy the value of a into b.
+                                            However when a is changed, b will stay the value you set earlier. This function fixes that where it will
+                                            link the exact MapValue from a into b, discarding b's old MapValue. such that editing any one of the symbols
+                                            via the reassignment syntax will update the linked variable.
+                                            
+                                            In the case that the "b" parameter does not actually exist in the symbol table, d_link will try to make it, itself.
+                                            """)
+                                                    .addExample("""
+                                            maak a <- f~() : 10! @ Lambda that returns 10
+                                            maak b <- true! @ boolean value true
+                                            
+                                            @ With normal reassignment syntax, setting b to a then changing b does not update a
+                                            b <- a!
+                                            b <- 10!
+                                            khuluma(a)! @ prints the lambda signature and not 10.
+                                            
+                                            @ With d_link, the exact MapValue held by that alias is copied.
+                                            d_link(a, b)!
+                                            b <- 10!
+                                            khuluma(a)! @ prints 10
+                                            a <- 100!
+                                            khuluma(b)! @ prints 100
+                                            """)
                             )
             );
         }
@@ -79,16 +79,16 @@ public class Debug extends BaseLibrary {
         @Override
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
             checkParams(tFuncCall, scope);
-            TokenDefault refA = null;
-            TokenDefault refB = null;
+            TokenDefault<?> refA = null;
+            TokenDefault<?> refB = null;
 
             if (tFuncCall.args.getFirst() instanceof Token<?>(Object value))
-                refA = (TokenDefault) value;
-            else if (tFuncCall.args.getFirst() instanceof TokenDefault t)
+                refA = (TokenDefault<?>) value;
+            else if (tFuncCall.args.getFirst() instanceof TokenDefault<?> t)
                 refA = t;
             if (tFuncCall.args.get(1) instanceof Token<?>(Object value))
-                refB = (TokenDefault) value;
-            else  if (tFuncCall.args.get(1) instanceof TokenDefault t)
+                refB = (TokenDefault<?>) value;
+            else  if (tFuncCall.args.get(1) instanceof TokenDefault<?> t)
                 refB = t;
 
             assert refA != null;
@@ -107,8 +107,7 @@ public class Debug extends BaseLibrary {
         }
     }
 
-    @SymbolConfig(experimental = true)
-    public class FVfs extends BaseFunction {
+    static class FVfs extends BaseFunction {
         FVfs() {
             super(FunctionBuilder.start()
                     .name("d_vfs")
@@ -145,7 +144,7 @@ public class Debug extends BaseLibrary {
         }
     }
 
-    public class FEmit extends BaseFunction {
+    static class FEmit extends BaseFunction {
         FEmit() {
             super(FunctionBuilder.start()
                     .name("d_emit")
@@ -196,7 +195,7 @@ public class Debug extends BaseLibrary {
         }
     }
 
-    public class FGetScope extends BaseFunction {
+    static class FGetScope extends BaseFunction {
         public FGetScope() {
             super(FunctionBuilder.start()
                     .name("d_getScope")

@@ -3,6 +3,10 @@ package com.jaiva.interpreter.libs.file;
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Scope;
+import com.jaiva.interpreter.libBuilders.func.Argument;
+import com.jaiva.interpreter.libBuilders.func.Arguments;
+import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
+import com.jaiva.interpreter.libBuilders.func.arg.AArgument;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.libs.file.api.FileType;
@@ -26,7 +30,8 @@ import java.util.ArrayList;
  * This class simply provides a way to organize these functions within the library system.
  * </p>
  */
-@JaivaLibrary(path = "file/query")
+@JaivaLibrary(path = "file/query", description = "Allows querying of file stuff from" +
+        " the structured array instead of manual indexing")
 public class FileQuery extends BaseLibrary {
     public FileQuery() {
         add(new FNameOf(), new FDirOf(), new FContentOf(), new FPermsOf());
@@ -34,18 +39,25 @@ public class FileQuery extends BaseLibrary {
 
     public static class FNameOf extends BaseFunction {
         public FNameOf() {
-            super("f_nameOf", new TFunction(
-                    "f_nameOf", new String[]{"file"}, null, -1,
-                    JDoc.builder()
-                            .addDesc("Gets the name of the file from a file.")
-                            .addParam("file", "[]", "The file array to get the name from.", false)
-                            .addReturns("The name of the file as a string.")
-                            .sinceVersion("5.0.0")
-                            .addExample("""
-                                    khuluma(f_nameOf(f_this))! @ Prints the name of the current file.
-                                    """)
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("f_nameOf")
+                            .arguments(Arguments.getInstance().add(
+                                    new AArgument(
+                                            "file", "The file array to get the name from.",
+                                            false, Argument.Type.ARRAY
+                                    )
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Gets the name of the file from a file.")
+                                            .addReturns("The name of the file as a string.")
+                                            .sinceVersion("5.0.0")
+                                            .addExample("""
+                                            khuluma(f_nameOf(f_this))! @ Prints the name of the current file.
+                                            """)
+                            )
+            );
             freeze();
         }
 
@@ -63,18 +75,25 @@ public class FileQuery extends BaseLibrary {
 
     public static class FDirOf extends BaseFunction {
         public FDirOf() {
-            super("f_dirOf", new TFunction(
-                    "f_dirOf", new String[]{"file"}, null, -1,
-                    JDoc.builder()
-                            .addDesc("Gets the directory path of the file from a file.")
-                            .addParam("file", "[]", "The file array to get the directory path from.", false)
-                            .addReturns("The directory path of the file as a string.")
-                            .sinceVersion("5.0.0")
-                            .addExample("""
-                                    khuluma(f_dirOf(f_this))! @ Prints the directory path of the current file.
-                                    """)
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("f_dirOf")
+                            .arguments(Arguments.getInstance().add(
+                                    new AArgument(
+                                            "file", "The file array to get the directory path from.",
+                                            false, Argument.Type.ARRAY
+                                    )
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Gets the directory path of the file from a file.")
+                                            .addReturns("The directory path of the file as a string.")
+                                            .sinceVersion("5.0.0")
+                                            .addExample("""
+                                            khuluma(f_dirOf(f_this))! @ Prints the directory path of the current file.
+                                            """)
+                            )
+            );
             freeze();
         }
 
@@ -92,18 +111,25 @@ public class FileQuery extends BaseLibrary {
 
     public static class FContentOf extends BaseFunction {
         public FContentOf() {
-            super("f_contentOf", new TFunction(
-                    "f_contentOf", new String[]{"file"}, null, -1,
-                    JDoc.builder()
-                            .addDesc("Gets the content of the file from a file.")
-                            .addParam("file", "[]", "The file array to get the content from.", false)
-                            .addReturns("The content of the file as an array of strings.")
-                            .sinceVersion("5.0.0")
-                            .addExample("""
-                                    khuluma(f_contentOf(f_this))! @ Prints the content of the current file.
-                                    """)
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("f_contentOf")
+                            .arguments(Arguments.getInstance().add(
+                                    new AArgument(
+                                            "file", "The file array to get the content from.",
+                                            false, Argument.Type.ARRAY
+                                    )
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Gets the content of the file from a file.")
+                                            .addReturns("The content of the file as an array of strings.")
+                                            .sinceVersion("5.0.0")
+                                            .addExample("""
+                                            khuluma(f_contentOf(f_this))! @ Prints the content of the current file.
+                                            """)
+                            )
+            );
             freeze();
         }
 
@@ -121,24 +147,37 @@ public class FileQuery extends BaseLibrary {
 
     public static class FPermsOf extends BaseFunction {
         public FPermsOf() {
-            super("f_permsOf", new TFunction(
-                    "f_permsOf", new String[]{"file"}, null, -1,
-                    JDoc.builder()
-                            .addDesc("Gets the permissions of the file from a file.")
-                            .addParam("file", "[]", "The file array to get the permissions from.", false)
-                            .addReturns("A function that allows you to return a specific permission or all permissions as an array.")
-                            .addNote("Unlike other functions, this one may require a bit of functional thinking. It returns a function that you can call to get specific permissions or all permissions at once.")
-                            .sinceVersion("5.0.0")
-                            .addExample("""
-                                    maak permissions <- f_permsOf(f_this)!
-                                    khuluma(permissions())! @ Prints all permissions as an array [canRead, canWrite, canExecute]
-                                    khuluma(permissions("read"))! @ Prints whether the file can be read (true/false)
-                                    khuluma(permissions("r"))! @ Prints whether the file can be read (true/false)
-                                    khuluma(permissions(0))! @ Prints whether the file can be read (true/false)
-                                    @ Similarly for "write"/"w"/1 and "execute"/"x"/2
-                                    """)
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("f_permsOf")
+                            .arguments(Arguments.getInstance().add(
+                                    new AArgument(
+                                            "file", "The file array to get the permissions from.",
+                                            false, Argument.Type.ARRAY
+                                    )
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Gets the permissions of the file from a file.")
+                                            .addReturns("A closure over the permissions array allowing multiple ways to access the permissions without directly indexing into the array.")
+                                            .addNote("Unlike other functions, this one may require a bit of functional thinking. " +
+                                                    "It returns a function that you can call to get specific permissions or all permissions at once. " +
+                                                    "The function can take, a full string such as \"read\" or \"r\" and return whether that permission exists, " +
+                                                    "An integer position [read, write, execute], or a Unix-like, 3 length permission string to return a boolean " +
+                                                    "indicating that, that permission stirng matches the permission \"rwx\" or \"r-x\""
+                                            )
+                                            .sinceVersion("5.0.0")
+                                            .addExample("""
+                                            maak permissions <- f_permsOf(f_this)!
+                                            khuluma(permissions())! @ Prints all permissions as an array [canRead, canWrite, canExecute]
+                                            khuluma(permissions("read"))! @ Prints whether the file can be read (true/false)
+                                            khuluma(permissions("r"))! @ Prints whether the file can be read (true/false)
+                                            khuluma(permissions(0))! @ Prints whether the file can be read (true/false)
+                                            @ Similarly for "write"/"w"/1 and "execute"/"x"/2
+                                            khuluma(permissions("r-x"))! @ Prints whether the file only has read and execute permission. (Unix like)
+                                            """)
+                            )
+            );
             freeze();
         }
 
@@ -146,30 +185,32 @@ public class FileQuery extends BaseLibrary {
          * Function returned by f_permsOf to get specific permissions.
          * This function doesn't actually require to have a name as it's created and immediately returned by f_permsOf.
          */
-        public class FPermissions extends BaseFunction {
+        public static class FPermissions extends BaseFunction {
             private final FileType file;
 
             public FPermissions(FileType file) {
-                super("perms", new TFunction(
-                        "perms",
-                        new String[]{"perm?"},
-                        null,
-                        -1,
-                        JDoc.builder()
-                                .addDesc("Gets specific permissions or all permission of the specified file.")
-                                .addParam("perm", "idk", "The permission to get ('read'/'r'/0, 'write'/'w'/1, 'execute'/'x'/2). If omitted, returns all permissions as an array.", true)
-                                .addReturns("The requested permission as a boolean, or all permissions as an array if no parameter is given.")
-                                .sinceVersion("5.0.0")
-                                .addExample("""
-                                        maak permissions <- f_permsOf(f_this)!
-                                        khuluma(permissions())! @ Prints all permissions as an array [canRead, canWrite, canExecute]
-                                        khuluma(permissions("read"))! @ Prints whether the file can be read (true/false)
-                                        khuluma(permissions("r"))! @ Prints whether the file can be read (true/false)
-                                        khuluma(permissions(0))! @ Prints whether the file can be read (true/false)
-                                        @ Similarly for "write"/"w"/1 and "execute"/"x"/2
-                                        """)
-                                .build()
-                ));
+                super(
+                        FunctionBuilder.start()
+                                .name("perms")
+                                .arguments(
+                                        Arguments.getInstance()
+                                                .add(
+                                                        new AArgument(
+                                                                "perms", "The permission to get ('read'/'r'/0, 'write'/'w'/1, " +
+                                                                "'execute'/'x'/2). If omitted, returns all permissions as an array.",
+                                                                false, Argument.Type.ANY
+                                                        )
+                                                )
+                                )
+                                .docs(
+                                        // docs really dont matter here its not discoverable as a closure.
+                                        JDoc.builder()
+                                                .addDesc("Gets specific permissions or all permission of the specified file.")
+                                                .addReturns("The requested permission as a boolean, or all permissions as an array " +
+                                                        "if no parameter is given.")
+                                                .sinceVersion("5.0.0")
+                                )
+                );
                 this.file = file;
                 freeze();
             }
@@ -183,6 +224,13 @@ public class FileQuery extends BaseLibrary {
                 } else {
                     Object permObj = params.getFirst();
                     if (permObj instanceof String permStr) {
+                        if (permStr.length() == 3) {
+                            boolean read = permStr.charAt(0) == 'r' && file.canRead();
+                            boolean write = permStr.charAt(1) == 'w' && file.canWrite();
+                            boolean execute = permStr.charAt(2) == 'x' && file.canExecute();
+
+                            return read && write && execute;
+                        }
                         switch (permStr.toLowerCase()) {
                             case "read", "r" -> {
                                 return file.canRead();
@@ -227,7 +275,7 @@ public class FileQuery extends BaseLibrary {
                 throw new InterpreterException.WtfAreYouDoingException(scope,
                         "The parameter 'file' needs to be an array like come on!", tFuncCall.lineNumber);
             FileType file = FileType.of((ArrayList<Object>) arr, scope, tFuncCall.lineNumber);
-            return new FPermsOf.FPermissions(file);
+            return new FPermissions(file);
         }
     }
 }

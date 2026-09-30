@@ -6,6 +6,11 @@ import com.jaiva.errors.InterpreterException.FunctionParametersException;
 import com.jaiva.errors.InterpreterException.WtfAreYouDoingException;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Scope;
+import com.jaiva.interpreter.libBuilders.func.Argument;
+import com.jaiva.interpreter.libBuilders.func.Arguments;
+import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
+import com.jaiva.interpreter.libBuilders.func.arg.AArgument;
+import com.jaiva.interpreter.libBuilders.var.VariableBuilder;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.libs.file.api.FileCreator;
@@ -31,7 +36,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 
-@JaivaLibrary(path = "file/api")
+@JaivaLibrary(path = "file/api", description = "The file api for actually creating files and stuff yknow")
 public class FileApi extends BaseLibrary {
 
     public FileApi(IConfig<Object> config) throws InterpreterException {
@@ -47,23 +52,24 @@ public class FileApi extends BaseLibrary {
      * is named "f_name"
      * and is frozen upon creation to prevent further modification.
      */
-    public class VFileName extends BaseVariable {
+    static class VFileName extends BaseVariable {
         public VFileName(IConfig<Object> config) {
-            super("f_name",
-                    new TStringVar("f_name",
-                            config.filePath == null ? "FileApi" : config.filePath.getFileName().toString(), -1,
-                            JDoc.builder()
-                                    .addDesc("Variable that holds the current file's name")
-                                    .addNote("If you call this within the REPL, or somehow the filePath is null, it holds \"REPL\"")
-                                    .sinceVersion("1.0.0")
-                                    .addExample("""
+            super(
+                    VariableBuilder.start()
+                            .name("f_name")
+                            .value(config.filePath == null ? "FileApi" : config.filePath.getFileName().toString())
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Variable that holds the current file's name")
+                                            .addNote("If you call this within the REPL, or somehow the filePath is null, it holds \"FileApi\"")
+                                            .sinceVersion("1.0.0")
+                                            .addExample("""
                                             if (f_name != "myFile.jiv") ->
                                                 khuluma("This is not myFile.jiv!")!
                                             <~
                                             """)
-                                    .build()
-                    ),
-                    config.filePath == null ? "FileApi" : config.filePath.getFileName().toString());
+                            )
+            );
             freeze();
 
         }
@@ -80,21 +86,22 @@ public class FileApi extends BaseLibrary {
      * </p>
      *
      */
-    public class VDirectory extends BaseVariable {
+    static class VDirectory extends BaseVariable {
         public VDirectory(IConfig<Object> config) {
-            super("f_dir",
-                    new TStringVar("f_dir", config.fileDirectory == null ? "FileApi"
-                            : config.fileDirectory.toAbsolutePath().toString(), -1,
-                            JDoc.builder()
-                                    .addDesc("Variable that holds the current file's directory.")
-                                    .addNote("If you call this within the REPL, or somehow the filePath is null, it holds \"REPL\"")
-                                    .sinceVersion("1.0.0")
-                                    .addExample("""
+            super(
+                    VariableBuilder.start()
+                            .name("f_dir")
+                            .value(config.fileDirectory == null ? "FileApi" : config.fileDirectory.toAbsolutePath().toString())
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Variable that holds the current file's directory.")
+                                            .addNote("If you call this within the REPL, or somehow the filePath is null, it holds \"FileApi\"")
+                                            .sinceVersion("1.0.0")
+                                            .addExample("""
                                             khuluma("Current file directory is: " + f_dir)!
                                             """)
-                                    .build()
-                    ),
-                    config.fileDirectory == null ? "FileApi" : config.fileDirectory.toAbsolutePath().toString());
+                            )
+            );
             freeze();
         }
     }
@@ -119,7 +126,7 @@ public class FileApi extends BaseLibrary {
      * extracted and stored.
      * The variable is frozen after initialization to prevent further modification.
      */
-    public class VThis extends BaseVariable {
+    static class VThis extends BaseVariable {
         /**
          * Constructs a VThis object representing the current file's structure and
          * metadata.
@@ -145,22 +152,23 @@ public class FileApi extends BaseLibrary {
          * @throws InterpreterException If the file does not exist or cannot be read.
          */
         public VThis(IConfig<Object> config) throws InterpreterException {
-            super("f_this", new TArrayVar("f_this", new ArrayList<>(), -1,
-                    JDoc.builder()
-                            .addDesc("Returns the current file's properties and contents.")
-                            .addNote("Returns an array containing the current file's properties \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]")
-                            .addNote("Once again, if we are inside the REPL, we just return static content. (Does not represent the REPL)")
-                            .sinceVersion("1.0.1")
-                            .addExample("""
-                                    f_this[0]! @ holds the file name
-                                    f_this[1]! @ holds the file directory
-                                    khuluma("FileApi contents: " + f_this[2])! @ holds the file contents as an array
-                                    khuluma("Can we write to this file? " + f_this[3][1])! @ holds the file permissions
-                                    """)
-                            .build()
-                    ),
-                    new ArrayList<>());
-            // createFunction the array containing this current file's structure
+            super(
+                    VariableBuilder.start()
+                            .name("f_this")
+                            .value(new ArrayList<>())
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Returns the current file's properties and contents.")
+                                            .addNote("Returns an array containing the current file's properties \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]")
+                                            .addNote("Once again, if we are inside the REPL, we just return static content. (Does not represent the REPL)")
+                                            .sinceVersion("1.0.1")
+                                            .addExample("""
+                                            f_this[0]! @ holds the file name
+                                            f_this[1]! @ holds the file directory
+                                            khuluma("File contents: " + f_this[2])! @ holds the file contents as an array
+                                            khuluma("Can we write to this file? " + f_this[3][1])! @ holds the file permissions
+                                            """))
+            );
             // if we're in the file.
             /*
              * [
@@ -179,11 +187,6 @@ public class FileApi extends BaseLibrary {
 
                 this.a_unsafeSet(fl);
 
-//                ((TArrayVar) this.token).contents.addAll(Arrays.asList(
-//                        "REPL",
-//                        Token.voidValue(-1),
-//                        new ArrayList<>(Arrays.asList("fweah!", "seeyuh")),
-//                        new ArrayList<>(Arrays.asList(false, true, false))));
                 return;
             }
 
@@ -195,8 +198,6 @@ public class FileApi extends BaseLibrary {
             } catch (FileNotFoundException e) {
                 ((TArrayVar) this.token).contents = new ArrayList<>();
                 return;
-//                throw new InterpreterException.CatchAllException(new Scope(config),
-//                        "Well, the current file doesn't exist??...", -1);
             }
             ArrayList<String> contents = new ArrayList<>();
             while (fs.hasNextLine())
@@ -229,22 +230,33 @@ public class FileApi extends BaseLibrary {
      * <li>Returns an ArrayList of the file properties
      * </ul>
      */
-    public class FFile extends BaseFunction {
+    static class FFile extends BaseFunction {
         // function looks for the file and returns its properties in the structure.
         public FFile(IConfig<Object> config) {
-            super("f_file", new TFunction("f_file", new String[] { "path" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Finds the specified file and retrieves it's contents.")
-                            .addParam("path", "string", "The path to the file you want to fetch.", false)
-                            .addReturns("Returns an array containing the properties of the file at the given `path` \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]")
-                            .addExample("""
-                                    maak file <- f_file("data/myFile.txt")!
-                                    khuluma("FileApi name: " + file[0])!
-                                    khuluma("FileApi directory: " + file[1])!
-                                    """)
-                            .sinceVersion("1.0.1")
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("f_file")
+                            .arguments(
+                                    Arguments.getInstance()
+                                            .add(
+                                                    new AArgument(
+                                                            "path", "The path to the file you want to fetch.",
+                                                            false, Argument.Type.STRING
+                                                    )
+                                            )
+                            )
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Finds the specified file and retrieves it's contents.")
+                                            .addReturns("Returns an array containing the properties of the file at the given `path` \\n [fileName, fileDir, [contents], [canRead?, canWrite?, canExecute?]]")
+                                            .addExample("""
+                                            maak file <- f_file("data/myFile.txt")!
+                                            khuluma("FileApi name: " + file[0])!
+                                            khuluma("FileApi directory: " + file[1])!
+                                            """)
+                                            .sinceVersion("1.0.1")
+                            )
+            );
             freeze();
         }
 
@@ -309,7 +321,7 @@ public class FileApi extends BaseLibrary {
      * <li>Returns true if the file was created successfully, false otherwise.</li>
      * </ul>
      */
-    public class FNew extends BaseFunction {
+    public static class FNew extends BaseFunction {
         public FNew(IConfig<Object> config) {
             /*
              * [
@@ -319,27 +331,48 @@ public class FileApi extends BaseLibrary {
              * [canRead?, canWrite?, canExecute?]
              * ]
              */
-            super("f_new", new TFunction("f_new",
-                    new String[] { "path", "content", "canRead?", "canWrite?", "canExecute?" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Creates a new file with the given properties at the given file.")
-                            .addParam("path", "string", "The path to the new file to createFunction. Along with the file name and extension", false)
-                            .addParam("content", "idk", "The content the file should hold. Either a string or an array of strings.", false)
-                            .addParam("canRead", "boolean", "Whether or not the file can be read. Defaults to true", true)
-                            .addParam("canWrite", "boolean", "Whether the file can be written to or not. Defaults to true", true)
-                            .addParam("canExecute", "boolean", "Whether the file can be executed or not. Defaults to true.", true)
-                            .addReturns("A boolean `true` if the file could be created. `false` otherwise.")
-                            .addExample("""
-                                    maak success <- f_new("data/newFile.txt", arrLit("Hello, World!", "This is a new file."), true, true, false)!
-                                    if (success) ->
-                                        khuluma("FileApi created successfully!")!
-                                    <~ else ->
-                                        khuluma("Failed to createFunction file.")!
-                                    <~
-                                    """)
-                            .sinceVersion("2.0.1")
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("f_new")
+                            .arguments(
+                                    Arguments.getInstance()
+                                            .add(new AArgument(
+                                                    "path", "The path to the new file to createFunction. Along with the file name and extension",
+                                                    false, Argument.Type.STRING
+                                            ))
+                                            .add(new AArgument(
+                                                    "content", "The content the file should hold. Either a string or an array of strings.",
+                                                    false, Argument.Type.ANY
+                                            ))
+                                            .add(new AArgument(
+                                                    "canRead", "Whether or not the file can be read. Defaults to true",
+                                                    true, Argument.Type.BOOLEAN
+                                            ))
+                                            .add(new AArgument(
+                                                    "canWrite", "Whether the file can be written to or not. Defaults to true",
+                                                    true, Argument.Type.BOOLEAN
+                                            ))
+                                            .add(new AArgument(
+                                                    "canExecute", "Whether the file can be executed or not. Defaults to true.",
+                                                    true, Argument.Type.BOOLEAN
+                                            ))
+                            )
+                            .docs(
+
+                                    JDoc.builder()
+                                            .addDesc("Creates a new file with the given properties at the given file.")
+                                            .addReturns("A boolean `true` if the file could be created. `false` otherwise.")
+                                            .addExample("""
+                                            maak success <- f_new("data/newFile.txt", arrLit("Hello, World!", "This is a new file."), true, true, false)!
+                                            if (success) ->
+                                                khuluma("FileApi created successfully!")!
+                                            <~ else ->
+                                                khuluma("Failed to createFunction file.")!
+                                            <~
+                                            """)
+                                            .sinceVersion("2.0.1")
+                            )
+            );
         }
 
         @Override

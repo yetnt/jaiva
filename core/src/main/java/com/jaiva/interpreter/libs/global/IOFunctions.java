@@ -5,6 +5,11 @@ import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.Interpreter.ThrowIfGlobalContext;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Scope;
+import com.jaiva.interpreter.libBuilders.func.Argument;
+import com.jaiva.interpreter.libBuilders.func.Arguments;
+import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
+import com.jaiva.interpreter.libBuilders.func.arg.AArgument;
+import com.jaiva.interpreter.libBuilders.var.VariableBuilder;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
@@ -39,26 +44,38 @@ public class IOFunctions extends BaseLibrary {
      * khuluma("hello world")!
      * This will print the given input to the console.
      */
-    class FKhuluma extends BaseFunction {
+    static class FKhuluma extends BaseFunction {
 
         FKhuluma() {
-            super("khuluma", new TFunction("khuluma", new String[] { "msg?", "removeNewLn?" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Prints any given input to the console.")
-                            .addParam("msg", "idk","The message to print.", true)
-                            .addParam("removeNewLn", "boolean", "If true, no new line is printed after the message. Defaults to false.", true)
-                            .addReturns("idk")
-                            .sinceVersion("1.0.0-beta.2")
-                            .addNote("For the nerds. This is just System.out.println as default, then if removeNewLn is true, System.out.print. Lol")
-                            .addExample("""
-                                    khuluma("Hello, World!")! @ Prints "Hello, World!" to the console with a new line.
-                                    @ Then the following prints "Hello" then "World!" on the same line.
-                                    khuluma("Hello, ", true)!
-                                    khuluma("World!")!
-                                    khuluma()! @ Prints just a new line.
-                                    """)
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("khuluma")
+                            .arguments(Arguments.getInstance()
+                                    .add(
+                                            new AArgument(
+                                                    "msg", "The message to print.",
+                                                    true, Argument.Type.ANY
+                                            )
+                                    ).add(
+                                            new AArgument(
+                                                    "removenewLn", "If true, no new line is printed after the message." +
+                                                    " Defaults to false.", true, Argument.Type.BOOLEAN
+                                            )
+                                    )
+                            ).docs(
+                                    JDoc.builder()
+                                            .addDesc("Prints any given input to the console.")
+                                            .addReturns("idk")
+                                            .sinceVersion("1.0.0-beta.2")
+                                            .addExample("""
+                                            khuluma("Hello, World!")! @ Prints "Hello, World!" to the console with a new line.
+                                            @ Then the following prints "Hello" then "World!" on the same line.
+                                            khuluma("Hello, ", true)!
+                                            khuluma("World!")!
+                                            khuluma()! @ Prints just a new line.
+                                            """)
+                            )
+            );
             freeze();
         }
 
@@ -137,21 +154,24 @@ public class IOFunctions extends BaseLibrary {
      * maak n <- mamela()!
      * Listens for input form the console and returns a string.
      */
-    class FMamela extends BaseFunction {
+    static class FMamela extends BaseFunction {
         FMamela() {
-            super("mamela", new TFunction("mamela", new String[] {}, null, -1,
-                    JDoc.builder()
-                            .addDesc("Listens for input from the console.")
-                            .addReturns("The input given from the console as a string")
-                            .addNote("GithubBlockQuote: This will pause all execution until input is given.")
-                            .sinceVersion("1.0.0-beta.3")
-                            .addExample("""
-                                    khuluma("What is your name?")!
-                                    maak name <- mamela()! @ Reads input from the user and stores it in the variable name.
-                                    khuluma("Hello, " + name + "!")!
-                                    """)
-                    .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("mamela")
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Listens for input from the console.")
+                                            .addReturns("The input given from the console as a string")
+                                            .addNote("GithubBlockQuote: This will pause all execution until input is given.")
+                                            .sinceVersion("1.0.0-beta.3")
+                                            .addExample("""
+                                            khuluma("What is your name?")!
+                                            maak name <- mamela()! @ Reads input from the user and stores it in the variable name.
+                                            khuluma("Hello, " + name + "!")!
+                                            """)
+                            )
+            );
             freeze();
         }
 
@@ -183,22 +203,23 @@ public class IOFunctions extends BaseLibrary {
      * Note: The effectiveness of this function depends on the terminal's support
      * for ANSI escape codes.
      */
-    class FClear extends BaseFunction {
+    static class FClear extends BaseFunction {
 
         FClear() {
-            // Define the function without any parameters.
-            super("clear",
-                    new TFunction("clear", new String[] {}, null, -1,
-                            JDoc.builder()
-                                    .addDesc("Clears the console.")
-                                    .addReturns("idk")
-                                    .addNote("The effectiveness of this function depends on the terminal's support for ANSI escape codes.")
-                                    .sinceVersion("1.0.0")
-                                    .addExample("""
+            super(
+                    FunctionBuilder.start()
+                            .name("clear")
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Clears the console.")
+                                            .addReturns("idk")
+                                            .addNote("The effectiveness of this function depends on the terminal's support for ANSI escape codes.")
+                                            .sinceVersion("1.0.0")
+                                            .addExample("""
                                             clear()! @ Clears the console output.
                                             """)
-                                    .build()
-                    ));
+                            )
+            );
             freeze();
         }
 
@@ -223,40 +244,45 @@ public class IOFunctions extends BaseLibrary {
      * running the Jaiva command.
      * </p>
      */
-    class VArgs extends BaseVariable {
+    static class VArgs extends BaseVariable {
         VArgs(IConfig<Object> config) {
-            super("args", new TArrayVar("args", new ArrayList<>(Arrays.asList(config.args)), -1,
-                    JDoc.builder()
-                            .addDesc("The command-line arguments passed to the Jaiva command.")
-                            .addReturns("An array of strings, where each string is a command-line argument.")
-                            .sinceVersion("1.0.2")
-                            .addNote("This is the raw arguments given from Main.args[], including Jaiva-specific arguments.")
-                            .addExample("""
-                                    khuluma(args[0])! @ Prints "jaiva" if the command was 'jaiva myscript.jv'
-                                    khuluma(args[1])! @ Prints "myscript.jv" if the command was 'jaiva myscript.jv'
-                                    """)
-                            .build()
-            ),
-                    new ArrayList<>(Arrays.asList(config.args)));
+            super(
+                    VariableBuilder.start()
+                            .name("args")
+                            .value(new ArrayList<>(Arrays.asList(config.args)))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("The command-line arguments passed to the Jaiva command.")
+                                            .addReturns("An array of strings, where each string is a command-line argument.")
+                                            .sinceVersion("1.0.2")
+                                            .addNote("This is the raw arguments given from Main.args[], including Jaiva-specific arguments.")
+                                            .addExample("""
+                                            khuluma(args[0])! @ Prints "jaiva" if the command was 'jaiva myscript.jv'
+                                            khuluma(args[1])! @ Prints "myscript.jv" if the command was 'jaiva myscript.jv'
+                                            """)
+                            )
+            );
             freeze();
         }
     }
 
-    class VUArgs extends BaseVariable {
+    static class VUArgs extends BaseVariable {
         VUArgs(IConfig<Object> config) {
-            super("uArgs", new TArrayVar("uargs", (ArrayList) config.sanitisedArgs, -1,
-                    JDoc.builder()
-                            .addDesc("The command-line arguments without Jaiva-specific arguments.")
-                            .addReturns("An array of strings, representing the sanitized command-line arguments.")
-                            .sinceVersion("1.0.2")
-                            .addExample("""
-                                    khuluma(uargs[0])! @ Prints any other argument given after the Jaiva specific ones.
-                                    khuluma(uargs[1])! @ Prints the second user argument if provided.
-                                    khuluma(uargs[2])! @ And so on...
-                                    """)
-                            .build()
-            ),
-                    config.sanitisedArgs);
+            super(
+                    VariableBuilder.start()
+                            .name("uArgs")
+                            .value(config.sanitisedArgs)
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("The command-line arguments without Jaiva-specific arguments.")
+                                            .addReturns("An array of strings, representing the sanitized command-line arguments.")
+                                            .sinceVersion("1.0.2")
+                                            .addExample("""
+                                            khuluma(uargs[0])! @ Prints any other argument given after the Jaiva specific ones.
+                                            khuluma(uargs[1])! @ Prints the second user argument if provided.
+                                            khuluma(uargs[2])! @ And so on...
+                                            """))
+            );
             freeze();
         }
     }
