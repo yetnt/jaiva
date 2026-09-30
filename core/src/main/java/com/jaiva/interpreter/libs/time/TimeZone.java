@@ -1,10 +1,16 @@
 package com.jaiva.interpreter.libs.time;
 
+import com.jaiva.interpreter.Scope;
+import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
+import com.jaiva.interpreter.libBuilders.var.VariableBuilder;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
+import com.jaiva.interpreter.runtime.IConfig;
+import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.specific.TArrayVar;
+import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 import com.jaiva.tokenizer.tokens.specific.TStringVar;
 import com.yetnt.utils.tuple.SamePair;
 
@@ -14,37 +20,46 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@JaivaLibrary(path = "time/zone")
+@JaivaLibrary(path = "time/zone", description = "Contains all the timezone constants as variables.")
 public class TimeZone extends BaseLibrary {
 
     private static ArrayList<SamePair<String>> zoneIds = mapZoneIds();
 
+    static class FGetAll extends BaseFunction {
+        public FGetAll() {
+            super(
+                    FunctionBuilder.start()
+                            .name("tz_getAll")
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("The complete list of IANA format timezone constants.")
+                                            .sinceVersion("5.0.0")
+                                            .addExample("""
+                                            tsea "jaiva/timezone"!
+                                            
+                                            @ Get all timezone constants
+                                            maak list <- tz_getAll()!
+                                            @ Print everything with Etc prefix
+                                            colonize item with list ->
+                                                if (item ? "Etc") ->
+                                                    khuluma(item)!
+                                                <~
+                                            <~
+                                            """)
+                            )
+            );
+            freeze();
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
+            return new ArrayList<>(zoneIds.stream().map(SamePair::getSecond).toList());
+        }
+    }
+
     public TimeZone() {
 
-        BaseVariable getAll = new BaseVariable(
-                "tz_getAll",
-                new TArrayVar(
-                        "tz_getAll",
-                        new ArrayList<>(zoneIds.stream().map(SamePair::getSecond).toList()),
-                        -1,
-                        JDoc.builder()
-                                .addDesc("The complete list of IANA format timezone constants.")
-                                .sinceVersion("5.0.0")
-                                .addExample("""
-                                        tsea "jaiva/timezone"!
-                                        
-                                        @ Get all timezone constants
-                                        maak list <- tz_getAll!
-                                        @ Print everything with Etc prefix
-                                        colonize item with list ->
-                                            if (item ? "Etc") ->
-                                                khuluma(item)!
-                                            <~
-                                        <~
-                                        """)
-                                .build()
-                ), new ArrayList<>(zoneIds.stream().map(SamePair::getSecond).toList()));
-        getAll.freeze();
+        BaseFunction getAll = new FGetAll();
         add(getAll);
 
         zoneIds.stream().map(TimeZone::createVariable).forEach(this::add);
@@ -85,12 +100,17 @@ public class TimeZone extends BaseLibrary {
     protected static BaseVariable createVariable(SamePair<String> tuple) {
         String varName = tuple.getFirst();
         String value = tuple.getSecond();
-        BaseVariable var = new BaseVariable(varName, new TStringVar(varName, value, -1,
-                JDoc.builder()
-                        .addDesc(value + " zone constant.")
-                        .sinceVersion("5.0.0")
-                        .build()
-        ), value);
+        BaseVariable var = new BaseVariable(
+                VariableBuilder.start()
+                        .name(varName)
+                        .value(value)
+                        .docs(
+                                JDoc.builder()
+                                        .addDesc(value + " zone constant.")
+                                        .addNote("All zone constants are autogenerated by what the JVM supplies")
+                                        .sinceVersion("5.0.0")
+                        )
+        );
         var.freeze();
         return var;
     }

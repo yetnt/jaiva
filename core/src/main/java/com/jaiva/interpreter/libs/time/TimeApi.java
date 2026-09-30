@@ -3,6 +3,11 @@ package com.jaiva.interpreter.libs.time;
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Scope;
+import com.jaiva.interpreter.libBuilders.func.Argument;
+import com.jaiva.interpreter.libBuilders.func.Arguments;
+import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
+import com.jaiva.interpreter.libBuilders.func.arg.AArgument;
+import com.jaiva.interpreter.libBuilders.var.VariableBuilder;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -21,21 +26,24 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-@JaivaLibrary(path = "time/api")
+@JaivaLibrary(path = "time/api", description = "The time api where the relevant things such as parsing dates are.")
 public class TimeApi extends BaseLibrary {
     public TimeApi(IConfig<Object> config) {
-        add(new FNow(), new FMsToSec(), new FParseDate());
+        add(new FNow(), new FMsToSec(), new FParseDate(), new FMaxTime());
     }
 
     public static class FNow extends BaseFunction {
         public FNow() {
-            super("t_now", new TFunction("t_now", new String[]{}, null, -1,
-                    JDoc.builder()
-                            .addDesc("Returns the current time in milliseconds since the Unix epoch.")
-                            .addReturns("A number representing the current time in milliseconds.")
-                            .sinceVersion("5.0.0")
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("t_now")
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Returns the current time in milliseconds since the Unix epoch.")
+                                            .addReturns("A number representing the current time in milliseconds.")
+                                            .sinceVersion("5.0.0")
+                            )
+            );
             freeze();
         }
 
@@ -48,14 +56,19 @@ public class TimeApi extends BaseLibrary {
 
     public static class FMsToSec extends BaseFunction {
         public FMsToSec() {
-            super("t_msToSec", new TFunction("t_msToSec", new String[]{"milliseconds"}, null, -1,
-                    JDoc.builder()
-                            .addDesc("Converts milliseconds to seconds.")
-                            .addParam("milliseconds", "number", "The number of milliseconds to convert.", false)
-                            .addReturns("A number representing the converted seconds.")
-                            .sinceVersion("5.0.0")
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("t_msToSec")
+                            .arguments(Arguments.getInstance().add(
+                                    new AArgument("milliseconds", "The number of milliseconds to convert.", false, Argument.Type.NUMBER)
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Converts milliseconds to seconds.")
+                                            .addReturns("A number representing the converted seconds.")
+                                            .sinceVersion("5.0.0")
+                            )
+            );
             freeze();
         }
 
@@ -73,23 +86,44 @@ public class TimeApi extends BaseLibrary {
 
     public static class FParseDate extends BaseFunction {
         public FParseDate() {
-            super("t_parseDate", new TFunction("t_parseDate", new String[]{"dateString", "format?", "timezone?"}, null, -1,
-                    JDoc.builder()
-                            .addDesc("Parses a date string into milliseconds since the Unix epoch.")
-                            .addParam("dateString", "string", "The date string to parse.", false)
-                            .addParam("format", "string", "The format of the date string (e.g., \"yyyy-MM-dd HH:mm:ss\"). Defaults to ISO_LOCAL_DATE_TIME.", true)
-                            .addParam("timezone", "string", "The timezone to parse this date into. You can either put a magic string yourself or use the constants within \"jaiva/timezone\"", true)
-                            .addReturns("A number representing the parsed date in milliseconds.")
-                            .addNote("If no timezone is provided, a default timezone of UTC is used.")
-                            .addExample("""
-                                    @ Import jaiva/time/zone
-                                    tsea "jaiva/time/zone" <- TZ_AfricaJohannesburg!
-                                    maak ms <- t_parseDate("2023-10-05 14:30:00", "yyyy-MM-dd HH:mm:ss", TZ_AfricaJohannesburg)!
-                                    khuluma(ms)! @ Outputs the milliseconds since epoch for the given date in the specified timezone.
-                                    """)
-                            .sinceVersion("5.0.0")
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("t_parseDate")
+                            .arguments(Arguments.getInstance()
+                                    .add(
+                                            new AArgument(
+                                            "dateString", "The date string to parse.",
+                                                    false, Argument.Type.STRING
+                                            )
+                                    ).add(
+                                            new AArgument(
+                                                    "format",
+                                                    "The format of the date string (e.g. \"yyyy-MM-dd HH:mm:ss\")."
+                                                    + "Defaults to ISO_LOCAL_DATE_TIME,", true, Argument.Type.STRING
+                                            )
+                                    ).add(
+                                            new AArgument(
+                                                    "timezone",
+                                                    "The timezone to parse this date into. "
+                                                            + "You can either put a magic string yourself or use the constants within "
+                                                            + "\"jaiva/time/zone\"",
+                                                    true, Argument.Type.STRING
+                                            )
+                                    )
+                            ).docs(
+                                    JDoc.builder()
+                                            .addDesc("Parses a date string into milliseconds since the Unix epoch.")
+                                            .addReturns("A number representing the parsed date in milliseconds.")
+                                            .addNote("If no timezone is provided, a default timezone of UTC is used.")
+                                            .addExample("""
+                                            @ Import jaiva/time/zone
+                                            tsea "jaiva/time/zone" <- TZ_AfricaJohannesburg!
+                                            maak ms <- t_parseDate("2023-10-05 14:30:00", "yyyy-MM-dd HH:mm:ss", TZ_AfricaJohannesburg)!
+                                            khuluma(ms)! @ Outputs the milliseconds since epoch for the given date in the specified timezone.
+                                            """)
+                                            .sinceVersion("5.0.0")
+                            )
+            );
             freeze();
         }
 
@@ -113,7 +147,8 @@ public class TimeApi extends BaseLibrary {
                 try {
                     formatter = DateTimeFormatter.ofPattern(format);
                 } catch (IllegalArgumentException e) {
-                    throw new InterpreterException.WtfAreYouDoingException(scope, "Pls put valid format for date gng",  tFuncCall.lineNumber);
+                    throw new InterpreterException.WtfAreYouDoingException(scope, "Pls put valid format for date gng. "+
+                            "(One day i'll make a format package, and that same day ill make the inverse to this function)",  tFuncCall.lineNumber);
                 }
             } else
                 formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -143,14 +178,17 @@ public class TimeApi extends BaseLibrary {
 
     public static class FMaxTime extends BaseVariable {
         public FMaxTime() {
-            super("t_maxTime", new TNumberVar("t_maxTime", Long.MAX_VALUE, -1,
-                    JDoc.builder()
-                            .addDesc("Returns the maximum possible value for a time in milliseconds (Long.MAX_VALUE).")
-                            .sinceVersion("5.0.0")
-                            .build()
-            ), Long.MAX_VALUE);
+            super(
+                    VariableBuilder.start()
+                            .name("t_maxTime")
+                            .value(Long.MAX_VALUE)
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Returns the maximum possible value for a time in milliseconds (Long.MAX_VALUE).")
+                                            .sinceVersion("5.0.0")
+                            )
+            );
             freeze();
         }
-
     }
 }

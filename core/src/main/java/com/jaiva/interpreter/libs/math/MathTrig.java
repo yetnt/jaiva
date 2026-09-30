@@ -13,15 +13,14 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
-import com.jaiva.tokenizer.tokens.specific.TFunction;
 
 import java.util.ArrayList;
 
-@JaivaLibrary(path = "math/trig")
+import static com.jaiva.interpreter.libs.math.MathBase.ifNan;
+
+@JaivaLibrary(path = "math/trig", description = "All the (basic) math functions related to the illusive triangle (trig)")
 public class MathTrig extends BaseLibrary {
     public MathTrig() {
-        // This is a container class for the MathBase class, so prefix everything with "m_"
-        // TODO: one day maybe use reflection instead.
         add(
                 new FSin(), new FCos(), new FTan(), new FAsin(), new FAcos(),
                 new FAtan(), new FToRad(), new FToDeg(), new FAtan2()
@@ -181,7 +180,7 @@ public class MathTrig extends BaseLibrary {
                             .docs(
                                     JDoc.builder()
                                             .addDesc("Returns the arc sine of a number in radians.")
-                                            .addReturns("The arc sine of the given value in radians.")
+                                            .addReturns("The arc sine of the given value in radians, or idk if the argument's absolute value is greater than 1")
                                             .sinceVersion("1.0.2")
                             )
             );
@@ -200,7 +199,9 @@ public class MathTrig extends BaseLibrary {
             }
             // Calculate the arctangent of the number
             double value = ((Number) v).doubleValue();
-            return java.lang.Math.asin(value);
+            Number n = java.lang.Math.asin(value);
+
+            return ifNan(tFuncCall, n);
         }
     }
 
@@ -225,7 +226,7 @@ public class MathTrig extends BaseLibrary {
                             .docs(
                                     JDoc.builder()
                                             .addDesc("Returns the arc cosine of a number in radians.")
-                                            .addReturns("The arc cosine of the given value in radians.")
+                                            .addReturns("The arc cosine of the given value in radians, or idk if the argument's absolute value is greater than 1")
                                             .sinceVersion("1.0.2")
                             )
             );
@@ -244,7 +245,8 @@ public class MathTrig extends BaseLibrary {
             }
             // Calculate the arctangent of the number
             double value = ((Number) v).doubleValue();
-            return java.lang.Math.acos(value);
+            Number n = java.lang.Math.acos(value);
+            return ifNan(tFuncCall, n);
         }
     }
 

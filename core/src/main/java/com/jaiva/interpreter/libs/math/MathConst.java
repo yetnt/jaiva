@@ -10,7 +10,7 @@ import com.jaiva.tokenizer.tokens.specific.TNumberVar;
 /**
  * Container class for mathematical constants.
  */
-@JaivaLibrary(path = "math/const")
+@JaivaLibrary(path = "math/const", description = "The math constants that'll never change")
 public class MathConst extends BaseLibrary {
     /**
      * Default Constructor

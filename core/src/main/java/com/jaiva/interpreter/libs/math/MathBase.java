@@ -23,7 +23,10 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * MathBase functions ofc
  */
-@JaivaLibrary(path = "math/base")
+@JaivaLibrary(
+        path = "math/base",
+        description = "Contains the math functions like sqrt or ceil which don't really have their own home unique to them..."
+)
 public class MathBase extends BaseLibrary {
 
     public MathBase() {
