@@ -11,6 +11,7 @@ import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.*;
 import com.yetnt.utils.builders.AnsiColour;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -40,18 +41,17 @@ public class InterpreterException extends JaivaException {
      * @return a user-friendly string representing the type
      */
     private static String friendlyName(Class<?> c) {
-        if (c == BaseFunction.class || c == DefinedFunction.class)
-            return "function";
-        else if (c == BaseVariable.class || c == DefinedVariable.class)
-            return "variable";
-        else if (c == String.class)
-            return "string";
-        else if (c == int.class || c == double.class || c == Number.class)
-            return "number";
-        else if (c == boolean.class)
-            return "boolean";
-        else
-            return c.getSimpleName();
+
+        if (c.isAssignableFrom(BaseFunction.class))      return "function";
+        else if (c.isAssignableFrom(BaseVariable.class)) return "variable";
+        else if (c == String.class)                      return "string";
+        else if (c == int.class)                         return "integer";
+        else if (c == double.class)                      return "double";
+        else if (c == long.class)                        return "long";
+        else if (c == boolean.class)                     return "boolean";
+        else if (c == ArrayList.class)                   return "array";
+        else                                             return c.getSimpleName();
+
     }
 
     /**
@@ -236,7 +236,7 @@ public class InterpreterException extends JaivaException {
             super(ct, lineNumber, "The " + nthParam + (nthParam.endsWith("1") ? "st"
                     : nthParam.endsWith("2") ? "nd" : nthParam.endsWith("3") ? "rd" : "th") + " parameter in " + s.name
                     + "() is required to be a " + friendlyName(expected) + ", but you gave me a "
-                    + friendlyName(param.getClass()) + ". Wtf bro.");
+                    + (param == null ? "null?" : friendlyName(param.getClass())) + ". Wtf bro.");
         }
     }
 

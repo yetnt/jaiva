@@ -46,7 +46,7 @@ public class FileQuery extends BaseLibrary {
                                     """)
                             .build()
             ));
-            this.freeze();
+            freeze();
         }
 
         @Override
@@ -75,7 +75,7 @@ public class FileQuery extends BaseLibrary {
                                     """)
                             .build()
             ));
-            this.freeze();
+            freeze();
         }
 
         @Override
@@ -104,7 +104,7 @@ public class FileQuery extends BaseLibrary {
                                     """)
                             .build()
             ));
-            this.freeze();
+            freeze();
         }
 
         @Override
@@ -139,7 +139,7 @@ public class FileQuery extends BaseLibrary {
                                     """)
                             .build()
             ));
-            this.freeze();
+            freeze();
         }
 
         /**
@@ -171,7 +171,7 @@ public class FileQuery extends BaseLibrary {
                                 .build()
                 ));
                 this.file = file;
-                this.freeze();
+                freeze();
             }
 
             @Override

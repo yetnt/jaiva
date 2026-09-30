@@ -59,7 +59,7 @@ public class IOFunctions extends BaseLibrary {
                                     """)
                             .build()
             ));
-            this.freeze();
+            freeze();
         }
 
         @Override
@@ -152,7 +152,7 @@ public class IOFunctions extends BaseLibrary {
                                     """)
                     .build()
             ));
-            this.freeze();
+            freeze();
         }
 
         @Override
@@ -238,7 +238,7 @@ public class IOFunctions extends BaseLibrary {
                             .build()
             ),
                     new ArrayList<>(Arrays.asList(config.args)));
-            this.freeze();
+            freeze();
         }
     }
 
@@ -257,7 +257,7 @@ public class IOFunctions extends BaseLibrary {
                             .build()
             ),
                     config.sanitisedArgs);
-            this.freeze();
+            freeze();
         }
     }
 }

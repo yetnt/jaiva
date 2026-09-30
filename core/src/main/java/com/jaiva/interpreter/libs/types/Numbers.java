@@ -49,7 +49,7 @@ public class Numbers extends BaseLibrary {
                                             .sinceVersion("6.0.0-beta.5")
                             )
             );
-            this.freeze();
+            freeze();
         }
 
         @Override
@@ -89,7 +89,7 @@ public class Numbers extends BaseLibrary {
                                             .sinceVersion("6.0.0-beta.5")
                             )
             );
-            this.freeze();
+            freeze();
         }
 
         @Override

@@ -3,6 +3,10 @@ package com.jaiva.interpreter.libs.math;
 import com.jaiva.errors.InterpreterException.FunctionParametersException;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Scope;
+import com.jaiva.interpreter.libBuilders.func.Argument;
+import com.jaiva.interpreter.libBuilders.func.Arguments;
+import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
+import com.jaiva.interpreter.libBuilders.func.arg.AArgument;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -34,16 +38,21 @@ public class MathTrig extends BaseLibrary {
      * </ul>
      * </p>
      */
-    class FSin extends BaseFunction {
+    static class FSin extends BaseFunction {
         FSin() {
-            super("m_sin", new TFunction("m_sin", new String[] { "value" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Returns the sine of a number in radians.")
-                            .addParam("value", "number", "The value in radians.", false)
-                            .addReturns("The sine of the given value in radians.")
-                            .sinceVersion("1.0.2")
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("m_sin")
+                            .arguments(Arguments.getInstance().add(
+                                    new AArgument("value", "The value in radians", false, Argument.Type.NUMBER)
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Returns the sine of a number in radians.")
+                                            .addReturns("The sine of the given value in radians.")
+                                            .sinceVersion("1.0.2")
+                            )
+            );
             this.freeze();
         }
 
@@ -73,16 +82,21 @@ public class MathTrig extends BaseLibrary {
      * </ul>
      * </p>
      */
-    class FCos extends BaseFunction {
+    static class FCos extends BaseFunction {
         FCos() {
-            super("m_cos", new TFunction("m_cos", new String[] { "value" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Returns the cosine of a number in radians.")
-                            .addParam("value", "number", "The value in radians.", false)
-                            .addReturns("The cosine of the given value in radians.")
-                            .sinceVersion("1.0.2")
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("m_cos")
+                            .arguments(Arguments.getInstance().add(
+                                    new AArgument("value", "The value in radians", false, Argument.Type.NUMBER)
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Returns the cosine of a number in radians.")
+                                            .addReturns("The cosine of the given value in radians.")
+                                            .sinceVersion("1.0.2")
+                            )
+            );
             this.freeze();
         }
 
@@ -112,16 +126,21 @@ public class MathTrig extends BaseLibrary {
      * </ul>
      * </p>
      */
-    class FTan extends BaseFunction {
+    static class FTan extends BaseFunction {
         FTan() {
-            super("m_tan", new TFunction("m_tan", new String[] { "value" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Returns the tangent of a number in radians.")
-                            .addParam("value", "number", "The value in radians.", false)
-                            .addReturns("The tangent of the given value in radians.")
-                            .sinceVersion("1.0.2")
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("m_tan")
+                            .arguments(Arguments.getInstance().add(
+                                    new AArgument("value", "The value in radians", false, Argument.Type.NUMBER)
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Returns the trig tangent of a number in radians.")
+                                            .addReturns("The trig tangent of the given value in radians.")
+                                            .sinceVersion("1.0.2")
+                            )
+            );
             this.freeze();
         }
 
@@ -151,16 +170,21 @@ public class MathTrig extends BaseLibrary {
      * </ul>
      * </p>
      */
-    class FAsin extends BaseFunction {
+    static class FAsin extends BaseFunction {
         FAsin() {
-            super("m_asin", new TFunction("m_asin", new String[] { "value" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Returns the arcsine of a number in radians.")
-                            .addParam("value", "number", "The value in radians.", false)
-                            .addReturns("The arcsine of the given value in radians.")
-                            .sinceVersion("1.0.2")
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("m_asin")
+                            .arguments(Arguments.getInstance().add(
+                                    new AArgument("value", "The value in radians", false, Argument.Type.NUMBER)
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Returns the arc sine of a number in radians.")
+                                            .addReturns("The arc sine of the given value in radians.")
+                                            .sinceVersion("1.0.2")
+                            )
+            );
             this.freeze();
         }
 
@@ -190,16 +214,21 @@ public class MathTrig extends BaseLibrary {
      * </ul>
      * </p>
      */
-    class FAcos extends BaseFunction {
+    static class FAcos extends BaseFunction {
         FAcos() {
-            super("m_acos", new TFunction("m_acos", new String[] { "value" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Returns the arccosine of a number in radians.")
-                            .addParam("value", "number", "The value in radians.", false)
-                            .addReturns("The arccosine of the given value in radians.")
-                            .sinceVersion("1.0.2")
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("m_acos")
+                            .arguments(Arguments.getInstance().add(
+                                    new AArgument("value", "The value in radians", false, Argument.Type.NUMBER)
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Returns the arc cosine of a number in radians.")
+                                            .addReturns("The arc cosine of the given value in radians.")
+                                            .sinceVersion("1.0.2")
+                            )
+            );
             this.freeze();
         }
 
@@ -229,16 +258,21 @@ public class MathTrig extends BaseLibrary {
      * </ul>
      * </p>
      */
-    class FAtan extends BaseFunction {
+    static class FAtan extends BaseFunction {
         FAtan() {
-            super("m_atan", new TFunction("m_atan", new String[] { "value" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Returns the arctangent of a number in radians.")
-                            .addParam("value", "number", "The value in radians.", false)
-                            .addReturns("The arctangent of the given value in radians.")
-                            .sinceVersion("1.0.2")
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("m_atan")
+                            .arguments(Arguments.getInstance().add(
+                                    new AArgument("value", "The value in radians", false, Argument.Type.NUMBER)
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Returns the arc tangent of a number in radians.")
+                                            .addReturns("The arc tangent of the given value in radians.")
+                                            .sinceVersion("1.0.2")
+                            )
+            );
             this.freeze();
         }
 
@@ -267,21 +301,26 @@ public class MathTrig extends BaseLibrary {
      * </ul>
      * </p>
      */
-    class FToRad extends BaseFunction {
+    static class FToRad extends BaseFunction {
         FToRad() {
-            super("m_toRad", new TFunction("m_toRad", new String[] { "degrees" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Converts degrees to radians.")
-                            .addParam("degrees", "number", "The value in degrees.", false)
-                            .addReturns("The value in radians.")
-                            .addExample("""
-                                    maak deg <- 90!
-                                    maak rad <- m_toRad(deg)!
-                                    khuluma(rad) @ Output: 1.5707963267948966
-                                    """)
-                            .sinceVersion("1.0.2")
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("m_toRad")
+                            .arguments(Arguments.getInstance().add(
+                                    new AArgument("degrees", "The value in degrees", false, Argument.Type.NUMBER)
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Converts degrees to radians.")
+                                            .addReturns("The value in radians.")
+                                            .addExample("""
+                                            maak deg <- 90!
+                                            maak rad <- m_toRad(deg)!
+                                            khuluma(rad) @ Output: 1.5707963267948966
+                                            """)
+                                            .sinceVersion("1.0.2")
+                            )
+            );
             this.freeze();
         }
 
@@ -311,21 +350,26 @@ public class MathTrig extends BaseLibrary {
      * </ul>
      * </p>
      */
-    class FToDeg extends BaseFunction {
+    static class FToDeg extends BaseFunction {
         FToDeg() {
-            super("m_toDeg", new TFunction("m_toDeg", new String[] { "radians" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Converts radians to degrees.")
-                            .addParam("radians", "number", "The value in radians.", false)
-                            .addReturns("The value in degrees.")
-                            .addExample("""
-                                    maak rad <- 1.5708!
-                                    maak deg <- m_toDeg(rad)!
-                                    khuluma(deg) @ Output: 90.0002104591497
-                                    """)
-                            .sinceVersion("1.0.2")
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("m_toDeg")
+                            .arguments(Arguments.getInstance().add(
+                                    new AArgument("radians", "The value in radians", false, Argument.Type.NUMBER)
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Converts radians to degrees.")
+                                            .addReturns("The value in degrees.")
+                                            .addExample("""
+                                            maak rad <- 1.5708!
+                                            maak deg <- m_toDeg(rad)!
+                                            khuluma(deg) @ Output: 90.0002104591497
+                                            """)
+                                            .sinceVersion("1.0.2")
+                            )
+            );
             this.freeze();
         }
 
@@ -346,22 +390,26 @@ public class MathTrig extends BaseLibrary {
         }
     }
 
-    class FAtan2 extends BaseFunction {
+    static class FAtan2 extends BaseFunction {
         FAtan2() {
-            super("m_atan2", new TFunction(
-                    "m_atan2",
-                    new String[] {"y", "x"},
-                    null,
-                    -1,
-                    JDoc.builder()
-                            .addDesc("Returns the angle in radians between the positive x-axis and the point (x, y).")
-                            .addParam("y", "number", "The y-coordinate.", false)
-                            .addParam("x", "number", "The x-coordinate.", false)
-                            .addReturns("The angle in radians from the positive x-axis to the point (x, y).")
-                            .sinceVersion("6.0.0-alpha.3")
-                            .build()
-            ));
-            this.freeze();
+            super(
+                    FunctionBuilder.start()
+                            .name("m_atan2")
+                            .arguments(Arguments.getInstance().add(
+                                    new AArgument("y", "The y-coordinate", false, Argument.Type.NUMBER)
+                            ).add(
+                                    new AArgument("x", "The x-coordinate",  false, Argument.Type.NUMBER)
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Returns the angle in radians between the positive x-axis and the point (x, y).")
+                                            .addReturns("The angle in radians from the positive x-axis to the point (x, y).")
+                                            .addNote("honestly, if you're using this function you should probably not be using Jaiva to do what"
+                                            + "ever the hell you're doing...")
+                                            .sinceVersion("6.0.0-alpha.3")
+                            )
+            );
+            freeze();
         }
 
         @Override

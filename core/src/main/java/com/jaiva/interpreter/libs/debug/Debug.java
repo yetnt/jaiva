@@ -121,7 +121,7 @@ public class Debug extends BaseLibrary {
                                     " Everytime this function is called a new array containing all the stuff is made.")
                     )
             );
-            this.freeze();
+            freeze();
         }
 
         @Override
@@ -166,7 +166,7 @@ public class Debug extends BaseLibrary {
                                    .sinceVersion("1.0.2")
                     )
             );
-            this.freeze();
+            freeze();
         }
 
         @Override

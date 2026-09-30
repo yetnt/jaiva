@@ -49,7 +49,7 @@ public class Types extends BaseLibrary {
                             .sinceVersion("2.0.0-beta.3")
                             .build()
             ));
-            this.freeze();
+            freeze();
         }
 
         @Override
@@ -112,7 +112,7 @@ public class Types extends BaseLibrary {
                             .build()
 //                    "converts any **input** of any given type to a string. With an optional **radix** input for converting integers."
                     ));
-            this.freeze();
+            freeze();
         }
 
         @Override

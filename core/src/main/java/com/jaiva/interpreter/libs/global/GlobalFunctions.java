@@ -79,7 +79,7 @@ public class GlobalFunctions extends BaseLibrary {
                                             .sinceVersion("4.1.1")
                             )
             );
-            this.freeze();
+            freeze();
         }
 
         @Override
@@ -132,7 +132,7 @@ public class GlobalFunctions extends BaseLibrary {
                                     """)
                             )
             );
-            this.freeze();
+            freeze();
         }
 
         @Override
@@ -177,7 +177,7 @@ public class GlobalFunctions extends BaseLibrary {
                                     .addExample("khuluma(reservedKeywords)! @ Prints all the reserved keywords.")
                                     .addDesc("An array containing jaiva's reserved keywords that you cannot use as symbol names.").build()),
                     new ArrayList<>(Arrays.asList(Keywords.all)));
-            this.freeze();
+            freeze();
         }
     }
 
@@ -201,7 +201,7 @@ public class GlobalFunctions extends BaseLibrary {
                                     """)
                             )
             );
-            this.freeze();
+            freeze();
         }
 
         @Override
@@ -226,7 +226,7 @@ public class GlobalFunctions extends BaseLibrary {
                                     khuluma(version)! @ Prints 5.0.0 (at the time of writing)
                                     """)
                             .sinceVersion("1.0.0-beta.0").build()), Main.version);
-            this.freeze();
+            freeze();
         }
     }
 
@@ -257,7 +257,7 @@ public class GlobalFunctions extends BaseLibrary {
                                     """)
                             )
             );
-            this.freeze();
+            freeze();
         }
 
         @Override
@@ -333,7 +333,7 @@ public class GlobalFunctions extends BaseLibrary {
                                     """)
                             )
             );
-            this.freeze();
+            freeze();
         }
 
         @Override
@@ -382,7 +382,7 @@ public class GlobalFunctions extends BaseLibrary {
                                     """)
                     )
             );
-            this.freeze();
+            freeze();
         }
 
         @Override
@@ -431,7 +431,7 @@ public class GlobalFunctions extends BaseLibrary {
                                     """)
                             .build()
             ));
-            this.freeze();
+            freeze();
         }
 
         @Override
@@ -476,7 +476,7 @@ public class GlobalFunctions extends BaseLibrary {
                                     """)
                             .build()
             ));
-            this.freeze();
+            freeze();
         }
 
         @Override

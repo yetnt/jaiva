@@ -34,7 +34,7 @@ public class TimeZone extends BaseLibrary {
                                         tsea "jaiva/timezone"!
                                         
                                         @ Get all timezone constants
-                                        maak list <- tz_all!
+                                        maak list <- tz_getAll!
                                         @ Print everything with Etc prefix
                                         colonize item with list ->
                                             if (item ? "Etc") ->

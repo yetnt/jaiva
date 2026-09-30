@@ -1,6 +1,7 @@
 package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.Token;
 
 /**
@@ -17,6 +18,11 @@ public class TBooleanVar extends TUnknownScalar<Object, TBooleanVar> {
      */
     public TBooleanVar(String name, boolean value, int ln) {
         super(name, value, ln);
+        this.value = value;
+    }
+
+    public TBooleanVar(String name, boolean value, int ln,  JDoc customToolTip) {
+        super(name, value, ln, customToolTip);
         this.value = value;
     }
 
