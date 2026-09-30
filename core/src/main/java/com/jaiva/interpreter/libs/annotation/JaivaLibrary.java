@@ -52,4 +52,10 @@ public @interface JaivaLibrary {
      * @return The string path
      */
     String path();
+
+    /**
+     * The library's description
+     * @return The description
+     */
+    String description() default "";
 }

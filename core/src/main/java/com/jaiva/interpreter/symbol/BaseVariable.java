@@ -2,10 +2,12 @@ package com.jaiva.interpreter.symbol;
 
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.interpreter.Scope;
+import com.jaiva.interpreter.libBuilders.var.VariableBuilder;
 import com.jaiva.interpreter.libs.file.FileApi;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -59,7 +61,7 @@ public class BaseVariable extends Symbol {
      * @param t      the token associated with the variable
      * @param scalar the scalar value of the variable
      */
-    public BaseVariable(String name, TokenDefault t, Object scalar) {
+    public BaseVariable(String name, TokenDefault<?> t, Object scalar) {
         super(name, SymbolType.VARIABLE, t);
         this.scalar = scalar;
         variableType = VariableType.SCALAR;
@@ -73,10 +75,21 @@ public class BaseVariable extends Symbol {
      * @param t    the token associated with the variable
      * @param arr  the array value of the variable
      */
-    public BaseVariable(String name, TokenDefault t, ArrayList<Object> arr) {
+    public BaseVariable(String name, TokenDefault<?> t, ArrayList<Object> arr) {
         super(name, SymbolType.VARIABLE, t);
         this.array.addAll(arr);
         variableType = VariableType.ARRAY;
+    }
+
+    public BaseVariable(VariableBuilder builder) {
+        super(builder.getVarName(), SymbolType.VARIABLE, builder.toToken());
+        if (builder.getType() ==  VariableType.SCALAR) {
+            variableType = VariableType.SCALAR;
+            this.scalar = builder.getValue();
+        } else {
+            variableType = VariableType.ARRAY;
+            this.array.addAll((Collection<?>) builder.getValue());
+        }
     }
 
     /**
@@ -85,7 +98,7 @@ public class BaseVariable extends Symbol {
      * @param name the name of the variable
      * @param t    the token associated with the variable
      */
-    public BaseVariable(String name, TokenDefault t) {
+    public BaseVariable(String name, TokenDefault<?> t) {
         super(name, SymbolType.VARIABLE, t);
         variableType = VariableType.UNKNOWN;
     }
@@ -212,7 +225,7 @@ public class BaseVariable extends Symbol {
      * @param arr  The arraylist.
      * @return A User Defined Variable.
      */
-    public static DefinedVariable create(String name, TokenDefault t, ArrayList<Object> arr, boolean setArray) {
+    public static DefinedVariable create(String name, TokenDefault<?> t, ArrayList<Object> arr, boolean setArray) {
         if (arr.size() == 1 && !setArray)
             return new DefinedVariable(name, t, arr.get(0));
         return new DefinedVariable(name, t, arr);
@@ -231,7 +244,7 @@ public class BaseVariable extends Symbol {
          * @param t      the token associated with the variable
          * @param scalar the scalar value of the variable
          */
-        DefinedVariable(String name, TokenDefault t, Object scalar) {
+        DefinedVariable(String name, TokenDefault<?> t, Object scalar) {
             super(name, t, scalar);
         }
 
@@ -243,7 +256,7 @@ public class BaseVariable extends Symbol {
          * @param t    the token associated with the variable
          * @param arr  the array value of the variable
          */
-        DefinedVariable(String name, TokenDefault t, ArrayList<Object> arr) {
+        DefinedVariable(String name, TokenDefault<?> t, ArrayList<Object> arr) {
             super(name, t, arr);
         }
     }

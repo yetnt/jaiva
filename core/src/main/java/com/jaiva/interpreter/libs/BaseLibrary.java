@@ -232,6 +232,16 @@ public class BaseLibrary {
         return Optional.empty();
     }
 
+    public Optional<String> getDescription() {
+        JaivaLibrary library = this.getClass().getAnnotation(JaivaLibrary.class);
+        if (library != null) return Optional.of(library.description());
+
+        PublicLibrary library2 = this.getClass().getAnnotation(PublicLibrary.class);
+        if (library2 != null) return Optional.of(library2.description());
+
+        return Optional.empty();
+    }
+
     public ArrayList<LibrarySymbol> getSymbols() {
         return new ArrayList<>(symbols);
     }
@@ -239,33 +249,6 @@ public class BaseLibrary {
     public ArrayList<ImportPromise> getImportPromises() {
         return importPromises;
     }
-
-//    /**
-//     * Converts the contents of the vfs to a JSON array string.
-//     * Each entry in the vfs is expected to have a value containing a Symbol object,
-//     * whose token is serialized to JSON using its toJson() method.
-//     * The resulting JSON array contains the serialized tokens of all symbols in the
-//     * vfs.
-//     *
-//     * @return a JSON array string representing the tokens of all symbols in the vfs
-//     */
-//    public String toJson(IConfig<Object> config, Globals globals) {
-//        StringBuilder str = new StringBuilder();
-//        getVfs(config, globals).forEach((key, value) -> {
-//            // Example: append key and value to the string builder
-//            Symbol sym = (Symbol) value.getValue();
-//            try {
-//                str.append(sym.token.toJson());
-//            } catch (JaivaException e) {
-//                // Handle the exception, e.g., log or append an error message
-//                throw new RuntimeException(e);
-//            }
-//            str.append(",");
-//        });
-//        // Remove trailing comma and space if needed
-//        return "[" + str.substring(0, str.toString().length() - 1) + "]";
-//    }
-
     /**
      * Uses reflection to get the public static String field named "path" from the given class.
      *
