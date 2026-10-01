@@ -1,7 +1,7 @@
 scope("strict")! @ This freezes all the functions, and elevates all warnings to fatal crashes.
 
 {
-    Code here, as written in Jaiva itself unlike other Jaiva libraries being written in Java,
+    Code here, as written in Jaiva itself unlike other Jaiva libraries being written in what jaiva itself is written in,
     will constantly be updated and improved as syntax evolves and new features are added to the language.
     An example : Moving away from constant flat() calls to using v5 spread syntax for arrays, which is more concise
     readable, efficient, and easier to use. Also a very functional way of working with arrays.
@@ -9,6 +9,7 @@ scope("strict")! @ This freezes all the functions, and elevates all warnings to 
 
     v5.0.4: Adding braces in colonize loops (before it was optional, now its required)
     v5.1.0: Replacing (val = true) with (val;) and replacing (val = idk) with val?
+    v6.0.0: |> Parameters Extension Syntax, for long function calls to be broken  into multiple lines
 }
 
 @* Remove n elements from the end of an array
@@ -87,7 +88,6 @@ kwenza *a_pushAll(<-params) ->
     <~
     khutla returnArr!
 <~
-
 
 @* Appends an element to the start of an array and returns the new array.
 @* p        $> arr <- [] The original array
@@ -272,8 +272,9 @@ kwenza *a_reverse(arr) ->
 @* since    $> 3.0.0
 @* example  $> maak arr <-| 1, 2, 3, 4!
 @*          $> maak sumReducer <- f~(acc, el) : acc + el! @ A lambda function to sum two numbers
-@*          $> khuluma(a_reduce(arr, sumReducer, 0))! @ Returns 10
-@*          $> khuluma(a_reduce(arr, sumReducer))! @ Returns 10
+@*          $> a_reduce(arr, sumReducer, 0)! @ Returns 10
+@*          $> a_reduce(arr)!
+@*          $> |> sumReducer! @ Returns 10
 kwenza *a_reduce(arr, F~reducer, initial?) ->
     if (typeOf(arr) != "array") ->
         cima <== "a_reduce() only works on arrays"!
@@ -333,7 +334,7 @@ kwenza *a_from(input, split?) ->
 
     tsea "jaiva/types" <- t_str!
 
-    if ((split = idk) || (split = "")) ->
+    if ((split?) || (split = "")) ->
         khutla arrLit(input:::)! @ Spread syntax to convert string to array of characters.
     <~
 
@@ -405,10 +406,14 @@ kwenza *a_forEach(arr, F~function) ->
 @*          $> @ Returns [1, 2, 3, 4]
 @*          $> a_apply(arr, f~(a) : a_map(a, f~(num) : num * 3))
 @*          $> @ Returns [3, 6, 9, 12]
-@*          $> a_apply(arr, a_reverse, f~(a) : a_map(a, f~(num) : num * 3))
-@*          $> @ Returns [12, 9, 6, 3]
 @*          $> a_apply(arr, khuluma)
 @*          $> @ Returns [1, 2, 3, 4] (khuluma returns idk)
+@*          $> a_apply(arr, a_reverse, f~(a) : a_map(a, f~(num) : num * 3))
+@*          $> @ Returns [12, 9, 6, 3]
+@*          $> a_apply(arr)!
+@*          $> |> a_reverse!
+@*          $> |> f~(a) : a_map(a, f~(num) : num * 3)!
+@*          $> @ Previous example but using newer parameter extension
 @* devn     $> Just like normal function, it can take a function reference or lambda, which is itself
 @*          $> technically a function reference
 kwenza *a_apply(<-params) ->
@@ -432,5 +437,4 @@ kwenza *a_apply(<-params) ->
     <~
 
     khutla arr!
-
 <~

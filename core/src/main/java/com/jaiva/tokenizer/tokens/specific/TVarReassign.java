@@ -1,11 +1,15 @@
 package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.tokens.TParamsExtendable;
 import com.jaiva.tokenizer.tokens.TStatement;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
-public class TVarReassign extends TokenDefault<TVarReassign> implements TStatement {
+/**
+ * Represents a reassignment such as {@code x <- 10}
+ */
+public class TVarReassign extends TokenDefault<TVarReassign> implements TStatement, TParamsExtendable {
     /**
      * The new value of the variable.
      */
@@ -48,5 +52,15 @@ public class TVarReassign extends TokenDefault<TVarReassign> implements TStateme
      */
     public Token<TVarReassign> toToken() {
         return new Token<>(this);
+    }
+
+    @Override
+    public boolean endsWithFuncCall() {
+        return checkObject(newValue) != null;
+    }
+
+    @Override
+    public TFuncCall get() {
+        return endsWithFuncCall() ? checkObject(newValue) : null;
     }
 }

@@ -337,7 +337,7 @@ public class FileApi extends BaseLibrary {
                             .arguments(
                                     Arguments.getInstance()
                                             .add(new AArgument(
-                                                    "path", "The path to the new file to createFunction. Along with the file name and extension",
+                                                    "path", "The path to the new file to create. Along with the file name and extension",
                                                     false, Argument.Type.STRING
                                             ))
                                             .add(new AArgument(
@@ -363,7 +363,10 @@ public class FileApi extends BaseLibrary {
                                             .addDesc("Creates a new file with the given properties at the given file.")
                                             .addReturns("A boolean `true` if the file could be created. `false` otherwise.")
                                             .addExample("""
-                                            maak success <- f_new("data/newFile.txt", arrLit("Hello, World!", "This is a new file."), true, true, false)!
+                                            maak success <- f_new()!
+                                            <| "data/newFile.txt"!
+                                            <| arrLit("Hello, World!", "This is a new file.")!
+                                            <| (true, true, false)!
                                             if (success) ->
                                                 khuluma("FileApi created successfully!")!
                                             <~ else ->

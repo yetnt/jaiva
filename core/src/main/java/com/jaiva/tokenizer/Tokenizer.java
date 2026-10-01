@@ -11,6 +11,7 @@ import com.jaiva.lang.Comments;
 import com.jaiva.lang.EscapeSequence;
 import com.jaiva.lang.Keywords;
 import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.TParamsExtendable;
 import com.jaiva.tokenizer.tokens.TSymbol;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
@@ -806,6 +807,12 @@ public final class Tokenizer {
                         comment = (comment == null ? "" : comment)
                                 + ((TDocsComment) token.value()).comment;
                     }
+                    case Token<?> token when token.value() instanceof TExtendParams extendParams -> {
+                        b = null;
+                        m = null;
+                        comment = null;
+                        consumeExtension(extendParams, tokens.isEmpty() ? null : tokens.getLast().value(), lineNumber);
+                    }
                     case Token<?> token -> {
                         TokenDefault<?> t = token.value();
                         t.tooltip = comment != null ? comment : t.tooltip;
@@ -880,6 +887,12 @@ public final class Tokenizer {
         }
 
         line = line.substring(0, line.length() - 1);
+
+        if (line.startsWith(Chars.PARAM_EXTENDOR)) {
+            line = line.trim();
+            return Token.processContext(line, lineNumber);
+        }
+
 
         if (line.startsWith(Keywords.IMPORT.get(0)) || line.startsWith(Keywords.IMPORT.get(1)))
             return handleImport(line, lineNumber, config);
@@ -970,5 +983,25 @@ public final class Tokenizer {
                     "Ehh baba you must use the right syntax if u wanna cima this process.", lineNumber);
 
         return parts[1].trim();
+    }
+
+    public static void consumeExtension(TExtendParams tExtendParams, TokenDefault<?> previousToken, int lineNumber)
+            throws TokenizerException {
+        if (lineNumber == 1 || previousToken == null)
+            throw new MalformedSyntaxException("How do you extend the start of a scope bro?", lineNumber);
+        if (previousToken instanceof TParamsExtendable tpe) {
+            if (tpe.endsWithFuncCall())
+                tpe.addArguments(tExtendParams.args);
+            else throw new MalformedSyntaxException(
+                    "Cannot extend the value on line " + (lineNumber - 1) + " as it is not a function call.",
+                    lineNumber
+            );
+        } else {
+            throw new MalformedSyntaxException(
+                    "Cannot extend the construct on line " + (lineNumber - 1) + " as it is not extendable",
+                    lineNumber
+            );
+        }
+        // TExtendParams effectively goes to hell.
     }
 }

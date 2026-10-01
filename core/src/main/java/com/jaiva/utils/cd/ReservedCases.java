@@ -9,7 +9,8 @@ public enum ReservedCases {
 //    EMPTY_STRING(0b10000), // 16. Commented out because this follows the standard rules.
     DOUBLE_QUOTES(0b10001), // 17. A string that starts and ends with double quotes.
     TERNARY(0b10010), // 18. A ternary operation.
-    LAMBDA(0b10011); // 19. A lambda.
+    LAMBDA(0b10011), // 19. A lambda.
+    PARAMS_EXTENDOR(0b10100); // 20. Param extendor
 
     /**
      * The code representing the reserved case.

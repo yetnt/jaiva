@@ -111,6 +111,10 @@ public class ContextDispatcher {
             bits = 0b10001;
             return;
         }
+        if (line.startsWith(Chars.PARAM_EXTENDOR)) {
+            bits = ReservedCases.PARAMS_EXTENDOR.code();
+            return;
+        }
         if (line.isEmpty()) {
             SE = true;
             bits |= 0b10000;
@@ -192,7 +196,7 @@ public class ContextDispatcher {
     public String printCase() {
         return switch (bits) {
             case 6, 7, 12, 14, 15 -> "TExpression";
-            case 0, 11, 13, 17, 18, 19 -> "processContext";
+            case 0, 11, 13, 17, 18, 19, 20 -> "processContext";
             case 9, 8 -> "single brace";
             case 16 -> "empty string";
             default -> "ERROR";

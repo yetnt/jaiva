@@ -92,9 +92,12 @@ public class DefinedFunction extends BaseFunction {
                 } else {
                     // cacthes nested calls, operations and others
                     Object o = Primitives.toPrimitive(value, false, config, scope);
-                    wrappedValue = BaseVariable.create(name,
-                            new TUnknownScalar(name, o, tFuncCall.lineNumber),
-                            o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Collections.singletonList(o)), false);
+                    if (o instanceof BaseFunction l)
+                        wrappedValue = l;
+                    else
+                        wrappedValue = BaseVariable.create(name,
+                                new TUnknownScalar(name, o, tFuncCall.lineNumber),
+                                o instanceof ArrayList ? (ArrayList) o : new ArrayList<>(Collections.singletonList(o)), false);
                 }
                 newVfs.put(name.replace("F~", "").replace("V~", ""), (Symbol) wrappedValue);
             }

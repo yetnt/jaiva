@@ -198,6 +198,39 @@ public record Token<T extends TokenDefault>(T value) {
 
             return new TTernary(condition, processContext(expr1, lineNumber),
                     processContext(expr2, lineNumber), lineNumber).toToken();
+        } else if (d.bits == ReservedCases.PARAMS_EXTENDOR.code()) {
+            // remove 2 chars at the start
+            line = line.substring(2).trim();
+            ArrayList<String> args = new ArrayList<>();
+
+            if (Find.lastOutermostBracePair(line) == 0 && !line.startsWith("[")) {
+                // if nraced, remove braces
+                String params = line.substring(1, line.lastIndexOf(")")).trim();
+                args.addAll(Token.splitByTopLevelComma(params));
+            } else {
+                // otherwise treat as a singular argument
+                args.add(line);
+            }
+
+            if (line.length() - Chars.SPREAD.length() == line.indexOf(Chars.SPREAD)) {
+                // user attempts to spread
+                throw new TokenizerException.MalformedJDocException(
+                        lineNumber,
+                        "The spread operator cannot be applied to a function extension."
+                );
+            }
+
+            ArrayList<Object> parsedArgs = new ArrayList<>();
+            for (String arg : args) {
+                parsedArgs.add(processContext((String) arg, lineNumber));
+            }
+            return new TExtendParams(parsedArgs, lineNumber,
+                    line.charAt(line.length() - 1) == Chars.LENGTH_CHAR,
+                    // spreading is for spreading an array or string into a nested function argument
+                    // due to the nature of this token, it literally CANNOT spread
+                    // a user might rightfully, call the length of a long function call which might return an arr/string however
+                    // but spreading works in a context that this just doesn't support.
+                    false ).toToken();
         } else if (index != -1 && (line.charAt(index) == '(')) {
             // then its a TFuncCall
             String name = line.substring(0, index).trim();
@@ -278,17 +311,14 @@ public record Token<T extends TokenDefault>(T value) {
             throws TokenizerException {
         line = line.trim();
         ContextDispatcher d = new ContextDispatcher(line);
-        switch (d.getDeligation()) {
-            case TEXPRESSION:
-                return new TExpression(lineNumber).parse(line);
-            case PROCESS_CONTENT:
-                return processContext(line, lineNumber);
-            case SINGLE_BRACE, EMPTY_STRING:
-                throw new MalformedSyntaxException("Okay so uhm, there's a malformed string somewhere there",
-                        lineNumber);
-            default:
-                throw new CatchAllException("yeah sum went wrong with ur dispatch code", lineNumber);
-        }
+        return switch (d.getDeligation()) {
+            case TEXPRESSION -> new TExpression(lineNumber).parse(line);
+            case PROCESS_CONTENT -> processContext(line, lineNumber);
+            case SINGLE_BRACE, EMPTY_STRING ->
+                    throw new MalformedSyntaxException("Okay so uhm, there's a malformed string somewhere there",
+                            lineNumber);
+            default -> throw new CatchAllException("yeah sum went wrong with ur dispatch code", lineNumber);
+        };
 
     }
 

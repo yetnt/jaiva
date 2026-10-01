@@ -499,13 +499,9 @@ public class GlobalFunctions extends BaseLibrary {
 
             checkParams(tFuncCall, scope);
             ArrayList<Object> returned = new ArrayList<>();
-            params.forEach(arg -> {
-                try {
-                    returned.add(Primitives.toPrimitive(arg, false, config, scope));
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            for (Object arg : params) {
+                returned.add(Primitives.toPrimitive(arg, false, config, scope));
+            }
             return returned;
         }
     }

@@ -16,6 +16,7 @@ import com.jaiva.tokenizer.tokens.TSymbol;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.TDocsComment;
+import com.jaiva.tokenizer.tokens.specific.TExtendParams;
 import com.jaiva.utils.generic.BlockChain;
 import com.jaiva.utils.generic.MultipleLinesOutput;
 import com.yetnt.utils.builders.AnsiColour;
@@ -23,6 +24,8 @@ import com.yetnt.utils.builders.AnsiColour;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
+
+import static com.jaiva.tokenizer.Tokenizer.consumeExtension;
 
 /**
  * The Main class serves as the entry point for the Jaiva programming language
@@ -59,7 +62,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "6.0.0-beta.7";
+    public static String version = "6.0.0-beta.8";
     /**
      * Author, it's just me.
      */
@@ -451,6 +454,12 @@ public class Main {
                     m = null;
                     comment = (comment == null ? "" : comment)
                             + ((TDocsComment) token1.value()).comment;
+                }
+                case Token<?> token when token.value() instanceof TExtendParams extendParams -> {
+                    b = null;
+                    m = null;
+                    comment = null;
+                    consumeExtension(extendParams, tokens.isEmpty() ? null : tokens.getLast().value(), lineNum);
                 }
                 case Token<?> token -> {
                     TokenDefault<?> t = token.value();

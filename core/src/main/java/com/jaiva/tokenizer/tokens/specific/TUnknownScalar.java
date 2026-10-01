@@ -3,6 +3,7 @@ package com.jaiva.tokenizer.tokens.specific;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.lang.Chars;
 import com.jaiva.tokenizer.jdoc.JDoc;
+import com.jaiva.tokenizer.tokens.TParamsExtendable;
 import com.jaiva.tokenizer.tokens.TVariable;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
@@ -14,10 +15,22 @@ import java.util.regex.Pattern;
  * Represents a variable where it's type can only be resolved by the interpeter
  * such as {@code maak name <- functionCall()!}; or if they made a variable but
  * didnt declare the value.
+ * <p>
+ *     This token is a type monster because it serves 2 purposes:
+ *     <ol>
+ *         <li>
+ *             It's the abse class for the concrete {@link TStringVar}, {@link TBooleanVar}, {@link TNumberVar}
+ *         </li>
+ *         <li>
+ *             It is itself also representative of a variable declration who's type cna only be determined at
+ *             runtime
+ *         </li>
+ *     </ol>
+ * </p>
  *
  * @param <Type> The type of the variable.
  */
-public class TUnknownScalar<Type, K extends TokenDefault<K>> extends TokenDefault<K> implements TVariable {
+public class TUnknownScalar<Type, K extends TokenDefault<K>> extends TokenDefault<K> implements TVariable, TParamsExtendable {
     /**
      * The value of the variable.
      */
@@ -66,5 +79,16 @@ public class TUnknownScalar<Type, K extends TokenDefault<K>> extends TokenDefaul
      */
     public Token<K> toToken() {
         return new Token(this);
+    }
+
+
+    @Override
+    public boolean endsWithFuncCall() {
+        return checkObject(value) != null;
+    }
+
+    @Override
+    public TFuncCall get() {
+        return endsWithFuncCall() ? checkObject(value) : null;
     }
 }

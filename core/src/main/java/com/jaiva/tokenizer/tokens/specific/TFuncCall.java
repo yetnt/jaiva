@@ -1,6 +1,7 @@
 package com.jaiva.tokenizer.tokens.specific;
 
 import com.jaiva.errors.JaivaException;
+import com.jaiva.tokenizer.tokens.TParamsExtendable;
 import com.jaiva.tokenizer.tokens.TReference;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
@@ -9,10 +10,10 @@ import java.util.ArrayList;
 
 /**
  * Represents a function call such as {@code func1(10, 20)} or {@code func2()}
- * or {@code func3(10, 20) -> ... <~} or {@code func4(10, 20)!}. Any, if not ALL
+ * or {@code func4(10, 20)!}. Any, if not ALL
  * function calls are possible.
  */
-public class TFuncCall extends TokenDefault<TFuncCall> implements TReference {
+public class TFuncCall extends TokenDefault<TFuncCall> implements TReference, TParamsExtendable {
     /**
      * The name of the function being called.
      * <p>
@@ -94,5 +95,15 @@ public class TFuncCall extends TokenDefault<TFuncCall> implements TReference {
     @Override
     public boolean getSpreadArr() {
         return spreadArr;
+    }
+
+    @Override
+    public boolean endsWithFuncCall() {
+        return true;
+    }
+
+    @Override
+    public TFuncCall get() {
+        return this;
     }
 }

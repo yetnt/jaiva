@@ -1,0 +1,43 @@
+@ Just some nice array examples
+@ tsea "jaiva/arrays"!
+@
+@ kwenza replaceOddChar(original, c) ->
+@     maak originalAsCharArray <- arrLit(original:::)!
+@     if (typeOf(c) != "string") ->
+@         khutla original!
+@     <~
+@
+@     maak out <- ""!
+@     colonize (i <- 0 | i < originalAsCharArray~ | +) ->
+@         maak let <- originalAsCharArray[i]!
+@         out <- out + (i % 2 != 0 => c however let)!
+@     <~
+@
+@     khutla out!
+@ <~
+@
+@ @ The "|>" operator appends the value to the parameter list of the function call preceding it
+@
+@ maak result <- a_apply(reservedKeywords)!
+@     |> f~(arr) : a_filter(arr, f~(str) : str~ <= 4)!
+@     |> f~(arr) : a_map(arr, f~(str) : str~)!
+@     |> f~(arr) : a_map(arr, f~(num) : "l" * num)!
+@     |> a_reverse!
+@     |> f~(arr) : a_map(arr, f~(str) : replaceOddChar(str, "p"))!
+@
+@ @ Exact same as calling
+@ @ maak res <- a_apply(reservedKeywords,  f~(arr) : a_filter(arr, f~(str) : str~ <= 4), f~(arr) : a_map(arr, f~(str) : str~), ...)!
+@
+@ khuluma(result)! @ Should print
+@                  @ ["lplp", "lplp", "lplp", "lplp", "lpl", "lplp", "lplp", "lplp", "lplp", "lp", "lplp"]
+
+tsea "jaiva/arrays"!
+
+@ A very messy array
+maak myArr <-| 10, 49, f~() : 2, "whats up", yebo, idk, arrLit(10), 81!
+
+
+maak out <- a_apply(myArr)!
+    |> f~(arr) : a_forEach(arr, khuluma)!
+    |> f~(arr) : a_map(arr, (f~(el) : typeOf(el) = "function" => el() however el))!
+    |> f~(arr) : a_filter(arr, f~(el) : ((el?)'))!

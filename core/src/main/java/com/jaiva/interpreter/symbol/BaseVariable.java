@@ -64,6 +64,8 @@ public class BaseVariable extends Symbol {
     public BaseVariable(String name, TokenDefault<?> t, Object scalar) {
         super(name, SymbolType.VARIABLE, t);
         this.scalar = scalar;
+        if (scalar instanceof Lambda)
+            System.out.println("FUCK");
         variableType = VariableType.SCALAR;
     }
 

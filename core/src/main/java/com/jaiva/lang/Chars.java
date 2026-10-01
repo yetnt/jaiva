@@ -38,114 +38,118 @@ public class Chars {
     /**
      * The escape character used in strings.
      */
-    public static char ESCAPE = '$';
+    public static final char ESCAPE = '$';
     /**
      * The end line character used to denote the end of a line.
      */
-    public static char END_LINE = '!';
+    public static final char END_LINE = '!';
     /**
      * The character used to denote a single line comment.
      */
-    public static char COMMENT = '@';
+    public static final char COMMENT = '@';
     /**
      * The character used to denote that the symbol defined should be exported.
      */
-    public static char EXPORT_SYMBOL = '*';
+    public static final char EXPORT_SYMBOL = '*';
     /**
      * The character used to denote a comment which is a documentation comment.
      */
-    public static String COMMENT_DOC = "@*";
+    public static final String COMMENT_DOC = "@*";
     /**
      * The character used to denote the opening of a comment block.
      */
-    public static char COMMENT_OPEN = '{';
+    public static final char COMMENT_OPEN = '{';
     /**
      * The character used to denote the closing of a comment block.
      */
-    public static char COMMENT_CLOSE = '}';
+    public static final char COMMENT_CLOSE = '}';
     /**
      * The character used to denote the opening of a block.
      */
-    public static String BLOCK_OPEN = "->";
+    public static final String BLOCK_OPEN = "->";
     /**
      * The character used to denote the closing of a block.
      */
-    public static String BLOCK_CLOSE = "<~";
+    public static final String BLOCK_CLOSE = "<~";
     /**
      * The character used to denote the opening of a statement.
      */
-    public static char STATEMENT_OPEN = '(';
+    public static final char STATEMENT_OPEN = '(';
     /**
      * The character used to denote the closing of a statement.
      */
-    public static char STATEMENT_CLOSE = ')';
+    public static final char STATEMENT_CLOSE = ')';
     /**
      * The character used to denote any assignment.
      */
-    public static String ASSIGNMENT = "<-";
+    public static final String ASSIGNMENT = "<-";
     /**
      * The character used to denote an assignment to an error.
      * <p>
      * Why is there a special separate character for this? Yes.
      */
-    public static String THROW_ERROR = "<==";
+    public static final String THROW_ERROR = "<==";
     /**
      * The character used to denote the creation of a new array.
      */
-    public static String ARRAY_ASSIGNMENT = "<-|";
+    public static final String ARRAY_ASSIGNMENT = "<-|";
 
     /**
      * The character used to denote the opening of an array access.
      */
-    public static char ARRAY_OPEN = '[';
+    public static final char ARRAY_OPEN = '[';
     /**
      * The character used to denote the closing of an array access.
      */
-    public static char ARRAY_CLOSE = ']';
+    public static final char ARRAY_CLOSE = ']';
     /**
      * The character used to get the length of an array or string variable.
      */
-    public static char LENGTH_CHAR = '~';
+    public static final char LENGTH_CHAR = '~';
     /**
      * The character used to separate the arguments in a colonize loop
      */
-    public static char FOR_SEPARATOR = '|';
+    public static final char FOR_SEPARATOR = '|';
     /**
      * The character used to separate the arguments in a function call.
      */
-    public static char ARGS_SEPARATOR = ',';
+    public static final char ARGS_SEPARATOR = ',';
     /**
      * The character used to denote a string.
      */
-    public static char STRING = '"';
+    public static final char STRING = '"';
     /**
      * The character used to denote a function's argument is optional.
      */
-    public static char OPTIONAL_ARG = '?';
+    public static final char OPTIONAL_ARG = '?';
     /**
      * Represents the ternary operator symbol used in the language.
      */
-    public static String TERNARY = "=>";
+    public static final String TERNARY = "=>";
     /**
      * Represents the separator needed to separate a tag in a JDoc string.
      */
-    public static String DOC_TAG = "$>";
+    public static final String DOC_TAG = "$>";
     /**
      * Represents something that is a function.
      * This is used for defining lambdas
      */
-    public static String LAMBDA_DEFINITION = "f~";
+    public static final String LAMBDA_DEFINITION = "f~";
 
     /**
      * Represents the spread operator used in function calls and array definitions.
      */
-    public static String SPREAD = ":::";
+    public static final String SPREAD = ":::";
+    /**
+     * Represents the params extension operation
+     */
+    public static final String PARAM_EXTENDOR = "|>";
 
 
     /**
      * The Operators class defines a set of arithmetic and boolean operators.
      */
-    public static class Operators {
+    public static final class Operators {
         /**
          * List of exponentiation operators. (Well only one.)
          */
@@ -290,7 +294,7 @@ public class Chars {
          * This method aggregates several predefined lists, such as Exponentiation,
          * DivMult, AddSub, Shift, Bitwise, Comparison and Logical, into a single list
          * of lists.
-         * 
+         *
          * @return A list containing all predefined lists of strings.
          */
         public static List<List<String>> getAllLists() {
@@ -347,7 +351,7 @@ public class Chars {
      * <p>
      * This is the exact same as {@link #invalidChars()} but without the
      * {@link Chars#EXPORT_SYMBOL}.
-     * 
+     *
      * @return An arraylist of characters that are not allowed in a symbol name.
      */
     public static ArrayList<String> invalidCharsForSymbolName() {
@@ -359,13 +363,14 @@ public class Chars {
 
     /**
      * Returns an arraylist of characters that cannot be used randomly.
-     * 
+     *
      * @return An arraylist of characters that cannot be used randomly.
      */
     public static ArrayList<String> invalidChars() {
         String all = Operators.getAll().toString().replaceAll(",", "").replaceAll(" ", "").replace("[", "").replace("]",
                 "") +
                 ESCAPE +
+                PARAM_EXTENDOR +
                 OPTIONAL_ARG +
                 END_LINE +
                 COMMENT +

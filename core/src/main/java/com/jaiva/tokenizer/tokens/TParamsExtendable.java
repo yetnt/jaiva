@@ -1,0 +1,30 @@
+package com.jaiva.tokenizer.tokens;
+
+import com.jaiva.tokenizer.tokens.specific.TExpression;
+import com.jaiva.tokenizer.tokens.specific.TFuncCall;
+
+import java.util.ArrayList;
+
+/**
+ * An interface describing functionality that if this particular token is or references a singular
+ * function call, and a TContinueParams token follows it, the Continue Params token is allowed to mutate
+ * said function call to add parameters into the list.
+ */
+public interface TParamsExtendable {
+    boolean endsWithFuncCall();
+    TFuncCall get();
+    default void addArguments(ArrayList<Object> moreArgs) {
+        get().args.addAll(moreArgs);
+    }
+    default TFuncCall checkObject(Object t) {
+        if (t instanceof TFuncCall f) return f;
+        if (t instanceof TExpression expr) {
+            return checkObject(expr.rHandSide);
+        }
+        return switch (t) {
+            case Token<?> w when w.value() instanceof TFuncCall f -> f;
+            case Token<?> w when w.value() instanceof TExpression expr -> checkObject(expr.rHandSide);
+            default -> null;
+        };
+    }
+}

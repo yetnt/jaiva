@@ -237,6 +237,76 @@ See [jaiva-install on CLI](./docs/CLI.md#jaiva-installcmd-batch--jaiva-install-b
 
 ### Language Features
 
+#### Argument Extensions
+
+Since `()` and `[]` in jaiva have to be on the same line, problems arise when you are passing multiple arguments into a function.
+
+For instance, take `a_apply` from `jaiva/arrays` which applies the given functions to an array:
+
+```jaiva
+tsea "jaiva/arrays"!
+
+@ A very messy array
+maak myArr <-| 10, 49, f~() : 2, "whats up", yebo, idk, arrLit(10), 81! 
+
+maak out <- a_apply(myArr, f~(arr) : a_forEach(arr, khuluma), f~(arr) : a_map(arr, f~(el) : typeOf(el) = "function" => el() however el), f~(arr) : a_filter(arr, f~(el) : (el?)' )!
+```
+
+I can barely even read that!
+
+To fix this, we can use syntax which allows you to extend a function call's arguments
+into multiple lines (uses `|>`)
+
+```jaiva
+tsea "jaiva/arrays"!
+
+@ A very messy array
+maak myArr <-| 10, 49, f~() : 2, "whats up", yebo, idk, arrLit(10), 81! 
+
+maak out <- a_apply(myArr)!
+    |> f~(arr) : a_forEach(arr, khuluma)!
+    |> f~(arr) : a_map(arr, f~(el) : typeOf(el) = "function" => el() however el)!
+    |> f~(arr) : a_filter(arr, f~(el) : (el?)')!
+```
+
+which is functionally equivalent to calling the called function with all the values in `|>` appended to the call as independent arguments.
+
+So it is literally just a way to split the argument list into multiple lines.
+
+> [!NOTE]
+> The statement itself still has to close it's brace and have `!` at the end. As in:
+```diff
+- WRONG
+func(
+    |> arg
+    |> arg, arg2)!
+
++ CORRECT
+func()!
+|> arg!
+|> (arg, arg2)!
+```
+
+This does come in handy for functional style usage but this is purely for making arguments readable, for exmaple
+take `f_new` function from `jaiva/file`, which takes in conceptually `f_new(filePath, [content], canRead?, canWrite?, canExecute?)`
+
+You can write the entire call in a single line
+
+```jaiva
+tsea "jaiva/file/api"!
+f_new("C:/Users/PrivateLol/data.csv", arrLit("some,random,text,here","1,2,6,3","10,5,1,6"), true, true, true)!
+```
+
+or you can use argument extension to either pass one or multiple arguments at once vertically
+```jaiva
+f_new()!
+    |> "C:/Users/PrivateLol/data.csv"!
+    |> arrLit("some,random,text,here","1,2,6,3","10,5,1,6")! @ Passes a single array as the second parameter
+    |> (true, true, true)! @ Passes true into the third, fourth and fifth slot.
+```
+
+id document more but come on man go test urself
+
 #### Hierarchical Libraries
 
 Due to an internal change [See nerd corner block](#baselibrary-metadata-as-annotations), now
@@ -314,11 +384,14 @@ a_apply(arr)!
 @ Returns [1, 2, 3, 4]
 a_apply(arr, func)!
 @ Returns [2, 3, 4, 5]
-a_apply(arr, f~(a) : a_map(a, f~(num) : num * 3))
+a_apply(arr, f~(a) : a_map(a, f~(num) : num * 3))!
 @ Returns [3, 6, 9, 12]
-a_apply(arr, a_reverse, f~(a) : a_map(a, f~(num) : num * 3))
+a_apply()!
+    |> arr!                                 @ First argument
+    |> a_reverse!                           @ Second argument
+    |> f~(a) : a_map(a, f~(num) : num * 3)! @ Third argument
 @ Returns [12, 9, 6, 3]
-a_apply(arr, khuluma)
+a_apply(arr, khuluma)!
 @ Returns [1, 2, 3, 4] (khuluma returns idk)
 ```
 

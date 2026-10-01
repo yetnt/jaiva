@@ -47,7 +47,8 @@ kwenza *get(class, prop) ->
         cima <== "wrong class"!
     <~
 
-    maak found <- a_find(getFields(class), f~(el) : el[0] = split[1])!
+    maak found <- a_find(getFields(class))!
+    |> f~(el) : el[0] = split[1]!
     if (typeOf(found) = "array") ->
         if (found[2] = -1) ->
             khuluma(d_getScope())!
@@ -64,7 +65,8 @@ kwenza *call(class, prop, params) ->
         cima <== "wrong class"!
     <~
 
-    maak found <- a_find(getMethods(class), f~(el) : el[0] = split[1])!
+    maak found <- a_find(getMethods(class))!
+    |> f~(el) : el[0] = split[1]!
     if (typeOf(found) = "array") ->
         maak d <- found[1]!
         khutla d(class, params:::)!
@@ -77,7 +79,8 @@ kwenza *unsafeCast(class1, convertTo) ->
 
 kwenza *newClass(name, fields, methods, accessor?) ->
     tsea "jaiva/time" <- t_now!
-    maak more <- arrLit(methods:::, method("this", f~(<-i) : i[0]))!
+    maak more <- arrLit(methods:::)!
+    |> method("this", f~(<-i) : i[0])!
     maak props <-| t_now() - 100 << 3, name, accessor!
     khutla arrLit(props, fields, more)!
 <~
@@ -85,12 +88,22 @@ kwenza *newClass(name, fields, methods, accessor?) ->
 maak name <- field("name", "i am guy")!
 maak id <- field("id", 1001, -1)!
 
-maak getId <- method("getId", f~(<-i) : get(i[0], "MyClass.id") )!
-maak myMethid <- method("add", f~(<-i) : i[1] + i[2])!
-maak sub <- method("sub", f~(<-i) : i[1] - i[2])!
+maak getId <- method("getId")!
+|> f~(<-i) : get(i[0], "MyClass.id")!
 
-maak MyClass <- newClass("MyClass", arrLit(id, name), arrLit(myMethid, sub, getId))!
-maak OtherClass <- newClass("OtherClass", arrLit(id, name), arrLit(myMethid, sub, getId))!
+maak myMethid <- method("add")!
+|> f~(<-i) : i[1] + i[2]!
+
+maak sub <- method("sub")!
+|> f~(<-i) : i[1] - i[2]!
+
+maak MyClass <- newClass("MyClass")!
+|> arrLit(id, name)!
+|> arrLit(myMethid, sub, getId)!
+
+maak OtherClass <- newClass("OtherClass")!
+|> arrLit(id, name)!
+|> arrLit(myMethid, sub, getId)!
 
 khuluma(call(MyClass, "MyClass.getId", arrLit()))!
 khuluma(call(MyClass, "MyClass.this", arrLit()))!

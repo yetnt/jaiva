@@ -63,7 +63,7 @@ The integers we get are:
 
 TExpression = 6, 7, 12, 14, 15
 
-processContext = 0, 11, 13, 17*, 18*
+processContext = 0, 11, 13, 17*, 18, 19, 20*
 
 empty string = 16
 
@@ -72,7 +72,7 @@ single brace = 9, 8
 impossible cases = 1, 2, 3, 4, 5, 10, 19 - 31
 
 ---
-Reserved Cases = 17, 18, 19
+Reserved Cases = 17, 18, 19, 20
 > These are hard coded and do not follow the pattern.
 > This is typically for any value higher than 16. Since 16 signifies the string is empty, we can use the other, higher, values for special cases because you cant have an empty string with the other conditions.
 ---

@@ -1,12 +1,33 @@
-@ scope("strict")!
-@ tsea "jaiva/types"!
-@ maak var <- 10.391!
-@ maak z <- t_dToIEEE754Long(var)!
-@ maak str <- 2 - t_str(z, 16)! @ The "2 -" removes the "0x" prefix
-@ khuluma(str)!
+tsea "jaiva/arrays"!
 
-kwenza func() ->
-	khutla func!
+maak x <- arrLit(10)!
+|> (20, 30, 40)!
+|> arrLit(100)!
+
+
+khuluma(x)!
+
+x <- arrLit(100, 2)!
+|> (1, arrLit(12, 2), 8)!
+|> 100!
+
+khuluma(x)!
+
+kwenza kAll(<-pars) ->
+	colonize (p with pars) ->
+		khuluma(p)!
+	<~
 <~
 
-khuluma(func())!
+kAll("hello")!
+|> "World"!
+|> "new Syntax"!
+|> ("is beautiful", "like really")!
+|> kAll!
+
+maak add <- f~(<-nums) : a_reduce(nums, f~(a,b):a+b, 0)!
+
+maak z <- (10 + add(1))!
+|> (2, 3, 4, 5)!
+
+khuluma(z)!
