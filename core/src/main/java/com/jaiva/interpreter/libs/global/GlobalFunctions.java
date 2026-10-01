@@ -39,7 +39,7 @@ public class GlobalFunctions extends BaseLibrary {
         add(new IOFunctions(config));
     }
 
-    class FScope extends BaseFunction {
+    static class FScope extends BaseFunction {
         FScope() {
             super(
                     FunctionBuilder.start()
@@ -109,7 +109,7 @@ public class GlobalFunctions extends BaseLibrary {
      * getVarClass(variable)
      * Returns the .toString() class representation of a variable's token.
      */
-    class FGetVarClass extends BaseFunction {
+    static class FGetVarClass extends BaseFunction {
         FGetVarClass() {
             super(
                     FunctionBuilder.start()
@@ -168,7 +168,7 @@ public class GlobalFunctions extends BaseLibrary {
      * reservedKeywords (array) variable.
      * This contains an array of the reserved keywords
      */
-    class VReservedKeywords extends BaseVariable {
+    static class VReservedKeywords extends BaseVariable {
         VReservedKeywords() {
             super("reservedKeywords",
                     new TArrayVar("reservedKeywords", new ArrayList<>(Arrays.asList(Keywords.all)), -1,
@@ -184,7 +184,7 @@ public class GlobalFunctions extends BaseLibrary {
     /**
      * getCallerValue(variable)
      */
-    class FGetCallerValue extends BaseFunction {
+    static class FGetCallerValue extends BaseFunction {
         FGetCallerValue() {
             super(
                     FunctionBuilder.start()
@@ -217,7 +217,7 @@ public class GlobalFunctions extends BaseLibrary {
      * version variable.
      * This holds the current version of jaiva in {@link Main#version}
      */
-    class VJaivaVersion extends BaseVariable {
+    static class VJaivaVersion extends BaseVariable {
         VJaivaVersion() {
             super("version", new TStringVar("version", Main.version, -1,
                     JDoc.builder()
@@ -235,7 +235,7 @@ public class GlobalFunctions extends BaseLibrary {
      * flat(<-arrays)
      * Takes in 2 or more arrays and flattens them into a singular array.
      */
-    class FFlat extends BaseFunction {
+    static class FFlat extends BaseFunction {
         FFlat() {
             super(
                     FunctionBuilder.start()
@@ -312,7 +312,7 @@ public class GlobalFunctions extends BaseLibrary {
      * </p>
      *
      */
-    class FSleep extends BaseFunction {
+    static class FSleep extends BaseFunction {
         FSleep() {
             super(
                     FunctionBuilder.start()
@@ -353,7 +353,7 @@ public class GlobalFunctions extends BaseLibrary {
         }
     }
 
-    class FTypeOfNumber extends BaseFunction {
+    static class FTypeOfNumber extends BaseFunction {
         FTypeOfNumber() {
             super(FunctionBuilder.start()
                     .name("typeOfNumber")
@@ -407,30 +407,36 @@ public class GlobalFunctions extends BaseLibrary {
         }
     }
 
-    //todo: continue refactor of manual to use function builder
-
-    class FTypeOf extends BaseFunction {
+    static class FTypeOf extends BaseFunction {
         FTypeOf() {
-            super("typeOf", new TFunction("typeOf", new String[] { "input?" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Returns the type of any given input.")
-                            .addParam("input", "idk", "The input to check the type against", true)
-                            .addReturns("Returns the string form of the typ, which could be \"array\", \"string\", \"boolean\", \"number\", \"function\", or the primitive idk. "
-                                    + " If you require a more precise answer than number use typeOfNumber")
-                            .sinceVersion("3.0.0")
-                            .addExample("""
-                                    maak b <- 100!
-                                    
-                                    khuluma(typeOf(b))!                   @ "number"
-                                    khuluma(typeOf(typeOf))!                @ "function"
-                                    khuluma(typeOf())!                    @ idk
-                                    khuluma(typeOf(aowa))!                @ "boolean"
-                                    khuluma(typeOf("what the f"))!        @ "string"
-                                    khuluma(typeOf(reservedKeywords))!    @ "array"
-                                    khuluma(typeOf(idk))!                 @ idk
-                                    """)
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("typeOf")
+                            .arguments(Arguments.getInstance().add(
+                                    new AArgument(
+                                            "input","The input to check the type against",
+                                            true, Argument.Type.ANY
+                                    )
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Returns the type of any given input.")
+                                            .addReturns("Returns the string form of the typ, which could be \"array\", \"string\", \"boolean\", \"number\", \"function\", or the primitive idk. "
+                                                    + " If you require a more precise answer than number use typeOfNumber")
+                                            .sinceVersion("3.0.0")
+                                            .addExample("""
+                                            maak b <- 100!
+                                            
+                                            khuluma(typeOf(b))!                   @ "number"
+                                            khuluma(typeOf(typeOf))!                @ "function"
+                                            khuluma(typeOf())!                    @ idk
+                                            khuluma(typeOf(aowa))!                @ "boolean"
+                                            khuluma(typeOf("what the f"))!        @ "string"
+                                            khuluma(typeOf(reservedKeywords))!    @ "array"
+                                            khuluma(typeOf(idk))!                 @ idk
+                                            """)
+                            )
+            );
             freeze();
         }
 
@@ -458,24 +464,31 @@ public class GlobalFunctions extends BaseLibrary {
         }
     }
 
-    class FArrayLiteral extends BaseFunction {
+    static class FArrayLiteral extends BaseFunction {
         FArrayLiteral() {
-            super("arrLit", new TFunction("arrLit", new String[] { "<-elements" }, null, -1,
-                    JDoc.builder()
-                            .addDesc("Creates an array literal from the given elements. This is useful if you want to createFunction an array without declaring it to a variable. For example, `arrLit(1, 2, 3)` will return `[1, 2, 3]`. This is needed as Jaiva doesnt have square bracket syntax")
-                            .addParam("elements", "[]", "Variable amount of elements to take in and turn into a single array.", true)
-                            .addReturns("The input given, as an array")
-                            .sinceVersion("3.0.0")
-                            .addExample("""
-                                    maak array1 <- arrLit(1, 2, 3, "hello", aowa, idk)! @ Creates an array with mixed types.
-                                    maak array2 <-| 1, 2, 3, "hello", aowa, idk! @ Creates an array with mixed types. (Same as above but with maak syntax)
-                                    maak array3 <- arrLit()! @ Creates an empty array.
-                                    khuluma(array1)! @ Prints [1, 2, 3, "hello", aowa, idk]
-                                    khuluma(array3)! @ Prints []
-                                    khuluma(array1 = array2)! @ Prints aowa (false) (I am not implementing array equality via `=` operator anytime soon. It is the exact same array though.)
-                                    """)
-                            .build()
-            ));
+            super(
+                    FunctionBuilder.start()
+                            .name("arrLit")
+                            .arguments(Arguments.getInstance().addVarArg(
+                                    new AVarArgument(
+                                            "elements", "Variable amount of elements to take in and turn into a single array."
+                                    )
+                            ))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc("Creates an array literal from the given elements. This is useful if you want to createFunction an array without declaring it to a variable. For example, `arrLit(1, 2, 3)` will return `[1, 2, 3]`. This is needed as Jaiva doesnt have square bracket syntax")
+                                            .addReturns("The input given, as an array")
+                                            .sinceVersion("3.0.0")
+                                            .addExample("""
+                                            maak array1 <- arrLit(1, 2, 3, "hello", aowa, idk)! @ Creates an array with mixed types.
+                                            maak array2 <-| 1, 2, 3, "hello", aowa, idk! @ Creates an array with mixed types. (Same as above but with maak syntax)
+                                            maak array3 <- arrLit()! @ Creates an empty array.
+                                            khuluma(array1)! @ Prints [1, 2, 3, "hello", aowa, idk]
+                                            khuluma(array3)! @ Prints []
+                                            khuluma(array1 = array2)! @ Prints aowa (false) (I am not implementing array equality via `=` operator anytime soon. It is the exact same array though.)
+                                            """)
+                            )
+            );
             freeze();
         }
 

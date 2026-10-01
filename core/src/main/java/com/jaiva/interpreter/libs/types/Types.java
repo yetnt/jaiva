@@ -103,8 +103,8 @@ public class Types extends BaseLibrary {
 
                 Object r = Primitives.toPrimitive(p.get(1), false, config,
                         scope);
-                if (!(r instanceof TVoidValue) && !(r instanceof Long))
-                    throw new FunctionParametersException(scope, this, "2", tFuncCall.lineNumber);
+                if (!(r instanceof TVoidValue) && !(r instanceof Integer))
+                    throw new FunctionParametersException(scope, this, "2", r, Integer.class, tFuncCall.lineNumber);
                 int radix = r instanceof TVoidValue ? -1 : (int) r;
 
                 return Long.parseLong(v, t != -1 ? t : radix != -1 ? radix : 10);
@@ -126,7 +126,7 @@ public class Types extends BaseLibrary {
                     Object r = Primitives.toPrimitive(params.get(1), false, config,
                             scope);
                     if (!(r instanceof TVoidValue) && !(r instanceof Integer))
-                        throw new FunctionParametersException(scope, this, "2", tFuncCall.lineNumber);
+                        throw new FunctionParametersException(scope, this, "2", r, Integer.class, tFuncCall.lineNumber);
                     int radix = r instanceof TVoidValue ? -1 : (int) r;
 
                     return Integer.parseInt(value, type != -1 ? type : radix != -1 ? radix : 10);
@@ -211,8 +211,8 @@ public class Types extends BaseLibrary {
                         yield val.toString();
                     Object r = Primitives.toPrimitive(params.get(1), false, config,
                             scope);
-                    if (!(r instanceof TVoidValue) && !(r instanceof Long))
-                        throw new FunctionParametersException(scope, this, "2", tFuncCall.lineNumber);
+                    if (!(r instanceof TVoidValue) && !(r instanceof Integer))
+                        throw new FunctionParametersException(scope, this, "2", r, Integer.class, tFuncCall.lineNumber);
                     int radix = r instanceof TVoidValue ? -1 : (int) r;
                     yield switch (radix) {
                         case 2 -> "0b" + Long.toBinaryString(l);
@@ -227,7 +227,7 @@ public class Types extends BaseLibrary {
                     Object r = Primitives.toPrimitive(params.get(1), false, config,
                             scope);
                     if (!(r instanceof TVoidValue) && !(r instanceof Integer))
-                        throw new FunctionParametersException(scope, this, "2", tFuncCall.lineNumber);
+                        throw new FunctionParametersException(scope, this, "2", r, Integer.class, tFuncCall.lineNumber);
                     int radix = r instanceof TVoidValue ? -1 : (int) r;
                     yield switch (radix) {
                         case 2 -> "0b" + Integer.toBinaryString(integer);

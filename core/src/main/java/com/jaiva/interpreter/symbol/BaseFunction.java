@@ -29,18 +29,8 @@ public class BaseFunction extends Symbol {
      */
     public BaseFunction(TFunction token) {
         super(token.name, SymbolType.FUNCTION, token);
-        this.token = token;
     }
 
-    /**
-     * Constructs a new BaseFunction instance with the specified name.
-     * 
-     * @param name the name of the function
-     */
-    public BaseFunction(String name) {
-        super(name, SymbolType.FUNCTION);
-        this.name = name;
-    }
 
     /**
      * Constructs a new BaseFunction instance with the specified name and token.
@@ -50,8 +40,6 @@ public class BaseFunction extends Symbol {
      */
     public BaseFunction(String name, TFunction token) {
         super(name, SymbolType.FUNCTION, token);
-        this.token = token;
-        this.name = name;
     }
 
     /**

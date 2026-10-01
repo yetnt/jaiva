@@ -225,9 +225,9 @@ public class FileQuery extends BaseLibrary {
                     Object permObj = params.getFirst();
                     if (permObj instanceof String permStr) {
                         if (permStr.length() == 3) {
-                            boolean read = permStr.charAt(0) == 'r' && file.canRead();
-                            boolean write = permStr.charAt(1) == 'w' && file.canWrite();
-                            boolean execute = permStr.charAt(2) == 'x' && file.canExecute();
+                            boolean read = (permStr.charAt(0) == 'r') == file.canRead();
+                            boolean write = (permStr.charAt(1) == 'w') == file.canWrite();
+                            boolean execute = (permStr.charAt(2) == 'x') == file.canExecute();
 
                             return read && write && execute;
                         }

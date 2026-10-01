@@ -1,6 +1,7 @@
 package com.jaiva.interpreter;
 
 import com.jaiva.Main;
+import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.InterpreterException.*;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.errors.JaivaException.DebugException;
@@ -252,14 +253,19 @@ public class Interpreter {
             }
             case TVarReassign tVarReassign -> {
                 MapValue mapValue = scope.vfs.get(tVarReassign.name);
+                if (mapValue == null)
+                    throw new InterpreterException.UnknownVariableException(
+                            scope, tVarReassign
+                    );
                 if (MapValue.isEmpty(mapValue)
                         || (mapValue.getValue() == null || !(mapValue.getValue() instanceof BaseVariable
                         || mapValue.getValue() instanceof BaseFunction)))
                     throw new UnknownVariableException(scope, tVarReassign);
 
-                Symbol var = (Symbol) mapValue.getValue();
+                Symbol var = mapValue.getValue();
                 if (var.isFrozen)
-                    throw new FrozenSymbolException(scope, var, tVarReassign.lineNumber);
+                    throw new FrozenSymbolException(
+                            scope, var, tVarReassign.lineNumber);
 
                 Object o = Primitives.toPrimitive(tVarReassign.newValue, false,
                         config, scope);
