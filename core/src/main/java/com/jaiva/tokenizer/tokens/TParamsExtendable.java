@@ -11,7 +11,9 @@ import java.util.ArrayList;
  * said function call to add parameters into the list.
  */
 public interface TParamsExtendable {
-    boolean endsWithFuncCall();
+    default boolean endsWithFuncCall() {
+        return get() != null;
+    }
     TFuncCall get();
     default void addArguments(ArrayList<Object> moreArgs) {
         get().args.addAll(moreArgs);

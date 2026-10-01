@@ -81,14 +81,8 @@ public class TUnknownScalar<Type, K extends TokenDefault<K>> extends TokenDefaul
         return new Token(this);
     }
 
-
-    @Override
-    public boolean endsWithFuncCall() {
-        return checkObject(value) != null;
-    }
-
     @Override
     public TFuncCall get() {
-        return endsWithFuncCall() ? checkObject(value) : null;
+        return checkObject(value);
     }
 }

@@ -54,13 +54,9 @@ public class TVarReassign extends TokenDefault<TVarReassign> implements TStateme
         return new Token<>(this);
     }
 
-    @Override
-    public boolean endsWithFuncCall() {
-        return checkObject(newValue) != null;
-    }
 
     @Override
     public TFuncCall get() {
-        return endsWithFuncCall() ? checkObject(newValue) : null;
+        return checkObject(newValue);
     }
 }

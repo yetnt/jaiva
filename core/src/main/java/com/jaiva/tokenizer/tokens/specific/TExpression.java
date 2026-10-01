@@ -168,14 +168,8 @@ public class TExpression extends TokenDefault<TExpression> implements TAtomicVal
         return new Token<>(this);
     }
 
-
-    @Override
-    public boolean endsWithFuncCall() {
-        return checkObject(rHandSide) != null;
-    }
-
     @Override
     public TFuncCall get() {
-        return endsWithFuncCall() ? checkObject(rHandSide) : null;
+        return checkObject(rHandSide);
     }
 }
