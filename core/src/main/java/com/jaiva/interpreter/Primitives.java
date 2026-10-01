@@ -1,6 +1,8 @@
 package com.jaiva.interpreter;
 
+import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.InterpreterException.*;
+import com.jaiva.errors.JaivaException;
 import com.jaiva.errors.Warnings;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.*;

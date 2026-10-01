@@ -8,7 +8,7 @@ kwenza replaceOddChar(original, c) ->
     <~
 
     maak out <- ""!
-    colonize (i <- 0 /\ i < originalAsCharArray~ \/ +) ->
+    colonize (i <- 0 <| i < originalAsCharArray~ <| +) ->
         maak let <- originalAsCharArray[i]!
         out <- out + (i % 2 != 0 => c however let)!
     <~
@@ -42,3 +42,9 @@ myArr <- a_apply(myArr)!
     |> f~(arr) : a_filter(arr, f~(el) : ((el?)'))!
 
 khuluma(myArr)!
+
+khuluma()!
+
+colonize (i <- 1 <| i <= 10 <| (f~(z) : i % 2 = 1 => 2 * z however z + 1)(i) ) ->
+    khuluma(i)! @ 1, 2, 3, 6,  7
+<~

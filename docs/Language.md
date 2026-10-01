@@ -979,7 +979,7 @@ Where
 This ones a bit weird.
 
 ```jiv
-colonize ((variable init) | (condition) | (increment)) ->
+colonize ((variable init) <| (condition) <| (increment)) ->
     @ block to execute
 <~
 ```
@@ -990,13 +990,19 @@ Where
 
 > `condition` is the condition to check for the loop to continue. This is a boolean expression.
 
-> `increment` is the increment to use for the loop. This can be a `+` or a `-` sign.
+> `increment` is the increment to use for the loop. This can be a `+` or a `-` sign or an expression or function call or even just a value
 
-> and the `|` is the separator between the three parts of the for loop.
+> and the `<|` is the separator between the three parts of the for loop.
 
 ```jiv
-colonize (i <- 0 | i <= 10 | +) ->
+colonize (i <- 0 <| i <= 10 <| +) ->
     khuluma(i)! @ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+<~
+```
+
+```jiv
+colonize (i <- 1 <| i <= 10 <| (f~(z) : i % 2 = 1 => 2 * z however z + 1)(i) ) ->
+    khuluma(i)! @ 1, 2, 3, 6,  7
 <~
 ```
 
@@ -1034,7 +1040,7 @@ nikhil (a = 10) ->
 To skip to the next iteration of a loop, use the `nevermind` keyword.
 
 ```jiv
-colonize (i <- 0 | i <= 10 | +) ->
+colonize (i <- 0 <| i <= 10 <| +) ->
     if (i = 5) ->
         nevermind! @ this will skip the rest of the loop and go to the next iteration.
     <~

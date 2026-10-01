@@ -9,7 +9,9 @@ scope("strict")! @ This freezes all the functions, and elevates all warnings to 
 
     v5.0.4: Adding braces in colonize loops (before it was optional, now its required)
     v5.1.0: Replacing (val = true) with (val;) and replacing (val = idk) with val?
-    v6.0.0: |> Parameters Extension Syntax, for long function calls to be broken  into multiple lines
+    v6.0.0:
+        |> Parameters Extension Syntax, for long function calls to be broken  into multiple lines
+        <| Separator for colonize loops
 }
 
 @* Remove n elements from the end of an array
@@ -30,7 +32,7 @@ kwenza *a_remove(arr, n) ->
         cima <== "a_remove()'s second argument must be a non-negative number"!
     <~
     maak returnValue <-|!
-    colonize (i <- 0 | i < arr~ - n | +) ->
+    colonize (i <- 0 <| i < arr~ - n <| +) ->
         returnValue <- arrLit(returnValue:::, arr[i])!
     <~
     khutla returnValue!
@@ -83,7 +85,7 @@ kwenza *a_pushAll(<-params) ->
         cima <== "a_pushAll() only works on arrays"!
     <~
     maak returnArr <- arr!
-    colonize (i <- 1 | i < params~ | +) ->
+    colonize (i <- 1 <| i < params~ <| +) ->
         returnArr <- arrLit(returnArr:::, params[i])!
     <~
     khutla returnArr!
@@ -124,7 +126,7 @@ kwenza *a_shift(arr, n) ->
         cima <== "a_shift()'s second argument must be a non-negative number"!
     <~
     maak returnValue <-|!
-    colonize (i <- 0 | i < arr~ | +) ->
+    colonize (i <- 0 <| i < arr~ <| +) ->
         if (n > i) ->
             nevermind!
         <~
@@ -177,7 +179,7 @@ kwenza *a_replace(arr, i, el) ->
         cima <== "a_replace()'s second argument must be a valid index " + str!
     <~
     maak newArr <-|!
-    colonize (index <- 0 | index < arr~ | +) ->
+    colonize (index <- 0 <| index < arr~ <| +) ->
         if (index = i) ->
             newArr <- arrLit(newArr:::, el)!
         <~ mara ->
@@ -205,7 +207,7 @@ kwenza *a_delete(arr, i) ->
         cima <== "a_delete()'s second argument must be a valid index " + str!
     <~
     maak newArr <-|!
-    colonize (index <- 0 | index < arr~ | +) ->
+    colonize (index <- 0 <| index < arr~ <| +) ->
         if (index = i) ->
             nevermind!
         <~ mara ->
@@ -230,7 +232,7 @@ kwenza *a_indexOf(arr, el) ->
     if (typeOf(arr) != "array") ->
         cima <== "a_indexOf() only works on arrays"!
     <~
-    colonize (index <- 0 | index < arr~ | +) ->
+    colonize (index <- 0 <| index < arr~ <| +) ->
         if (arr[index] = el) ->
             khutla index!
         <~
@@ -252,7 +254,7 @@ kwenza *a_reverse(arr) ->
         cima <== "a_reverse() only works on arrays"!
     <~
     maak newArr <-|!
-    colonize (i <- arr~ - 1 | i >= 0 | -) ->
+    colonize (i <- arr~ - 1 <| i >= 0 <| -) ->
         newArr <- arrLit(newArr:::, arr[i])!
     <~
     khutla newArr!
@@ -343,7 +345,7 @@ kwenza *a_from(input, split?) ->
 
     if (typeOf(split) = "number") ->
         @ here we split at that index, splitting into an array of 2 elements
-        colonize (i <- 0 | i < input~ | +) ->
+        colonize (i <- 0 <| i < input~ <| +) ->
             if (i != split) ->
                 current <- current + input[i]!
             <~ mara ->
@@ -425,7 +427,7 @@ kwenza *a_apply(<-params) ->
         cima <== "a_apply() only works on arrays"!
     <~
 
-    colonize (i <- 1 | i < params~ | +) ->
+    colonize (i <- 1 <| i < params~ <| +) ->
         maak function <- params[i]!
         if (typeOf(function) != "function") ->
             cima <== function + " should be a function to apply to the array!"!

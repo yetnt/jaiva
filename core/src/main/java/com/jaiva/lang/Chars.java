@@ -1,6 +1,7 @@
 package com.jaiva.lang;
 
 import com.jaiva.utils.Find;
+import com.yetnt.utils.tuple.SamePair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,7 +110,7 @@ public class Chars {
     /**
      * The character used to separate the arguments in a colonize loop
      */
-    public static final char FOR_SEPARATOR = '|';
+    public static final String FOR_SEPARATOR = "<|";
     /**
      * The character used to separate the arguments in a function call.
      */
@@ -193,19 +194,6 @@ public class Chars {
          * Logical operators
          */
         public static final List<String> Logical = Arrays.asList("||", "&&", "'", ";");
-
-        // /**
-        // * List of boolean operators.
-        // */
-        // public static final List<String> Bools = Arrays.asList(">", "<", "=", "!",
-        // "?");
-
-        // /**
-        // * List of double boolean operators.
-        // */
-        // public static final List<String> DoubleBools = Arrays.asList("||", "&&",
-        // "!=", ">=", "<=");
-
         /**
          * List of all arithmetic operators.
          * <p>

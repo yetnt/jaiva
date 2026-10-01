@@ -4,6 +4,24 @@
 
 ## Jaiva Scripts
 
+### `colonize` loops
+
+I compeltely broke them lol
+
+OLD:
+
+```jaiva
+colonize (i <- 0 | i <= 10 | +) ->
+<~
+```
+
+NEW:
+
+```jaiva
+colonize (i <- 0 <| i <= 10 <| +) ->
+<~
+```
+
 ### Deprecated removal
 
 Remove functions which have been deprecated for quite some time now.
@@ -397,6 +415,18 @@ a_apply(arr, khuluma)!
 
 - Fix broken Long support from v5.0.4
 - Fix broken string concat
+
+#### Colonize Loops
+
+instead of taking just `+` or `-`, now they can also take any parsable value! And i mean any.
+
+```jiv
+colonize (i <- 1 <| i <= 10 <| (f~(z) : i % 2 = 1 => 2 * z however z + 1)(i) ) ->
+    khuluma(i)! @ 1, 2, 3, 6,  7
+<~
+```
+
+`+` for increment and `-` for decrement are still supported.
 
 ### Nerd Corner (API Features)
 

@@ -27,7 +27,7 @@ public class TForLoop extends TokenDefault<TForLoop> implements TConstruct, TCon
     /**
      * The increment of the for loop.
      */
-    public String increment;
+    public Object increment;
     /**
      * The body of the for loop.
      */
@@ -42,7 +42,7 @@ public class TForLoop extends TokenDefault<TForLoop> implements TConstruct, TCon
      * @param body      The body of the for loop.
      * @param ln        The line number.
      */
-    public TForLoop(TokenDefault variable, Object condition, String increment, TCodeblock body, int ln) {
+    public TForLoop(TokenDefault variable, Object condition, Object increment, TCodeblock body, int ln) {
         super("TForLoop", ln);
         this.variable = variable;
         this.condition = condition;

@@ -156,11 +156,11 @@ public final class Tokenizer {
                     // colonize declaration | condition | increment ->
                     // colonize variableName with array name ->
 
-                    // colonize i <- 0 | i <= 10 | + ->
+                    // colonize i <- 0 <| i <= 10 <| + ->
                     // colonize pointer with arr ->
 
-                    if (line.contains(Character.toString(Chars.FOR_SEPARATOR))) {
-                        String[] parts = line.split(Keywords.FOR)[1].trim().split(Chars.BLOCK_OPEN)[0].split("\\|");
+                    if (line.contains(Chars.FOR_SEPARATOR)) {
+                        String[] parts = line.split(Keywords.FOR)[1].trim().split(Chars.BLOCK_OPEN)[0].split("<\\|");
                         return new String[] { parts[0].trim(), parts[1].trim(), parts[2].trim() };
                     } else {
                         String[] parts = line.split(Keywords.FOR)[1].trim().split(Chars.BLOCK_OPEN)[0]
@@ -207,6 +207,7 @@ public final class Tokenizer {
      * @param lineNumber          The line number of the line.
      * @return The tokens for the given line.
      */
+    @SuppressWarnings("unchecked")
     private static Object processBlockLines(boolean isComment, String line,
             MultipleLinesOutput multipleLinesOutput,
             String tokenizerLine, ArrayList<Token<?>> tokens, String type, String[] args,
@@ -325,9 +326,17 @@ public final class Tokenizer {
                                 "Ayo the condition in the colonize (" + cond + ") gotta resolve to a boolean dawg.",
                                 finalMOutput.lineNumber);
                     }
+
+                    Object finalOp;
+                    String op = args[2].trim().substring(0, args[2].trim().length()-1);
+                    if (op.equals("+") || op.equals("-")) {
+                        finalOp = op;
+                    } else {
+                        finalOp = Token.processContext(op, lineNumber);
+                    }
                     specific = new TForLoop(
                             var, obj,
-                            args[2].replace(Chars.STATEMENT_CLOSE, ' ').trim(),
+                            finalOp,
                             codeblock, finalMOutput.lineNumber).toToken();
                 } else {
                     TUnknownScalar<?, ?> variable = (TUnknownScalar<?, ?>) ((ArrayList<Token<?>>) Objects.requireNonNull(readLine(

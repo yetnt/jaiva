@@ -22,10 +22,9 @@ import com.jaiva.tokenizer.tokens.specific.*;
 import com.yetnt.utils.tuple.Pair;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * The Interpreter class is one of the 3 main classes which handle Jaiva code.
@@ -533,7 +532,10 @@ public class Interpreter {
                 } else {
                     // normal for loop.
                     assert tForLoop.increment != null;
-                    char increment = tForLoop.increment.charAt(0);
+                    Object increment =
+                            tForLoop.increment instanceof String tF
+                                    ? tF.charAt(0)
+                                    : tForLoop.increment;
                     Object cond = Primitives.setCondition(tForLoop, config, scope);
                     while ((Boolean) cond) {
 
@@ -543,13 +545,21 @@ public class Interpreter {
                             if (g.c == Keywords.LoopControl.BREAK)
                                 break;
                             if (g.c == Keywords.LoopControl.CONTINUE) {
-                                v.s_set((Integer) v.s_get() + (increment == '+' ? 1 : -1), scope);
+                                v.s_set(
+                                        handleColonzieLoopIncrementExpresion(
+                                                increment, v, config, scope
+                                        ),
+                                        scope);
                                 cond = Primitives.setCondition(tForLoop, config, scope);
                                 continue;
                             }
                             return throwIfGlobalContext(scope, out, g.lineNumber);
                         }
-                        v.s_set((Integer) v.s_get() + (increment == '+' ? 1 : -1), scope);
+                        v.s_set(
+                                handleColonzieLoopIncrementExpresion(
+                                        increment, v, config, scope
+                                ),
+                                scope);
                         cond = Primitives.setCondition(tForLoop, config, scope);
                     }
                 }
@@ -625,5 +635,18 @@ public class Interpreter {
             config.dc.endOfFile(scope);
         }
         return config.importVfs.active || config.REPL ? scope.getVfs() : void.class;
+    }
+
+    public static Object handleColonzieLoopIncrementExpresion(
+            Object in, BaseVariable v,IConfig<Object> config, Scope scope
+            ) throws Exception{
+
+        if (in instanceof Character c) {
+            return (Integer) v.s_get() + (c == '+' ? 1 : -1);
+        } else {
+            return Primitives.toPrimitive(
+                    in, false, config, scope
+            );
+        }
     }
 }
