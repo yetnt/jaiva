@@ -16,7 +16,6 @@ import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.Symbol;
-import com.jaiva.interpreter.symbol.SymbolConfig;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
@@ -98,11 +97,11 @@ public class Debug extends BaseLibrary {
             if  (!(refB instanceof TVarRef))
                 throw new InterpreterException.WtfAreYouDoingException(scope, "The second parameter has to be a reference or variable.", tFuncCall.lineNumber);
 
-            MapValue mv = scope.vfs.get(((TVarRef) refA).varName.toString());
+            MapValue mv = scope.getVfs().get(((TVarRef) refA).varName.toString());
             if (mv == null || MapValue.isEmpty(mv))
                 throw new InterpreterException.UnknownVariableException(scope, refA.name, tFuncCall.lineNumber);
 
-            scope.vfs.put(((TVarRef) refB).varName.toString(), mv); // This does mean, if the second reference doesnt exist this function woll create it.
+            scope.getVfs().put(((TVarRef) refB).varName.toString(), mv); // This does mean, if the second reference doesnt exist this function woll create it.
             return Token.voidValue(tFuncCall.lineNumber);
         }
     }
@@ -127,7 +126,7 @@ public class Debug extends BaseLibrary {
         public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
             ArrayList<String> names = new ArrayList<>();
             ArrayList<Object> symbols = new ArrayList<>();
-            scope.vfs.forEach((v, f)-> {
+            scope.getVfs().forEach((v, f)-> {
                 names.add(v);
                 Symbol sym = f.getValue();
                 if (sym instanceof BaseVariable var) {

@@ -28,7 +28,7 @@ public class DefinedFunction extends BaseFunction {
         // this DefinedFunction, contains a TFunction where we need to check the params
         // so we can make name value pairs.
         String[] paramNames = ((TFunction) this.token).args;
-        Vfs newVfs = scope.vfs.clone();
+        Vfs newVfs = scope.getVfs().clone();
         if (((TFunction) this.token).varArgs) {
             ArrayList<Object> varArgsArr = new ArrayList<>();
             // below if because a single null param is, not supposed to be even possible, but here we are.
@@ -66,7 +66,7 @@ public class DefinedFunction extends BaseFunction {
                     if (value instanceof TLambda) wrappedValue = Primitives.toPrimitive(value, false, config, scope);
                     else if (value instanceof BaseFunction f) wrappedValue = f;
                     if ((value instanceof Token<?> && ((Token<?>) value).value() instanceof TVarRef tVarRef)) {
-                        MapValue v = scope.vfs.get(tVarRef.varName);
+                        MapValue v = scope.getVfs().get(tVarRef.varName);
                         if (v == null)
                             throw new InterpreterException.UnknownVariableException(scope, tVarRef);
                         if (!(v.getValue() instanceof BaseFunction))

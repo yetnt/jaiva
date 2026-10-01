@@ -227,7 +227,7 @@ public class Debugger {
                         switch (sub) {
                             case "dump" -> {
                                 boolean showAll = "all".equals(arg);
-                                config.dc.scope.vfs.forEach((name, value) -> {
+                                config.dc.scope.getVfs().forEach((name, value) -> {
                                     Symbol s = (Symbol) value.getValue();
                                     if (showAll || value.getValue() instanceof DefinedFunction
                                             || value.getValue() instanceof DefinedVariable) {
@@ -236,11 +236,11 @@ public class Debugger {
                                 });
                             }
                             case "get" -> {
-                                if (config.dc.scope.vfs.isEmpty()) {
+                                if (config.dc.scope.getVfs().isEmpty()) {
                                     if (CLI)
                                         System.out.println("No symbols in the current context.");
                                 } else if (arg != null) {
-                                    MapValue mv = config.dc.scope.vfs.get(arg);
+                                    MapValue mv = config.dc.scope.getVfs().get(arg);
                                     if (mv == null) {
                                         System.out.println("Symbol '" + arg + "' not found in the current context.");
                                     } else {
@@ -257,7 +257,7 @@ public class Debugger {
                                 }
                             }
                             default -> {
-                                config.dc.scope.vfs.forEach((name, value) -> {
+                                config.dc.scope.getVfs().forEach((name, value) -> {
                                     Symbol s = value.getValue();
                                     if (value.getValue() instanceof DefinedFunction
                                             || value.getValue() instanceof DefinedVariable) {

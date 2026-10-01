@@ -102,13 +102,13 @@ public class Interpreter {
         if (lc instanceof DebugException dlc)
             throw dlc; // user shouldnt catch it anywhere fr.
         else if (lc instanceof Keywords.LoopControl) {
-            if (scope.current == Context.GLOBAL)
+            if (scope.getCurrent() == Context.GLOBAL)
                 throw new WtfAreYouDoingException(scope, "So. You tried using "
                         + (lc.toString().equals("BREAK") ? Keywords.LC_BREAK : Keywords.LC_CONTINUE)
                         + ". But like, we're not in a loop yknow? ", lineNumber);
         } else if (Primitives.isPrimitive(lc)) {
             // a function return thing then
-            if (scope.current == Context.GLOBAL)
+            if (scope.getCurrent() == Context.GLOBAL)
                 throw new WtfAreYouDoingException(scope,
                         "What are you trying to return out of if we're not in a function??", lineNumber);
 
@@ -139,7 +139,7 @@ public class Interpreter {
      * @param s2 The current scope.
      */
     private static void freezeIfScopeConfig(Symbol s, Scope s2) {
-        if (s2.config.freezeAll()) s.freeze();
+        if (s2.getConfig().freezeAll()) s.freeze();
     }
 
     /**
@@ -183,7 +183,7 @@ public class Interpreter {
                 BaseVariable var = BaseVariable.create(((TokenDefault<?>) t).name, (TokenDefault<?>) t,
                         new ArrayList<>(Collections.singletonList(number)), false);
                 freezeIfScopeConfig(var, scope);
-                scope.vfs.put(tNumberVar.name, var);
+                scope.getVfs().put(tNumberVar.name, var);
             }
             case TBooleanVar tBooleanVar -> {
                 Object bool = Primitives.toPrimitive(tBooleanVar.value, false, config, scope);
@@ -194,7 +194,7 @@ public class Interpreter {
                 BaseVariable var = BaseVariable.create(((TokenDefault<?>) t).name, (TokenDefault<?>) t,
                         new ArrayList<>(Collections.singletonList(bool)), false);
                 freezeIfScopeConfig(var, scope);
-                scope.vfs.put(tBooleanVar.name, var);
+                scope.getVfs().put(tBooleanVar.name, var);
             }
             case TStringVar tStringVar -> {
                 Object string = Primitives.toPrimitive(tStringVar.value, false, config, scope);
@@ -204,7 +204,7 @@ public class Interpreter {
                     BaseVariable var = BaseVariable.create(((TokenDefault<?>) t).name, (TokenDefault<?>) t,
                         new ArrayList<>(Collections.singletonList(string)), false);
                 freezeIfScopeConfig(var, scope);
-                scope.vfs.put(tStringVar.name, var);
+                scope.getVfs().put(tStringVar.name, var);
             }
             case TUnknownScalar tUnknownScalar -> {
                 Object something = Primitives.toPrimitive(tUnknownScalar.value, false, config, scope);
@@ -221,7 +221,7 @@ public class Interpreter {
                                     : new ArrayList<>(Collections.singletonList(something)),
                             false);
                 freezeIfScopeConfig(var, scope);
-                scope.vfs.put(tUnknownScalar.name, var);
+                scope.getVfs().put(tUnknownScalar.name, var);
             }
             case TArrayVar tArrayVar -> {
                 ArrayList<Object> arr = new ArrayList<>();
@@ -241,7 +241,7 @@ public class Interpreter {
                 });
                 BaseVariable var = BaseVariable.create(((TokenDefault<?>) t).name, (TokenDefault<?>) t, arr, true);
                 freezeIfScopeConfig(var, scope);
-                scope.vfs.put(tArrayVar.name, var);
+                scope.getVfs().put(tArrayVar.name, var);
             }
             case TFunction function -> {
                 if (function instanceof TLambda)
@@ -249,10 +249,10 @@ public class Interpreter {
                 String name = function.name.replace("F~", "");
                 BaseFunction func = BaseFunction.createFunction(name, function);
                 freezeIfScopeConfig(func, scope);
-                scope.vfs.put(name, func);
+                scope.getVfs().put(name, func);
             }
             case TVarReassign tVarReassign -> {
-                MapValue mapValue = scope.vfs.get(tVarReassign.name);
+                MapValue mapValue = scope.getVfs().get(tVarReassign.name);
                 if (mapValue == null)
                     throw new InterpreterException.UnknownVariableException(
                             scope, tVarReassign
@@ -324,7 +324,11 @@ public class Interpreter {
     public static Object interpret(ArrayList<Token<?>> tokens, Scope scope, IConfig<Object> config)
             throws Exception {
         // prepare a new vfs.
-        scope.vfs = config.importVfs.active && scope.current == Context.GLOBAL ? new Vfs() : scope.vfs;
+        scope.setVfs(
+                config.importVfs.active && scope.getCurrent() == Context.GLOBAL
+                        ? new Vfs()
+                        : scope.getVfs()
+        );
 
 //        vfs = vfs != null ? vfs.clone() : vfs;
 
@@ -349,7 +353,7 @@ public class Interpreter {
                 continue;
             } else if (token instanceof TImport tImport) {
 //                Globals g = new Globals(config);
-                Globals g = scope.globals;
+                Globals g = scope.getGlobals();
                 Path importPath = Path.of(tImport.filePath);
 
                 Vfs vfsFromFile;
@@ -403,7 +407,7 @@ public class Interpreter {
                 if (!tImport.symbols.isEmpty()) {
                     vfsFromFile.entrySet().removeIf(e -> !tImport.symbols.contains(e.getKey()));
                 }
-                scope.vfs.putAll(vfsFromFile);
+                scope.getVfs().putAll(vfsFromFile);
             } else if (isVariableToken(token)) {
                 if (token instanceof TFuncCall || token instanceof TVarRef || token instanceof TLambda)
                     handleVariables(t, config, scope);
@@ -488,13 +492,13 @@ public class Interpreter {
             } else if (token instanceof TForLoop tForLoop && !config.importVfs.active) {
                 // for loop
                 handleVariables(tForLoop.variable, config, scope);
-                Object vObject = scope.vfs.get(tForLoop.variable.name).getValue();
+                Object vObject = scope.getVfs().get(tForLoop.variable.name).getValue();
                 if (!(vObject instanceof BaseVariable v))
                     throw new WtfAreYouDoingException(scope, vObject, BaseVariable.class,
                             tForLoop.lineNumber);
                 if (tForLoop.array != null && tForLoop.increment == null && tForLoop.condition == null) {
                     // for each
-                    MapValue mapValue = scope.vfs.get(tForLoop.array.varName);
+                    MapValue mapValue = scope.getVfs().get(tForLoop.array.varName);
                     if (mapValue == null || !((mapValue.getValue()) instanceof BaseVariable))
                         throw new UnknownVariableException(scope, tForLoop.array);
                     BaseVariable arr = (BaseVariable) mapValue.getValue();
@@ -550,11 +554,11 @@ public class Interpreter {
                     }
                 }
 
-                scope.vfs.remove(v.name);
+                scope.getVfs().remove(v.name);
                 // for loop
             } else if (token instanceof TTryCatch throwError && !config.importVfs.active) {
 
-                Vfs errorVfs = ((Vfs) scope.vfs.clone());
+                Vfs errorVfs = ((Vfs) scope.getVfs().clone());
                 errorVfs.entrySet().removeIf(vf -> !vf.getKey().contains("error"));
 
                 String varName = "error" + (!errorVfs.isEmpty() ? errorVfs.size() : "");
@@ -568,7 +572,7 @@ public class Interpreter {
                             return throwIfGlobalContext(scope, out, g.lineNumber);
                         } else if (g.c instanceof TThrowError err) {
                             Token<?> tContainer = new Token<>(null);
-                            scope.vfs.put(varName,
+                            scope.getVfs().put(varName,
                                     BaseVariable.create(
                                             varName,
                                             new TStringVar(
@@ -580,7 +584,7 @@ public class Interpreter {
                             Object out2 = Interpreter.interpret(throwError.catchBlock.lines,
                                     new Scope(Context.CATCH, token, scope),
                                     config);
-                            scope.vfs.remove(varName);
+                            scope.getVfs().remove(varName);
                             if (out2 instanceof ThrowIfGlobalContext g2) {
                                 return throwIfGlobalContext(scope, out2, g2.lineNumber);
                             }
@@ -592,7 +596,7 @@ public class Interpreter {
                     // catch any exception, and call the catch block with the error.
                     Token<?> tContainer = new Token<>(null);
 
-                    scope.vfs.put(varName,
+                    scope.getVfs().put(varName,
                             BaseVariable.create(
                                     varName,
                                     new TStringVar(
@@ -604,7 +608,7 @@ public class Interpreter {
                     Object out2 = Interpreter.interpret(throwError.catchBlock.lines,
                             new Scope(Context.CATCH, token, scope), config); // line
                     // 542
-                    scope.vfs.remove(varName);
+                    scope.getVfs().remove(varName);
                     if (out2 instanceof ThrowIfGlobalContext g2) {
                         return throwIfGlobalContext(scope, out2, g2.lineNumber);
                     }
@@ -616,10 +620,10 @@ public class Interpreter {
         }
         // System.out.println("heyy");
 
-        if (config.dc.active && scope.current == Context.GLOBAL) {
+        if (config.dc.active && scope.getCurrent() == Context.GLOBAL) {
             // if we're in the global context, then we end the debugging session.
             config.dc.endOfFile(scope);
         }
-        return config.importVfs.active || config.REPL ? scope.vfs : void.class;
+        return config.importVfs.active || config.REPL ? scope.getVfs() : void.class;
     }
 }

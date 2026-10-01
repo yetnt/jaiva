@@ -33,17 +33,12 @@ import java.util.function.BiFunction;
  * So much documentation, might as well call this an accumulation. HMM, bars.
  */
 public class Vfs extends LinkedHashMap<String, MapValue> {
-    /**
-     * This is used to keep track of every Vfs instance created and copied. Why? idk.
-     */
-    private static final ArrayList<Vfs> all = new ArrayList<>();
 
     /**
      * Calls {@link HashMap#HashMap()} creating an empty hash map for vfs.
      */
     public Vfs() {
         super();
-        all.add(this);
     }
 
     /**
@@ -52,7 +47,6 @@ public class Vfs extends LinkedHashMap<String, MapValue> {
      */
     private Vfs(HashMap<String, MapValue> vfs) {
         this.putAll(vfs);
-        all.add(this);
     }
 
     /**
@@ -65,19 +59,9 @@ public class Vfs extends LinkedHashMap<String, MapValue> {
         return super.put(key, new MapValue(sym));
     }
 
-    /**
-     * Return the list of all the vfs.
-     * @return An arraylist of vfs
-     */
-    public static ArrayList<Vfs> getAll() {
-        return all;
-    }
-
     @Override
     public Vfs clone() {
-        Vfs vfs = new Vfs((HashMap<String, MapValue>) super.clone());
-        all.add(vfs);
-        return vfs;
+        return (Vfs) super.clone();
     }
 
     /**

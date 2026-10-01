@@ -35,8 +35,8 @@ public final class Warnings {
     }
 
     public static void println(int ln, String message, Scope scope, IConfig<Object> config) throws InterpreterException.NoWarningsException {
-        if (scope.config.suppressWarnings()) return;
-        if (scope.config.elevateWarnings())
+        if (scope.getConfig().suppressWarnings()) return;
+        if (scope.getConfig().elevateWarnings())
             throw new InterpreterException.NoWarningsException(scope, ln, message);
         else {
             if (!config.isStreamer()) {

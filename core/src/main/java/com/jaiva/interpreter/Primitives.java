@@ -206,7 +206,7 @@ public class Primitives {
                     if (t instanceof String)
                         return t;
                 }
-                MapValue v = scope.vfs.get(tVarRef.varName instanceof Token<?>
+                MapValue v = scope.getVfs().get(tVarRef.varName instanceof Token<?>
                         ? toPrimitive(tVarRef.varName, true, config,
                         scope)
                         : (tVarRef).varName);
@@ -309,7 +309,7 @@ public class Primitives {
                         if (j instanceof BaseFunction) function = (BaseFunction) j;
                         else return j;
                     }
-                    v = scope.vfs.get(name);
+                    v = scope.getVfs().get(name);
                     if (v == null)
                         throw new UnknownVariableException(scope, tFuncCall);
 

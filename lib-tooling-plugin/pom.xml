@@ -4,59 +4,67 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-<parent>
-<groupId>com.jaiva</groupId>
-<artifactId>jaiva-parent</artifactId>
-<version>6.0.0-beta.7</version>
-</parent>
+    <parent>
+        <groupId>com.jaiva</groupId>
+        <artifactId>jaiva-parent</artifactId>
+        <version>6.0.0-beta.7</version>
+    </parent>
 
     <groupId>com.github.yetnt.jaiva</groupId>
-<artifactId>lib-tooling-plugin</artifactId>
-<packaging>maven-plugin</packaging>
+    <artifactId>lib-tooling-plugin</artifactId>
+    <packaging>maven-plugin</packaging>
 
-<dependencies>
-    <dependency>
-        <groupId>io.github.classgraph</groupId>
-        <artifactId>classgraph</artifactId>
-        <version>4.8.165</version>
-    </dependency>
-<dependency>
-    <groupId>org.apache.maven</groupId>
-    <artifactId>maven-plugin-api</artifactId>
-    <version>3.9.6</version>
-</dependency>
-<dependency>
-    <groupId>org.apache.maven.plugin-tools</groupId>
-    <artifactId>maven-plugin-annotations</artifactId>
-    <version>3.10.2</version>
-    <scope>provided</scope>
-</dependency>
-<dependency>
-    <groupId>org.apache.maven</groupId>
-    <artifactId>maven-project</artifactId>
-    <version>2.2.1</version>
-</dependency>
-    <dependency>
-    <groupId>org.apache.maven</groupId>
-    <artifactId>maven-core</artifactId>
-    <version>3.9.6</version>
-</dependency>
-    <dependency>
-        <groupId>com.jaiva</groupId>
-        <artifactId>core</artifactId>
-        <version>${project.version}</version>
-        <scope>compile</scope>
-    </dependency>
-</dependencies>
+    <dependencies>
 
-<build>
-<plugins>
-    <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-plugin-plugin</artifactId>
-        <version>3.10.2</version>
-        <!-- generates the plugin descriptor Maven needs to expose your Mojo + its @Parameter hover docs -->
-    </plugin>
-</plugins>
-</build>
-        </project>
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+            <version>4.8.165</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>3.9.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-annotations</artifactId>
+            <version>3.10.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-project</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+            <version>3.9.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jaiva</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <version>3.10.2</version>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

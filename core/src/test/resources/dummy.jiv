@@ -1,8 +1,12 @@
-tsea "jaiva/types"!
-tsea "jaiva/arrays"!
+@ scope("strict")!
+@ tsea "jaiva/types"!
+@ maak var <- 10.391!
+@ maak z <- t_dToIEEE754Long(var)!
+@ maak str <- 2 - t_str(z, 16)! @ The "2 -" removes the "0x" prefix
+@ khuluma(str)!
 
-maak arr <-| 3242.1, 35.2, -412.43, 123452.12, 42.1, 4234.1244!
+kwenza func() ->
+	khutla func!
+<~
 
-maak final <- a_reduce(a_apply(arr, f~(arr2):a_map(arr2, t_dToIEEE754Long) ),  f~ (a, b) : a # b < b => a # b however a << (b # (2*b)), 1)!
-
-khuluma(t_lToIEEE754Double(final))!
+khuluma(func())!

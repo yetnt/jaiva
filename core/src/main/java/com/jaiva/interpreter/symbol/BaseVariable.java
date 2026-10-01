@@ -130,7 +130,7 @@ public class BaseVariable extends Symbol {
     /**
      * Sets the array value of the variable.
      * <p>
-     *     GithubBlockQuote: This is intended for {@link FileApi.VThis} which doesn't have access to the current scope.
+     *     GithubBlockQuote: This is intended for {@code FileApi.VThis} which doesn't have access to the current scope.
      *     Use the other override or else anything can just be edited.
      * </p>
      *

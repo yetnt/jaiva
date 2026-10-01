@@ -100,7 +100,7 @@ public class GlobalFunctions extends BaseLibrary {
                 }
             });
 
-            scope.config.set(tFuncCall.lineNumber, scope, s.toArray(String[]::new));
+            scope.getConfig().set(tFuncCall.lineNumber, scope, s.toArray(String[]::new));
             return Token.voidValue(tFuncCall.lineNumber);
         }
     }
@@ -149,7 +149,7 @@ public class GlobalFunctions extends BaseLibrary {
                         "getVarClass() only accepts a variable reference or a string, whatever you sent is disgusting.",
                         tFuncCall.lineNumber);
             }
-            MapValue var = scope.vfs.get(name);
+            MapValue var = scope.getVfs().get(name);
             if (var == null) {
                 throw new InterpreterException.UnknownVariableException(scope, name, tFuncCall.lineNumber);
             }
@@ -270,7 +270,7 @@ public class GlobalFunctions extends BaseLibrary {
             params.forEach(arg -> {
                 if (arg instanceof TVarRef && ((TVarRef) arg).index == null) {
                     String name = ((TVarRef) arg).name;
-                    MapValue v = scope.vfs.get(name);
+                    MapValue v = scope.getVfs().get(name);
                     if (v == null)
                         return;
                     if (!(v.getValue() instanceof BaseVariable))

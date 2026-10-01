@@ -18,10 +18,7 @@ import com.jaiva.utils.generic.MultipleLinesOutput;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * REPLMode is an enumeration that represents the mode of the REPL
@@ -295,10 +292,10 @@ public class REPL {
                         assert value != null;
                         return new ReadOuput(value.toString());
                     } else {
-                        Object h = Interpreter.interpret(new ArrayList<>(Arrays.asList((Token<?>) something)),
+                        Object h = Interpreter.interpret(new ArrayList<>(List.of((Token<?>) something)),
                                 scope, iConfig);
                         if (h instanceof HashMap)
-                            scope.vfs = (Vfs) h;
+                            scope.setVfs((Vfs) h);
 
                         return new ReadOuput();
                     }
@@ -329,14 +326,14 @@ public class REPL {
                                     ))),
                                     scope, iConfig);
                             if (h instanceof HashMap)
-                                scope.vfs = (Vfs) h;
+                                scope.setVfs((Vfs) h);
 
                             return new ReadOuput();
                         }
                     } else {
                         Object h = Interpreter.interpret(tokens, scope, iConfig);
                         if (h instanceof HashMap)
-                            scope.vfs = (Vfs) h;
+                            scope.setVfs((Vfs) h);
                         return new ReadOuput();
                     }
                 } else if (mode == REPLMode.PRINT_TOKEN) {

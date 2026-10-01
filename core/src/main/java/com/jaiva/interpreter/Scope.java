@@ -19,27 +19,14 @@ import java.util.List;
  * any.
  */
 public class Scope {
-    public ScopeConfig config = new ScopeConfig();
-    /**
-     * The current scope in which the variable is defined or used.
-     * This variable is used to determine the scope of a variable
-     */
-    public Context current;
-    public TokenDefault token;
-    public int lineNumber;
-    /**
-     * The parent scope, if any.
-     * This is used to keep track of the scope hierarchy.
-     * <p>
-     * If null, it means this is the root scope.
-     * If not null, it means this scope is nested within another scope
-     * trace.
-     */
-    public Scope parent;
+    private ScopeConfig config = new ScopeConfig();
+    private final Context current;
+    private final TokenDefault<?> token;
+    private final int lineNumber;
+    private final Scope parent;
 
-    public Vfs vfs;
-
-    Globals globals;
+    private Vfs vfs;
+    private final Globals globals;
 
     /**
      * Default constructor for Scope.
@@ -54,7 +41,7 @@ public class Scope {
         this.parent = null;
         try {
             this.globals = new Globals(iconfig);
-            this.vfs = this.globals.getVfs(iconfig, this.globals);
+            this.vfs = this.getGlobals().getVfs(iconfig, this.getGlobals());
         } catch (InterpreterException e) {
             throw new RuntimeException(e);
         }
@@ -73,7 +60,7 @@ public class Scope {
         this.parent = null;
         try {
             this.globals = new Globals(iconfig, Scope.class.getClassLoader(), globals);
-            this.vfs = this.globals.getVfs(iconfig, this.globals);
+            this.vfs = this.getGlobals().getVfs(iconfig, this.getGlobals());
         } catch (InterpreterException e) {
             throw new RuntimeException(e);
         }
@@ -90,14 +77,14 @@ public class Scope {
      * @param token      The token associated with the current scope, if any.
      * @param parent     The parent scope, if any.
      */
-    public Scope(Context newC, TokenDefault token, Scope parent) {
+    public Scope(Context newC, TokenDefault<?> token, Scope parent) {
         this.current = newC;
         this.token = token;
         this.lineNumber = token == null ? 0 : token.lineNumber;
         this.parent = parent;
-        this.vfs = parent.vfs.clone();
-        this.config = parent.config;
-        this.globals = parent.globals;
+        this.vfs = parent.getVfs().clone();
+        this.config = parent.getConfig();
+        this.globals = parent.getGlobals();
     }
 
     /**
@@ -110,13 +97,14 @@ public class Scope {
      * @param parent The parent scope
      * @param vfs The vfs for this scope.
      */
-    public Scope(Context newC, TokenDefault token, Scope parent, Vfs vfs) {
+    public Scope(Context newC, TokenDefault<?> token, Scope parent, Vfs vfs) {
         this.current = newC;
         this.token = token;
         this.lineNumber = token == null ? 0 : token.lineNumber;
         this.parent = parent;
         this.vfs = vfs;
-        this.globals = parent.globals;
+        this.globals = parent.getGlobals();
+        this.config = parent.getConfig();
     }
 
     public Globals getGlobals() {
@@ -136,22 +124,62 @@ public class Scope {
         Scope current = this;
         StringBuilder sb = new StringBuilder();
         while (current != null) {
-            if (current.current == Context.GLOBAL) {
+            if (current.getCurrent() == Context.GLOBAL) {
                 sb.append("global");
                 current = null; // end the loop
             } else {
                 sb.append(
-                        current.current == Context.EOF ? "end of file <- "
-                                : (current.token.name.equals(current.token.getClass().getSimpleName())
-                                        ? ("[" + current.token.getClass().getSimpleName() + " "
-                                                + current.token.lineNumber
+                        current.getCurrent() == Context.EOF ? "end of file <- "
+                                : (current.getToken().name.equals(current.getToken().getClass().getSimpleName())
+                                        ? ("[" + current.getToken().getClass().getSimpleName() + " "
+                                                + current.getToken().lineNumber
                                                 + "]")
-                                        : (("[" + current.token.getClass().getSimpleName() + " "
-                                                + current.token.lineNumber + "]") + " : " + current.token.name + "()"))
+                                        : (("[" + current.getToken().getClass().getSimpleName() + " "
+                                                + current.getToken().lineNumber + "]") + " : " + current.getToken().name + "()"))
                                         + " <- ");
-                current = current.parent;
+                current = current.getParent();
             }
         }
         return sb.toString();
+    }
+
+    public ScopeConfig getConfig() {
+        return config;
+    }
+
+    /**
+     * The current scope in which the variable is defined or used.
+     * This variable is used to determine the scope of a variable
+     */
+    public Context getCurrent() {
+        return current;
+    }
+
+    public TokenDefault<?> getToken() {
+        return token;
+    }
+
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    /**
+     * The parent scope, if any.
+     * This is used to keep track of the scope hierarchy.
+     * <p>
+     * If null, it means this is the root scope.
+     * If not null, it means this scope is nested within another scope
+     * trace.
+     */
+    public Scope getParent() {
+        return parent;
+    }
+
+    public Vfs getVfs() {
+        return vfs;
+    }
+
+    public void setVfs(Vfs vfs) {
+        this.vfs = vfs;
     }
 }
