@@ -19,12 +19,11 @@ import com.jaiva.tokenizer.tokens.TSymbol;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.*;
+import com.jaiva.utils.ThrowableBiConsumer;
 import com.yetnt.utils.tuple.Pair;
 
 import java.nio.file.Path;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * The Interpreter class is one of the 3 main classes which handle Jaiva code.
@@ -536,6 +535,10 @@ public class Interpreter {
                             tForLoop.increment instanceof String tF
                                     ? tF.charAt(0)
                                     : tForLoop.increment;
+                    ThrowableBiConsumer<
+                            Object, Scope, InterpreterException
+                            > consumer = v.variableType == VariableType.ARRAY ?  v::a_objSet : v::s_set;
+
                     Object cond = Primitives.setCondition(tForLoop, config, scope);
                     while ((Boolean) cond) {
 
@@ -545,21 +548,17 @@ public class Interpreter {
                             if (g.c == Keywords.LoopControl.BREAK)
                                 break;
                             if (g.c == Keywords.LoopControl.CONTINUE) {
-                                v.s_set(
-                                        handleColonzieLoopIncrementExpresion(
-                                                increment, v, config, scope
-                                        ),
-                                        scope);
+                                handleColonzieLoopIncrementExpresion(
+                                        consumer, increment, v, config, scope
+                                );
                                 cond = Primitives.setCondition(tForLoop, config, scope);
                                 continue;
                             }
                             return throwIfGlobalContext(scope, out, g.lineNumber);
                         }
-                        v.s_set(
-                                handleColonzieLoopIncrementExpresion(
-                                        increment, v, config, scope
-                                ),
-                                scope);
+                        handleColonzieLoopIncrementExpresion(
+                                consumer, increment, v, config, scope
+                        );
                         cond = Primitives.setCondition(tForLoop, config, scope);
                     }
                 }
@@ -637,16 +636,29 @@ public class Interpreter {
         return config.importVfs.active || config.REPL ? scope.getVfs() : void.class;
     }
 
-    public static Object handleColonzieLoopIncrementExpresion(
-            Object in, BaseVariable v,IConfig<Object> config, Scope scope
+    public static void handleColonzieLoopIncrementExpresion(
+            ThrowableBiConsumer<
+                    Object, Scope, InterpreterException
+                    > consumer, Object in, BaseVariable v,IConfig<Object> config, Scope scope
             ) throws Exception{
 
+        Object val;
         if (in instanceof Character c) {
-            return (Integer) v.s_get() + (c == '+' ? 1 : -1);
+            val = switch (v.s_get()) {
+                case Integer i -> i + (c == '+' ? 1 : -1);
+                case Long i -> i + (c == '+' ? 1 : -1);
+                case Double i -> i + (c == '+' ? 1 : -1);
+                case null, default -> throw new WtfAreYouDoingException(
+                        scope, "did you just try to increment " + v.name + " when it's not even a" +
+                        " number?", v.token.lineNumber
+                );
+            };
         } else {
-            return Primitives.toPrimitive(
+            val = Primitives.toPrimitive(
                     in, false, config, scope
             );
         }
+
+        consumer.accept(val, scope);
     }
 }

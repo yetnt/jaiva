@@ -1,0 +1,92 @@
+{
+    TESTING FILE AHEAD!
+    This file tests a FUCK ton of features.
+
+    In the tokenizer:
+    - Enforcing older constructs still parse properly like imports functions, etc
+    - Inspecting the JDoc of the replaceOddCha and myArr that it's accurate to its source
+    - Enforcing the newer colonize syntax is truly generic and supports the old char setter
+    - Enforcing the new function parameters extension token does NOT appear in the list and the function
+    itself was actually extended
+    - Ensuring weird lambda stuff and immediately invoked lambdas are tokenized fine
+    - All line numbers accurate
+    - All arrays and syntax sugar is done properly
+
+    In the interpret:
+    - Inspecting the scope that it got populated with all the functions from "jaiva/arrays"
+    and only ONE function from "jaiva/debug" being d_emit
+    - Checking the values themselves actually match up with the comment
+    - checking If any exception occurs
+
+    If this file errors, you are at the wrong.
+}
+
+@ Just some nice array examples
+
+tsea "jaiva/arrays"!
+tsea "jaiva/debug" <- d_emit!
+
+@* My lovely function which replaces the odd character
+@* p    $> original <- string The original text
+@* p    $> c <- string The char to replace with. If this isn't a string
+@*      $> then just return the input
+@* rets $> A new string with the odd characters replaced with c (0-indexed)
+kwenza *replaceOddChar(original, c) ->
+    maak originalAsCharArray <- arrLit(original:::)!
+    if (typeOf(c) != "string") ->
+        khutla original!
+    <~
+    maak out <- ""!
+    colonize (i <- 0 <| i < originalAsCharArray~ <| +) ->
+        maak let <- originalAsCharArray[i]!
+        out <- out + (i % 2 != 0 => c however let)!
+    <~
+    khutla out!
+<~
+
+@ The "|>" operator appends the value to the parameter list of the function call preceding it
+
+maak result <- a_apply(reservedKeywords)!
+    |> f~(arr) : a_filter(arr, f~(str) : str~ <= 4)!
+    |> f~(arr) : a_map(arr, f~(str) : str~)!
+    |> f~(arr) : a_map(arr, f~(num) : "l" * num)!
+    |> a_reverse!
+    |> f~(arr) : a_map(arr, f~(str) : replaceOddChar(str, "p"))!
+
+@ Exact same as calling
+@ maak res <- a_apply(reservedKeywords,  f~(arr) : a_filter(arr, f~(str) : str~ <= 4), f~(arr) : a_map(arr, f~(str) : str~), ...)!
+
+@ result should have ["lplp", "lplp", "lplp", "lplp", "lpl", "lplp", "lplp", "lplp", "lplp", "lp", "lplp"]
+
+@ A very messy array
+maak myArr <-| 10, 49, f~() : 2, "whats up", yebo, idk, arrLit(10), 81!
+
+myArr <- a_apply(myArr)!
+    |> f~(arr) : a_forEach(arr, khuluma)!
+    |> f~(arr) : a_map(arr, (f~(el) : typeOf(el) = "function" => el() however el))!
+    |> f~(arr) : a_filter(arr, f~(el) : ((el?)'))!
+
+maak collect <-|!
+
+colonize (i <- 1 <| i <= 10 <| (f~(z) : i % 2 = 1 => 2 * z however z + 1)(i) ) ->
+    collect <- arrLit(collect:::, i)! @ 1, 2, 3, 6,  7
+<~
+
+maak collect2 <-|!
+
+colonize ( i <-| <| i~ <= 2 <| arrLit(i:::, i)) ->
+    collect2 <- arrLit(collect2:::, i)!
+    {
+        Should have the following:
+        Index 0: []
+        Index 1: [[]]
+        Index 2: [[], [[]]]
+    }
+<~
+
+
+d_emit()!
+    |> replaceOddChar!      @ To inspect the BaseFunction
+    |> result!              @ Inspect result
+    |> myArr!               @ Inspect transformations applied
+    |> (collect, collect2)! @ Inspect those 2 collections for the right colonize nonsense

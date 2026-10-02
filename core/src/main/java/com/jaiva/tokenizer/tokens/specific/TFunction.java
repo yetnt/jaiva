@@ -10,6 +10,7 @@ import com.jaiva.tokenizer.tokens.TokenDefault;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -147,5 +148,10 @@ public class TFunction extends TokenDefault<TFunction> implements TSymbol, TCons
             );
         }
         return out.append(")").toString();
+    }
+
+    @Override
+    public ArrayList<TCodeblock> getCodeBlocks() {
+        return new ArrayList<>(List.of(body));
     }
 }

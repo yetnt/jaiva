@@ -6,6 +6,9 @@ import com.jaiva.tokenizer.tokens.TConstruct;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represents a while loop such as {@code nikhil (i > 10) -> ... <~}
  */
@@ -51,5 +54,10 @@ public class TWhileLoop extends TokenDefault<TWhileLoop> implements TConstruct, 
     @Override
     public Object getConditionToken() {
         return condition;
+    }
+
+    @Override
+    public ArrayList<TCodeblock> getCodeBlocks() {
+        return new ArrayList<>(List.of(body));
     }
 }

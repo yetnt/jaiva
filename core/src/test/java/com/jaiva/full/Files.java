@@ -11,6 +11,7 @@ public class Files {
     static final Path COMMENTS_JIV;
     static final Path BUNDLER_JIV;
     static final Path LAMBDA_JVA;
+    static final Path PAIN_JVA;
 
 
     static {
@@ -50,6 +51,11 @@ public class Files {
                     Objects.requireNonNull(
                                     Files.class.getClassLoader()
                                             .getResource("lambda.jva"))
+                            .toURI());
+            PAIN_JVA = Path.of(
+                    Objects.requireNonNull(
+                                    Files.class.getClassLoader()
+                                            .getResource("pain.jva"))
                             .toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);

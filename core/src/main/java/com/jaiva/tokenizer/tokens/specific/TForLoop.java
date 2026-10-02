@@ -6,6 +6,9 @@ import com.jaiva.tokenizer.tokens.TConstruct;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represents a for loop, both with an iterator and a condition
  * {@code colonize i <- 0 | i < 10 | + -> ... <~} and a for each loop which
@@ -87,5 +90,10 @@ public class TForLoop extends TokenDefault<TForLoop> implements TConstruct, TCon
     @Override
     public Object getConditionToken() {
         return condition;
+    }
+
+    @Override
+    public ArrayList<TCodeblock> getCodeBlocks() {
+        return new ArrayList<>(List.of(body));
     }
 }

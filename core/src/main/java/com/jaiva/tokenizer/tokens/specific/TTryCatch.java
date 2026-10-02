@@ -5,6 +5,9 @@ import com.jaiva.tokenizer.tokens.TConstruct;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represents a try-catch statement such as
  * {@code zama zama -> ... <~ chaai -> ... <~}
@@ -53,5 +56,10 @@ public class TTryCatch extends TokenDefault<TTryCatch> implements TConstruct {
      */
     public Token<TTryCatch> toToken() {
         return new Token<>(this);
+    }
+
+    @Override
+    public ArrayList<TCodeblock> getCodeBlocks() {
+        return new ArrayList<>(List.of(tryBlock, catchBlock));
     }
 }

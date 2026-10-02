@@ -91,4 +91,17 @@ public class TIfStatement extends TokenDefault<TIfStatement> implements TConstru
     public Object getConditionToken() {
         return condition;
     }
+
+    @Override
+    public ArrayList<TCodeblock> getCodeBlocks() {
+        ArrayList<TCodeblock> blocks = new ArrayList<>();
+        blocks.add(body);
+        if (elseBody != null)
+            blocks.add(elseBody);
+        if (elseIfs != null)
+            elseIfs.stream()
+                    .map(t -> t.body)
+                    .forEach(blocks::add);
+        return blocks;
+    }
 }

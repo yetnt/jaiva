@@ -128,6 +128,19 @@ public class BaseVariable extends Symbol {
         array = t;
     }
 
+    public void a_objSet(Object o, Scope scope) throws InterpreterException {
+        if (!(o instanceof ArrayList<?> t))
+            throw new InterpreterException.WtfAreYouDoingException(
+                    scope, "idk how you got this error bro" +
+                    ". Essentially, you managed to make the interpreter pass" +
+                    " some random object instead of an array because it thought" +
+                    " that the nonsense you were doing in the colonize loop" +
+                    " was array related. But it wasn't. And now we are at a stand" +
+                    " still.", this.token.lineNumber
+            );
+        a_set(new ArrayList<>(t), scope);
+    }
+
 
     /**
      * Sets the array value of the variable.
