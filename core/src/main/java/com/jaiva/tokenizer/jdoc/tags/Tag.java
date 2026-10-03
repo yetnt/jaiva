@@ -121,6 +121,13 @@ public class Tag {
             if (addToDescription(desc)) attributes.put("description", desc);
         }
 
+        @Override
+        public boolean addToDescription(String description) {
+            if (desc.equals(description)) return super.addToDescription(description);
+            desc = desc + " " + description;
+            return super.addToDescription(" " + description);
+        }
+
         public DParameter(String varName, String type, String description, boolean optional) {
             super(TagType.PARAMETER);
             this.varName = varName;

@@ -224,13 +224,7 @@ public record Token<T extends TokenDefault>(T value) {
             for (String arg : args) {
                 parsedArgs.add(processContext((String) arg, lineNumber));
             }
-            return new TExtendParams(parsedArgs, lineNumber,
-                    line.charAt(line.length() - 1) == Chars.LENGTH_CHAR,
-                    // spreading is for spreading an array or string into a nested function argument
-                    // due to the nature of this token, it literally CANNOT spread
-                    // a user might rightfully, call the length of a long function call which might return an arr/string however
-                    // but spreading works in a context that this just doesn't support.
-                    false ).toToken();
+            return new TExtendParams(parsedArgs, lineNumber).toToken();
         } else if (index != -1 && (line.charAt(index) == '(')) {
             // then its a TFuncCall
             String name = line.substring(0, index).trim();

@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @implSpec This token isn't itself meant to be seen by the tokeniser as it gets
  * concatenated with the rest of the parameters of the previous function call
  */
-public class TExtendParams extends TokenDefault<TExtendParams> implements TStatement, TReference {
+public class TExtendParams extends TokenDefault<TExtendParams> implements TStatement {
     /**
      * The arguments of the extension1
      * <p>
@@ -21,19 +21,14 @@ public class TExtendParams extends TokenDefault<TExtendParams> implements TState
      */
     public ArrayList<Object> args; // can be a TStatement, TFuncCall, TVarRef, or a primitive type
 
-    private boolean length = false;
-    private boolean spread = false;
-
     /**
      * Constructor for TExtendParams
      * @param args The arguments of the extension
      * @param ln   The line number.
      */
-    public TExtendParams(ArrayList<Object> args, int ln, boolean len, boolean spr) {
+    public TExtendParams(ArrayList<Object> args, int ln) {
         super("TExtendParams", ln);
         this.args = args;
-        this.length = len;
-        this.spread = spr;
     }
 
     @Override
@@ -49,15 +44,5 @@ public class TExtendParams extends TokenDefault<TExtendParams> implements TState
      */
     public Token<TExtendParams> toToken() {
         return new Token<>(this);
-    }
-
-    @Override
-    public boolean getLength() {
-        return length;
-    }
-
-    @Override
-    public boolean getSpreadArr() {
-        return spread;
     }
 }

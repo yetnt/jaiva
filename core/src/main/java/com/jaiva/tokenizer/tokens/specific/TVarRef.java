@@ -12,10 +12,6 @@ import com.jaiva.tokenizer.tokens.TokenDefault;
  */
 public class TVarRef extends TokenDefault<TVarRef> implements TReference {
     /**
-     * The type of the variable reference.
-     */
-    public int type;
-    /**
      * The name of the variable being referenced.
      * <p>
      * This is an object due to the fact that it might itself be a TVarRef which
