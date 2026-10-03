@@ -56,13 +56,12 @@ public class TExpression extends TokenDefault<TExpression> implements TAtomicVal
     }
 
     /**
-     * Helper function that handles negatives in a statement. This is used to handle
-     * the case where a negative sign is used as a unary operator.
+     * Lie to the interpreter by changing the statement if this happened.
      *
      * @param s The statement to handle.
      * @return The handled statement.
      */
-    public static Object handleNegatives(Object s) throws TokenizerException.MalformedSyntaxException {
+    public static Object syntaxSugar(Object s) throws TokenizerException.MalformedSyntaxException {
         if (s instanceof TExpression statement) {
             if (statement.rHandSide == null && statement.op.equals("?")) {
                 statement.rHandSide = Token.voidValue(statement.lineNumber);
@@ -151,12 +150,12 @@ public class TExpression extends TokenDefault<TExpression> implements TAtomicVal
             info.op = ">=";
         }
 
-        lHandSide = handleNegatives(new TExpression(lineNumber).parse(statement.substring(0, info.index).trim()));
+        lHandSide = syntaxSugar(new TExpression(lineNumber).parse(statement.substring(0, info.index).trim()));
         this.op = info.op.trim();
-        rHandSide = handleNegatives(
+        rHandSide = syntaxSugar(
                 new TExpression(lineNumber).parse(statement.substring(info.index + info.op.length()).trim()));
         statementType = info.tStatementType;
-        return ((TExpression) handleNegatives(this)).toToken();
+        return ((TExpression) syntaxSugar(this)).toToken();
     }
 
     /**

@@ -47,3 +47,11 @@ Jaiva files end in the _`.jiv`_ or _`.jaiva`_ or _`.jva`_ extension.
 - Jaiva Highlight.js Repo [highlightjs-jaiva](https://github.com/yetnt/highlightjs-jaiva)
 - Jaiva Highlight.js NPM [highlightjs-jaiva](https://www.npmjs.com/package/highlightjs-jaiva)
 - Jaiva VSCode Extension [vscode](https://github.com/yetnt/jaiva-vscode)
+
+# Stats
+
+Stats cuz stats are cool
+
+[![RepoLens code-stats](https://repolens.io/api/embed/code-stats?owner=yetnt&repo=jaiva&theme=dark&hideRepoName=true)](https://repolens.io/?repo=yetnt/jaiva)
+
+[![RepoLens languages](https://repolens.io/api/embed/languages?owner=yetnt&repo=jaiva&theme=dark&hideRepoName=true)](https://repolens.io/?repo=yetnt/jaiva)

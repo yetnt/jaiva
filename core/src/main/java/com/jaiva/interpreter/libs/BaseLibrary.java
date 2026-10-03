@@ -47,38 +47,30 @@ public class BaseLibrary {
         importChain = new ImportChain(incident, importChain == null ? Optional.empty() : Optional.of(existing));
     }
 
-    private void addImportPromise(ImportPromise importPromise/*, ImportChain importChain*/) {
+    private void addImportPromise(ImportPromise importPromise) {
         importPromises.add(importPromise);
     }
 
     protected void add(Symbol ...syms) {
-        for (Symbol symbol : syms) {
-            LibrarySymbol ls = new LibrarySymbol(symbol);
-            symbols.add(ls);
-        }
+        Arrays.stream(syms).forEach(symbol -> symbols.add(new LibrarySymbol(symbol)));
     }
 
     protected void add(BaseLibrary bis) {
-        for (LibrarySymbol ls : bis.getSymbols()) {
-            symbols.add(ls);
-        }
+        symbols.addAll(bis.getSymbols());
     }
-
-//    protected void addFromExport(ArrayList<LibrarySymbol> syms) {
-//        symbols.addAll(syms);
-//    }
 
     protected void addWithAliases(Symbol symbol, String... aliases) {
-        LibrarySymbol ls = new LibrarySymbol(symbol, aliases);
-        symbols.add(ls);
+        symbols.add(new LibrarySymbol(symbol, aliases));
     }
 
-    /**
-     * Variable functions store
-     */
-    public Vfs getVfs(IConfig<Object> config, Globals globals) {
+    public Vfs getUniqueVfs() {
         Vfs vfs = new Vfs();
         symbols.forEach(vfs::putAsSymbolName);
+        return vfs;
+    }
+
+    public Vfs getVfs(IConfig<Object> config, Globals globals) {
+        Vfs vfs = getUniqueVfs();
         if (importPromises.isEmpty()) {
             return vfs;
         }
