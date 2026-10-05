@@ -3,10 +3,14 @@ package com.jaiva;
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.errors.LoadException;
+import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.LibraryLike;
 import com.jaiva.interpreter.libs.global.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
+import com.jaiva.md.MDInputProps;
+import com.jaiva.md.MDOutputProps;
+import com.jaiva.md.VfsToMD;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +61,60 @@ public final class Plugin {
             try {
                 BaseLibrary library = lib.loadClassLibrary(config, globals);
                 result.add(library.toToolingJSON(config, globals));
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to generate tooling JSON", e);
+            }
+        }
+        return result;
+    }
+
+    public static ArrayList<String> genMd(ArrayList<String> classesName, ArrayList<Boolean> opts) {
+        ArrayList<String> result = new ArrayList<>();
+        ArrayList<Class<? extends BaseLibrary>> clz = new ArrayList<>();
+        //
+        for (String className : classesName) {
+            Class<?> rawClass = null;
+            try {
+                rawClass = Class.forName(className, true, Plugin.class.getClassLoader());
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("Could not find class '"+className+"'", e);
+            }
+
+            Class<? extends BaseLibrary> libraryClass =
+                    rawClass.asSubclass(BaseLibrary.class);
+            try {
+                BaseLibrary.externalLibraryRequirements(libraryClass);
+            } catch (LoadException.LibraryAnnotationException e) {
+                throw new RuntimeException(e);
+            }
+
+            clz.add(libraryClass);
+        }
+
+        IConfig<Object> config = new IConfig<>(null);
+
+        Globals globals = null;
+        try {
+            globals = new Globals(config, Plugin.class.getClassLoader(), clz);
+        } catch (JaivaException e) {
+            throw new RuntimeException("Failed to generated tooling JSON", e);
+        }
+
+        for (Class<? extends BaseLibrary> libraryClass : clz) {
+            LibraryLike lib = LibraryLike.of(libraryClass);
+
+            try {
+                BaseLibrary library = lib.loadClassLibrary(config, globals);
+                Vfs vfs = library.getUniqueVfs();
+                MDInputProps inputProps = new MDInputProps(
+                        true, MDInputProps.Type.CLASS, vfs, library
+                );
+                MDOutputProps outputProps = MDOutputProps.from(opts);
+
+                result.add(
+                        new VfsToMD(inputProps, outputProps, config, globals).complete().content()
+                );
+
             } catch (Exception e) {
                 throw new RuntimeException("Failed to generate tooling JSON", e);
             }

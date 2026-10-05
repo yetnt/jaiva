@@ -30,7 +30,7 @@ import java.util.Arrays;
  */
 public class GlobalFunctions extends BaseLibrary {
 
-    public GlobalFunctions(IConfig<Object> config) throws InterpreterException {
+    public GlobalFunctions(IConfig<Object> config) {
         add(
                 new FGetVarClass(), new VReservedKeywords(), new VJaivaVersion(), new FFlat(),
                 new FSleep(), new FTypeOf(), new FTypeOfNumber(), new FArrayLiteral(),

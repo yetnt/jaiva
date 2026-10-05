@@ -1,4 +1,4 @@
-# 6.0.0
+# 6.0.0 (Library & Expressiveness overhaul)
 
 idk the library and expressiveness overhaul?
 
@@ -126,6 +126,23 @@ tsea "jaiva/file/api"! @ For actual creating or deleting files
 tsea "jaiva/file"! @ Aggregates both.
 ```
 
+### `-md` output
+
+The output no longer relies on the given input file and output folder
+alone just to make the resultant `.md` file. Now you also need a
+`path` variable with documentation. Although this is just the file name
+not the fulll qualified path.
+
+This is also trtue if you want a `description`
+
+```jaiva
+@* "path"
+maak *path!
+
+@* My lovely library shenanigans
+maak *description!
+```
+
 ## Internal Jaiva API
 
 ### Maven Coords
@@ -216,7 +233,7 @@ import com.jaiva.interpreter.libs.annotation.PublicLibrary;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.symbol.BaseFunction;
 
-@PublicLibrary(path = "shii")
+@PublicLibrary(path = "shii", description = "The description")
 public class Shii extends BaseLibrary {
     public Shii() {
         add(new FFunction());
@@ -498,7 +515,7 @@ A maven plugin which allows external Jaiva Hosted Java apps, to
 export tooling metadata such as `(basedir)/jaiva/*.json` for the VSCode Extension to
 discover External APIs and provide support for them
 
-(and soon) `*.md` output
+(oh yeah theres also the `markdown` mojo for markdown documentation)
 
 An example pom is as follows which uses this:
 
@@ -524,22 +541,31 @@ An example pom is as follows which uses this:
 
         <plugins>
 
-            <plugin>
-                <groupId>com.github.yetnt.jaiva</groupId>
-                <artifactId>lib-tooling-plugin</artifactId>
-                <version>VERSION</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate-lib-json</goal>
-                        </goals>
-                        <configuration>
-                            <toolingType>JSON</toolingType>
-                            <basePackage>com.app.baselib.package</basePackage>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
+          <plugin>
+            <groupId>com.github.yetnt.jaiva</groupId>
+            <artifactId>lib-tooling-plugin</artifactId>
+            <version>6.0.0</version>
+            <executions>
+              <execution>
+                <id>json-gen</id>
+                <goals><goal>json</goal></goals>
+                <configuration>
+                  <basePackage>com.j3d.jaiva.packs</basePackage>
+                  <ifOutDirNotEmpty>OVERWRITE</ifOutDirNotEmpty>
+                </configuration>
+              </execution>
+              <execution>
+                <id>md-gen</id>
+                <goals><goal>markdown</goal></goals>
+                <configuration>
+                  <basePackage>com.j3d.jaiva.packs</basePackage>
+                  <allOutputOptionsTrue>true</allOutputOptionsTrue>
+                  <ifOutDirNotEmpty>OVERWRITE</ifOutDirNotEmpty>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
 
         </plugins>
 
@@ -550,7 +576,7 @@ An example pom is as follows which uses this:
 ```
 
 In this case, it's configured to look for your custom `BaseLibrary` implementations within
-`com.app.baselib.package`, and generate the output JSON in `(basedir)/jaiva/` such that
+`com.app.baselib.package`, and generate the output JSON and MD in `(basedir)/jaiva/` such that
 if the project is shared on Github or otherwise, the Jaiva VSCode extension can find the
 appropriate JSON and provide autocomplete to the user.
 

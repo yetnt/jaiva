@@ -10,7 +10,7 @@ Simple CLI Ngl.
 
 ```sh
 > jaiva [-p | -h | -v | -t | -u | -js]
-> jaiva <filePath> [-j | -jg | -s | -jog]
+> jaiva <filePath> [-j | -jg | -s | -jog | -md]
 ```
 
 1. (No flags) launches the REPL.
@@ -135,9 +135,22 @@ Simple CLI Ngl.
 8. Export library as Markdown documentation
 
    > ```sh
-   > jaiva <filePath> --markdown <outputFolder>
-   > jaiva <filePath> -md <outputFolder>
+   > jaiva <filePath> --markdown <outputFolder> -p:[opts]
+   > jaiva <filePath> -md <outputFolder> -p:[opts]
    > ```
+
+   > [!NOTE]
+   > Where `<filePath>` can either be a file or a `jaiva/*` library
+   > reference.
+
+   > [!NOTE]
+   > Where `[opts]` is a 5 character list of `+` or `-` which represents
+   > the following positional paraemeters. (Where `+` is true, and `-` is false)
+   >  - `includeTableOfContents` : Whether the markdown should include a table of contents
+   >  - `splitSymbols` : Whether the single Symbols section should instead be split into Functions and Variables
+   >  - `preferFunctions`: If `splitSymbols` is true, prefer the functions section before variables
+   >  - `declareExports` : If is a library which is attached to a class, declare it's exports
+   >  - `listExports` : If `declareExports`, further list all the symbols which aren't apart of this library.
 
 ## Debugger Commands
 

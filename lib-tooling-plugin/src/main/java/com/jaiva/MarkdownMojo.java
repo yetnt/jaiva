@@ -33,11 +33,11 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 @Mojo(
-        name = "json",
+        name = "markdown",
         defaultPhase = LifecyclePhase.PACKAGE,
         requiresDependencyResolution = ResolutionScope.COMPILE
 )
-public class GenerateLibJsonMojo extends AbstractMojo {
+public class MarkdownMojo extends AbstractMojo {
 
     /**
      * The base package to scan for BaseLibrary subclasses. Such as
@@ -51,7 +51,7 @@ public class GenerateLibJsonMojo extends AbstractMojo {
     private String basePackage;
 
     /**
-     * The folder to write the generated JSON files. If your project is hosted on github or some other
+     * The folder to write the generated MarkDown files. If your project is hosted on github or some other
      * cdn-like place, it's best this be the project's base directory/jaiva (The default value) such
      * as to allow easy configuration for the VSCode extension.
      */
@@ -72,6 +72,18 @@ public class GenerateLibJsonMojo extends AbstractMojo {
             property = "jaiva.ifOutDirNotEmpty"
     )
     private OutDirNotEmpty ifOutDirNotEmpty;
+
+    /**
+     * Output properties
+     */
+    @Parameter
+    private OutputProperties outputProperties;
+
+    /**
+     * An escape hatch to set all the output properties to true. this has higher precedence than setting the values.
+     */
+    @Parameter(defaultValue = "false", property = "jaiva.allOutOptionsTrue")
+    private boolean allOutputOptionsTrue;
 
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
@@ -102,9 +114,7 @@ public class GenerateLibJsonMojo extends AbstractMojo {
 
                 Class<?> pluginClass = Class.forName(Plugin.class.getName(), true, projectClassLoader);
 
-                Method method = pluginClass.getMethod("generateToolingJSON", ArrayList.class);
-
-                Properties props = new Properties();
+                Method method = pluginClass.getMethod("genMd", ArrayList.class, ArrayList.class);
 
                 ArrayList<String> classNames = new ArrayList<>();
                 ArrayList<String> paths = new ArrayList<>();
@@ -126,47 +136,47 @@ public class GenerateLibJsonMojo extends AbstractMojo {
 
                     classNames.add(className);
                 }
+                ArrayList<Boolean> list = allOutputOptionsTrue
+                        ? OutputProperties.allTrue()
+                        : outputProperties.asList();
 
-                ArrayList<String> out = invokeToolingJSON(method, classNames);
+                ArrayList<String> out = invokeGenMd(method, classNames, list);
 
                 for (int i = 0; i < out.size(); i++) {
                     String json = out.get(i);
                     String path = paths.get(i);
                     String className = classNames.get(i);
 
-                    String fileName = sanitizeToFileName(path) + ".json";
+                    String fileName = sanitizeToFileName(path) + ".md";
 
-                    Path jsonFile = outputFolder.toPath().resolve(fileName);
+                    Path md = outputFolder.toPath().resolve(fileName);
 
                     try {
-                        Files.writeString(jsonFile, json, StandardCharsets.UTF_8);
+                        Files.writeString(md, json, StandardCharsets.UTF_8);
                     } catch (IOException e) {
-                        throw new MojoExecutionException("Failed to write tooling JSON for " + className, e);
+                        throw new MojoExecutionException("Failed to write MarkDown for " + className, e);
                     }
 
-                    props.setProperty(path, fileName);
-
-                    getLog().info("Generated: " + jsonFile);
+                    getLog().info("Generated: " + md);
                 }
-
-                writeFetchProperties(props);
             }
         } catch (IOException e) {
             throw new MojoExecutionException("Failed to close project classloader", e);
         } catch (ClassNotFoundException e) {
             throw new MojoExecutionException("Could not load project-side Jaiva Plugin", e);
         } catch (NoSuchMethodException e) {
-            throw new MojoExecutionException("Project-side Jaiva Plugin doesnt have generateToolingJSON(ArrayList)", e);
+            throw new MojoExecutionException("Project-side Jaiva Plugin doesnt have genMd(ArrayList)", e);
         }
     }
 
-    private ArrayList<String> invokeToolingJSON(
+    private ArrayList<String> invokeGenMd(
             Method method,
-            ArrayList<String> className
+            ArrayList<String> className,
+            ArrayList<Boolean> properties
     ) throws MojoExecutionException {
 
         try {
-            return (ArrayList) method.invoke(null, className);
+            return (ArrayList) method.invoke(null, className, properties);
         } catch (IllegalAccessException e) {
             throw new MojoExecutionException("Could not access project-side Jaiva Plugin", e);
         } catch (InvocationTargetException e) {
@@ -232,38 +242,13 @@ public class GenerateLibJsonMojo extends AbstractMojo {
         }
     }
 
-    private void writeFetchProperties(Properties props) throws MojoExecutionException {
-
-        props.setProperty("version", Main.version);
-
-        Path filePath = outputDir.toPath().resolve("fetch.properties");
-
-        File file = filePath.toFile();
-
-        try {
-            file.createNewFile();
-
-        } catch (IOException e) {
-            throw new MojoExecutionException("Could not create fetch.properties", e);
-        }
-
-        try (OutputStream out = new FileOutputStream(file)) {
-
-            props.store(out, "Jaiva Fetch Configg");
-
-        } catch (IOException e) {
-            throw new MojoExecutionException("An IO Problem occurred", e);
-        }
-    }
-
     private String sanitizeToFileName(String input) {
 
         if (input == null || input.isBlank())
             return "unnamed";
 
-
         return input
-                .replaceAll("[\\\\/]", "_")
+                .replaceAll("[\\\\/]", "-")
                 .replaceAll("[<>:\"|?*]", "")
                 .trim()
                 .replaceAll("^[.]+", "");

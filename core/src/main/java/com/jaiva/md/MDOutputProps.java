@@ -1,5 +1,7 @@
 package com.jaiva.md;
 
+import java.util.ArrayList;
+
 /**
  * The format of the output MD file
  * @param includeTableOfContents   Whether to include a table of contents. in this case the entire structure is
@@ -13,4 +15,11 @@ package com.jaiva.md;
 public record MDOutputProps(boolean includeTableOfContents, boolean splitSymbols, boolean preferFunctions,
                             boolean declareExportedLibraries, boolean listExports) {
 
+    public static MDOutputProps from(ArrayList<Boolean> opts) {
+        return new MDOutputProps(
+                opts.getFirst(), opts.get(1),
+                opts.get(2), opts.get(3),
+                opts.get(4)
+        );
+    }
 }
