@@ -1,8 +1,35 @@
-# 6.0.0 (Alpha)
+# 6.0.0
+
+idk the library and expressiveness overhaul?
 
 # BREAKING CHANGES
 
+For a quick list of things that broke
+- Scripts
+    - [deprecation stuff](#deprecation)
+    - [`colonize` loops](#colonize-loops)
+    - [library locations](#library-location-changes)
+- Jaiva Internals
+    - [maven coordinates](#maven-coords)
+    - [BaseLibrary metadata](#baselibrary)
+
 ## Jaiva Scripts
+
+### Deprecation
+
+#### REMOVED
+
+Remove functions which have been deprecated for quite some time now.
+
+- `f_bin` from the files library. Deprecated since `v4.0.0`
+- `neg` from the global scope. Deprecated since `v1.0.1`
+- `ask` from the global scope. Deprecated since kingdom come (idk when)
+
+#### Newly deprecated
+
+- `a_push`, `a_pushAll` and `a_unshift` from arrays library. They've been
+marked as deprecated as `arrLit(element, arr:::)` combinations are more
+expressive syntax. It may be removed in a later version idk
 
 ### `colonize` loops
 
@@ -22,13 +49,6 @@ colonize (i <- 0 <| i <= 10 <| +) ->
 <~
 ```
 
-### Deprecated removal
-
-Remove functions which have been deprecated for quite some time now.
-
-- `f_bin` from the files library. Deprecated since `v4.0.0`
-- `neg` from the global scope. Deprecated since `v1.0.1`
-- `ask` from the global scope. Deprecated since kingdom come (idk when)
 
 ### Library Location Changes
 
@@ -155,7 +175,8 @@ New `pom.xml`
     <dependencies>
         <dependency>
             <groupId>com.github.yetnt.jaiva</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>core</artifactId> 
+            <!-- core is now the actual Jaiva types and stuff-->
             <version>5.0.2</version>
         </dependency>
     </dependencies>
@@ -239,6 +260,30 @@ For Container libraries, you explicitly do not annotate them. So you can remove 
 completely. It just needs to extends `BaseLibrary`
 
 ## New Features
+
+### Jaiva file metadata
+
+For jaiva file's themselves as the Markdown was overhauled, they can
+optionally export a `description` and `path` variable with Jaiva Documentation
+to document itself
+
+```jaiva
+
+@* "arrays"
+maak *path!
+
+@* The arrays library
+maak *description!
+```
+
+> [!NOTE]
+> The value of the variable's is not taken into account. Only the actual
+> documentation is whats of importance.
+
+> [!NOTE]
+> The path is purely metadata it does not mean the script can define
+> it's own custom path. If a script is `lib.jiv`, then its best to just
+> document the path as `"lib.jiv"`
 
 ### `jaiva-install` script
 
@@ -413,9 +458,6 @@ a_apply(arr, khuluma)!
 @ Returns [1, 2, 3, 4] (khuluma returns idk)
 ```
 
-- Fix broken Long support from v5.0.4
-- Fix broken string concat
-
 #### Colonize Loops
 
 instead of taking just `+` or `-`, now they can also take any parsable value! And i mean any.
@@ -511,3 +553,13 @@ In this case, it's configured to look for your custom `BaseLibrary` implementati
 `com.app.baselib.package`, and generate the output JSON in `(basedir)/jaiva/` such that
 if the project is shared on Github or otherwise, the Jaiva VSCode extension can find the
 appropriate JSON and provide autocomplete to the user.
+
+## Fixes
+
+- Fix broken Long support from v5.0.4
+    - `types` now handles long values, parsing to and from strings.
+      - Similarly, if an integer string is too large it will be parsed as a long
+  instead
+- Some random runtime exceptions have actual jaiva exceptions
+- Fix broken string concat
+- Refactor some fields in the interpreter to be encapsulated.
