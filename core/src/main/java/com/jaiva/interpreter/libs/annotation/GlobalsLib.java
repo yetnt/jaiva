@@ -22,4 +22,6 @@ import java.lang.annotation.Target;
 @JaivaLibrary(path="global", description = "The globals, These functions and variables are available in any scope.")
 @Target(ElementType.TYPE)
 public @interface GlobalsLib {
+    String path() default "globals";
+    String description() default "The globals, These functions and variables are available in any scope without an explicit import.";
 }

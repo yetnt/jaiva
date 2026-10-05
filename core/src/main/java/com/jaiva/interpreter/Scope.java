@@ -1,6 +1,7 @@
 package com.jaiva.interpreter;
 
 import com.jaiva.errors.InterpreterException;
+import com.jaiva.errors.JaivaException;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.global.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -42,7 +43,7 @@ public class Scope {
         try {
             this.globals = new Globals(iconfig);
             this.vfs = this.getGlobals().getVfs(iconfig, this.getGlobals());
-        } catch (InterpreterException e) {
+        } catch (JaivaException e) {
             throw new RuntimeException(e);
         }
     }
@@ -61,7 +62,7 @@ public class Scope {
         try {
             this.globals = new Globals(iconfig, Scope.class.getClassLoader(), globals);
             this.vfs = this.getGlobals().getVfs(iconfig, this.getGlobals());
-        } catch (InterpreterException e) {
+        } catch (JaivaException e) {
             throw new RuntimeException(e);
         }
     }

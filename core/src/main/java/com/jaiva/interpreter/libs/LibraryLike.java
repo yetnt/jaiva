@@ -1,5 +1,7 @@
 package com.jaiva.interpreter.libs;
 
+import com.jaiva.errors.JaivaException;
+import com.jaiva.errors.LoadException;
 import com.jaiva.interpreter.Vfs;
 import com.jaiva.interpreter.libs.global.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -29,20 +31,16 @@ public class LibraryLike {
         return new LibraryLike(libName);
     }
 
-    public BaseLibrary loadClassLibrary(IConfig<Object> i, Globals globals) {
+    public BaseLibrary loadClassLibrary(IConfig<Object> i, Globals globals) throws JaivaException {
         if (lib instanceof BaseLibrary b) return b;
-        if (!(lib instanceof Class<?> c)) throw new RuntimeException(
+        if (!(lib instanceof Class<?> c)) throw new LoadException.LibraryLikeGetException(
                 "The object stored by this lazily initializer is not a class."
         );
 
-        try {
-            return BaseLibrary.instantiate(c, i, globals);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return BaseLibrary.instantiate(c, i, globals);
     }
 
-    public Vfs load(IConfig<Object> i, Globals globals) {
+    public Vfs load(IConfig<Object> i, Globals globals) throws Exception {
         switch (lib) {
             case Class<?> ignored -> {
                 return loadClassLibrary(i, globals).getVfs(i, globals);

@@ -3,6 +3,8 @@ package com.jaiva.interpreter;
 import com.jaiva.interpreter.symbol.Symbol;
 import com.jaiva.interpreter.symbol.SymbolType;
 
+import java.util.Objects;
+
 /**
  * Represents a Map Value instance.
  * This is so that when we're ina scope and variables get copied over,
@@ -64,6 +66,19 @@ public class MapValue {
      */
     public void setValue(Symbol value) {
         this.value = value;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        MapValue mapValue = (MapValue) o;
+        return Objects.equals(getValue(), mapValue.getValue());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getValue());
     }
 
     @Override

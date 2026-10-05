@@ -1,6 +1,8 @@
 package com.jaiva;
 
 import com.jaiva.errors.InterpreterException;
+import com.jaiva.errors.JaivaException;
+import com.jaiva.errors.LoadException;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.LibraryLike;
 import com.jaiva.interpreter.libs.global.Globals;
@@ -31,7 +33,11 @@ public final class Plugin {
 
             Class<? extends BaseLibrary> libraryClass =
                     rawClass.asSubclass(BaseLibrary.class);
-            BaseLibrary.externalLibraryRequirements(libraryClass);
+            try {
+                BaseLibrary.externalLibraryRequirements(libraryClass);
+            } catch (LoadException.LibraryAnnotationException e) {
+                throw new RuntimeException(e);
+            }
 
             clz.add(libraryClass);
         }
@@ -41,16 +47,19 @@ public final class Plugin {
         Globals globals = null;
         try {
             globals = new Globals(config, Plugin.class.getClassLoader(), clz);
-        } catch (InterpreterException e) {
+        } catch (JaivaException e) {
             throw new RuntimeException("Failed to generated tooling JSON", e);
         }
 
         for (Class<? extends BaseLibrary> libraryClass : clz) {
             LibraryLike lib = LibraryLike.of(libraryClass);
 
-            BaseLibrary library = lib.loadClassLibrary(config, globals);
-
-            result.add(library.toToolingJSON(config, globals));
+            try {
+                BaseLibrary library = lib.loadClassLibrary(config, globals);
+                result.add(library.toToolingJSON(config, globals));
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to generate tooling JSON", e);
+            }
         }
         return result;
     }

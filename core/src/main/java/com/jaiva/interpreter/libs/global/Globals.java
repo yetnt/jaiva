@@ -79,11 +79,11 @@ public class Globals extends BaseLibrary {
      *
      * @throws InterpreterException if something goes wrong lol
      */
-    public Globals(IConfig<Object> config) throws InterpreterException {
+    public Globals(IConfig<Object> config) throws JaivaException {
         this(config, Globals.class.getClassLoader(), new ArrayList<>());
     }
 
-    public Globals(IConfig<Object> config, ClassLoader classLoader) throws InterpreterException {
+    public Globals(IConfig<Object> config, ClassLoader classLoader) throws JaivaException {
         this(config, classLoader, new ArrayList<>());
     }
 
@@ -98,7 +98,7 @@ public class Globals extends BaseLibrary {
      * @param external The list of external classes to store
      * @throws InterpreterException if something goes wrong lol
      */
-    public Globals(IConfig<Object> config, ClassLoader classLoader, List<Class<? extends BaseLibrary>> external) throws InterpreterException {
+    public Globals(IConfig<Object> config, ClassLoader classLoader, List<Class<? extends BaseLibrary>> external) throws JaivaException {
         super();
         allClassLibraries.addAll(putGlobals(config, classLoader == null ? Globals.class.getClassLoader() : classLoader));
         for (Class<? extends BaseLibrary> ext : external) {
@@ -110,7 +110,7 @@ public class Globals extends BaseLibrary {
         }
     }
 
-    public ArrayList<LibraryLike> putGlobals(IConfig<Object> config, ClassLoader cl) throws InterpreterException {
+    public ArrayList<LibraryLike> putGlobals(IConfig<Object> config, ClassLoader cl) throws JaivaException {
 
         add(new GlobalFunctions(config));
 
@@ -155,7 +155,7 @@ public class Globals extends BaseLibrary {
      * @param removeTrailingComma Remove the trailing comma
      * @return string with the JSON representation of the global tokens.
      */
-    public String returnGlobalsJSON(IConfig<Object> config, boolean removeTrailingComma) {
+    public String returnGlobalsJSON(IConfig<Object> config, boolean removeTrailingComma) throws JaivaException {
         StringBuilder string = new StringBuilder();
         getVfs(config, this).forEach((name, vf) -> {
             Symbol symbol = vf.getValue();
@@ -169,7 +169,7 @@ public class Globals extends BaseLibrary {
         return string.substring(0, string.length() - (removeTrailingComma ? 1 : 0));
     }
 
-    public String returnGlobalsOf(String label, IConfig<Object> i) {
+    public String returnGlobalsOf(String label, IConfig<Object> i) throws Exception {
         Vfs VFS = getVfs(i, this);
         if (!label.equals("jaiva/global")) {
             String label2 = label.replace("jaiva/", "").replace("jaiva\\", "");
@@ -196,10 +196,11 @@ public class Globals extends BaseLibrary {
         return string.toString();
     }
 
-    public Vfs getBuiltInGlobal(String name) {
+    public Vfs getBuiltInGlobal(String name) throws Exception {
         if (name.startsWith("jaiva/") || name.startsWith("jaiva\\")) {
             name = name.substring(6);
         }
+        if (!builtInGlobals.containsKey(name)) return null;
         return builtInGlobals.get(name).load(new IConfig<Object>(true, null), this);
     }
 

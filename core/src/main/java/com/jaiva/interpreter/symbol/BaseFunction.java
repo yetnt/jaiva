@@ -22,14 +22,14 @@ import java.util.Collections;
  */
 public class BaseFunction extends Symbol {
 
-    /**
-     * Constructs a new BaseFunction instance with the specified name and token.
-     * 
-     * @param token the token associated with the function
-     */
-    public BaseFunction(TFunction token) {
-        super(token.name, SymbolType.FUNCTION, token);
-    }
+//    /**
+//     * Constructs a new BaseFunction instance with the specified name and token.
+//     *
+//     * @param token the token associated with the function
+//     */
+//    public BaseFunction(TFunction token) {
+//        super(token.name, SymbolType.FUNCTION, token);
+//    }
 
 
     /**

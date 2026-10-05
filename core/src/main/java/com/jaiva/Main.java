@@ -3,11 +3,15 @@ package com.jaiva;
 import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.errors.JaivaException.UnknownFileException;
+import com.jaiva.errors.LoadException;
 import com.jaiva.errors.TokenizerException;
 import com.jaiva.interpreter.Interpreter;
 import com.jaiva.interpreter.Scope;
+import com.jaiva.interpreter.Vfs;
+import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.global.Globals;
 import com.jaiva.interpreter.runtime.IConfig;
+import com.jaiva.md.MDInputProps;
 import com.jaiva.md.ToMarkdown;
 import com.jaiva.tokenizer.TConfig;
 import com.jaiva.tokenizer.Tokenizer;
@@ -23,6 +27,7 @@ import com.yetnt.utils.builders.AnsiColour;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
 import java.util.*;
 
 import static com.jaiva.tokenizer.Tokenizer.consumeExtension;
@@ -291,20 +296,44 @@ public class Main {
                         return;
                     }
                     case "-md", "--markdown" -> {
-//                        if (args.length != 3)
-//                            throw new JaivaException.TooLittleArgsException("Markdown output needs an output directory!");
-//                        if (args[0].startsWith("jaiva/") || args[0].startsWith("jaiva\\")) {
-//                            // The user is trying to output markdown for the built-in jaiva libs. Why not give it to them.
-//                            Vfs vfs = args[0].endsWith("globals")  // edge case for globals lib.
-//                                    ? new Globals(new IConfig<>(null)).getVfs()
-//                                    : new Globals(new IConfig<>(null)).getBuiltInGlobal(args[0]);
-//                            if (vfs == null)
-//                                throw new JaivaException.UnknownFileException("You can't output markdown for the built-in jaiva libs that don't exist.");
-//                            tokens = vfs.toTokenList();
-//                        }
-//                        String out = args[2];
-//                        Path outDir = Path.of(out);
-                        new ToMarkdown();
+                        if (args.length < 3)
+                            throw new JaivaException.TooLittleArgsException("Markdown output needs an output directory!");
+                        BaseLibrary baseLibrary = null;
+                        Vfs vfs = null;
+                        MDInputProps.Type type = MDInputProps.Type.FILE;
+                        Globals globals = new Globals(new IConfig<>(null));
+                        boolean isLib = false;
+                        if (args[0].startsWith("jaiva/") || args[0].startsWith("jaiva\\")) {
+                            // The user is trying to output markdown for the built-in jaiva libs. Why not give it to them.
+                            String lib = args[0]
+                                    .replace("jaiva/", "")
+                                    .replace("jaiva\\", "");
+                            if (globals.getBuiltInGlobal(lib) == null && !lib.contains("globals"))
+                                throw new JaivaException.UnknownFileException("jaiva/" + lib);
+                            try {
+                                baseLibrary = args[0].endsWith("globals")  // edge case for globals lib.
+                                        ? globals
+                                        : globals.builtInGlobals.get(lib)
+                                        .loadClassLibrary(iconfig, globals);
+                                vfs = baseLibrary.getUniqueVfs();
+                                type = MDInputProps.Type.CLASS;
+                            } catch (LoadException.LibraryLikeGetException e) {
+                                vfs = globals.builtInGlobals.get(lib).load(iconfig, globals);
+                            }
+                            isLib = true;
+                            if (vfs == null)
+                                throw new JaivaException.UnknownFileException("jaiva/" + lib);
+                        }
+                        String out = args[2];
+                        Path outDir = Path.of(out);
+                        new ToMarkdown(
+                                new MDInputProps(
+                                        isLib, type, vfs == null ? Vfs.fromFile(tokens) : vfs, baseLibrary
+                                ),
+                                outDir,
+                                iconfig, globals,
+                                args.length > 3 ? args[3] : null
+                        );
                         System.out.println();
                         System.exit(0);
                         return;
@@ -339,6 +368,13 @@ public class Main {
                 }
                 case TokenizerException tokenizerException -> {
                     System.out.println("Error while parsing code: ");
+                    System.out.println(e.getMessage());
+//                    e.printStackTrace(System.out);
+                    System.out.println();
+                    System.exit(-1);
+                }
+                case LoadException tokenizerException -> {
+                    System.out.println("Error loading something: ");
                     System.out.println(e.getMessage());
 //                    e.printStackTrace(System.out);
                     System.out.println();

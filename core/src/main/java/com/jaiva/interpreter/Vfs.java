@@ -3,8 +3,15 @@ package com.jaiva.interpreter;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.LibrarySymbol;
 import com.jaiva.interpreter.libs.annotation.Library;
+import com.jaiva.interpreter.symbol.BaseFunction;
+import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.interpreter.symbol.Symbol;
+import com.jaiva.tokenizer.tokens.TSymbol;
 import com.jaiva.tokenizer.tokens.Token;
+import com.jaiva.tokenizer.tokens.TokenDefault;
+import com.jaiva.tokenizer.tokens.specific.TArrayVar;
+import com.jaiva.tokenizer.tokens.specific.TFunction;
+import com.jaiva.tokenizer.tokens.specific.TUnknownScalar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +52,7 @@ public class Vfs extends LinkedHashMap<String, MapValue> {
      * Creates a new Vfs Object with the given HashMap.
      * @param vfs Given Vfs.
      */
-    private Vfs(HashMap<String, MapValue> vfs) {
+    public Vfs(LinkedHashMap<String, MapValue> vfs) {
         this.putAll(vfs);
     }
 
@@ -71,7 +78,7 @@ public class Vfs extends LinkedHashMap<String, MapValue> {
      * @return An exact copy of this instance with every element being a copy.
      */
     public Vfs fullCopy() {
-        HashMap<String, MapValue> vfs = new HashMap<>();
+        LinkedHashMap<String, MapValue> vfs = new LinkedHashMap<>();
         super.forEach((s, mv) -> {
             try {
                 vfs.put(s, new MapValue(mv.getValue().clone()));
@@ -153,5 +160,27 @@ public class Vfs extends LinkedHashMap<String, MapValue> {
 
     public void putAsSymbolName(LibrarySymbol symbol) {
         symbol.aliases().forEach(alias -> put(alias, symbol.symbol()));
+    }
+
+    public static Vfs fromFile(ArrayList<Token<?>> tokens) {
+        Vfs vfs = new Vfs();
+        tokens.forEach(token -> {
+            if (token.value() instanceof TSymbol) {
+                TokenDefault<?> t = token.value();
+                if (t.exportSymbol) {
+                    if (t instanceof TFunction func) {
+                        String name = func.name.substring(2);
+                        vfs.put(name, new BaseFunction(name, func));
+                    } else if (t instanceof TUnknownScalar scalar) {
+                        vfs.put(scalar.name, new BaseVariable(scalar.name, scalar, scalar.value));
+                    } else {
+                        // can only be TArrayVar now
+                        TArrayVar var = (TArrayVar) t;
+                        vfs.put(t.name, new BaseVariable(t.name, t, var.contents));
+                    }
+                }
+            }
+        });
+        return vfs;
     }
 }

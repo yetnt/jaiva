@@ -165,4 +165,13 @@ public class JaivaException extends Exception {
         }
 
     }
+
+    public static class InvalidArgsException extends JaivaException {
+        private static final long serialVersionUID = 1L;
+
+        public InvalidArgsException(String message) {
+            super(message);
+        }
+
+    }
 }

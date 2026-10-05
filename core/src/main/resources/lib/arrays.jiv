@@ -12,7 +12,16 @@ scope("strict")! @ This freezes all the functions, and elevates all warnings to 
     v6.0.0:
         |> Parameters Extension Syntax, for long function calls to be broken  into multiple lines
         <| Separator for colonize loops
+        "description" and "path" variables that the markdown output cares about
 }
+
+@* "arrays"
+maak *path!
+
+@* Jaiva's arrays standard library which is itself, made in Jaiva.
+@* It really just contains convenience methods such that you don't
+@* have to index into or look for things yourself.
+maak description!
 
 @* Remove n elements from the end of an array
 @* p        $> arr <- [] The original array
@@ -64,6 +73,8 @@ kwenza *a_pop(array) ->
 @* devn     $> Throws if the first argument is not an array.
 @* example  $> maak arr <-| 1, 2, 3!
 @*          $> khuluma(a_push(arr, 4))! @ Returns [1, 2, 3, 4]
+@* depr     $> Whilst this function works, rather use arrLit + array spreading with :::
+@*          $> which is ultimately cleaner and more expressive syntax. `arrLit(arr:::, element)`
 kwenza *a_push(arr, element) ->
     if (typeOf(arr) != "array") ->
         cima <== "a_push() only works on arrays"!
@@ -79,6 +90,8 @@ kwenza *a_push(arr, element) ->
 @* devn     $> Throws if the first argument is not an array.
 @* example  $> maak arr <-| 1, 2, 3!
 @*          $> khuluma(a_pushAll(arr, 4, 5, 6))! @ Returns [1, 2, 3, 4, 5, 6]
+@* depr     $> Whilst this function works, rather use arrLit + array spreading with :::
+@*          $> which is ultimately cleaner and more expressive syntax. `arrLit(arr:::, element1, element2, ...)`
 kwenza *a_pushAll(<-params) ->
     maak arr <- params[0]!
     if (typeOf(arr) != "array") ->
@@ -99,6 +112,8 @@ kwenza *a_pushAll(<-params) ->
 @* devn     $> Throws if the first argument is not an array.
 @* example  $> maak arr <-| 2, 3, 4!
 @*          $> khuluma(a_unshift(arr, 1))! @ Returns [1, 2, 3, 4]
+@* depr     $> Whilst this function works, rather use arrLit + array spreading with :::
+@*          $> which is ultimately cleaner and more expressive syntax. `arrLit(element, arr:::)`
 kwenza *a_unshift(arr, element) ->
     if (typeOf(arr) != "array") ->
         cima <== "a_unshift() only works on arrays"!

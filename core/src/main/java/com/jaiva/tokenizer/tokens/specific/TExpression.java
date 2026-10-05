@@ -47,12 +47,12 @@ public class TExpression extends TokenDefault<TExpression> implements TAtomicVal
     public int statementType;
 
     /**
-     * Constructor for TStatement
+     * Constructor for TExpression
      *
      * @param ln The line number.
      */
     public TExpression(int ln) {
-        super("TStatement", ln);
+        super("TExpression", ln);
     }
 
     /**

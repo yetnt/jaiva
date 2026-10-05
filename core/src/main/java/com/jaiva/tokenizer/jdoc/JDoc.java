@@ -103,6 +103,17 @@ public class JDoc {
         return params;
     }
 
+    public String getVersion() {
+        for (Tag tag : tags) {
+            if (tag.tagType == TagType.FROM) {
+                String v = (String) tag.attributes.get("version");
+                return v == null ? "" : v;
+            }
+        }
+        return "";
+    }
+
+
     public ArrayList<String> getExample() {
         for (Tag tag : tags) {
             if (tag.tagType == TagType.EXAMPLE) {

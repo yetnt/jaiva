@@ -1,5 +1,11 @@
 tsea "jaiva/arrays"!
 
+@* dummy
+maak *path!
+
+@* My shit
+maak *description!
+
 maak x <- arrLit(10)!
 |> (20, 30, 40)!
 |> arrLit(100)!
@@ -13,7 +19,11 @@ x <- arrLit(100, 2)!
 
 khuluma(x)!
 
-kwenza kAll(<-pars) ->
+@* A function with the sole purpose of just emitting side effects
+@* param        $> pars? <- [] Array of input, var args.
+@* rets         $> idk (The type)
+@* note         $> You could just call khuluma multiple times on this
+kwenza *kAll(<-pars) ->
 	colonize (p with pars) ->
 		khuluma(p)!
 	<~
@@ -25,7 +35,14 @@ kAll("hello")!
 |> ("is beautiful", "like really")!
 |> kAll!
 
-maak add <- f~(<-nums) : a_reduce(nums, f~(a,b):a+b, 0)!
+@* My lovely add thingy
+@* example  $> maak add <- f~(<-nums) : a_reduce(nums, f~(a, b):a+b, 0)!
+@*          $> @ (Provided you have imported a_reduce)
+@* note     $> The example is just an example you dont need to import
+@*          $> a_reduce to use the variable.
+@* depr     $> find something bhetter
+@* since    $> v2
+maak *add <- f~(<-nums) : a_reduce(nums, f~(a,b):a+b, 0)!
 
 maak z <- (10 + add(1))!
 |> (2, 3, 4, 5)!
