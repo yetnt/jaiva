@@ -1,4 +1,4 @@
-# 6.0.0 (Library & Expressiveness overhaul)
+~~# 6.0.0 (Library & Expressiveness overhaul)
 
 idk the library and expressiveness overhaul?
 
@@ -588,4 +588,4 @@ appropriate JSON and provide autocomplete to the user.
   instead
 - Some random runtime exceptions have actual jaiva exceptions
 - Fix broken string concat
-- Refactor some fields in the interpreter to be encapsulated.
+- Refactor some fields in the interpreter to be encapsulated.~~

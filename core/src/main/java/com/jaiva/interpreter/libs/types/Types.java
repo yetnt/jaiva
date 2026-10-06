@@ -18,7 +18,7 @@ import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 import com.jaiva.tokenizer.tokens.specific.TFunction;
 import com.jaiva.tokenizer.tokens.specific.TVoidValue;
-import com.yetnt.utils.functional.ThrowableTriFunction;
+import com.yetnt.utils.functional.function.ThrowableTriFunction;
 
 import java.util.ArrayList;
 

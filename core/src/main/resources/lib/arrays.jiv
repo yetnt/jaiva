@@ -15,7 +15,7 @@ scope("strict")! @ This freezes all the functions, and elevates all warnings to 
         "description" and "path" variables that the markdown output cares about
 }
 
-@* "arrays"
+@* arrays
 maak *path!
 
 @* Jaiva's arrays standard library which is itself, made in Jaiva.

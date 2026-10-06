@@ -18,13 +18,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
     <dependencies>
 
         <!-- For tests -->
@@ -38,9 +31,9 @@
         <!-- My custom common utilities. Such as tuples and more function arities-->
 
         <dependency>
-            <groupId>com.github.yetnt</groupId>
+            <groupId>io.github.yetnt</groupId>
             <artifactId>ytils</artifactId>
-            <version>1.0.1</version>
+            <version>1.1.0</version>
         </dependency>
 
         <!-- Specifically for loading internal jaiva libraries so we don't have to define it everytime -->
@@ -112,21 +105,6 @@
 
     <build>
 
-        <pluginManagement>
-            <!--
-            <plugins>
-                <plugin>
-                    <groupId>org.panteleyev</groupId>
-                    <artifactId>jpackage-maven-plugin</artifactId>
-                    <version>1.6.0</version>
-                    <configuration>
-                        <name>Jaiva</name>
-                    </configuration>
-                </plugin>
-            </plugins>
-            -->
-        </pluginManagement>
-
         <plugins>
 
             <!--
@@ -189,50 +167,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!--
-            <plugin>
-                <groupId>org.panteleyev</groupId>
-                <artifactId>jpackage-maven-plugin</artifactId>
-                <version>1.6.0</version>
-
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-
-                        <goals>
-                            <goal>jpackage</goal>
-                        </goals>
-
-                        <configuration>
-                            <name>Jaiva</name>
-                            <appVersion>${project.version}</appVersion>
-                            <icon>src/main/resources/jaiva.ico</icon>
-                            <description>Jaiva! Tokenizer &amp; Interpreter</description>
-                            <vendor>yetnt</vendor>
-                            <mainClass>com.jaiva.Main</mainClass>
-                            <mainJar>${project.build.finalName}.jar</mainJar>
-                            <resourceDir>src/main/resources</resourceDir>
-                            <type>MSI</type>
-                            <winConsole>true</winConsole>
-                            <installDir></installDir>
-
-                            <input>${project.build.directory}</input>
-                            <destination>${project.build.directory}/jpackage</destination>
-
-                            <fileAssociations>
-                                <fileAssociation>src/main/resources/file-assoc-jaiva.properties</fileAssociation>
-                                <fileAssociation>src/main/resources/file-assoc-jva.properties</fileAssociation>
-                                <fileAssociation>src/main/resources/file-assoc-jiv.properties</fileAssociation>
-                            </fileAssociations>
-
-                            <winPerUserInstall>false</winPerUserInstall>
-                            <aboutUrl>https://github.com/yetnt/jaiva</aboutUrl>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

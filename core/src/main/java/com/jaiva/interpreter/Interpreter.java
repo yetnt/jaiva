@@ -19,7 +19,7 @@ import com.jaiva.tokenizer.tokens.TSymbol;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.*;
-import com.jaiva.utils.ThrowableBiConsumer;
+import com.yetnt.utils.functional.consumer.ThrowableBiConsumer;
 import com.yetnt.utils.tuple.Pair;
 
 import java.nio.file.Path;
@@ -638,8 +638,8 @@ public class Interpreter {
 
     public static void handleColonzieLoopIncrementExpresion(
             ThrowableBiConsumer<
-                    Object, Scope, InterpreterException
-                    > consumer, Object in, BaseVariable v,IConfig<Object> config, Scope scope
+                                Object, Scope, InterpreterException
+                                > consumer, Object in, BaseVariable v, IConfig<Object> config, Scope scope
             ) throws Exception{
 
         Object val;
@@ -659,6 +659,6 @@ public class Interpreter {
             );
         }
 
-        consumer.accept(val, scope);
+        consumer.apply(val, scope);
     }
 }
