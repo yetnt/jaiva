@@ -3,6 +3,7 @@ package com.jaiva.interpreter.runtime;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 public class GlobalResources  {
 
@@ -11,14 +12,19 @@ public class GlobalResources  {
             Resources resources
     ) {}
 
+    private final Supplier<Boolean> mainThreadFinished;
+    private final Runnable onMainFinish;
+
     private final ConcurrentHashMap<Long, ResValue> threadResourcesMap = new ConcurrentHashMap<>();
 
-    public GlobalResources() {
+    public GlobalResources(Supplier<Boolean> mainThreadFinished, Runnable onMainFinish) {
         // each IConfig gets a new GlobalResources for the current thread
         threadResourcesMap.put(
                 Thread.currentThread().threadId(),
                 new ResValue(Thread.currentThread(), new Resources())
         );
+        this.mainThreadFinished = mainThreadFinished;
+        this.onMainFinish = onMainFinish;
     }
 
     public Resources registerNewThead(Thread thread) {
@@ -27,11 +33,20 @@ public class GlobalResources  {
         return resources;
     }
 
+    public void outlivedMainCheck() {
+        if ((threadResourcesMap.size() == 1L && threadResourcesMap.containsKey(Thread.currentThread().threadId())) || threadResourcesMap.isEmpty()) {
+            if (mainThreadFinished.get()) {
+                onMainFinish.run();
+            }
+        }
+    }
+
     public void releaseCurrent() throws IOException {
         // releases this own thread's resources.
         Resources resValue = ofCurrentThread();
         resValue.release();
         threadResourcesMap.remove(Thread.currentThread().threadId());
+        outlivedMainCheck();
     }
 
     protected void interruptAll() {

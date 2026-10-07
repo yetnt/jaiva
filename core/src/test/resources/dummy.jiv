@@ -1,50 +1,38 @@
-tsea "jaiva/arrays"!
+tsea "jaiva/threads"!
+tsea "jaiva/file/io"!
 
-@* dummy
-maak *path!
+kwenza t() ->
+    khuluma("HII")!
 
-@* My shit
-maak *description!
+    sleep(1000)!
 
-maak x <- arrLit(10)!
-|> (20, 30, 40)!
-|> arrLit(100)!
-
-
-khuluma(x)!
-
-x <- arrLit(100, 2)!
-|> (1, arrLit(12, 2), 8)!
-|> 100!
-
-khuluma(x)!
-
-@* A function with the sole purpose of just emitting side effects
-@* param        $> pars? <- [] Array of input, var args.
-@* rets         $> idk (The type)
-@* note         $> You could just call khuluma multiple times on this
-kwenza *kAll(<-pars) ->
-	colonize (p with pars) ->
-		khuluma(p)!
-	<~
+    @ Thread should error, below is wrong
+    khuluma("WHAT" / 0.3242)!
 <~
 
-kAll("hello")!
-|> "World"!
-|> "new Syntax"!
-|> ("is beautiful", "like really")!
-|> kAll!
+kwenza clean(type, err) ->
+    khuluma(type)!
+    if (err~ > 0) ->
+        khuluma(err)!
+    <~
+<~
 
-@* My lovely add thingy
-@* example  $> maak add <- f~(<-nums) : a_reduce(nums, f~(a, b):a+b, 0)!
-@*          $> @ (Provided you have imported a_reduce)
-@* note     $> The example is just an example you dont need to import
-@*          $> a_reduce to use the variable.
-@* depr     $> find something bhetter
-@* since    $> v2
-maak *add <- f~(<-nums) : a_reduce(nums, f~(a,b):a+b, 0)!
+thread(t, clean)!
 
-maak z <- (10 + add(1))!
-|> (2, 3, 4, 5)!
+khuluma("yo")!
 
-khuluma(z)!
+maak str <- "C:\Users\ACER\Documents\code\jaiva\core\src\main\java\com\jaiva\interpreter\symbol\inf\BFMethod.java"!
+
+maak conf <- f_read(str)!
+
+maak read <- conf("read")!
+
+maak lastVal!
+@ EOF, since readByte throws EOFException and not some sentinetal, so for testing purposes
+@ read in this specfic case will return false when the file is done.
+nikhil (lastVal != false) ->
+    lastVal <- read()! @ will be byte values converted to Longs between 0 and 255
+    khuluma(lastVal)!
+<~
+
+conf("close")()!

@@ -351,8 +351,8 @@ public class Main {
 
             // if we reached here, everythign went well!
 
-            System.out.println();
-            System.exit(0);
+//            System.out.println();
+            iconfig.setOutLivedMain(true);
 
         } catch (Exception e) {
             iconfig.releaseAll();

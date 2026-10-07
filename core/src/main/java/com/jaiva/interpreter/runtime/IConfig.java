@@ -24,7 +24,8 @@ public class IConfig<T> extends Config {
     private final ArrayList<String> sanitisedArgs = new ArrayList<>();
     private ImportVfs importVfs = new ImportVfs(false);
     private boolean REPL = false;
-    private final GlobalResources globalResources = new GlobalResources();
+    private boolean outLivedMain = false;
+    private final GlobalResources globalResources;
     private Path filePath = null;
     private Path fileDirectory = null;
     private Object callerValue;
@@ -64,6 +65,19 @@ public class IConfig<T> extends Config {
         Path path = Path.of(currentFilePath != null ? currentFilePath : "");
         filePath = path;
         fileDirectory = path.getParent();
+        globalResources = new GlobalResources(
+                this::isOutLivedMain,
+                () -> System.exit(0)
+        );
+    }
+
+    public boolean isOutLivedMain() {
+        return outLivedMain;
+    }
+
+    public void setOutLivedMain(boolean outLivedMain) {
+        this.outLivedMain = outLivedMain;
+        globalResources.outlivedMainCheck();
     }
 
     /**
@@ -93,6 +107,10 @@ public class IConfig<T> extends Config {
      */
     public IConfig() {
         super();
+        globalResources = new GlobalResources(
+                this::isOutLivedMain,
+                () -> System.exit(0)
+        );
     }
 
     public <V> void add(V callerValue) {

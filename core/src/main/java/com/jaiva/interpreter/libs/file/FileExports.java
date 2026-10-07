@@ -4,7 +4,7 @@ import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.annotation.Exports;
 import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 
-@Exports({FileApi.class, FileQuery.class})
+@Exports({FileApi.class, FileQuery.class, FileBytes.class})
 @JaivaLibrary(path = "file", description = "All the file related stuff, sorta all not sure if i did all while writing this annotation lololol")
 public class FileExports extends BaseLibrary {
 }
