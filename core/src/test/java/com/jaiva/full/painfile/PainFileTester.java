@@ -39,8 +39,8 @@ public class PainFileTester {
     public void interpret() throws Exception {
         IConfig<Object> c = new IConfig<Object>(new ArrayList<>(List.of(
                 PAIN_JVA.toString())),
-                PAIN_JVA.toString(),
-                null);
+                PAIN_JVA.toString()
+        );
         Interpreter.interpret(tokens, new Scope(c), c);
     }
 

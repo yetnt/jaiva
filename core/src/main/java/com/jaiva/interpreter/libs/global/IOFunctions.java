@@ -12,6 +12,7 @@ import com.jaiva.interpreter.libBuilders.func.arg.AArgument;
 import com.jaiva.interpreter.libBuilders.var.VariableBuilder;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
+import com.jaiva.interpreter.runtime.Resources;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.BaseVariable;
 import com.jaiva.lang.EscapeSequence;
@@ -20,9 +21,9 @@ import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.TokenDefault;
 import com.jaiva.tokenizer.tokens.specific.*;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 
 /**
  * IOFunctions class holds the functions that are used for input and output in
@@ -120,7 +121,7 @@ public class IOFunctions extends BaseLibrary {
                 output = o.toString();
             }
 
-            String isJustStr = newO instanceof String && config.printStacks ? "\"" : "";
+            String isJustStr = newO instanceof String && config.isPrintStacks() ? "\"" : "";
 
             if (config.isStreamer())
                 return Token.voidValue(tFuncCall.lineNumber);
@@ -182,7 +183,10 @@ public class IOFunctions extends BaseLibrary {
             if (config.isStreamer())
                 return Token.voidValue(tFuncCall.lineNumber);
 
-            return config.resources.consoleIn.nextLine();
+            return config.getGlobalResources()
+                    .ofCurrentThread()
+                    .getResource(Resources.Common.CONSOLE_IN.getUuid(), Scanner.class)
+                    .nextLine();
         }
     }
 
@@ -249,7 +253,7 @@ public class IOFunctions extends BaseLibrary {
             super(
                     VariableBuilder.start()
                             .name("args")
-                            .value(new ArrayList<>(Arrays.asList(config.args)))
+                            .value(new ArrayList<>(Arrays.asList(config.getArgs())))
                             .docs(
                                     JDoc.builder()
                                             .addDesc("The command-line arguments passed to the Jaiva command.")
@@ -271,7 +275,7 @@ public class IOFunctions extends BaseLibrary {
             super(
                     VariableBuilder.start()
                             .name("uArgs")
-                            .value(config.sanitisedArgs)
+                            .value(config.getSanitisedArgs())
                             .docs(
                                     JDoc.builder()
                                             .addDesc("The command-line arguments without Jaiva-specific arguments.")

@@ -86,7 +86,7 @@ public class Streamer {
                         ArrayList<Token<?>> tokens = Main.parseTokens(l, false);
 
                         if (arg != null && arg.equals("INTERP")) {
-                            IConfig<Object> iconfig = new IConfig<>(line.split("#"), l, null);
+                            IConfig<Object> iconfig = new IConfig<>(line.split("#"), l);
                             iconfig.streamer();
                             try {
                                 Scope scope = new Scope(iconfig);

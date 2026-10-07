@@ -169,7 +169,7 @@ public class Interpreter {
     public static Object handleVariables(Object t, IConfig<Object> config, Scope scope)
             throws Exception {
         // fast path
-        if (t instanceof TSymbol && config.importVfs.active && !config.importVfs.shouldImport(((TokenDefault<?>)t).name.replace("F~", ""))) {
+        if (t instanceof TSymbol && config.getImportVfs().active && !config.getImportVfs().shouldImport(((TokenDefault<?>)t).name.replace("F~", ""))) {
             return null;
         }
         switch (t) {
@@ -323,7 +323,7 @@ public class Interpreter {
             throws Exception {
         // prepare a new vfs.
         scope.setVfs(
-                config.importVfs.active && scope.getCurrent() == Context.GLOBAL
+                config.getImportVfs().active && scope.getCurrent() == Context.GLOBAL
                         ? new Vfs()
                         : scope.getVfs()
         );
@@ -364,7 +364,7 @@ public class Interpreter {
                     if (!importPath.isAbsolute()) {
                         // Resolve it relative to the current file's directory,
                         // then normalize to tidy up any relative path elements.
-                        importPath = config.fileDirectory.resolve(importPath).normalize();
+                        importPath = config.getFileDirectory().resolve(importPath).normalize();
                     }
 
                     importPath = importPath.toAbsolutePath();
@@ -380,10 +380,10 @@ public class Interpreter {
                     if (tks.isEmpty())
                         continue; // Nohing to import.
 
-                    IConfig<Object> newConfig = new IConfig<Object>(config.sanitisedArgs, importPath.toString(),
-                            null);
+                    IConfig<Object> newConfig = new IConfig<Object>(config.getSanitisedArgs(), importPath.toString()
+                    );
 
-                    newConfig.importVfs = new ImportVfs(true, tImport.symbols); // This tells the interpreter to only parse exported symbols. (Functions
+                    newConfig.setImportVfs(new ImportVfs(true, tImport.symbols)); // This tells the interpreter to only parse exported symbols. (Functions
                                                 // and variables)
 
                     try {
@@ -413,15 +413,15 @@ public class Interpreter {
                     handleVariables(token, config, scope);
                 // If it returns a meaningful value, then oh well, because in this case they
                 // basically called a function that returned soemthing but dont use that value.
-            } else if (token instanceof TFuncReturn tFuncReturn && !config.importVfs.active) {
+            } else if (token instanceof TFuncReturn tFuncReturn && !config.getImportVfs().active) {
                 Object c = handleVariables(tFuncReturn.value, config, scope);
                 return throwIfGlobalContext(scope, c, token.lineNumber);
-            } else if (token instanceof TLoopControl loopControl && !config.importVfs.active) {
+            } else if (token instanceof TLoopControl loopControl && !config.getImportVfs().active) {
                 Object lc = loopControl.type;
                 return throwIfGlobalContext(scope, lc, loopControl.lineNumber);
-            } else if (token instanceof TThrowError lc && !config.importVfs.active) {
+            } else if (token instanceof TThrowError lc && !config.getImportVfs().active) {
                 return throwIfGlobalContext(scope, lc, lc.lineNumber);
-            } else if (token instanceof TWhileLoop whileLoop && !config.importVfs.active) {
+            } else if (token instanceof TWhileLoop whileLoop && !config.getImportVfs().active) {
                 // while loop
                 Object cond = Primitives.setCondition(whileLoop, config, scope);
 
@@ -442,7 +442,7 @@ public class Interpreter {
                     cond = Primitives.setCondition(whileLoop, config, scope);
                 }
                 // while loop
-            } else if (token instanceof TIfStatement ifStatement && !config.importVfs.active) {
+            } else if (token instanceof TIfStatement ifStatement && !config.getImportVfs().active) {
                 // if statement handling below
                 if (!(ifStatement.condition instanceof TExpression))
                     throw new WtfAreYouDoingException(scope,
@@ -487,7 +487,7 @@ public class Interpreter {
                     }
                 }
                 // if statement handling above
-            } else if (token instanceof TForLoop tForLoop && !config.importVfs.active) {
+            } else if (token instanceof TForLoop tForLoop && !config.getImportVfs().active) {
                 // for loop
                 handleVariables(tForLoop.variable, config, scope);
                 Object vObject = scope.getVfs().get(tForLoop.variable.name).getValue();
@@ -565,7 +565,7 @@ public class Interpreter {
 
                 scope.getVfs().remove(v.name);
                 // for loop
-            } else if (token instanceof TTryCatch throwError && !config.importVfs.active) {
+            } else if (token instanceof TTryCatch throwError && !config.getImportVfs().active) {
 
                 Vfs errorVfs = ((Vfs) scope.getVfs().clone());
                 errorVfs.entrySet().removeIf(vf -> !vf.getKey().contains("error"));
@@ -633,7 +633,7 @@ public class Interpreter {
             // if we're in the global context, then we end the debugging session.
             config.dc.endOfFile(scope);
         }
-        return config.importVfs.active || config.REPL ? scope.getVfs() : void.class;
+        return config.getImportVfs().active || config.isREPL() ? scope.getVfs() : void.class;
     }
 
     public static void handleColonzieLoopIncrementExpresion(

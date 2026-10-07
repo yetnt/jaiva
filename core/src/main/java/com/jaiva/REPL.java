@@ -173,7 +173,7 @@ public class REPL {
      * Interpreter configuration object.
      * It contains the resources and configuration for the interpreter.
      */
-    private final IConfig<Object> iConfig = new IConfig<Object>(null);
+    private final IConfig<Object> iConfig = new IConfig<Object>();
     /**
      * Tokenizer configuration object.
      * It contains the configuration for the tokenizer.
@@ -195,7 +195,7 @@ public class REPL {
      * @throws InterpreterException when it encounters one.
      */
     public REPL(int mode) throws InterpreterException {
-        this.iConfig.REPL = true;
+        this.iConfig.setREPL(true);
         this.scope = new Scope(iConfig);
         this.state = State.ACTIVE;
         this.mode = REPLMode.STANDARD.toEnum(mode);
@@ -257,7 +257,7 @@ public class REPL {
     public void close() {
         try {
             reader.close();
-            iConfig.resources.release();
+            iConfig.releaseAll();
         } catch (IOException e) {
             e.printStackTrace();
         }

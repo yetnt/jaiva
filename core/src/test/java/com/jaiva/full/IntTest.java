@@ -1,7 +1,5 @@
 package com.jaiva.full;
 
-import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -33,8 +31,8 @@ public class IntTest {
             tokens = Main.parseTokens(FILE_JIV.toString(), false);
             IConfig<Object> c = new IConfig<Object>(new ArrayList<>(Arrays.asList(
                     FILE_JIV.toString())),
-                    FILE_JIV.toString(),
-                    null);
+                    FILE_JIV.toString()
+            );
             Interpreter.interpret(tokens, new Scope(c), c);
 
             // DebugException was not thrown. Test failure.
@@ -63,8 +61,8 @@ public class IntTest {
             tokens = Main.parseTokens(FILE2_JIV.toString(), false);
             IConfig<Object> c = new IConfig<Object>(new ArrayList<>(Arrays.asList(
                     FILE2_JIV.toString())),
-                    FILE2_JIV.toString(),
-                    null);
+                    FILE2_JIV.toString()
+            );
             Interpreter.interpret(tokens, new Scope(c), c);
 
             // DebugException was not thrown. Test failure.
@@ -98,8 +96,8 @@ public class IntTest {
             tokens = Main.parseTokens(IMPORT_JIV.toString(), false);
             IConfig<Object> c = new IConfig<Object>(new ArrayList<>(Arrays.asList(
                     IMPORT_JIV.toString())),
-                    IMPORT_JIV.toString(),
-                    null);
+                    IMPORT_JIV.toString()
+            );
             Interpreter.interpret(tokens, new Scope(c), c);
 
             // DebugException was not thrown. Test failure.

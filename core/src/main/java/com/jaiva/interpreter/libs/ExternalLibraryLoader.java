@@ -63,10 +63,10 @@ public class ExternalLibraryLoader {
 
         ArrayList<Token<?>> tks = (ArrayList<Token<?>>) Tokenizer.readLine(content, "", null, null, -1, new TConfig());
 
-        IConfig<Object> newConfig = new IConfig<Object>(config.sanitisedArgs, path,
-                null);
+        IConfig<Object> newConfig = new IConfig<Object>(config.getSanitisedArgs(), path
+        );
 
-        newConfig.importVfs = new ImportVfs(true); // This tells the interpreter to only parse exported symbols. (Functions
+        newConfig.setImportVfs(new ImportVfs(true)); // This tells the interpreter to only parse exported symbols. (Functions
         // and variables)
 
         Vfs vfsFromFile = ((Vfs) Interpreter.interpret(tks, new Scope(Context.IMPORT,

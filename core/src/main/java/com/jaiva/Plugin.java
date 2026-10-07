@@ -1,6 +1,5 @@
 package com.jaiva;
 
-import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.errors.LoadException;
 import com.jaiva.interpreter.Vfs;
@@ -13,7 +12,6 @@ import com.jaiva.md.MDOutputProps;
 import com.jaiva.md.VfsToMD;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public final class Plugin {
 
@@ -46,7 +44,7 @@ public final class Plugin {
             clz.add(libraryClass);
         }
 
-        IConfig<Object> config = new IConfig<>(null);
+        IConfig<Object> config = new IConfig<>();
 
         Globals globals = null;
         try {
@@ -91,7 +89,7 @@ public final class Plugin {
             clz.add(libraryClass);
         }
 
-        IConfig<Object> config = new IConfig<>(null);
+        IConfig<Object> config = new IConfig<>();
 
         Globals globals = null;
         try {

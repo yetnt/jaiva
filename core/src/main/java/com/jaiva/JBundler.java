@@ -63,7 +63,7 @@ public class JBundler {
      */
     public <T, V> void execute(String filePath, T obj, V jaivaValue) throws Exception {
         ArrayList<Token<?>> tokens = Main.parseTokens(filePath, false);
-        IConfig<T> config = new IConfig<>(new ArrayList<>(List.of("jaiva")), filePath, obj);
+        IConfig<T> config = new IConfig<>(new ArrayList<>(List.of("jaiva")), filePath);
         config.add(jaivaValue);
         Scope sc = new Scope((IConfig<Object>) config, classes);
         Interpreter.interpret(tokens, sc, (IConfig<Object>) config);
@@ -79,7 +79,7 @@ public class JBundler {
     }
 
     public <T> void  interpret(T obj) throws Exception {
-        IConfig<T> config = new IConfig<>(new ArrayList<>(List.of("jaiva")), filePath, obj);
+        IConfig<T> config = new IConfig<>(new ArrayList<>(List.of("jaiva")), filePath);
         Scope scope = new Scope((IConfig<Object>) config, classes);
 
         Interpreter.interpret(tokens, scope, (IConfig<Object>) config);

@@ -22,8 +22,6 @@ import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.TArrayVar;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
-import com.jaiva.tokenizer.tokens.specific.TFunction;
-import com.jaiva.tokenizer.tokens.specific.TStringVar;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -57,7 +55,7 @@ public class FileApi extends BaseLibrary {
             super(
                     VariableBuilder.start()
                             .name("f_name")
-                            .value(config.filePath == null ? "FileApi" : config.filePath.getFileName().toString())
+                            .value(config.getFilePath() == null ? "FileApi" : config.getFilePath().getFileName().toString())
                             .docs(
                                     JDoc.builder()
                                             .addDesc("Variable that holds the current file's name")
@@ -91,7 +89,7 @@ public class FileApi extends BaseLibrary {
             super(
                     VariableBuilder.start()
                             .name("f_dir")
-                            .value(config.fileDirectory == null ? "FileApi" : config.fileDirectory.toAbsolutePath().toString())
+                            .value(config.getFileDirectory() == null ? "FileApi" : config.getFileDirectory().toAbsolutePath().toString())
                             .docs(
                                     JDoc.builder()
                                             .addDesc("Variable that holds the current file's directory.")
@@ -179,7 +177,7 @@ public class FileApi extends BaseLibrary {
              * ]
              */
             FileType fl;
-            if (config.filePath == null) {
+            if (config.getFilePath() == null) {
                 fl = FileType.of(
                         new FileCreator()
                 );
@@ -191,7 +189,7 @@ public class FileApi extends BaseLibrary {
             }
 
             ArrayList<Object> file = new ArrayList<>();
-            java.io.File f = config.filePath.toFile();
+            java.io.File f = config.getFilePath().toFile();
             Scanner fs;
             try {
                 fs = new Scanner(f);
@@ -205,7 +203,7 @@ public class FileApi extends BaseLibrary {
             fs.close();
 
             file.add(f.getName());
-            file.add(config.fileDirectory);
+            file.add(config.getFileDirectory());
             file.add(contents);
             file.add(new ArrayList<>(Arrays.asList(f.canRead(), f.canWrite(), f.canExecute())));
 
@@ -271,7 +269,7 @@ public class FileApi extends BaseLibrary {
                 throw new WtfAreYouDoingException(scope, "Da path must be a string.",
                         tFuncCall.lineNumber);
 
-            Path baseDir = (config.filePath != null) ? config.filePath.getParent() : null;
+            Path baseDir = (config.getFilePath() != null) ? config.getFilePath().getParent() : null;
             Path filePath;
             if (baseDir != null) {
                 filePath = Paths.get((String) path);
@@ -436,7 +434,7 @@ public class FileApi extends BaseLibrary {
                             tFuncCall.lineNumber);
                 canExecute = ce.equals(Boolean.TRUE);
             }
-            Path baseDir = (config.filePath != null) ? config.filePath.getParent() : null;
+            Path baseDir = (config.getFilePath() != null) ? config.getFilePath().getParent() : null;
             Path newFilePath = Paths.get((String) path);
 
             if (newFilePath.toFile().exists())

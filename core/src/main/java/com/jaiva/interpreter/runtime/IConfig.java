@@ -4,6 +4,7 @@ import com.jaiva.Config;
 import com.jaiva.Main;
 import com.jaiva.errors.Warnings;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
@@ -13,63 +14,22 @@ import java.util.ArrayList;
  * It allows customization of interpreter behavior through various flags and
  * options.
  */
-public class IConfig<T extends Object> extends Config {
-
-    public final T object;
+public class IConfig<T> extends Config {
     /**
      * The debug controller instance used to manage debugging features.
      */
-    public DebugController dc = new DebugController();
-    /**
-     * This flag is used to print stack traces when an error occurs during
-     * interpretation.
-     */
-    public boolean printStacks = false;
-    /**
-     * The command-line arguments passed to the Jaiva tokenizer and interpreter.
-     * This array is used to tell the user what arguments were passed to the current
-     * file.
-     */
-    public String[] args = new String[] {};
-    /**
-     * The sanitised arguments list stores the command-line arguments without
-     * arguments used by jaiva. It removes the first argument (FileApi path) and
-     * possibly second argument (which is sometimes the debug flag).
-     * This is useful for processing the arguments in a more user-friendly way.
-     */
-    public ArrayList<String> sanitisedArgs = new ArrayList<>();
-    /**
-     * This flag is used when the interpreter needs to import the vfs from another
-     * file to use in the current file. (This means it will skip tokenizing other
-     * stuff and only import exported symbols.)
-     */
-    public ImportVfs importVfs = new ImportVfs(false);
-
-    /**
-     * If this flag is set to true, during start up when an external library is being imported, it wont import
-     * any other external libraries in its own tokenization and interpretation process. This is due to the fact
-     * that it would get itself each time creating a circular dependancy and yeah yu get the gist.
-     */
-    public boolean destroyLibraryCircularDependancy = false;
-
-    /**
-     * Boolean flag indicating we're in the REPL.
-     */
-    public boolean REPL = false;
-
-    /**
-     * * The {@code GlobalResources} instance provides access to global resources
-     * used by the intepreter at run time.
-     */
-    public GlobalResources resources = new GlobalResources();
-    /**
-     * The path of the current file being interpreted.
-     */
-    public Path filePath = null;
-    /**
-     * The directory containing the file we're interpreting
-     */
-    public Path fileDirectory = null;
+    public final DebugController dc = new DebugController();
+    private boolean printStacks = false;
+    private String[] args = new String[] {};
+    private final ArrayList<String> sanitisedArgs = new ArrayList<>();
+    private ImportVfs importVfs = new ImportVfs(false);
+    private boolean REPL = false;
+    private final GlobalResources globalResources = new GlobalResources();
+    private Path filePath = null;
+    private Path fileDirectory = null;
+    private Object callerValue;
+    private boolean streamer = false;
+    private final ArrayList<Warnings.Warning> warnings = new ArrayList<>();
 
     // ...add more interpreter settings.
 
@@ -82,18 +42,16 @@ public class IConfig<T extends Object> extends Config {
      * @param args            The command-line arguments passed to the jaiva
      *                        command.
      * @param currentFilePath The path of the current file being interpreted.
-     * @param customObject    A given custom object to sve into IConfig
      * @throws NullPointerException if {@code currentFilePath} or {@code jSrc} is
      */
-    public IConfig(String[] args, String currentFilePath, T customObject) {
+    public IConfig(String[] args, String currentFilePath) {
         super();
-        object = customObject;
         this.args = args;
         for (String arg : args) {
             if (arg.equals("-is") || arg.equals("--include-stacks"))
-                printStacks = !printStacks;
+                printStacks = !isPrintStacks();
             if (arg.equals("-d") || arg.equals("--debug")) {
-                printStacks = !printStacks;
+                printStacks = !isPrintStacks();
                 dc.activate();
             }
             if (!arg.equals(currentFilePath) && !Main.tokenArgs.contains(arg)
@@ -122,10 +80,9 @@ public class IConfig<T extends Object> extends Config {
      *                        jaiva
      *                        command.
      * @param currentFilePath The path of the current file being interpreted.
-     * @param customObject    The custom object.
      */
-    public IConfig(ArrayList<String> args, String currentFilePath, T customObject) {
-        this(args.toArray(new String[0]), currentFilePath, customObject);
+    public IConfig(ArrayList<String> args, String currentFilePath) {
+        this(args.toArray(new String[0]), currentFilePath);
     }
 
     /**
@@ -133,51 +90,121 @@ public class IConfig<T extends Object> extends Config {
      * <p>
      * This constructor is used when only the Jaiva source directory is provided,
      * typically in a REPL context.
-     *
-     * @param customObject The custom object.
      */
-    public IConfig(T customObject) {
+    public IConfig() {
         super();
-        object = customObject;
     }
-
-    /**
-     * Constructs a new IConfig with a boolean
-     * @param destroyLibraryCircularDependancy To destroy library circular dependancy.
-     */
-    public IConfig(boolean destroyLibraryCircularDependancy,T object) {
-        super();
-        this.object = object;
-        this.destroyLibraryCircularDependancy = destroyLibraryCircularDependancy;
-    }
-
-    private Object callerValue;
 
     public <V> void add(V callerValue) {
         this.callerValue = callerValue;
     }
-
+    /**
+     * The caller value provided by a host Java app through {@link com.jaiva.JBundler}
+     */
     public Object getCallerValue() {
         return callerValue;
     }
 
-    private boolean streamer = false;
-
     public void streamer() {
         streamer = true;
     }
-
+    /**
+     * Whether we are in streamer mode or not.
+     */
     public boolean isStreamer() {
         return streamer;
     }
 
-    private ArrayList<Warnings.Warning> warnings = new ArrayList<>();
-
+    /**
+     * Adds a new warning
+     * @param warning A warning
+     */
     public void addWarning(Warnings.Warning warning) {
         warnings.add(warning);
     }
-
+    /**
+     * Collected warnings when interpreting via {@link com.jaiva.Streamer}
+     */
     public ArrayList<Warnings.Warning> getWarnings() {
         return warnings;
     }
+
+    /**
+     * This flag is used to print stack traces when an error occurs during
+     * interpretation.
+     */
+    public boolean isPrintStacks() {
+        return printStacks;
+    }
+
+    /**
+     * The command-line arguments passed to the Jaiva tokenizer and interpreter.
+     * This array is used to tell the user what arguments were passed to the current
+     * file.
+     */
+    public String[] getArgs() {
+        return args;
+    }
+
+    /**
+     * The sanitised arguments list stores the command-line arguments without
+     * arguments used by jaiva. It removes the first argument (FileApi path) and
+     * possibly second argument (which is sometimes the debug flag).
+     * This is useful for processing the arguments in a more user-friendly way.
+     */
+    public ArrayList<String> getSanitisedArgs() {
+        return sanitisedArgs;
+    }
+
+    /**
+     * This flag is used when the interpreter needs to import the vfs from another
+     * file to use in the current file. (This means it will skip tokenising other
+     * stuff and only import exported symbols.)
+     */
+    public ImportVfs getImportVfs() {
+        return importVfs;
+    }
+
+    public void setImportVfs(ImportVfs importVfs) {
+        this.importVfs = importVfs;
+    }
+
+    /**
+     * Boolean flag indicating we're in the REPL.
+     */
+    public boolean isREPL() {
+        return REPL;
+    }
+
+    public void setREPL(boolean REPL) {
+        this.REPL = REPL;
+    }
+
+    /**
+     * * The {@code Resources} instance provides access to global resources
+     * used by the intepreter at run time.
+     */
+    public GlobalResources getGlobalResources() {
+        return globalResources;
+    }
+
+    public void releaseAll() throws IOException {
+        globalResources.releaseCurrent();
+        globalResources.interruptAll();
+    }
+
+    /**
+     * The path of the current file being interpreted.
+     */
+    public Path getFilePath() {
+        return filePath;
+    }
+
+    /**
+     * The directory containing the file we're interpreting
+     */
+    public Path getFileDirectory() {
+        return fileDirectory;
+    }
+
 }

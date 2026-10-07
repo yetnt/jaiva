@@ -205,7 +205,7 @@ public class Main {
             return;
         }
 
-        IConfig<Object> iconfig = new IConfig<Object>(args, args[0], null);
+        IConfig<Object> iconfig = new IConfig<>(args, args[0]);
         boolean stackTraces = false;
         boolean debug = false;
         try {
@@ -301,7 +301,7 @@ public class Main {
                         BaseLibrary baseLibrary = null;
                         Vfs vfs = null;
                         MDInputProps.Type type = MDInputProps.Type.FILE;
-                        Globals globals = new Globals(new IConfig<>(null));
+                        Globals globals = new Globals(iconfig);
                         boolean isLib = false;
                         if (args[0].startsWith("jaiva/") || args[0].startsWith("jaiva\\")) {
                             // The user is trying to output markdown for the built-in jaiva libs. Why not give it to them.
@@ -355,7 +355,7 @@ public class Main {
             System.exit(0);
 
         } catch (Exception e) {
-            iconfig.resources.release();
+            iconfig.releaseAll();
             if (debug || stackTraces)
                 throw e; // throw the error as uncaught when debug mode is enabled so that we get the
                          // entire error along with the stack trace.

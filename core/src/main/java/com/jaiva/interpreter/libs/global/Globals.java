@@ -201,7 +201,7 @@ public class Globals extends BaseLibrary {
             name = name.substring(6);
         }
         if (!builtInGlobals.containsKey(name)) return null;
-        return builtInGlobals.get(name).load(new IConfig<Object>(true, null), this);
+        return builtInGlobals.get(name).load(new IConfig<>(), this);
     }
 
     public static List<Class<? extends BaseLibrary>> findInternalLibraries(
