@@ -145,6 +145,10 @@ public class Chars {
      * Represents the params extension operation
      */
     public static final String PARAM_EXTENDOR = "|>";
+    /**
+     * Represents the shorthand if separator or "Statement/Action" Operation
+     */
+    public static final String SHORTHAND_IF_SEPARATOR = "?>";
 
 
     /**
@@ -377,6 +381,7 @@ public class Chars {
                 ARRAY_CLOSE +
                 ARGS_SEPARATOR +
                 FOR_SEPARATOR +
+                SHORTHAND_IF_SEPARATOR +
                 STRING +
                 SPREAD;
         return new ArrayList<>(new HashSet<>(Arrays.asList(all.split(""))));

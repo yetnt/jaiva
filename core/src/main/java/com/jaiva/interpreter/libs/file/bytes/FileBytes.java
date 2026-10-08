@@ -18,9 +18,9 @@ import com.jaiva.interpreter.libs.types.TypeConverter;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
-import com.jaiva.utils.ThrowableSupplier;
 import com.yetnt.utils.builders.MarkDownLiteral;
 import com.yetnt.utils.functional.consumer.ThrowableConsumer;
+import com.yetnt.utils.functional.generic.ThrowableSupplier;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -29,7 +29,8 @@ import java.util.ArrayList;
 @Exports(ByteConstants.class)
 @JaivaLibrary(
         path = "file/bytes",
-        description = "experimental"
+        description = "Allows byte level reading and writing of files onto disk. This makes use of " +
+                "continuous functions to do so."
 )
 public class FileBytes extends BaseLibrary {
     public FileBytes() {

@@ -10,8 +10,8 @@ import com.jaiva.interpreter.symbol.inf.BFMethodToConsumer;
 import com.jaiva.interpreter.symbol.inf.BFMethodToSupplier;
 import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
-import com.jaiva.utils.ThrowableSupplier;
 import com.yetnt.utils.functional.consumer.ThrowableConsumer;
+import com.yetnt.utils.functional.generic.ThrowableSupplier;
 
 import java.io.Closeable;
 import java.io.IOException;

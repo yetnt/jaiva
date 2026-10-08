@@ -4,8 +4,8 @@ import com.jaiva.errors.InterpreterException;
 import com.jaiva.errors.JaivaException;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.runtime.Resources;
-import com.jaiva.utils.ThrowableRunnable;
 import com.yetnt.utils.functional.consumer.ThrowableBiConsumer;
+import com.yetnt.utils.functional.generic.ThrowableRunnable;
 
 import java.io.IOException;
 import java.util.function.BiConsumer;

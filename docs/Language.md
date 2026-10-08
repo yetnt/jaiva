@@ -44,6 +44,7 @@ which the current stable versions supports.
     -   _[mara (else)](#mara-else)_
     -   _[mara (else) with if](#mara-else-with-if)_
     -   _[Ternary Ifs](#ternary-ifs)_
+    -   _[Shorthand Ifs](#shorthand-ifs)_
 -   **[Loops](#loops)**
     -   _[Nikhil Loops (While Loops)](#nikhil-loops-while-loops)_
     -   _[Colonize Loops (For Loops)](#colonize-loops-for-loops)_
@@ -53,6 +54,7 @@ which the current stable versions supports.
     -   _[Throw an Error](#throw-an-error)_
     -   _[zama zama (Try) chaai (Catch) Block](#zama-zama-try-chaai-catch-block)_
 -   **[Tsea (Import) and Exporting Files](#tsea-import-and-exporting-files)**
+-   **[Arrow Syntax Table](#arrow-syntax-table)**
 
 # Examples
 
@@ -175,7 +177,7 @@ khuluma(b~)! @ returns 10
 
 2.  Substring (first occurance)
 
-    `"string" - "tri"` _returns_ **`"sing"`** (removes the first occuramce of rhs from the lhs. Sometimes this dont work tho lol.)
+    `"string" - "tri"` _returns_ **`"sing"`** (removes the first occuramce of rhs from the lhs.
 
     `"string" - 2` _returns_ **`"stri"`**
 
@@ -187,7 +189,7 @@ khuluma(b~)! @ returns 10
 
 4.  Substring (all occurances)
 
-    `"remove all es please" / "e"` _returns_ **`"rmov all s plas"`** (removes ALL occurences of rhs from the lhs. Sometimes this dont work too lol.)
+    `"remove all es please" / "e"` _returns_ **`"rmov all s plas"`** (removes ALL occurences of rhs from the lhs.)
 
     `"Hello ong World" / 2` _returns_ **`"Hello o"`** (returns the substring in the range _[0, (lhs' length)/rhs)_ )
 
@@ -200,6 +202,13 @@ khuluma(b~)! @ returns 10
     `"string" ? "tri"` _returns_ **`true`** (checks if the left-hand string contains the right-hand string)
 
     `"string" ? "xyz"` _returns_ **`false`**
+
+Also you can go nuts and compound them together
+
+```jaiva
+maak output <- 2 - "hello" - 2!
+@ Output holds "l"
+```
 
 #### Escaping characters
 
@@ -454,10 +463,10 @@ maak f!                 @ define without a value.
 Also a neat feature, since only a specifc set of chars are reserved, this allows for some weird variable names that is allowed.
 
 | Statement                                 | Variable Name |
-| ----------------------------------------- | ------------- |
+|-------------------------------------------|---------------|
 | `maak a b <- 10!`                         | `a b`         |
 | `maak a  b <- 100!` (diferent from above) | `a  b`        |
-| `maak #b... <- 20!`                       | `#b...`       |
+| `maak b... <- 20!`                        | `b...`        |
 | `maak \ <- 10!`                           | `\`           |
 
 And more crazy combos you can come up with. if it doesnt result in a generic Java error, it's probably valid. Go wild.
@@ -513,6 +522,8 @@ maak a <- arrLit(10, 23, 984)!
 @ Same as
 maak a <-| 10, 23, 984!
 ```
+
+Then there's spreading arrays into functions, but thats in [Argument Spreading](#spread-operator)
 
 # Functions
 
@@ -838,6 +849,43 @@ f_new()!
 
 id document more but come on man go test urself
 
+## Continuous Functions
+
+These are special types of functions which provide a closure over resources.
+
+They are so special, they get their own documentation in [Continuous Functions](./Continuous-Functions.md)
+
+However here is an example reading some input file.
+
+```jaiva
+
+tsea "jaiva/file/bytes"!
+tsea "jaiva/continuous!"
+tsea "jaiva/types/numbers"!
+
+@ If the file contains a UTF8 string then a 255 byte value
+
+maak conf <- f_creader("C:\Users\Wow\myFile.jib")!
+@ Get the read function
+maak read <- conf(C_READ)!
+maak collect <-|!
+
+@ While the EOF function returns false, meaning we haven't reached the end of the file
+nikhil (conf(C_EOF)()') ->
+    @ Read 1 byte
+    maak byte <- read(R_BYTE)!
+
+    @ Shorthand ifs that execute the statement if the condition is true
+    sif (byte?) ?> nevermind!
+    sif (byte != 255) ?> collect <- arrLit(collect:::, byte)!
+<~
+@ Close the stream and free resources
+conf(C_CLOSE)()!
+@ Print the resulting UTF-8 String by expanding the byte array into individual aprameters into
+@ t_strFromByteArr function provided by "jaiva/types/numbers"
+khuluma(t_strFromByteArr(collect:::))!
+```
+
 # If Statements
 
 For if statements, `if` is the keyword, and `mara` is the else statement.
@@ -952,6 +1000,44 @@ Here we define a function `clamp` which will... clamp, what'd you think, the giv
 
 > [!WARNING]
 > You cant have ternaries on new lines, they hve to be in the sam eline if you chain them unfortunately
+
+## Shorthand Ifs
+
+Believe me when i tell you it gets tiring to write a single conditional everytime.
+e.g.
+```jaiva
+if (value != z && (s << 2 == r~)) ->
+    value <- z!
+<~
+```
+
+That's 3 whole lines. `s`horthand `if`s however, or `sif`s, collpase this into a single line!
+
+```jaiva
+sif (value != z && (s << 2 == r~)) ?> value <- z!
+```
+
+Where:
+
+```jaiva
+sif (CONDITION) ?> (STATEMENT)!
+```
+
+is exactly the same as writing
+```jaiva
+if (CONDITION) ->
+    (STATEMENT)!
+<~
+```
+
+> [!NOTE]
+> This only works for single statement blocks, and only works for a singular `if`, it doesn't
+> have a `mara if` or `mara` counterpart.
+
+> [!NOTE]
+> Where this differs from [Ternaries](#ternary-ifs) is that, a ternary is used to output a
+> **_value_** with both a `true` case and a `false` case. A Shorthand-If however, is purely
+> used to execute a **_statement_** only if, the condition is `true`
 
 # Loops
 
@@ -1167,3 +1253,31 @@ tsea "file.jiv" <- addition!
 
 > [!NOTE]
 > Omitting the file extension is okay, however it will default to `.jiv`
+
+
+# Arrow Syntax Table
+
+Just a nice list since if you havent noticed, i looove arrows
+
+| Syntax | Description                        | Documentation                                 |
+|--------|------------------------------------|-----------------------------------------------|
+| `>`    | Greater Than                       | [Operators](#operators)                       |
+| `<`    | Less Than                          | [Operators](#operators)                       |
+| `>=`   | Greater Than or Equal              | [Operators](#operators)                       |
+| `<=`   | Less Than or Equal                 | [Operators](#operators)                       |
+| `>>`   | right shift                        | [Operators](#operators)                       |
+| `<<`   | left shift                         | [Operators](#operators)                       |
+| `>x`   | right (hex) shift                  | [Operators](#operators)                       |
+| `<x`   | left (hex) shit                    | [Operators](#operators)                       |
+| `<-`   | Assignment                         | [Assignment Operators](#assignment-operators) |
+| `<-\|` | Array Variable Assignment          | [Assignment Operators](#assignment-operators) |
+| `<==`  | Error Output Assignment            | [Assignment Operators](#assignment-operators) |
+| `->`   | Block Open                         | [Blocks](#blocks)                             |
+| `<~`   | Block Close                        | [Blocks](#blocks)                             |
+| `$>`   | JDoc Param Separator               | [Jaiva Documentation](JDoc.md)                |
+| `=>`   | Ternary Statement                  | [Ternary Ifs](#ternary-ifs)                   |
+| `<\|`  | Colonize Loop Separator            | [Colonize Loops](#colonize-loops-for-loops)   |
+| `\|>`  | Function Call Parameters Extension | [Argument Extensions](#argument-extensions)   |
+| `?>`   | Shorthand If Statement             | [Shorthand ifs](#shorthand-ifs)               |
+
+damn you made it to the end?

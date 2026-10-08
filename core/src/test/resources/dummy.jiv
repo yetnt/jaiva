@@ -5,7 +5,8 @@ tsea "jaiva/file/bytes"!
 tsea "jaiva/continuous"!
 
 @ Continuous
-maak conf <- f_cwriter("C:\Users\ACER\Documents\Untitled.txt")!  @ file loc
+maak conf <- f_cwriter()!
+    |> "C:\Users\ACER\Documents\Untitled.txt"!  @ file loc
     |> true!                                    @ Appends to the file
 
 @ Java UTF-8 Uses the normal DataOutputStream modified UTF-8 encoding.
@@ -18,7 +19,8 @@ conf(C_CLOSE)()!
 maak maxBytes <- 200!
 
 kwenza t() ->
-    maak cf <- f_creader("C:\Users\ACER\Documents\code\jaiva\core\src\test\resources\dummy.jiv")!
+    maak cf <- f_creader()!
+    |> "C:\Users\ACER\Documents\code\jaiva\core\src\test\resources\dummy.jiv"!
     maak read <- cf(C_INPUT)!
     maak eof <- cf(C_EOF)! @ A function which returns a boolean.
 
@@ -26,9 +28,7 @@ kwenza t() ->
     maak lastVal!
     nikhil (eof()') ->
         lastVal <- read(R_BYTE)!
-        if (lastVal != idk) ->
-            collect <- arrLit(collect:::, lastVal)!
-        <~
+        sif (lastVal != idk) ?> collect <- arrLit(collect:::, lastVal)!
     <~
 
     khuluma("Self bytes:")!
@@ -39,16 +39,15 @@ kwenza t() ->
 
 kwenza clean(type, err) ->
     khuluma(type)!
-    if (err~ > 0) ->
-        khuluma(err)!
-    <~
+    sif (err~ > 0) ?> khuluma(err)!
 <~
 
 thread(t, clean)!
 
 khuluma("yo")!
 
-maak conf <- f_creader("C:\Users\ACER\OneDrive\Music\scammerz.wav")!
+maak conf <- f_creader()!
+|> "C:\Users\ACER\OneDrive\Music\scammerz.wav"!
 maak read <- conf(C_READ)!
 maak eof <- conf(C_EOF)!
 
@@ -58,9 +57,7 @@ nikhil (eof()' && lastVal != false) ->
     lastVal <- read(R_BYTE)!
     if (lastVal != idk) ->
         collect <- arrLit(collect:::, lastVal)!
-        if (collect~ = maxBytes) ->
-            lastVal <- false!
-        <~
+        sif (collect~ = maxBytes) ?> lastVal <- false!
     <~
 <~
 

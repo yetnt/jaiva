@@ -29,6 +29,7 @@ public class TConfig extends Config {
      * configuring the behavior of the tokenizer.
      */
     public static class Flags {
+        public boolean SHORTHAND_IF = false;
         /**
          * This flag is used by the tokenizer, to indicate to it that the line while being parsed by {@link Tokenizer#readLine(String, String, Object, BlockChain, int, TConfig)} should instead of trimming it's contents, preserve it.
          * <p>

@@ -16,6 +16,8 @@ public interface TParamsExtendable {
     }
     TFuncCall get();
     default void addArguments(ArrayList<Object> moreArgs) {
+        if (get().args.size() == 1 && get().args.getFirst() == null)
+            get().args.removeFirst();
         get().args.addAll(moreArgs);
     }
     default TFuncCall checkObject(Object t) {

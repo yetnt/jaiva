@@ -1,6 +1,6 @@
 # file/bytes (Library)
 
-_experimental_
+_Allows byte level reading and writing of files onto disk. This makes use of continuous functions to do so._
 ## Exports
 This library exports the following libraries: 
 - file/bytes/const

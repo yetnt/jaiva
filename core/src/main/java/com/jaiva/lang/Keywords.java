@@ -23,6 +23,10 @@ public class Keywords {
      */
     public static String IF = "if";
     /**
+     * The keyword for a shorthand if statement.
+     */
+    public static String SHORTHAND_IF = "sif";
+    /**
      * The keyword for an else statement.
      */
     public static String ELSE = "mara";
