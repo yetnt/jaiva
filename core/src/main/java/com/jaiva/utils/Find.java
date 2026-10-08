@@ -151,52 +151,56 @@ public class Find {
         return -1;
     }
 
+
     /**
-     * Method will return the index of the opening brace which is part of the last,
+     * Returns the index of the opening brace which is part of the last,
      * outermost brace pair. Both () and [] are checked for agasinst each other.
      * This will r
      * <p>
      * <blockquote>
-     * 
+     *
      * <pre>
      * "func()" returns 4
      * "()[]" returns 2
      * "()" returns 0
      * </pre>
-     * 
+     *
      * </blockquote>
-     * 
+     * </p>
+     *
      * @param line Input.
      * @return the index where the outermost brace pair starts
+     * @implNote Specialization of {@link #lastOutermostBracePair(String)}
      */
-    public static int lastOutermostBracePair(String line) {
-        ArrayList<Integer> indexes = new ArrayList<>();
-        int depth = 0;
-        for (int i = 0; i < line.length(); i++) {
-            char c = line.charAt(i);
-            if ((c == '(' || c == '[') && Validate.isOpInQuotePair(line, i) == -1) {
-                depth++;
-                if (depth == 1)
-                    indexes.add(i);
-            }
-            if ((c == ')' || c == ']') && Validate.isOpInQuotePair(line, i) == -1) {
-                depth--;
-            }
-        }
-        List<Integer> rIndexes = indexes.reversed();
-        for (Integer i : rIndexes) {
-            String sString = line.substring(i);
-            char openingChar = line.charAt(i);
-            int closingCharI = closingCharIndex(sString, openingChar, openingChar == '(' ? ')' : ']');
-            if (
-                    closingCharI == sString.length() - 1 || // Normal closing
-                            closingCharI == sString.length() - 2 || // Account for length operator '~'
-                            closingCharI == sString.length() - 4 // Account for spread operator ':::'
-            )
-                return i;
-        }
+    public static int lastOuterMostBracePairIndex(String line) {
+        SamePair<Integer> last = lastOutermostBracePair(line);
+        return last == null ? -1 : last.getFirst();
+    }
 
-        return -1;
+
+    /**
+     * Returns the pair of indexes corresponding to the last,
+     * outermost brace pair. Both () and [] are checked for against each other.
+     * <p>
+     * <blockquote>
+     *
+     * <pre>
+     * "func()" returns SamePair(4, 5)
+     * "()[]" returns SamePair(2, 3)
+     * "()" returns SamePair(0, 1)
+     * </pre>
+     *
+     * </blockquote>
+     * </p>
+     *
+     * @param line Input.
+     * @return the pair where the outermost brace pair starts
+     */
+    public static SamePair<Integer> lastOutermostBracePair(String line) {
+        BracePairs bp = Find.bracePairs(line);
+        ArrayList<SamePair<Integer>> closed = bp.closedPairs();
+        if (closed.isEmpty()) return null;
+        return closed.getLast();
     }
 
     /**

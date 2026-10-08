@@ -20,17 +20,14 @@ import com.jaiva.utils.Find;
 import com.jaiva.utils.Validate;
 import com.jaiva.utils.Validate.IsValidSymbolName;
 import com.jaiva.utils.generic.BlockChain;
-import com.jaiva.utils.generic.BracePairs;
 import com.jaiva.utils.generic.MultipleLinesOutput;
 import com.yetnt.utils.tuple.Pair;
 import com.yetnt.utils.tuple.SamePair;
 
-import javax.swing.text.html.Option;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -911,13 +908,16 @@ public final class Tokenizer {
 
             if (!line.contains(Chars.SHORTHAND_IF_SEPARATOR))
                 throw new MalformedSyntaxException("using sif, requires you have ?> after the condition bro", lineNumber);
-            BracePairs all = Find.bracePairs(line);
 
-            int lastEndIndex = all.closedPairs().getFirst().getSecond();
+            String[] partz = line.split(Pattern.quote(Chars.SHORTHAND_IF_SEPARATOR));
+            SamePair<Integer> outerMost = Find.lastOutermostBracePair(partz[0]);
+            if (outerMost == null)
+                throw new MalformedSyntaxException("Wrong brace placement???", lineNumber);
+            int lastEndIndex = outerMost.getSecond();
             int indexOfOp = line.indexOf(Chars.SHORTHAND_IF_SEPARATOR);
 
             // split sting at that index (Without the brace.)
-            String first = line.substring(0, lastEndIndex).trim();
+            String first = partz[0].substring(0, lastEndIndex).trim();
             String last = line.substring(indexOfOp+2).trim();
             // remove keyword from first
             String[] b_args = new String[]{first.substring(3), ""};

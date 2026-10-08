@@ -143,7 +143,7 @@ public record Token<T extends TokenDefault>(T value) {
         if (d.getDeligation() == To.TEXPRESSION) {
             return new TExpression(lineNumber).parse(line);
         }
-        int index = Find.lastOutermostBracePair(line);
+        int index = Find.lastOuterMostBracePairIndex(line);
 
         if (index == 0) {
             // the outmost pair is just () so its prolly a TStatement, remove the stuff then
@@ -203,7 +203,7 @@ public record Token<T extends TokenDefault>(T value) {
             line = line.substring(2).trim();
             ArrayList<String> args = new ArrayList<>();
 
-            if (Find.lastOutermostBracePair(line) == 0 && !line.startsWith("[")) {
+            if (Find.lastOuterMostBracePairIndex(line) == 0 && !line.startsWith("[")) {
                 // if nraced, remove braces
                 String params = line.substring(1, line.lastIndexOf(")")).trim();
                 args.addAll(Token.splitByTopLevelComma(params));

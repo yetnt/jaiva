@@ -47,12 +47,12 @@ public class FindTest {
     @Test
     void testLastOutermostBracePair() {
         String statement = "([])[]";
-        int actual = Find.lastOutermostBracePair(statement);
+        int actual = Find.lastOuterMostBracePairIndex(statement);
         int expected = 4;
         Assertions.assertEquals(expected, actual);
 
         statement = "[(([])())()]";
-        actual = Find.lastOutermostBracePair(statement);
+        actual = Find.lastOuterMostBracePairIndex(statement);
         expected = 0;
         Assertions.assertEquals(expected, actual);
     }

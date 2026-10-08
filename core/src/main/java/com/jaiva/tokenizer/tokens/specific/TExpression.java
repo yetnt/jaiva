@@ -127,7 +127,7 @@ public class TExpression extends TokenDefault<TExpression> implements TAtomicVal
         }
         this.statement = statement;
 
-        int lastBraceIndex = Find.lastOutermostBracePair(statement);
+        int lastBraceIndex = Find.lastOuterMostBracePairIndex(statement);
         if ((statement.startsWith("(") && statement.endsWith(")")) && lastBraceIndex == 0) {
             return parse(statement.substring(1, statement.length() - 1).trim());
         }
