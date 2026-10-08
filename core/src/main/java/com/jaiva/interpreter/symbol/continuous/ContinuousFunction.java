@@ -7,6 +7,8 @@ import com.jaiva.interpreter.libBuilders.func.Argument;
 import com.jaiva.interpreter.libBuilders.func.Arguments;
 import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
 import com.jaiva.interpreter.libBuilders.func.arg.AArgument;
+import com.jaiva.interpreter.libs.cont.ContinuousConst;
+import com.jaiva.interpreter.libs.file.bytes.FileBytes;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.inf.BFMethodToConsumer;
@@ -19,16 +21,99 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+/**
+ * A ContinuousFunction is a specialisation of your ordinary {@link BaseFunction} with the sole purpose
+ * of being a closure over resources. Either an {@link InputStream} or an {@link OutputStream} implementation.
+ * <p>
+ *     What it does is close over said {@link Closeable}, but doesn't itself do any IO. it instead acts as a dispatcher
+ *     for smaller {@link CFClosures} (Continuous Function Closures) which have specific tasks. The user themselves uses the
+ *     {@link ContinuousFunction} via passing a {@link CFuncInput} type to return the {@link CFClosures} they want to use.
+ * </p>
+ * <p>
+ *     A continuous function either holds a subtype of a {@link InputStream} or a subtype of a {@link OutputStream} at once and
+ *     hence only has the capabilities for that particular stream. (e.g, only output stream hel continuous functions are able to
+ *     make {@link CFClosures.Close} have a semantic meaning.)
+ * </p>
+ * <p>
+ *     The following {@link CFuncInput} maps to the corresponding closure
+ *     <table>
+ *         <tr>
+ *             <td>Continuous Function Input</td> <td>{@link CFClosures} instance</td> <td> Description </td>
+ *         </tr>
+ *         <tr>
+ *             <td>{@link CFuncInput#READ}</td> <td>{@link CFClosures.Input}</td>
+ *             <td> Specifically wraps an input stream. Mutually exclusive with {@link CFuncInput#WRITE} </td>
+ *         </tr>
+ *         <tr>
+ *             <td>{@link CFuncInput#WRITE}</td> <td>{@link CFClosures.Output}</td>
+ *             <td> Specifically wraps an output stream. Mutually excluse with {@link CFuncInput#READ} </td>
+ *         </tr>
+ *         <tr>
+ *             <td>{@link CFuncInput#FLUSH}</td> <td>{@link CFClosures.Flush}</td>
+ *             <td> Provies any {@link ContinuousFunction} of an {@link OutputStream} to call {@link OutputStream#flush()} </td>
+ *         </tr>
+ *         <tr>
+ *             <td>{@link CFuncInput#EOF}</td> <td>{@link CFClosures.EOF}</td>
+ *             <td> Provies any {@link ContinuousFunction} of an {@link InputStream} to  signal the end of a file. Although
+ *             the implementation si responsible for what exactly that means as not all input streams have some EOF marker.
+ *             </td>
+ *         </tr>
+ *         <tr>
+ *             <td>{@link CFuncInput#CLOSE}</td> <td>{@link CFClosures.Close}</td>
+ *             <td> Provies any {@link ContinuousFunction} of any {@link Closeable} to be able to release it's resources by
+ *             calling {@link Closeable#close()}
+ *             </td>
+ *         </tr>
+ *     </table>
+ * </p>
+ * <p>
+ *     Example Jaiva Usage with the {@link FileBytes} library.
+ *     <pre>{@code
+ *      tsea "jaiva/file/bytes" <- f_creader, R_BYTE!
+ *      tsea "jaiva/continuous" <- C_READ, C_EOF, C_CLOSE!
+ *
+ *      maak conf <- f_creader("(RANDOM FILE)")! @ Returns a continious function
+ *      maak read <- conf(C_READ)! @ Get the reader closure
+ *      maak eof <- conf(C_EOF)! @ Get the EOF closure
+ *
+ *      maak collect <-|!
+ *      maak lastVal!
+ *      nikhil (eof()') -> @ If not EOF
+ *          lastVal <- read(R_BYTE)! @ Read a single byte
+ *          if (lastVal != idk) -> @ defensive.
+ *              collect <- arrLit(collect:::, lastVal)!
+ *          <~
+ *      <~
+ *
+ *      conf(C_CLOSE)()! @ Close and release resources.
+ *
+ *      khuluma("The following bytes were found:")!
+ *      khuluma(collect)!
+ *     }</pre>
+ * </p>
+ * @see CFClosures
+ * @see CFuncInput
+ * @see BaseFunction
+ * @see com.jaiva.interpreter.runtime.Resources
+ * @see com.jaiva.interpreter.runtime.GlobalResources
+ * @see InputStream
+ * @see OutputStream
+ * @see Closeable
+ * @see ContinuousConst
+ * @author Lehlogonolo Poole
+ * @param <T> The type of the closeable.
+ */
 public class ContinuousFunction<T extends Closeable> extends BaseFunction {
 
     public enum ContinuousFunctionType {INPUT, OUTPUT}
     T closeable;
     ContinuousFunctionType continuousFunctionType;
 
-    CFClosures.Input inputStreamClosure = null;
-    CFClosures.Output outputStreamClosure = null;
+    CFClosures.Input inputStreamClosure;
+    CFClosures.Output outputStreamClosure;
     CFClosures.Close closeClosure;
     CFClosures.Flush flushClosure;
+    CFClosures.EOF eofClosure;
 
 
     private ContinuousFunction(
@@ -36,7 +121,8 @@ public class ContinuousFunction<T extends Closeable> extends BaseFunction {
             T closeable,
             ContinuousFunctionType continuousFunctionType,
             BFMethodToSupplier<?> readStreamSupplier,
-            BFMethodToConsumer<Object> writeStreamConsumer
+            BFMethodToConsumer<Object> writeStreamConsumer,
+            CFClosures.EOF eofClosure
     ) {
         super(
                 // docs wont matter here, all the stuff here is purely to create
@@ -47,8 +133,8 @@ public class ContinuousFunction<T extends Closeable> extends BaseFunction {
                                 new AArgument(
                                         "string",
                                         "The input string ",
-                                        true,
-                                        Argument.Type.ANY
+                                        false,
+                                        Argument.Type.STRING
                                 )
                         ))
         );
@@ -61,20 +147,22 @@ public class ContinuousFunction<T extends Closeable> extends BaseFunction {
                 config.getGlobalResources().ofCurrentThread().addResource(closeable)
         );
         flushClosure = new CFClosures.Flush(closeable);
+        this.eofClosure = eofClosure;
     }
 
     public static <T extends InputStream> ContinuousFunction<T> from(
             IConfig<Object> config, T inputStream,
-            BFMethodToSupplier<?> inputStreamConsumer
+            BFMethodToSupplier<?> inputStreamConsumer,
+            CFClosures.EOF eofClosure
     ) {
-        return new ContinuousFunction<T>(config, inputStream, ContinuousFunctionType.INPUT, inputStreamConsumer, null);
+        return new ContinuousFunction<T>(config, inputStream, ContinuousFunctionType.INPUT, inputStreamConsumer, null, eofClosure);
     }
 
     public static <T extends OutputStream> ContinuousFunction<T> from(
             IConfig<Object> config, T outputStream,
             BFMethodToConsumer<Object> outputStreamConsumer
     ) {
-        return new ContinuousFunction<T>(config, outputStream, ContinuousFunctionType.OUTPUT, null, outputStreamConsumer);
+        return new ContinuousFunction<T>(config, outputStream, ContinuousFunctionType.OUTPUT, null, outputStreamConsumer, new CFClosures.EOF());
     }
 
     @Override
@@ -91,7 +179,7 @@ public class ContinuousFunction<T extends Closeable> extends BaseFunction {
             protocol = protocol.toLowerCase();
             if (!CFuncInput.isValid(protocol))
                 throw new InterpreterException.WtfAreYouDoingException(
-                        scope, "A continious function can only take string inputs of: " +
+                        scope, "A continuous function can only take string inputs of: " +
                         " \"read\", \"write\", \"flush\" or \"close\"!", tFuncCall.lineNumber
                 );
 
@@ -104,6 +192,7 @@ public class ContinuousFunction<T extends Closeable> extends BaseFunction {
                 case WRITE -> outputStreamClosure;
                 case CLOSE -> closeClosure;
                 case FLUSH -> flushClosure;
+                case EOF -> eofClosure;
             };
         }
         return Token.voidValue(tFuncCall.lineNumber);

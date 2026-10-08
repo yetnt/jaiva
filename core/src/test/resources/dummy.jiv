@@ -1,13 +1,40 @@
 tsea "jaiva/threads"!
-tsea "jaiva/file/io"!
+@ Constants for file reading and writing type inputs/keys
+tsea "jaiva/file/bytes"!
+@ Constants for continuous function keys
+tsea "jaiva/continuous"!
+
+@ Continuous
+maak conf <- f_cwriter("C:\Users\ACER\Documents\Untitled.txt")!  @ file loc
+    |> true!                                    @ Appends to the file
+
+@ Java UTF-8 Uses the normal DataOutputStream modified UTF-8 encoding.
+@ W_UTF8 can be used, but we wont know the length.
+conf(C_OUTPUT)(W_JAVA_UTF8, "Hello World!!!")!
+conf(C_OUTPUT)(W_JAVA_UTF8, "Other things")!
+conf(C_FLUSH)()!
+conf(C_CLOSE)()!
+
+maak maxBytes <- 200!
 
 kwenza t() ->
-    khuluma("HII")!
+    maak cf <- f_creader("C:\Users\ACER\Documents\code\jaiva\core\src\test\resources\dummy.jiv")!
+    maak read <- cf(C_INPUT)!
+    maak eof <- cf(C_EOF)! @ A function which returns a boolean.
 
-    sleep(1000)!
+    maak collect <-|!
+    maak lastVal!
+    nikhil (eof()') ->
+        lastVal <- read(R_BYTE)!
+        if (lastVal != idk) ->
+            collect <- arrLit(collect:::, lastVal)!
+        <~
+    <~
 
-    @ Thread should error, below is wrong
-    khuluma("WHAT" / 0.3242)!
+    khuluma("Self bytes:")!
+    khuluma(collect)!
+
+    cf(C_CLOSE)()!
 <~
 
 kwenza clean(type, err) ->
@@ -21,38 +48,23 @@ thread(t, clean)!
 
 khuluma("yo")!
 
-maak str <- "C:\Users\ACER\OneDrive\Music\scammerz.wav"!
-
-maak conf <- f_read(str)!
-
-maak read <- conf("read")!
+maak conf <- f_creader("C:\Users\ACER\OneDrive\Music\scammerz.wav")!
+maak read <- conf(C_READ)!
+maak eof <- conf(C_EOF)!
 
 maak collect <-|!
 maak lastVal!
-@ EOF, since readByte throws EOFException and not some sentinetal, so for testing purposes
-@ read in this specfic case will return false when the file is done.
-nikhil (lastVal != false) ->
-    lastVal <- read()! @ will be byte values converted to Longs between 0 and 255
-    if (lastVal != false) ->
+nikhil (eof()' && lastVal != false) ->
+    lastVal <- read(R_BYTE)!
+    if (lastVal != idk) ->
         collect <- arrLit(collect:::, lastVal)!
-        if (collect~ = 100) ->
+        if (collect~ = maxBytes) ->
             lastVal <- false!
         <~
     <~
 <~
 
-conf("close")()!
+conf(C_CLOSE)()!
 
 khuluma("The following bytes were found:")!
 khuluma(collect)!
-
-{
-Output:
-"yo"
-"HII"
-"The following bytes were found:"
-[82, 73, 70, 70, 252, 173, 119, 2, 87, 65, 86, 69, 74, 85, 78, 75, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 102, 109, 116, 32, 16, 0, 0, 0, 1, 0, 2, 0, 68, 172, 0, 0, 16, 177, 2, 0, 4, 0, 16, 0, 100, 97, 116, 97, 144, 173, 119, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-"ERR"
-"[line 10] WHAT (the left hand side) in ("WHAT" / 0.3242) is not allowed in an arithmetic statement.
-[TFunction 4] : F~t() <- global"
-}

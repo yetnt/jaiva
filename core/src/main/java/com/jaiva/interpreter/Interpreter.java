@@ -433,9 +433,17 @@ public class Interpreter {
                     if (out instanceof ThrowIfGlobalContext old) {
                         if (old.c == Keywords.LoopControl.BREAK)
                             break;
+                        if (old.c == Keywords.LoopControl.CONTINUE) {
+                            cond = Primitives.setCondition(whileLoop, config, scope);
+                            continue;
+                        }
                         ThrowIfGlobalContext checker = throwIfGlobalContext(scope, out, old.lineNumber);
                         if (checker.c == Keywords.LoopControl.BREAK)
                             break;
+                        if (checker.c == Keywords.LoopControl.CONTINUE) {
+                            cond = Primitives.setCondition(whileLoop, config, scope);
+                            continue;
+                        }
                         return checker;
                     }
 

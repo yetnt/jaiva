@@ -3,6 +3,7 @@ package com.jaiva.interpreter.symbol.continuous;
 import com.jaiva.interpreter.Primitives;
 import com.jaiva.interpreter.Scope;
 import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
+import com.jaiva.interpreter.libs.types.TypeConverter;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.inf.BFMethodToConsumer;
@@ -16,9 +17,28 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class CFClosures {
+
+    public static class EOF extends BaseFunction {
+        private boolean eof = false;
+
+        public EOF() {
+            super(FunctionBuilder.start());
+        }
+
+        public void set() {
+            eof = true;
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
+            return eof;
+        }
+    }
+
     public static class Input extends BaseFunction {
         BFMethodToSupplier<?> readStreamSupplier;
 
@@ -49,6 +69,14 @@ public class CFClosures {
 
             if (out instanceof Byte b) {
                 return TypeConverter.fromByte(b);
+            } else if (out.getClass().isArray()) {
+                // most probably a byte array
+                // return as integer list
+                return new ArrayList<>(List.of(
+                        TypeConverter.byteArrToIntArr(
+                                (byte[]) out
+                        )
+                ));
             } else {
                 return out; // pray.
             }

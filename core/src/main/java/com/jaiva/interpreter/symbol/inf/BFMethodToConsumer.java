@@ -14,5 +14,6 @@ public interface BFMethodToConsumer<T> extends ThrowableQuadFunction<
         TFuncCall, ArrayList<Object>,
         IConfig<Object>, Scope,
         ThrowableConsumer<T, IOException>,
+
         Exception> {
 }

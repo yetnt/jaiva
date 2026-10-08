@@ -7,6 +7,7 @@ import com.jaiva.interpreter.libBuilders.func.Argument;
 import com.jaiva.interpreter.libBuilders.func.Arguments;
 import com.jaiva.interpreter.libBuilders.func.FunctionBuilder;
 import com.jaiva.interpreter.libBuilders.func.arg.AArgument;
+import com.jaiva.interpreter.libBuilders.func.arg.AVarArgument;
 import com.jaiva.interpreter.libs.BaseLibrary;
 import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
@@ -14,8 +15,10 @@ import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.interpreter.symbol.SymbolConfig;
 import com.jaiva.tokenizer.jdoc.JDoc;
 import com.jaiva.tokenizer.jdoc.JDocBuilder;
+import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 @JaivaLibrary(path="types/numbers", description = "More complicated converters")
@@ -23,7 +26,8 @@ public class Numbers extends BaseLibrary {
     public Numbers() {
         add(
                 new FDoubleToIEE754Long(),
-                new FLongToIEEE754Double()
+                new FLongToIEEE754Double(),
+                new FStringFromByteArray()
         );
     }
 
@@ -106,6 +110,61 @@ public class Numbers extends BaseLibrary {
                         tFuncCall.lineNumber);
 
             return Double.longBitsToDouble(l);
+        }
+    }
+
+    static class FStringFromByteArray extends BaseFunction {
+        public FStringFromByteArray() {
+            super(
+                    FunctionBuilder.start()
+                            .name("t_strFromByteArr")
+                            .arguments(
+                                    Arguments.getInstance().addVarArg(
+                                            new AVarArgument(
+                                                    "arr",
+                                                    "A var args byte array (integer values from 0 to 255)"
+                                            )
+                                    )
+                            )
+                    .docs(JDoc.builder()
+                            .addDesc(
+                                    "Converts the given byte array into a UTF-8 (Standard) string"
+                            ).addReturns("the string")
+                            .sinceVersion("6.1.0")
+                            .addExample("""
+                                    tsea "jaiva/types/numbers"!
+                                    
+                                    maak byteArr <-| 72, 101, 108, 108, 111!
+                                    
+                                    khuluma(t_strFromByteArr(byteArr:::))! @ Prints "Hello"
+                                    """)
+                    )
+            );
+        }
+
+        @Override
+        public Object call(TFuncCall tFuncCall, ArrayList<Object> params, IConfig<Object> config, Scope scope) throws Exception {
+            if (params.isEmpty() || (params.size() == 1 && params.getFirst() == null)) return Token.voidValue(tFuncCall.lineNumber);
+            byte[] collectedBytss = new byte[params.size()];
+            for (int i = 0; i < params.size(); i++) {
+                Object val = Primitives.toPrimitive(params.get(i), false, config, scope);
+
+                try {
+                    if (val instanceof Integer l)
+                        collectedBytss[i] = TypeConverter.toByte(l);
+                    else if (val instanceof Long l)
+                        collectedBytss[i] = TypeConverter.toByte(l);
+                    else throw new InterpreterException.WtfAreYouDoingException(
+                            scope, "Okay so like " + val + " just isnt something that can be represented as a byte bro.", tFuncCall.lineNumber
+                        );
+                } catch (IllegalArgumentException e) {
+                    throw new InterpreterException.WtfAreYouDoingException(
+                            scope, "One of the integer/long values in the array was either lwoert ahn 0 or higher than 255!", tFuncCall.lineNumber
+                    );
+                }
+            }
+
+            return new String(collectedBytss, StandardCharsets.UTF_8);
         }
     }
 }

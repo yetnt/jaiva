@@ -11,8 +11,6 @@ import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.BaseFunction;
 import com.jaiva.tokenizer.jdoc.JDoc;
-import com.jaiva.tokenizer.jdoc.JDocBuilder;
-import com.jaiva.tokenizer.tokens.Token;
 import com.jaiva.tokenizer.tokens.specific.TFuncCall;
 import com.jaiva.tokenizer.tokens.specific.TVoidValue;
 import com.jaiva.utils.ThrowableRunnable;
@@ -21,7 +19,6 @@ import com.yetnt.utils.functional.consumer.ThrowableBiConsumer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 @JaivaLibrary(
         path = "threads",
@@ -29,6 +26,7 @@ import java.util.function.BiConsumer;
                 " about 2 threads mutating the same variable... That's ur problem bro."
 )
 public class ThreadsLib extends BaseLibrary {
+
     public ThreadsLib() {
         add(new FThread());
     }
@@ -57,7 +55,47 @@ public class ThreadsLib extends BaseLibrary {
                                                     )
                                             )
                             )
-                            .docs(JDoc.builder().sinceVersion("6.1.0"))
+                            .docs(
+                                    JDoc.builder()
+                                            .addDesc(
+                                                    "Executes the given function in it's own separate thread. If the function aught to fail for some" +
+                                                            " reason, a string and the error message is passed into a secondary" +
+                                                            " cleanup function which is ran on the original thread."
+                                            )
+                                            .addReturns(
+                                                    "The thread Id (Long). Idk what you'd do with this"
+                                            )
+                                            .addExample("""
+                                                    tsea "jaiva/threads"!
+                                                    
+                                                    kwenza f1() ->
+                                                        khuluma("HI")!
+                                                        sleep(3000)! @ Sleep for 3 seconds
+                                                        khuluma("Damn.")!
+                                                    <~
+                                                    
+                                                    kwenza clean(type, err) ->
+                                                        if (err~ > 0) ->
+                                                            khuluma("An error occured executing f1!")!
+                                                            khuluma(err)!
+                                                        <~
+                                                    <~
+                                                    
+                                                    thread(f1, clean)!
+                                                    khuluma("OKAY")!
+                                                    sleep(2000)!
+                                                    khuluma("WOW")!
+                                                    
+                                                    {
+                                                    Output should be:
+                                                    "OKAY"
+                                                    "HI"
+                                                    "WOW"
+                                                    "Damn."
+                                                    }
+                                                    """)
+                                            .sinceVersion("6.1.0")
+                            )
             );
         }
 

@@ -8,6 +8,7 @@ This library exports the following libraries:
 | --- | --- |
 | t_dToIEEE754Long | [t_dToIEEE754Long](#t_dToIEEE754Long) |
 | t_lToIEEE754Double | [t_lToIEEE754Double](#t_lToIEEE754Double) |
+| t_strFromByteArr | [t_strFromByteArr](#t_strFromByteArr) |
 ## Functions
 
 ### t_dToIEEE754Long
@@ -51,6 +52,40 @@ F~t_lToIEEE754Double(long)
 _**Returns:**_ **the double this long's bits represent.**
 
 Since Version: _6.0.0-beta.5_
+
+
+---
+
+
+### t_strFromByteArr
+
+This symbol can be reached by the following aliases: _`t_strFromByteArr`_
+
+_**Converts the given byte array into a UTF-8 (Standard) string**_
+
+
+#### Definition
+
+```jaiva
+F~t_strFromByteArr(<-arr?)
+```
+- **_arr_** **`?`** **`<-`** _**[]**_
+	 - _A var args byte array (integer values from 0 to 255)_
+
+_**Returns:**_ **the string**
+
+Since Version: _6.1.0_
+
+
+#### Example: 
+
+```jaiva
+tsea "jaiva/types/numbers"!
+
+maak byteArr <-| 72, 101, 108, 108, 111!
+
+khuluma(t_strFromByteArr(byteArr:::))! @ Prints "Hello"
+```
 
 
 ---
