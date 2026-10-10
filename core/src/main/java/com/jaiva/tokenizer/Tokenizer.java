@@ -832,7 +832,7 @@ public final class Tokenizer {
                                 && ((t instanceof TArrayVar) || (t instanceof TUnknownScalar)
                                 || (t instanceof TFunction))) {
 
-                            JDoc doc = new JDoc(lineNumber, comment.trim());
+                            JDoc doc = new JDoc(t.lineNumber, comment.trim());
                             t.tooltip = doc;
                             t.json.removeKey("toolTip");
                             t.json.append("toolTip", doc, true);

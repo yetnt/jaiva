@@ -18,6 +18,7 @@ import com.jaiva.interpreter.libs.annotation.JaivaLibrary;
 import com.jaiva.interpreter.libs.annotation.PublicLibrary;
 import com.jaiva.interpreter.runtime.IConfig;
 import com.jaiva.interpreter.symbol.Symbol;
+import com.jaiva.interpreter.symbol.SymbolType;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
@@ -25,6 +26,7 @@ import io.github.classgraph.ScanResult;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Globals class has 2 pretty signifact jobs lol
@@ -181,15 +183,27 @@ public class Globals extends BaseLibrary {
         string.append("{").append("\"version\":\"").append(Main.version).append("\",");
         string.append("\"tokens\":");
         string.append("[");
-        VFS.forEach((name, vf) -> {
-            Symbol symbol = (Symbol) ((MapValue) vf).getValue();
-            try {
-                string.append(symbol.token.toJson());
-            } catch (JaivaException e) {
-                throw new RuntimeException(e);
+        HashMap<Symbol, String> jsonMap = new HashMap<>();
+        for (Map.Entry<String, MapValue> entry : VFS.entrySet()) {
+            String name = entry.getKey();
+            MapValue vf = entry.getValue();
+            Symbol symbol = vf.getValue();
+            if (jsonMap.containsKey(symbol)) {
+                String symJson = jsonMap.get(symbol);
+                if (symbol.symbolType == SymbolType.FUNCTION) {
+                    // TFunction token adds F~ syntax to name
+                    symJson = symJson.replace("\"name\": \"" + symbol.token.name + "\"", "\"name\": \"F~" + name + "\"");
+                } else {
+                    symJson = symJson.replace("\"name\": \"" + symbol.token.name + "\"", "\"name\": \"" + name + "\"");
+                }
+                string.append(symJson);
+            } else {
+                String json = symbol.token.toJson();
+                string.append(json);
+                jsonMap.put(symbol, json);
             }
             string.append(",");
-        });
+        }
         string.deleteCharAt(string.length() - 1);
         string.append("]");
         string.append("}");

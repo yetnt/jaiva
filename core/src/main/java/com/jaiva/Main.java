@@ -67,7 +67,7 @@ public class Main {
      * .<build number>"
      * (SemVar).
      */
-    public static String version = "6.1.1";
+    public static String version = "6.1.2";
     /**
      * Author, it's just me.
      */
@@ -504,7 +504,7 @@ public class Main {
                     } else if (comment != null
                             && t instanceof TSymbol) {
 
-                        JDoc doc = new JDoc(lineNum, comment.trim());
+                        JDoc doc = new JDoc(t.lineNumber, comment.trim());
                         t.tooltip = doc;
                         t.json.removeKey("toolTip");
                         t.json.append("toolTip", doc, true);
